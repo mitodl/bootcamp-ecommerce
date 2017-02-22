@@ -1,0 +1,81 @@
+{
+    "name": "bootcamp-ecommerce",
+    "description": "MIT Bootcamp e-commerce",
+    "keywords": [
+        "Django",
+        "Python",
+        "MIT",
+        "Office of Digital Learning"
+    ],
+    "website": "https://github.com/mitodl/bootcamp-ecommerce",
+    "repository": "https://github.com/mitodl/bootcamp-ecommerce",
+    "success_url": "/",
+    "scripts": {
+        "postdeploy": "./manage.py migrate"
+    },
+    "addons": [
+        "heroku-postgresql:hobby-dev",
+        "newrelic:wayne"
+    ],
+    "buildpacks": [
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-python"
+        }
+    ],
+    "env": {
+        "ALLOWED_HOSTS": {
+            "description": "Array of allowed hostnames",
+            "default":  "['*']"
+        },
+        "BOOTCAMP-ECOMMERCE_ADMIN_EMAIL": {
+            "description": "E-mail to send 500 reports to.",
+            "required": false
+        },
+        "BOOTCAMP-ECOMMERCE_EMAIL_HOST": {
+            "description": "Outgoing e-mail settings",
+            "required": false
+        },
+        "BOOTCAMP-ECOMMERCE_EMAIL_PASSWORD": {
+            "description": "Outgoing e-mail settings",
+            "required": false
+        },
+        "BOOTCAMP-ECOMMERCE_EMAIL_PORT": {
+            "description": "Outgoing e-mail settings",
+            "required": false,
+            "value":  "587"
+        },
+        "BOOTCAMP-ECOMMERCE_EMAIL_TLS": {
+            "description": "Outgoing e-mail settings",
+            "required": false,
+            "value":  "True"
+        },
+        "BOOTCAMP-ECOMMERCE_EMAIL_USER": {
+            "description": "Outgoing e-mail settings",
+            "required": false
+        },
+        "BOOTCAMP-ECOMMERCE_FROM_EMAIL": {
+            "description": "E-mail to use for the from field"
+
+        },
+        "NEW_RELIC_APP_NAME": {
+            "description": "Application identifier in New Relic.",
+            "default": "bootcamp-ecommerce"
+        },
+        "SECRET_KEY": {
+            "description": "Django secret key.",
+            "generator": "secret"
+        },
+        "BOOTCAMP-ECOMMERCE_SECURE_SSL_REDIRECT": {
+            "description": "Application-level SSL redirect setting.",
+            "required": false,
+            "value": "True"
+        },
+        "STATUS_TOKEN": {
+            "description": "Token to access the status API.",
+            "required": true
+        }
+    }
+}

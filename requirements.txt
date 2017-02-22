@@ -1,0 +1,13 @@
+Django==1.9.4
+PyYAML==3.11
+dj-database-url==0.3.0
+dj-static==0.0.6
+django-server-status==0.3
+factory_boy==2.6.0
+fake-factory==0.5.3
+uwsgi==2.0.10
+psycopg2==2.6
+six==1.10.0
+tox==2.3.1
+static3==0.5.1
+newrelic==2.54.0.41
