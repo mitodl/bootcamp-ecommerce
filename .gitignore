@@ -15,8 +15,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+./lib/
+./lib64/
 parts/
 sdist/
 var/
@@ -52,6 +52,7 @@ coverage/
 
 # Django stuff:
 *.log
+celerybeat-schedule.db
 
 # Sphinx documentation
 docs/_build/
@@ -59,8 +60,9 @@ docs/_build/
 # PyBuilder
 target/
 
-#Ipython Notebook
+#Ipython/Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb
 
 # Heroku/Foreman
 .env
@@ -68,6 +70,9 @@ target/
 # webpack
 static/bundles
 node_modules
+
+# JS directories
+!static/js/lib
 
 # Editor stuff
 *.swp
@@ -88,3 +93,15 @@ codekit-config.json
 staticfiles/
 
 .venv
+release-notes-checklist
+
+static/scss/material.css
+
+# Local settings
+bootcamp-ecommerce.yml
+
+# Webpack
+webpack-stats.json
+
+# Celery Beat
+celerybeat-schedule

@@ -1,35 +1,63 @@
-db:
-  image: postgres
-  ports:
-    - "5432"
-web:
-  build: .
-  command: >
-    /bin/bash -c '
-    sleep 3 &&
-    python3 manage.py migrate &&
-    ./with_host.sh python3 manage.py runserver 0.0.0.0:8099'
-  environment:
-    DEBUG: 'False'
-    COVERAGE_DIR: htmlcov
-    PORT: 8099
-    NODE_ENV: 'production'
-    DATABASE_URL: postgres://postgres@db:5432/postgres
-    BOOTCAMP-ECOMMERCE_SECURE_SSL_REDIRECT: 'False'
-    BOOTCAMP-ECOMMERCE_DB_DISABLE_SSL: 'True'
-  ports:
-    - "8099:8099"
-  links:
-    - db
+version: '2'
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432"
 
-watch:
-  image: node:6.2
-  working_dir: /src
-  command: >
-    /bin/bash -c './webpack_if_prod.sh'
-  ports:
-    - "8098:8098"
-  volumes:
-    - .:/src
-  environment:
-    NODE_ENV: 'production'
+  redis:
+    image: redis
+    ports:
+      - "6379"
+
+  python:
+    build:
+      context: .
+      dockerfile: ./travis/Dockerfile-travis-web
+    command: /bin/true
+    environment:
+      DEBUG: 'False'
+      COVERAGE_DIR: htmlcov
+      PORT: 8099
+      NODE_ENV: 'production'
+      DATABASE_URL: postgres://postgres@db:5432/postgres
+      BOOTCAMP_SECURE_SSL_REDIRECT: 'False'
+      BOOTCAMP_DB_DISABLE_SSL: 'True'
+      BROKER_URL: redis://redis:6379/4
+      CELERY_RESULT_BACKEND: redis://redis:6379/4
+      XDG_CACHE_HOME: /src/.cache
+    env_file: .env
+
+  web:
+    image: bootcamp_python
+    extends:
+      service: python
+    command: >
+      /bin/bash -c '
+      sleep 3 &&
+      python3 manage.py migrate &&
+      ./with_host.sh python3 manage.py runserver 0.0.0.0:8099'
+    ports:
+      - "8099:8099"
+    links:
+      - db
+
+  celery:
+    image: bootcamp_python
+    extends:
+      service: python
+    command: >
+      /bin/bash -c '
+      sleep 3;
+      celery -A bootcamp worker -B -l debug'
+    links:
+      - db
+      - redis
+
+  selenium:
+    image: bootcamp_python
+    extends:
+      service: python
+    links:
+      - db
+      - redis

@@ -1,0 +1,16 @@
+[ignore]
+.*/node_modules/fbjs/.*
+.*.git/.*
+
+[include]
+./static/js
+
+[libs]
+./static/js/flow/declarations.js
+node_modules/iflow-lodash/index.js.flow
+./flow-typed/npm/
+
+[options]
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe

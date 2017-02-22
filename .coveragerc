@@ -2,13 +2,14 @@
 branch = True
 source = .
 data_file=/tmp/coverage
-omit = 
-    bootcamp-ecommerce/wsgi.py
+omit =
+    bootcamp/wsgi.py
     manage.py
     ./.tox/*
     */migrations/*
     *_test.py
     *_tests.py
+    ./selenium_tests/*
 
 [report]
 exclude_lines =

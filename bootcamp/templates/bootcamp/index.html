@@ -6,9 +6,7 @@
 {% block content %}
 <h1>{% trans "Hi, I'm bootcamp-ecommerce" %}</h1>
 <div id="container"></div>
-<script type="text/javascript">
-var SETTINGS = {{ js_settings_json|safe }};
-</script>
-<script src="{{ root_src }}" type="text/javascript"></script>
+{% load render_bundle %}
+{% render_bundle 'root' %}
 {% endblock %}
 

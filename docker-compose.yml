@@ -1,42 +1,90 @@
-db:
-  image: postgres
-  ports:
-    - "5432"
+version: '2'
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432"
 
-web:
-  build: .
-  command: >
-    /bin/bash -c '
-    sleep 3 &&
-    python3 manage.py migrate &&
-    ./with_host.sh python3 manage.py runserver 0.0.0.0:8099'
-  volumes:
-    - .:/src
-  environment:
-    DEBUG: 'True'
-    NODE_ENV: 'development'
-    PORT: 8099
-    COVERAGE_DIR: htmlcov
-    DATABASE_URL: postgres://postgres@db:5432/postgres
-    BOOTCAMP-ECOMMERCE_USE_WEBPACK_DEV_SERVER: 'True'
-    BOOTCAMP-ECOMMERCE_SECURE_SSL_REDIRECT: 'False'
-    BOOTCAMP-ECOMMERCE_DB_DISABLE_SSL: 'True'
-  env_file: .env
-  ports:
-    - "8099:8099"
-  links:
-    - db
+  redis:
+    image: redis
+    ports:
+      - "6379"
 
-watch:
-  build: .
-  dockerfile: Dockerfile-node
-  working_dir: /src
-  command: >
-    /bin/bash -c './webpack_dev_server.sh --install'
-  ports:
-    - "8098:8098"
-  volumes:
-    - .:/src
-  environment:
-    NODE_ENV: 'development'
-  env_file: .env
+  nginx:
+    image: nginx
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/web.conf
+      - ./:/src
+    ports:
+      - "8099:8099"
+    links:
+      - web
+      - watch
+
+  python:
+    build: .
+    command: /bin/true
+    volumes:
+      - .:/src
+      - django_media:/var/media
+    environment:
+      DEBUG: 'True'
+      DEV_ENV: 'True'
+      NODE_ENV: 'development'
+      PORT: 8097
+      COVERAGE_DIR: htmlcov
+      DATABASE_URL: postgres://postgres@db:5432/postgres
+      BOOTCAMP_USE_WEBPACK_DEV_SERVER: 'True'
+      BOOTCAMP_SECURE_SSL_REDIRECT: 'False'
+      BOOTCAMP_DB_DISABLE_SSL: 'True'
+      CELERY_ALWAYS_EAGER: 'False'
+      BROKER_URL: redis://redis:6379/4
+      CELERY_RESULT_BACKEND: redis://redis:6379/4
+    env_file: .env
+
+  web:
+    image: bootcamp_python
+    extends:
+      service: python
+    command: >
+      /bin/bash -c '
+      sleep 3 &&
+      python3 manage.py migrate &&
+      uwsgi uwsgi.ini'
+    ports:
+      - "8097:8097"
+    links:
+      - db
+      - redis
+
+  watch:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    working_dir: /src
+    command: >
+      /bin/bash -c './webpack_dev_server.sh --install'
+    ports:
+      - "8098:8098"
+    volumes:
+      - .:/src
+      - yarn-cache:/home/mitodl/.cache/yarn
+    environment:
+      NODE_ENV: 'development'
+    env_file: .env
+
+  celery:
+    image: bootcamp_python
+    extends:
+      service: python
+    command: >
+      /bin/bash -c '
+      sleep 3;
+      celery -A bootcamp worker -B -l debug'
+    links:
+      - db
+      - redis
+
+volumes:
+  django_media: {}
+  yarn-cache: {}

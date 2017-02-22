@@ -4,23 +4,11 @@ bootcamp views
 import json
 
 from django.conf import settings
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.shortcuts import render
+from raven.contrib.django.raven_compat.models import client as sentry
 
-
-def get_bundle_url(request, bundle_name):
-    """
-    Create a URL for the webpack bundle.
-    """
-    if settings.DEBUG and settings.USE_WEBPACK_DEV_SERVER:
-        host = request.get_host().split(":")[0]
-
-        return "{host_url}/{bundle}".format(
-            host_url=settings.WEBPACK_SERVER_URL.format(host=host),
-            bundle=bundle_name
-        )
-    else:
-        return static("bundles/{bundle}".format(bundle=bundle_name))
+from bootcamp.templatetags.render_bundle import public_path
+from bootcamp.utils import webpack_dev_server_host
 
 
 def index(request):
@@ -28,14 +16,18 @@ def index(request):
     The index view. Display available programs
     """
 
-    host = request.get_host().split(":")[0]
     js_settings = {
         "gaTrackingID": settings.GA_TRACKING_ID,
-        "host": host
+        'reactGaDebug': settings.REACT_GA_DEBUG,
+        "host": webpack_dev_server_host(request),
+        'edx_base_url': settings.EDXORG_BASE_URL,
+        "release_version": settings.VERSION,
+        "environment": settings.ENVIRONMENT,
+        "sentry_dsn": sentry.get_public_dsn(),
+        'support_email': settings.EMAIL_SUPPORT,
+        'public_path': public_path(request),
     }
 
     return render(request, "bootcamp/index.html", context={
-        "style_src": get_bundle_url(request, "style.js"),
-        "root_src": get_bundle_url(request, "root.js"),
         "js_settings_json": json.dumps(js_settings),
     })

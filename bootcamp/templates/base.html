@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {% spaceless %}
+    {% load static %}
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load raven %}
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+    <script type="text/javascript">
+    var SETTINGS = {{ js_settings_json|safe }};
+    </script>
+    {% load render_bundle %}
+    {% render_bundle 'common' %}
+    {% render_bundle 'sentry_client' %}
+    {% render_bundle 'style' %}
     <title>{% block title %}{% endblock %}</title>
     {% block extrahead %}
-    <script type="text/javascript" src="{{ style_src }}"></script>
     {% endblock %}
+    {% endspaceless %}
   </head>
   <body>
     {% block content %}
