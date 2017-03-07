@@ -1,4 +1,4 @@
-Django==1.10.3
+Django==1.10.5
 PyYAML==3.11
 celery==3.1.23
 dj-database-url==0.3.0
@@ -15,9 +15,10 @@ ipython
 newrelic
 psycopg2==2.6
 python-dateutil
-python-social-auth==0.2.21
+pytz
 raven
 redis==2.10.5
 requests
+social-auth-app-django==1.1.0
 static3==0.5.1
 uwsgi

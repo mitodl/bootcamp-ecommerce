@@ -6,29 +6,29 @@
 #
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
-appdirs==1.4.0            # via setuptools
+appdirs==1.4.3            # via setuptools
 billiard==3.3.0.23        # via celery
 celery==3.1.23
 contextlib2==0.5.4        # via raven
 decorator==4.0.11         # via ipython, traitlets
-defusedxml==0.5.0         # via python3-openid
+defusedxml==0.5.0         # via python3-openid, social-auth-core
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-redis==4.7.0
 django-server-status==0.3.2
 django-webpack-loader==0.4.1
-Django==1.10.3            # via django-server-status
+Django==1.10.5            # via django-server-status
 djangorestframework==3.5.2
 edx-api-client==0.3.0
-elasticsearch==2.3.0      # via django-server-status
+elasticsearch==5.2.0      # via django-server-status
 factory-boy==2.8.1
-faker==0.7.7
+faker==0.7.9
 html5lib==0.999999999
 ipython-genutils==0.1.0   # via traitlets
-ipython==5.2.2
+ipython==5.3.0
 kombu==3.0.37             # via celery, django-server-status
-newrelic==2.78.0.57
-oauthlib==2.0.1           # via python-social-auth, requests-oauthlib
+newrelic==2.80.1.61
+oauthlib==2.0.1           # via requests-oauthlib, social-auth-core
 packaging==16.8           # via setuptools
 pexpect==4.2.1            # via ipython
 pickleshare==0.7.4        # via ipython
@@ -36,21 +36,22 @@ prompt-toolkit==1.0.13    # via ipython
 psycopg2==2.6
 ptyprocess==0.5.1         # via pexpect
 pygments==2.2.0           # via ipython
-pyjwt==1.4.2              # via python-social-auth
-pyparsing==2.1.10         # via packaging
+PyJWT==1.4.2              # via social-auth-core
+pyparsing==2.2.0          # via packaging
 python-dateutil==2.5.3
-python-social-auth==0.2.21
-python3-openid==3.0.10    # via python-social-auth
-pytz==2016.10             # via celery
+python3-openid==3.1.0     # via social-auth-core
+pytz==2016.10
 PyYAML==3.11
-raven==5.32.0
+raven==6.0.0
 redis==2.10.5
-requests-oauthlib==0.8.0  # via python-social-auth
+requests-oauthlib==0.8.0  # via social-auth-core
 requests==2.11.1
 simplegeneric==0.8.1      # via ipython
-six==1.10.0               # via django-server-status, edx-api-client, faker, html5lib, packaging, prompt-toolkit, python-dateutil, python-social-auth, setuptools, traitlets
+six==1.10.0               # via django-server-status, edx-api-client, faker, html5lib, packaging, prompt-toolkit, python-dateutil, setuptools, social-auth-app-django, social-auth-core, traitlets
+social-auth-app-django==1.1.0
+social-auth-core==1.2.0   # via social-auth-app-django
 static3==0.5.1
-traitlets==4.3.1          # via ipython
+traitlets==4.3.2          # via ipython
 urllib3==1.20             # via elasticsearch
 uwsgi==2.0.14
 wcwidth==0.1.7            # via prompt-toolkit
