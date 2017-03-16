@@ -17,49 +17,36 @@ class TestViews(TestCase):
     Test that the views work as expected.
     """
 
-    def test_index_view(self):
+    def test_index(self):
         """Verify the index view is as expected"""
-        response = self.client.get(reverse('bootcamp-index'))
-        self.assertContains(
-            response,
-            "Log in using your edx.org account",
-            status_code=200
-        )
-
-    def test_webpack_url(self):
-        """Verify that webpack bundle src shows up in production"""
 
         host = FuzzyText().fuzz()
-        edx_base_url = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
-        email_support = FuzzyText().fuzz()
         version = '0.0.1'
         with self.settings(
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
-            EDXORG_BASE_URL=edx_base_url,
             ENVIRONMENT=environment,
-            EMAIL_SUPPORT=email_support,
         ), patch('bootcamp.templatetags.render_bundle._get_bundle') as get_bundle:
-            response = self.client.get('/')
+            resp = self.client.get('/')
+        self.assertContains(
+            resp,
+            "Log in using your edx.org account",
+            status_code=200
+        )
 
         bundles = [bundle[0][1] for bundle in get_bundle.call_args_list]
         assert set(bundles) == {
             'common',
-            'root',
             'sentry_client',
             'style',
         }
-
-        js_settings = json.loads(response.context['js_settings_json'])
+        js_settings = json.loads(resp.context['js_settings_json'])
         assert js_settings == {
             'environment': environment,
-            'host': host,
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',
-            'support_email': email_support,
-            'edx_base_url': edx_base_url,
         }
 
     def test_pay_anonymous(self):
@@ -74,6 +61,29 @@ class TestViews(TestCase):
         """
         user = UserFactory.create()
         self.client.force_login(user)
-        resp = self.client.get(reverse('pay'))
-        self.assertContains(resp, "{full}, Welcome to MIT Bootcamps".format(full=user.get_full_name()))
-        self.assertContains(resp, "Make a payment of")
+        host = FuzzyText().fuzz()
+        environment = FuzzyText().fuzz()
+        version = '0.0.1'
+        with self.settings(
+            WEBPACK_DEV_SERVER_HOST=host,
+            VERSION=version,
+            ENVIRONMENT=environment,
+        ), patch('bootcamp.templatetags.render_bundle._get_bundle') as get_bundle:
+            resp = self.client.get(reverse('pay'))
+
+        bundles = [bundle[0][1] for bundle in get_bundle.call_args_list]
+        assert set(bundles) == {
+            'common',
+            'payment',
+            'sentry_client',
+            'style',
+        }
+
+        js_settings = json.loads(resp.context['js_settings_json'])
+        assert js_settings == {
+            'environment': environment,
+            'full_name': user.get_full_name(),
+            'release_version': version,
+            'sentry_dsn': None,
+            'public_path': '/static/bundles/',
+        }

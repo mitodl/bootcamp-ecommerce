@@ -1,14 +1,6 @@
 // Define globals we would usually get from Django
 const _createSettings = () => ({
-  user: {
-    username: "jane",
-    email: "jane@example.com",
-    first_name: "Jane",
-    last_name: "Doe",
-    preferred_name: "JD"
-  },
-  edx_base_url: "/edx/",
-  support_email: "a_real_email@example.com"
+  full_name: 'Jane Doe',
 });
 
 global.SETTINGS = _createSettings();

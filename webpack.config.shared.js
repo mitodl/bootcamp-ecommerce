@@ -4,7 +4,7 @@ const webpack = require("webpack");
 module.exports = {
   config: {
     entry: {
-      'root': ['babel-polyfill', './static/js/entry/root'],
+      'payment': ['babel-polyfill', './static/js/entry/payment'],
       'sentry_client': './static/js/entry/sentry_client.js',
       'style': './static/js/entry/style',
     },
