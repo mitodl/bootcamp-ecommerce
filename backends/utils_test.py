@@ -4,14 +4,17 @@ Tests for the utils
 from datetime import datetime, timedelta
 from unittest.mock import (
     MagicMock,
+    Mock,
     patch,
 )
 
 import pytz
+from django.contrib.auth.models import User
 from django.test import TestCase
 from requests.exceptions import HTTPError
 
 from backends import utils
+from backends.utils import get_social_username
 from backends.edxorg import EdxOrgOAuth2
 from bootcamp.factories import UserFactory
 # pylint: disable=protected-access
@@ -22,7 +25,7 @@ class RefreshTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        super(RefreshTest, cls).setUpTestData()
+        super().setUpTestData()
         # create an user
         cls.user = UserFactory.create()
         # create a social auth for the user
@@ -121,3 +124,104 @@ class RefreshTest(TestCase):
         social_user = self.user.social_auth.get(provider=EdxOrgOAuth2.name)
         with self.assertRaises(HTTPError):
             utils._send_refresh_request(social_user)
+
+
+class SplitNameTests(TestCase):
+    """
+    Tests for split_name
+    """
+    def test_none(self):
+        """
+        None should be treated like an empty string
+        """
+        first_name, last_name = utils.split_name(None)
+        assert first_name == ""
+        assert last_name == ""
+
+    def test_empty(self):
+        """
+        split_name should always return two parts
+        """
+        first_name, last_name = utils.split_name("")
+        assert first_name == ""
+        assert last_name == ""
+
+    def test_one(self):
+        """
+        Split name should have the name as the first tuple item
+        """
+        first_name, last_name = utils.split_name("one")
+        assert first_name == "one"
+        assert last_name == ""
+
+    def test_two(self):
+        """
+        Split name with two names
+        """
+        first_name, last_name = utils.split_name("two names")
+        assert first_name == "two"
+        assert last_name == "names"
+
+    def test_more_than_two(self):
+        """
+        Split name should be limited to two names
+        """
+        first_name, last_name = utils.split_name("three names here")
+        assert first_name == "three"
+        assert last_name == "names here"
+
+    def test_split_and_truncate(self):
+        """
+        Split and truncate should limit first and last name to 30 characters each
+        """
+        first, middle, last = "🐶" * 32, "🐱" * 16, "🐕" * 16
+        long_name = "{} {} {}".format(first, middle, last)
+        truncated_first, truncated_last = utils.split_and_truncate_name(long_name)
+        assert truncated_first == first[:30]
+        assert truncated_last == "{} {}".format(middle, last[:13])
+        # No exception should occur when creating the user
+        User.objects.create(first_name=truncated_first, last_name=truncated_last)
+
+
+class SocialTests(TestCase):
+    """
+    Tests for profile functions
+    """
+
+    def setUp(self):
+        """
+        Create a user with a default social auth
+        """
+        super().setUp()
+
+        self.user = UserFactory.create()
+        self.user.social_auth.create(
+            provider='not_edx',
+        )
+        self.social_username = "{}_edx".format(self.user.username)
+        self.user.social_auth.create(
+            provider=EdxOrgOAuth2.name,
+            uid=self.social_username,
+        )
+
+    def test_anonymous_user(self):
+        """
+        get_social_username should return None for anonymous users
+        """
+        is_anonymous = Mock(return_value=True)
+        user = Mock(is_anonymous=is_anonymous)
+        assert get_social_username(user) is None
+        assert is_anonymous.called
+
+    def test_zero_social(self):
+        """
+        get_social_username should return None if there is no edX account associated yet
+        """
+        self.user.social_auth.all().delete()
+        assert get_social_username(self.user) is None
+
+    def test_one_social(self):
+        """
+        get_social_username should return the social username, not the Django username
+        """
+        assert get_social_username(self.user) == self.social_username

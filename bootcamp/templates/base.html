@@ -20,6 +20,8 @@
     {% endspaceless %}
   </head>
   <body>
+    {% load render_bundle %}
+    {% render_bundle 'root' %}
     {% block content %}
     {% endblock %}
   </body>

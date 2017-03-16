@@ -1,8 +1,19 @@
-// Layout goes here
+#home {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 800px;
+}
 
-// Fake style to confirm that webpack dev server works
-h1 {
-  border-radius: 25px;
-  border: 2px solid blue;
-  padding: 2px;
+#pay {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .payment {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
 }

@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans "bootcamp-ecommerce" %}{% endblock %}
+{% block title %}MIT Bootcamps{% endblock %}
 
 {% block content %}
-<h1>{% trans "Hi, I'm bootcamp-ecommerce" %}</h1>
-<div id="container"></div>
-{% load render_bundle %}
-{% render_bundle 'root' %}
+<div id="home">
+  <a href="{% url 'social:begin' 'edxorg' %}">Continue with edX</a>
+  <span>Log in using your edx.org account</span>
+</div>
 {% endblock %}
 
