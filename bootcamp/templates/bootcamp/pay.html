@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}MIT Bootcamps{% endblock %}
+
+{% block content %}
+<div id="pay">
+  <h3 class="intro">{{ name }}, Welcome to MIT Bootcamps</h3>
+  <h2 class="bootcamp-title">Internet of Things</h2>
+  <span>You have paid $2000 out of $6000</span>
+  <div class="payment">
+    <span>Make a payment of:</span>
+    <span>
+      $<input type="number" id="total" />
+    </span>
+    <button class="payment-button">Pay</button>
+  </div>
+
+  <a href="#">Print your statement</a>
+</div>
+{% endblock %}
+
