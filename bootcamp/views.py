@@ -38,7 +38,7 @@ def pay(request):
         "environment": settings.ENVIRONMENT,
         "sentry_dsn": sentry.get_public_dsn(),
         'public_path': public_path(request),
-        'full_name': request.user.get_full_name(),
+        'full_name': request.user.profile.name,
     }
 
     return render(request, "bootcamp/pay.html", context={

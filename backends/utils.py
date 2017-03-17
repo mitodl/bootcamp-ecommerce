@@ -52,39 +52,6 @@ def refresh_user_token(user_social):
         _send_refresh_request(user_social)
 
 
-def split_name(name):
-    """
-    Split a name into two names. If there is only one name, the last name will be
-    empty. If there are more than two, the extra names will be appended to the last
-    name.
-
-    Args:
-        name (str): A name to split into first name, last name
-    Returns:
-        tuple: (first, last)
-    """
-    if name is None:
-        return "", ""
-    names = name.split(maxsplit=1)
-    if len(names) == 0:
-        return "", ""
-    else:
-        return names[0], " ".join(names[1:])
-
-
-def split_and_truncate_name(name):
-    """
-    Split a name into two names and truncate each name to fit within 30 character limit in User object.
-
-    Args:
-        name (str): A name to split into first name, last name
-    Returns:
-        tuple: (first, last)
-    """
-    first, last = split_name(name)
-    return first[:30], last[:30]
-
-
 def get_social_username(user):
     """
     Get social auth edX username for a user, or else return None.

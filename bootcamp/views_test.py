@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from factory.fuzzy import FuzzyText
 from rest_framework.status import HTTP_302_FOUND
 
-from bootcamp.factories import UserFactory
+from profiles.factories import ProfileFactory
 
 
 class TestViews(TestCase):
@@ -59,7 +59,7 @@ class TestViews(TestCase):
         """
         Test that logged in users can see the payment page
         """
-        user = UserFactory.create()
+        user = ProfileFactory.create().user
         self.client.force_login(user)
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
@@ -82,7 +82,7 @@ class TestViews(TestCase):
         js_settings = json.loads(resp.context['js_settings_json'])
         assert js_settings == {
             'environment': environment,
-            'full_name': user.get_full_name(),
+            'full_name': user.profile.name,
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',

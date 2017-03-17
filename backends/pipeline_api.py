@@ -8,17 +8,15 @@ from urllib.parse import urljoin
 import pytz
 
 from backends.edxorg import EdxOrgOAuth2
-from backends.utils import (
-    get_social_username,
-    split_and_truncate_name,
-)
+from backends.utils import get_social_username
+from profiles.models import Profile
 
 log = logging.getLogger(__name__)
 
 
-def update_user_from_edx(backend, user, response, is_new, *args, **kwargs):  # pylint: disable=unused-argument
+def update_profile_from_edx(backend, user, response, is_new, *args, **kwargs):  # pylint: disable=unused-argument
     """
-    Gets profile information from edX and saves it in the User object
+    Gets profile information from edX and saves it in the Profile object (creating one if necessary)
 
     Args:
         backend (social.backends.oauth.BaseOAuth2): the python social auth backend
@@ -33,8 +31,8 @@ def update_user_from_edx(backend, user, response, is_new, *args, **kwargs):  # p
     if backend.name != EdxOrgOAuth2.name:
         return
 
-    # We don't check is_new here because something else in the pipeline is updating the User
-    # and we need to fix it here
+    if not is_new:
+        return
 
     access_token = response.get('access_token')
     if not access_token:
@@ -49,9 +47,10 @@ def update_user_from_edx(backend, user, response, is_new, *args, **kwargs):  # p
             "Authorization": "Bearer {}".format(access_token),
         }
     )
+    profile, _ = Profile.objects.get_or_create(user=user)
     name = user_profile_edx.get('name', '')
-    user.first_name, user.last_name = split_and_truncate_name(name)
-    user.save()
+    profile.name = name
+    profile.save()
 
     log.debug(
         'Profile for user "%s" updated with values from EDX %s',

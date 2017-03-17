@@ -9,14 +9,13 @@ from unittest.mock import (
 )
 
 import pytz
-from django.contrib.auth.models import User
 from django.test import TestCase
 from requests.exceptions import HTTPError
 
 from backends import utils
 from backends.utils import get_social_username
 from backends.edxorg import EdxOrgOAuth2
-from bootcamp.factories import UserFactory
+from profiles.factories import UserFactory
 # pylint: disable=protected-access
 
 
@@ -124,63 +123,6 @@ class RefreshTest(TestCase):
         social_user = self.user.social_auth.get(provider=EdxOrgOAuth2.name)
         with self.assertRaises(HTTPError):
             utils._send_refresh_request(social_user)
-
-
-class SplitNameTests(TestCase):
-    """
-    Tests for split_name
-    """
-    def test_none(self):
-        """
-        None should be treated like an empty string
-        """
-        first_name, last_name = utils.split_name(None)
-        assert first_name == ""
-        assert last_name == ""
-
-    def test_empty(self):
-        """
-        split_name should always return two parts
-        """
-        first_name, last_name = utils.split_name("")
-        assert first_name == ""
-        assert last_name == ""
-
-    def test_one(self):
-        """
-        Split name should have the name as the first tuple item
-        """
-        first_name, last_name = utils.split_name("one")
-        assert first_name == "one"
-        assert last_name == ""
-
-    def test_two(self):
-        """
-        Split name with two names
-        """
-        first_name, last_name = utils.split_name("two names")
-        assert first_name == "two"
-        assert last_name == "names"
-
-    def test_more_than_two(self):
-        """
-        Split name should be limited to two names
-        """
-        first_name, last_name = utils.split_name("three names here")
-        assert first_name == "three"
-        assert last_name == "names here"
-
-    def test_split_and_truncate(self):
-        """
-        Split and truncate should limit first and last name to 30 characters each
-        """
-        first, middle, last = "🐶" * 32, "🐱" * 16, "🐕" * 16
-        long_name = "{} {} {}".format(first, middle, last)
-        truncated_first, truncated_last = utils.split_and_truncate_name(long_name)
-        assert truncated_first == first[:30]
-        assert truncated_last == "{} {}".format(middle, last[:13])
-        # No exception should occur when creating the user
-        User.objects.create(first_name=truncated_first, last_name=truncated_last)
 
 
 class SocialTests(TestCase):
