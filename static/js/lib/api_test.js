@@ -2,14 +2,14 @@
 import sinon from 'sinon';
 import { assert } from 'chai';
 
-import * as api_util from './api_util';
+import * as apiUtil from './api_util';
 import { sendPayment } from './api';
 
 describe('REST functions', () => {
   let sandbox, fetchJSONStub;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
-    fetchJSONStub = sandbox.stub(api_util, 'fetchJSONWithCSRF');
+    fetchJSONStub = sandbox.stub(apiUtil, 'fetchJSONWithCSRF');
   });
 
   afterEach(() => {
