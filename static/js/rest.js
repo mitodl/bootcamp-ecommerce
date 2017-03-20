@@ -8,26 +8,17 @@ import {
   FETCH_FAILURE,
 } from './actions';
 
-const endpoints = [
-  {
-    name: 'payment',
-    prefix: '',
-    url: '/api/v0/payment/',
-    makeOptions: total => ({
-      method: 'POST',
-      body: JSON.stringify({
-        total: total,
-      })
-    }),
-  },
-];
-
 export const makeRequestActionType = reducerName => `REQUEST_${reducerName.toUpperCase()}`;
 export const makeReceiveSuccessActionType = reducerName => `RECEIVE_${reducerName.toUpperCase()}_SUCCESS`;
 export const makeReceiveFailureActionType = reducerName => `RECEIVE_${reducerName.toUpperCase()}_FAILURE`;
 export const makeClearType = reducerName => `CLEAR_${reducerName.toUpperCase()}`;
 
-const makeReducer = (reducerName, initialState = {}) => {
+const INITIAL_STATE = {
+  loaded: false,
+  processing: false,
+};
+export const makeReducer = (endpoint, initialState = INITIAL_STATE) => {
+  const reducerName = endpoint.name;
   const requestType = makeRequestActionType(reducerName);
   const receiveSuccessType = makeReceiveSuccessActionType(reducerName);
   const receiveFailureType = makeReceiveFailureActionType(reducerName);
@@ -35,46 +26,49 @@ const makeReducer = (reducerName, initialState = {}) => {
 
   return (state = initialState, action) => {
     switch (action.type) {
-      case [requestType]:
-        return {
-          ...state,
-          fetchStatus: FETCH_PROCESSING,
-        };
-      case [receiveSuccessType]:
-        return {
-          ...state,
-          fetchStatus: FETCH_SUCCESS,
-          data: action.payload,
-        };
-      case [receiveFailureType]:
-        return {
-          ...state,
-          fetchStatus: FETCH_FAILURE,
-          error: action.payload,
-        };
-      case [clearType]:
-        return initialState;
-      default:
-        return state;
+    case requestType:
+      return {
+        ...state,
+        fetchStatus: FETCH_PROCESSING,
+        loaded: false,
+        processing: true,
+      };
+    case receiveSuccessType:
+      return {
+        ...state,
+        fetchStatus: FETCH_SUCCESS,
+        data: action.payload,
+        loaded: true,
+        processing: false,
+      };
+    case receiveFailureType:
+      return {
+        ...state,
+        fetchStatus: FETCH_FAILURE,
+        error: action.payload,
+        loaded: true,
+        processing: false,
+      };
+    case clearType:
+      return initialState;
+    default:
+      return state;
     }
-  }
+  };
 };
 
-const _reducers = {};
-const _actions = {};
-for (const endpoint of endpoints) {
-  _reducers[endpoint.name] = makeReducer(endpoint.name);
+export const makeFetchFunc = endpoint => (
+  (...args) => fetchJSONWithCSRF(endpoint.url, endpoint.makeOptions(...args))
+);
 
-  let fetchFunc = (...args) => {
-    let options = endpoint.makeOptions(...args);
-    return fetchJSONWithCSRF(endpoint.url, options);
-  };
-
+export const makeAction = (endpoint) => {
   const requestAction = createAction(makeRequestActionType(endpoint.name));
   const receiveSuccessAction = createAction(makeReceiveSuccessActionType(endpoint.name));
   const receiveFailureAction = createAction(makeReceiveFailureActionType(endpoint.name));
 
-  _actions[endpoint.name] = (...params) => {
+  const fetchFunc = makeFetchFunc(endpoint);
+
+  return (...params) => {
     return dispatch => {
       dispatch(requestAction());
       fetchFunc(...params).then(data => {
@@ -85,7 +79,26 @@ for (const endpoint of endpoints) {
         return Promise.reject();
       });
     };
-  }
+  };
+};
+
+export const endpoints = [
+  {
+    name: 'payment',
+    url: '/api/v0/payment/',
+    makeOptions: total => ({
+      method: 'POST',
+      body: JSON.stringify({
+        total: total,
+      })
+    }),
+  },
+];
+
+const reducers = {};
+const actions = {};
+for (const endpoint of endpoints) {
+  reducers[endpoint.name] = makeReducer(endpoint);
+  actions[endpoint.name] = makeAction(endpoint);
 }
-export const reducers = _reducers;
-export const actions = _actions;
+export { reducers, actions };

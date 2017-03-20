@@ -1,21 +1,10 @@
 // @flow
 import { combineReducers } from 'redux';
-import {
-  FETCH_PROCESSING,
-  FETCH_SUCCESS,
-  FETCH_FAILURE,
 
-  REQUEST_PAYMENT,
-  RECEIVE_PAYMENT_SUCCESS,
-  RECEIVE_PAYMENT_FAILURE,
-  SET_TOTAL,
-} from '../actions';
+import { SET_TOTAL } from '../actions';
 import type { Action } from '../flow/reduxTypes';
 import { reducers as restReducers } from '../rest';
 
-export type PaymentState = {
-  fetchStatus?: string,
-};
 export type UIState = {
   total: string,
 };

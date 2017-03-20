@@ -7,13 +7,13 @@ import { assert } from 'chai';
 import sinon from 'sinon';
 
 import * as api from '../lib/api';
-import {
-  REQUEST_PAYMENT,
-  RECEIVE_PAYMENT_SUCCESS,
-  setTotal,
-} from '../actions';
+import { setTotal } from '../actions';
 import rootReducer from '../reducers';
 import Payment from '../containers/Payment';
+import { makeRequestActionType, makeReceiveSuccessActionType } from '../rest';
+
+const REQUEST_PAYMENT = makeRequestActionType('payment');
+const RECEIVE_PAYMENT_SUCCESS = makeReceiveSuccessActionType('payment');
 
 describe('Payment', () => {
   let store, listenForActions, sandbox;
@@ -46,7 +46,7 @@ describe('Payment', () => {
 
   it('sends a payment when API is contacted', () => {
     store.dispatch(setTotal("123"));
-    sandbox.stub(api, 'sendPayment').returns(Promise.resolve());
+    sandbox.stub(api, 'fetchJSONWithCSRF').withArgs('/api/v0/payment/').returns(Promise.resolve());
     let payment = renderPayment();
 
     return listenForActions([REQUEST_PAYMENT, RECEIVE_PAYMENT_SUCCESS], () => {
