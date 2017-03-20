@@ -11,25 +11,11 @@ import {
   SET_TOTAL,
 } from '../actions';
 import type { Action } from '../flow/reduxTypes';
+import { reducers as restReducers } from '../rest';
 
 export type PaymentState = {
   fetchStatus?: string,
 };
-const INITIAL_PAYMENT_STATE: PaymentState = {};
-
-export const payment = (state: PaymentState = INITIAL_PAYMENT_STATE, action: Action) => {
-  switch (action.type) {
-  case REQUEST_PAYMENT:
-    return { ...state, fetchStatus: FETCH_PROCESSING };
-  case RECEIVE_PAYMENT_SUCCESS:
-    return { ...state, fetchStatus: FETCH_SUCCESS };
-  case RECEIVE_PAYMENT_FAILURE:
-    return { ...state, fetchStatus: FETCH_FAILURE };
-  default:
-    return state;
-  }
-};
-
 export type UIState = {
   total: string,
 };
@@ -47,6 +33,6 @@ export const ui = (state: UIState = INITIAL_UI_STATE, action: Action) => {
 };
 
 export default combineReducers({
-  payment,
   ui,
+  ...restReducers,
 });

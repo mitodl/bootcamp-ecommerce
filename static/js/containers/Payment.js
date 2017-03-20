@@ -11,8 +11,8 @@ import type {
 import {
   FETCH_PROCESSING,
   setTotal,
-  sendPayment,
 } from '../actions';
+import { actions } from '../rest';
 
 class Payment extends React.Component {
   props: {
@@ -23,7 +23,7 @@ class Payment extends React.Component {
 
   sendPayment = () => {
     const { dispatch, ui: { total } } = this.props;
-    dispatch(sendPayment(total));
+    dispatch(actions.payment(total));
   };
 
   setTotal = (event) => {
