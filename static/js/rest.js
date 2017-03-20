@@ -1,8 +1,7 @@
 // @flow
 import { createAction } from 'redux-actions';
 
-import { fetchJSONWithCSRF } from './lib/api_util';
-
+import { fetchJSONWithCSRF } from './lib/api';
 import {
   FETCH_PROCESSING,
   FETCH_SUCCESS,
@@ -28,33 +27,38 @@ export const makeReceiveSuccessActionType = reducerName => `RECEIVE_${reducerNam
 export const makeReceiveFailureActionType = reducerName => `RECEIVE_${reducerName.toUpperCase()}_FAILURE`;
 export const makeClearType = reducerName => `CLEAR_${reducerName.toUpperCase()}`;
 
-const makeReducer = (reducerName, initialState = {}) => (
-  (state = initialState, action) => {
+const makeReducer = (reducerName, initialState = {}) => {
+  const requestType = makeRequestActionType(reducerName);
+  const receiveSuccessType = makeReceiveSuccessActionType(reducerName);
+  const receiveFailureType = makeReceiveFailureActionType(reducerName);
+  const clearType = makeClearType(reducerName);
+
+  return (state = initialState, action) => {
     switch (action.type) {
-    case [makeRequestActionType(reducerName)]:
-      return {
-        ...state,
-        fetchStatus: FETCH_PROCESSING,
-      };
-    case [makeReceiveSuccessActionType(reducerName)]:
-      return {
-        ...state,
-        fetchStatus: FETCH_SUCCESS,
-        data: action.payload,
-      };
-    case [makeReceiveFailureActionType(reducerName)]:
-      return {
-        ...state,
-        fetchStatus: FETCH_FAILURE,
-        error: action.payload,
-      };
-    case [makeClearType(reducerName)]:
-      return initialState;
-    default:
-      return state;
+      case [requestType]:
+        return {
+          ...state,
+          fetchStatus: FETCH_PROCESSING,
+        };
+      case [receiveSuccessType]:
+        return {
+          ...state,
+          fetchStatus: FETCH_SUCCESS,
+          data: action.payload,
+        };
+      case [receiveFailureType]:
+        return {
+          ...state,
+          fetchStatus: FETCH_FAILURE,
+          error: action.payload,
+        };
+      case [clearType]:
+        return initialState;
+      default:
+        return state;
     }
   }
-);
+};
 
 const _reducers = {};
 const _actions = {};
@@ -66,14 +70,18 @@ for (const endpoint of endpoints) {
     return fetchJSONWithCSRF(endpoint.url, options);
   };
 
+  const requestAction = createAction(makeRequestActionType(endpoint.name));
+  const receiveSuccessAction = createAction(makeReceiveSuccessActionType(endpoint.name));
+  const receiveFailureAction = createAction(makeReceiveFailureActionType(endpoint.name));
+
   _actions[endpoint.name] = (...params) => {
     return dispatch => {
-      dispatch(createAction(makeRequestActionType(endpoint.name))());
+      dispatch(requestAction());
       fetchFunc(...params).then(data => {
-        dispatch(createAction(makeReceiveSuccessActionType(endpoint.name))(data));
+        dispatch(receiveSuccessAction(data));
         return Promise.resolve();
       }).catch(error => {
-        dispatch(createAction(makeReceiveFailureActionType(endpoint.name))(error));
+        dispatch(receiveFailureAction(error));
         return Promise.reject();
       });
     };
