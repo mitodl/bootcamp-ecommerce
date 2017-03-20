@@ -7,7 +7,7 @@ import {
   getCookie,
   fetchJSONWithCSRF,
   csrfSafeMethod,
-} from './api_util';
+} from './api';
 
 describe('api utility functions', function() {
   let sandbox;
