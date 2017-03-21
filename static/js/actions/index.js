@@ -1,6 +1,9 @@
-export const UPDATE_CHECKBOX = 'UPDATE_CHECKBOX';
+// @flow
+import { createAction } from 'redux-actions';
 
-export const updateCheckbox = checked => ({
-  type: UPDATE_CHECKBOX,
-  payload: { checked }
-});
+export const SET_TOTAL = 'SET_TOTAL';
+export const setTotal = createAction(SET_TOTAL);
+
+export const FETCH_PROCESSING = 'FETCH_PROCESSING';
+export const FETCH_SUCCESS = 'FETCH_SUCCESS';
+export const FETCH_FAILURE = 'FETCH_FAILURE';

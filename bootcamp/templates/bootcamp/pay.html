@@ -4,8 +4,9 @@
 {% block title %}MIT Bootcamps{% endblock %}
 
 {% block content %}
-<div id="home">
-  <a href="{% url 'social:begin' 'edxorg' %}">Continue with edX</a>
-  <span>Log in using your edx.org account</span>
+<div id="pay">
 </div>
+{% load render_bundle %}
+{% render_bundle "payment" %}
 {% endblock %}
+

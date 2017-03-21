@@ -114,7 +114,9 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
 
     # Our INSTALLED_APPS
+    'backends',
     'bootcamp',
+    'profiles',
 )
 
 DISABLE_WEBPACK_LOADER_STATS = get_var("DISABLE_WEBPACK_LOADER_STATS", False)
@@ -167,6 +169,7 @@ SOCIAL_AUTH_PIPELINE = (
     'backends.pipeline_api.set_last_update',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
+    'backends.pipeline_api.update_profile_from_edx',
 )
 SOCIAL_AUTH_EDXORG_AUTH_EXTRA_ARGUMENTS = {
     'access_type': 'offline',
@@ -174,7 +177,7 @@ SOCIAL_AUTH_EDXORG_AUTH_EXTRA_ARGUMENTS = {
 }
 SOCIAL_AUTH_EDXORG_EXTRA_DATA = ['updated_at']
 
-LOGIN_REDIRECT_URL = '/redirect_url'
+LOGIN_REDIRECT_URL = '/pay'
 LOGIN_URL = '/'
 LOGIN_ERROR_URL = '/'
 

@@ -2,12 +2,18 @@
 Utility functions for the backends
 """
 from datetime import datetime, timedelta
+import logging
 import pytz
 
+from django.core.exceptions import ObjectDoesNotExist
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy
 
 from backends.exceptions import InvalidCredentialStored
+from backends.edxorg import EdxOrgOAuth2
+
+
+log = logging.getLogger(__name__)
 
 
 def _send_refresh_request(user_social):
@@ -44,3 +50,23 @@ def refresh_user_token(user_social):
     error_margin = timedelta(minutes=5)
     if datetime.now(tz=pytz.UTC) - last_update >= expires_in - error_margin:
         _send_refresh_request(user_social)
+
+
+def get_social_username(user):
+    """
+    Get social auth edX username for a user, or else return None.
+
+    Args:
+        user (django.contrib.auth.models.User):
+            A Django user
+    """
+    if user.is_anonymous():
+        return None
+
+    try:
+        return user.social_auth.get(provider=EdxOrgOAuth2.name).uid
+    except ObjectDoesNotExist:
+        return None
+    except Exception as ex:  # pylint: disable=broad-except
+        log.error("Unexpected error retrieving social auth username: %s", ex)
+        return None

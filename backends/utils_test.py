@@ -4,6 +4,7 @@ Tests for the utils
 from datetime import datetime, timedelta
 from unittest.mock import (
     MagicMock,
+    Mock,
     patch,
 )
 
@@ -12,8 +13,9 @@ from django.test import TestCase
 from requests.exceptions import HTTPError
 
 from backends import utils
+from backends.utils import get_social_username
 from backends.edxorg import EdxOrgOAuth2
-from bootcamp.factories import UserFactory
+from profiles.factories import UserFactory
 # pylint: disable=protected-access
 
 
@@ -22,7 +24,7 @@ class RefreshTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        super(RefreshTest, cls).setUpTestData()
+        super().setUpTestData()
         # create an user
         cls.user = UserFactory.create()
         # create a social auth for the user
@@ -121,3 +123,47 @@ class RefreshTest(TestCase):
         social_user = self.user.social_auth.get(provider=EdxOrgOAuth2.name)
         with self.assertRaises(HTTPError):
             utils._send_refresh_request(social_user)
+
+
+class SocialTests(TestCase):
+    """
+    Tests for profile functions
+    """
+
+    def setUp(self):
+        """
+        Create a user with a default social auth
+        """
+        super().setUp()
+
+        self.user = UserFactory.create()
+        self.user.social_auth.create(
+            provider='not_edx',
+        )
+        self.social_username = "{}_edx".format(self.user.username)
+        self.user.social_auth.create(
+            provider=EdxOrgOAuth2.name,
+            uid=self.social_username,
+        )
+
+    def test_anonymous_user(self):
+        """
+        get_social_username should return None for anonymous users
+        """
+        is_anonymous = Mock(return_value=True)
+        user = Mock(is_anonymous=is_anonymous)
+        assert get_social_username(user) is None
+        assert is_anonymous.called
+
+    def test_zero_social(self):
+        """
+        get_social_username should return None if there is no edX account associated yet
+        """
+        self.user.social_auth.all().delete()
+        assert get_social_username(self.user) is None
+
+    def test_one_social(self):
+        """
+        get_social_username should return the social username, not the Django username
+        """
+        assert get_social_username(self.user) == self.social_username
