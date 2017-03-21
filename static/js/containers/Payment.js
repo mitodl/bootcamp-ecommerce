@@ -5,19 +5,18 @@ import { connect } from 'react-redux';
 import type { Dispatch } from 'redux';
 
 import type {
-  PaymentState,
   UIState,
 } from '../reducers';
 import {
-  FETCH_PROCESSING,
   setTotal,
 } from '../actions';
 import { actions } from '../rest';
+import type { RestState } from '../rest';
 
 class Payment extends React.Component {
   props: {
     ui: UIState,
-    payment: PaymentState,
+    payment: RestState,
     dispatch: Dispatch,
   };
 
@@ -34,10 +33,8 @@ class Payment extends React.Component {
   render() {
     const {
       ui: { total },
-      payment: { fetchStatus },
+      payment: { processing },
     } = this.props;
-
-    const disabled = fetchStatus === FETCH_PROCESSING;
 
     return <div className="payment">
       <h3 className="intro">{SETTINGS.full_name}, Welcome to MIT Bootcamps</h3>
@@ -48,7 +45,7 @@ class Payment extends React.Component {
         <span>
           $<input type="number" id="total" value={total} onChange={this.setTotal} />
         </span>
-        <button className="payment-button" onClick={this.sendPayment} disabled={disabled}>
+        <button className="payment-button" onClick={this.sendPayment} disabled={processing}>
           Pay
         </button>
       </div>
