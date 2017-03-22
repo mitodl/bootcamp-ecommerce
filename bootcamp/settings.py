@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     # Our INSTALLED_APPS
     'backends',
     'bootcamp',
+    'ecommerce',
     'profiles',
 )
 
