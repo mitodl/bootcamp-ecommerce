@@ -10,6 +10,7 @@ from factory.django import DjangoModelFactory
 from factory.fuzzy import (
     FuzzyChoice,
     FuzzyDecimal,
+    FuzzyInteger,
     FuzzyText,
 )
 import faker
@@ -45,7 +46,7 @@ class LineFactory(DjangoModelFactory):
     """Factory for Line"""
     order = SubFactory(OrderFactory)
     price = SelfAttribute('order.total_price_paid')
-    klasse_id = FuzzyText()
+    klass_id = FuzzyInteger(low=1, high=1234)
     description = FuzzyText(prefix="Line ")
 
     class Meta:

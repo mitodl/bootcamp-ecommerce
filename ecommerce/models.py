@@ -5,6 +5,7 @@ from django.db.models import (
     CharField,
     DecimalField,
     ForeignKey,
+    IntegerField,
     SET_NULL,
     TextField,
 )
@@ -75,16 +76,16 @@ class Line(TimestampedModel):
     Represents a line item in the order
     """
     order = ForeignKey(Order)
-    klasse_id = TextField()
+    klass_id = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
 
     def __str__(self):
         """Description for Line"""
-        return "Line for {order}, price={price}, klasse_id={klasse_id}, description={description}".format(
+        return "Line for {order}, price={price}, klass_id={klass_id}, description={description}".format(
             order=self.order,
             price=self.price,
-            klasse_id=self.klasse_id,
+            klass_id=self.klass_id,
             description=self.description,
         )
 
