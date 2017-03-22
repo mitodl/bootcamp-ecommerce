@@ -1,4 +1,4 @@
-FROM mitodl/mm_watch_travis
+FROM mitodl/bootcamp_watch_travis
 
 WORKDIR /src
 
