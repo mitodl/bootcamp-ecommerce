@@ -1,15 +1,21 @@
 """
 Tests for the utils module
 """
+import unittest
+
 from django.test import (
     override_settings,
     TestCase,
 )
 
 from ecommerce.factories import (
+    Order,
     ReceiptFactory,
 )
-from bootcamp.utils import serialize_model_object
+from bootcamp.utils import (
+    get_field_names,
+    serialize_model_object,
+)
 
 
 def format_as_iso8601(time):
@@ -37,3 +43,21 @@ class SerializerTests(TestCase):
                 'updated_on': format_as_iso8601(receipt.updated_on),
                 'order': receipt.order.id,
             }
+
+
+class FieldNamesTests(unittest.TestCase):
+    """
+    Tests for get_field_names
+    """
+
+    def test_get_field_names(self):
+        """
+        Assert that get_field_names does not include related fields
+        """
+        assert set(get_field_names(Order)) == {
+            'user',
+            'status',
+            'total_price_paid',
+            'created_on',
+            'updated_on',
+        }
