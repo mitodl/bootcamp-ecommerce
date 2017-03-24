@@ -3,12 +3,10 @@ Factories for ecommerce models
 """
 from factory import (
     Faker,
-    LazyAttribute,
     SubFactory,
 )
 from factory.django import DjangoModelFactory
 from factory.fuzzy import (
-    FuzzyDateTime,
     FuzzyDecimal,
     FuzzyInteger,
     FuzzyText,
