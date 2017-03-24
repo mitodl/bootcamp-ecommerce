@@ -1,19 +1,23 @@
 // @flow
 import { combineReducers } from 'redux';
 
-import { SET_TOTAL } from '../actions';
+import { SET_KLASS_ID, SET_TOTAL } from '../actions';
 import type { Action } from '../flow/reduxTypes';
 import { reducers as restReducers } from '../rest';
 
 export type UIState = {
   total: string,
+  klassId: string,
 };
 const INITIAL_UI_STATE = {
-  total: ''
+  total: '',
+  klassId: '',
 };
 
 export const ui = (state: UIState = INITIAL_UI_STATE, action: Action) => {
   switch (action.type) {
+  case SET_KLASS_ID:
+    return { ...state, klassId: action.payload };
   case SET_TOTAL:
     return { ...state, total: action.payload };
   default:

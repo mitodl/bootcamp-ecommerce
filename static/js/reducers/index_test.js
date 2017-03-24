@@ -1,15 +1,20 @@
-import { assert } from 'chai';
 import configureTestStore from 'redux-asserts';
 import sinon from 'sinon';
 
-import { setTotal } from '../actions';
+import {
+  setKlassId,
+  setTotal,
+} from '../actions';
 import rootReducer from '../reducers';
+import { createAssertReducerResultState } from '../util/test_utils';
+
 
 describe('reducers', () => {
-  let sandbox, store;
+  let sandbox, store, assertReducerResultState;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     store = configureTestStore(rootReducer);
+    assertReducerResultState = createAssertReducerResultState(store, state => state.ui);
   });
 
   afterEach(() => {
@@ -18,9 +23,11 @@ describe('reducers', () => {
 
   describe('ui', () => {
     it('should set the total price', () => {
-      assert.equal(store.getState().ui.total, '');
-      store.dispatch(setTotal("price"));
-      assert.equal(store.getState().ui.total, "price");
+      assertReducerResultState(setTotal, ui => ui.total, '');
+    });
+
+    it('should set the klass id', () => {
+      assertReducerResultState(setKlassId, ui => ui.klassId, '');
     });
   });
 
