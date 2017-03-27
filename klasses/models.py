@@ -23,6 +23,8 @@ class Klass(Model):
     bootcamp = ForeignKey(Bootcamp)
     klass_id = IntegerField()
     price = DecimalField(max_digits=20, decimal_places=2)
+    start_date = DateTimeField(null=True)
+    end_date = DateTimeField(null=True)
 
 
 class Installment(Model):
