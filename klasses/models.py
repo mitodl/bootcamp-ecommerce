@@ -21,8 +21,8 @@ class Klass(Model):
     A class within a bootcamp
     """
     bootcamp = ForeignKey(Bootcamp)
+    title = TextField(blank=True)
     klass_id = IntegerField()
-    price = DecimalField(max_digits=20, decimal_places=2)
     start_date = DateTimeField(null=True)
     end_date = DateTimeField(null=True)
 
