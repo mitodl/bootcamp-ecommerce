@@ -1,40 +1,33 @@
 """Models for klasses"""
-from django.db.models.base import Model
-from django.db.models.fields import (
-    DateTimeField,
-    DecimalField,
-    TextField,
-    IntegerField,
-)
-from django.db.models.fields.related import ForeignKey
+from django.db import models
 
 
-class Bootcamp(Model):
+class Bootcamp(models.Model):
     """
     A bootcamp
     """
-    title = TextField()
+    title = models.TextField()
 
 
-class Klass(Model):
+class Klass(models.Model):
     """
     A class within a bootcamp
     """
-    bootcamp = ForeignKey(Bootcamp)
-    title = TextField(blank=True)
-    klass_id = IntegerField()
-    start_date = DateTimeField(null=True)
-    end_date = DateTimeField(null=True)
+    bootcamp = models.ForeignKey(Bootcamp)
+    title = models.TextField(blank=True)
+    klass_id = models.IntegerField()
+    start_date = models.DateTimeField(null=True)
+    end_date = models.DateTimeField(null=True)
 
 
-class Installment(Model):
+class Installment(models.Model):
     """
     A payment installment
     """
-    klass = ForeignKey(Klass)
-    installment_number = IntegerField()
-    min_amount = DecimalField(max_digits=20, decimal_places=2)
-    deadline = DateTimeField(null=True)
+    klass = models.ForeignKey(Klass)
+    installment_number = models.IntegerField()
+    min_amount = models.DecimalField(max_digits=20, decimal_places=2)
+    deadline = models.DateTimeField(null=True)
 
     class Meta:
         unique_together = ('klass', 'installment_number')
