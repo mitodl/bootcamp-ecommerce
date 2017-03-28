@@ -22,6 +22,13 @@ class Klass(models.Model):
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 
+    @property
+    def price(self):
+        """
+        Get price, the sum of all installments
+        """
+        return self.installment_set.aggregate(price=models.Sum('amount'))['price']
+
     def __str__(self):
         return "Klass {title} of {bootcamp}".format(
             title=self.title,
@@ -35,15 +42,15 @@ class Installment(models.Model):
     """
     klass = models.ForeignKey(Klass)
     installment_number = models.IntegerField()
-    min_amount = models.DecimalField(max_digits=20, decimal_places=2)
+    amount = models.DecimalField(max_digits=20, decimal_places=2)
     deadline = models.DateTimeField(null=True)
 
     class Meta:
         unique_together = ('klass', 'installment_number')
 
     def __str__(self):
-        return "Installment {installment_number} for {min_amount} for {klass}".format(
+        return "Installment {installment_number} for {amount} for {klass}".format(
             installment_number=self.installment_number,
-            min_amount=self.min_amount,
+            amount=self.amount,
             klass=self.klass,
         )
