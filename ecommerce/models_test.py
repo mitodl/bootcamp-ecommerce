@@ -29,9 +29,9 @@ class OrderTests(TestCase):
         """Test Line.__str__"""
         line = LineFactory.create()
         assert str(line) == (
-            "Line for {order}, price={price}, klasse_id={klasse_id}, description={description}".format(
+            "Line for {order}, price={price}, klass_id={klass_id}, description={description}".format(
                 order=line.order,
-                klasse_id=line.klasse_id,
+                klass_id=line.klass_id,
                 price=line.price,
                 description=line.description,
             )
