@@ -8,6 +8,9 @@ class Bootcamp(models.Model):
     """
     title = models.TextField()
 
+    def __str__(self):
+        return "Bootcamp {title}".format(title=self.title)
+
 
 class Klass(models.Model):
     """
@@ -18,6 +21,12 @@ class Klass(models.Model):
     klass_id = models.IntegerField()
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return "Klass {title} of {bootcamp}".format(
+            title=self.title,
+            bootcamp=self.bootcamp,
+        )
 
 
 class Installment(models.Model):
@@ -31,3 +40,10 @@ class Installment(models.Model):
 
     class Meta:
         unique_together = ('klass', 'installment_number')
+
+    def __str__(self):
+        return "Installment {installment_number} for {min_amount} for {klass}".format(
+            installment_number=self.installment_number,
+            min_amount=self.min_amount,
+            klass=self.klass,
+        )
