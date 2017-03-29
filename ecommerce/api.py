@@ -133,7 +133,6 @@ def generate_cybersource_sa_payload(order, redirect_url):
     # http://apps.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_WM/Secure_Acceptance_WM.pdf
     # Section: API Fields
 
-    # Course key is used only to show the confirmation message to the user
     klass_id = None
     line = order.line_set.first()
     if line is not None:

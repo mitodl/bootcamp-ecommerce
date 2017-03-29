@@ -101,7 +101,7 @@ class PurchasableTests(TestCase):
 
     def test_create_order(self):  # pylint: disable=too-many-locals
         """
-        Create Order from a purchasable course
+        Create Order from a purchasable klass
         """
         payment = 123
         order = create_unfulfilled_order(self.user, self.klass.klass_id, payment)
