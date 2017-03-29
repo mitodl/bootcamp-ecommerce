@@ -4,13 +4,13 @@ Admin views for ecommerce models
 
 from django.contrib import admin
 
+from bootcamp.utils import get_field_names
 from ecommerce.models import (
     Line,
     Order,
     OrderAudit,
     Receipt,
 )
-from bootcamp.utils import get_field_names
 
 
 class LineAdmin(admin.ModelAdmin):
@@ -32,14 +32,8 @@ class OrderAdmin(admin.ModelAdmin):
     model = Order
 
     readonly_fields = [name for name in get_field_names(Order) if name != 'status']
-    list_display = ('id', 'user', 'status', 'line_description', )
+    list_display = ('id', 'user', 'status', 'line_description', 'klass_title',)
     list_filter = ('status', )
-
-    def line_description(self, order):
-        line = order.line_set.first()
-        if line:
-            return line.description
-        return ""
 
     def has_add_permission(self, request):
         return False

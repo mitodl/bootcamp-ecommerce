@@ -17,6 +17,7 @@ from bootcamp.models import (
     TimestampedModel,
 )
 from bootcamp.utils import serialize_model_object
+from klasses.models import Klass
 
 
 class Order(AuditableModel, TimestampedModel):
@@ -42,6 +43,25 @@ class Order(AuditableModel, TimestampedModel):
     def __str__(self):
         """Description for Order"""
         return "Order {}, status={} for user={}".format(self.id, self.status, self.user)
+
+    @property
+    def line_description(self):
+        """Description of the first line in the Order (usually there should be only one)"""
+        line = self.line_set.first()
+        if not line:
+            return ""
+        return line.description
+
+    @property
+    def klass_title(self):
+        """Title of the klass being paid for"""
+        line = self.line_set.first()
+        if not line:
+            return ""
+        klass = Klass.objects.filter(klass_id=line.klass_id).first()
+        if not klass:
+            return ""
+        return klass.title
 
     @classmethod
     def get_audit_class(cls):
