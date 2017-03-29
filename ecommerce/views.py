@@ -2,6 +2,7 @@
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -32,7 +33,7 @@ class PaymentView(CreateAPIView):
         klass_id = serializer.data['klass_id']
 
         order = create_unfulfilled_order(self.request.user, klass_id, total)
-        redirect_url = self.request.build_absolute_uri('/')
+        redirect_url = self.request.build_absolute_uri(reverse('bootcamp-index'))
 
         return Response({
             'payload': generate_cybersource_sa_payload(order, redirect_url),
