@@ -8,10 +8,12 @@ import type {
   UIState,
 } from '../reducers';
 import {
+  setKlassId,
   setTotal,
 } from '../actions';
 import { actions } from '../rest';
 import type { RestState } from '../rest';
+import { createForm } from '../util/util';
 
 class Payment extends React.Component {
   props: {
@@ -21,8 +23,14 @@ class Payment extends React.Component {
   };
 
   sendPayment = () => {
-    const { dispatch, ui: { total } } = this.props;
-    dispatch(actions.payment(total));
+    const { dispatch, ui: { total, klassId } } = this.props;
+    dispatch(actions.payment(total, klassId)).then(result => {
+      const { url, payload } = result;
+      const form = createForm(url, payload);
+      const body = document.querySelector("body");
+      body.appendChild(form);
+      form.submit();
+    });
   };
 
   setTotal = (event) => {
@@ -30,9 +38,14 @@ class Payment extends React.Component {
     dispatch(setTotal(event.target.value));
   };
 
+  setKlassId = event => {
+    const { dispatch } = this.props;
+    dispatch(setKlassId(event.target.value));
+  };
+
   render() {
     const {
-      ui: { total },
+      ui: { total, klassId },
       payment: { processing },
     } = this.props;
 
@@ -44,6 +57,10 @@ class Payment extends React.Component {
         <span>Make a payment of:</span>
         <span>
           $<input type="number" id="total" value={total} onChange={this.setTotal} />
+        </span>
+        For klass id:
+        <span>
+          <input type="number" value={klassId} onChange={this.setKlassId} />
         </span>
         <button className="payment-button" onClick={this.sendPayment} disabled={processing}>
           Pay

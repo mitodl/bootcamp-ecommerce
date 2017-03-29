@@ -89,10 +89,10 @@ export const makeAction = (endpoint: Endpoint): ((...params: any) => Dispatcher<
       dispatch(requestAction());
       return fetchFunc(...params).then(data => {
         dispatch(receiveSuccessAction(data));
-        return Promise.resolve();
+        return Promise.resolve(data);
       }).catch(error => {
         dispatch(receiveFailureAction(error));
-        return Promise.reject();
+        return Promise.reject(error);
       });
     };
   };
@@ -102,10 +102,11 @@ export const endpoints: Array<Endpoint> = [
   {
     name: 'payment',
     url: '/api/v0/payment/',
-    makeOptions: total => ({
+    makeOptions: (total, klassId) => ({
       method: 'POST',
       body: JSON.stringify({
         total: total,
+        klass_id: klassId,
       })
     }),
   },

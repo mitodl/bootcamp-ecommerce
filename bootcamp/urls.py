@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^pay/$', pay, name='pay'),
     url(r'^status/', include('server_status.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url('', include('ecommerce.urls')),
     url('', include('social_django.urls', namespace='social')),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
 ]
