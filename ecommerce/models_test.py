@@ -6,12 +6,14 @@ from django.test import (
     TestCase,
 )
 
+from bootcamp.utils import serialize_model_object
 from ecommerce.factories import (
     LineFactory,
     OrderFactory,
     ReceiptFactory,
 )
-from bootcamp.utils import serialize_model_object
+from klasses.factories import KlassFactory
+from klasses.models import Klass
 
 
 @override_settings(CYBERSOURCE_SECURITY_KEY='fake')
@@ -57,3 +59,41 @@ class OrderTests(TestCase):
         lines_data = data.pop('lines')
         assert serialize_model_object(order) == data
         assert lines_data == [serialize_model_object(line) for line in lines]
+
+
+class LineDescriptionTests(TestCase):
+    """
+    Tests for Order.line_description
+    """
+    def test_empty(self):
+        """If there is no Line there should be an empty string"""
+        order = OrderFactory.create()
+        assert order.line_description == ""
+
+    def test_description(self):
+        """line_description should be line.description of the first line"""
+        line = LineFactory.create()
+        # Second line should be ignored
+        LineFactory.create(order=line.order)
+        assert line.order.line_description == line.description
+
+
+class KlassTitleTests(TestCase):
+    """Tests for Order.klass_title"""
+
+    def test_empty(self):
+        """If there is no Line there should be an empty string"""
+        order = OrderFactory.create()
+        assert order.klass_title == ""
+
+    def test_no_klass(self):
+        """If there is no Klass there should be an empty string"""
+        line = LineFactory.create()
+        assert Klass.objects.filter(klass_id=line.klass_id).exists() is False
+        assert line.order.klass_title == ""
+
+    def test_klass_title(self):
+        """klass_title should be klass.title for the given klass_id"""
+        klass = KlassFactory.create()
+        line = LineFactory.create(klass_id=klass.klass_id)
+        assert line.order.klass_title == klass.title
