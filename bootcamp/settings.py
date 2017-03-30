@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     'backends',
     'bootcamp',
     'ecommerce',
+    'mail',
     'klasses',
     'profiles',
 )

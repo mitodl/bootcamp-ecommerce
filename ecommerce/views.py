@@ -1,18 +1,36 @@
 """Views for ecommerce"""
 from decimal import Decimal
+import logging
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from rest_framework import status as statuses
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from rest_framework.views import APIView
 
 from ecommerce.api import (
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
+    get_new_order_by_reference_number,
 )
+from ecommerce.constants import (
+    CYBERSOURCE_DECISION_ACCEPT,
+    CYBERSOURCE_DECISION_CANCEL,
+)
+from ecommerce.exceptions import EcommerceException
+from ecommerce.models import (
+    Order,
+    Receipt,
+)
+from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
+from mail.api import MailgunClient
+
+
+log = logging.getLogger(__name__)
 
 
 class PaymentView(CreateAPIView):
@@ -39,3 +57,64 @@ class PaymentView(CreateAPIView):
             'payload': generate_cybersource_sa_payload(order, redirect_url),
             'url': settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL,
         })
+
+
+class OrderFulfillmentView(APIView):
+    """
+    View for order fulfillment API. This API is special in that only CyberSource should talk to it.
+    Instead of authenticating with OAuth or via session this looks at the signature of the message
+    to verify authenticity.
+    """
+
+    authentication_classes = ()
+    permission_classes = (IsSignedByCyberSource, )
+
+    def post(self, request, *args, **kwargs):
+        """
+        Confirmation from CyberSource which fulfills an existing Order.
+        """
+        # First, save this information in a receipt
+        receipt = Receipt.objects.create(data=request.data)
+
+        # Link the order with the receipt if we can parse it
+        reference_number = request.data['req_reference_number']
+        order = get_new_order_by_reference_number(reference_number)
+        receipt.order = order
+        receipt.save()
+
+        decision = request.data['decision']
+        if order.status == Order.FAILED and decision == CYBERSOURCE_DECISION_CANCEL:
+            # This is a duplicate message, ignore since it's already handled
+            return Response(status=statuses.HTTP_200_OK)
+        elif order.status != Order.CREATED:
+            raise EcommerceException("Order {} is expected to have status 'created'".format(order.id))
+
+        if decision != CYBERSOURCE_DECISION_ACCEPT:
+            order.status = Order.FAILED
+            log.warning(
+                "Order fulfillment failed: received a decision that wasn't ACCEPT for order %s",
+                order,
+            )
+            if decision != CYBERSOURCE_DECISION_CANCEL:
+                try:
+                    MailgunClient().send_individual_email(
+                        "Order fulfillment failed, decision={decision}".format(
+                            decision=decision
+                        ),
+                        "Order fulfillment failed for order {order}".format(
+                            order=order,
+                        ),
+                        settings.ECOMMERCE_EMAIL
+                    )
+                except:  # pylint: disable=bare-except
+                    log.exception(
+                        "Error occurred when sending the email to notify "
+                        "about order fulfillment failure for order %s",
+                        order,
+                    )
+        else:
+            order.status = Order.FULFILLED
+        order.save_and_log(None)
+
+        # The response does not matter to CyberSource
+        return Response(status=statuses.HTTP_200_OK)

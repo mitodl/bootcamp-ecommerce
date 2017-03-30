@@ -23,9 +23,14 @@ from ecommerce.api import (
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
     generate_cybersource_sa_signature,
+    get_new_order_by_reference_number,
     get_total_paid,
     ISO_8601_FORMAT,
     make_reference_id,
+)
+from ecommerce.exceptions import (
+    EcommerceException,
+    ParseException,
 )
 from ecommerce.factories import LineFactory
 from ecommerce.models import (
@@ -271,7 +276,7 @@ class CybersourceTests(TestCase):
 @override_settings(CYBERSOURCE_REFERENCE_PREFIX=CYBERSOURCE_REFERENCE_PREFIX)
 class ReferenceNumberTests(TestCase):
     """
-    Tests for make_reference_id
+    Tests for make_reference_id and get_new_order_by_reference_number
     """
 
     def test_make_reference_id(self):
@@ -281,3 +286,49 @@ class ReferenceNumberTests(TestCase):
         klass, user = create_purchasable_klass()
         order = create_unfulfilled_order(user, klass.klass_id, 123)
         assert "BOOTCAMP-{}-{}".format(CYBERSOURCE_REFERENCE_PREFIX, order.id) == make_reference_id(order)
+
+    def test_get_new_order_by_reference_number(self):
+        """
+        get_new_order_by_reference_number returns an Order with status created
+        """
+        klass, user = create_purchasable_klass()
+        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        same_order = get_new_order_by_reference_number(make_reference_id(order))
+        assert same_order.id == order.id
+
+    def test_parse(self):
+        """
+        Test parse errors are handled well
+        """
+        with self.assertRaises(ParseException) as ex:
+            get_new_order_by_reference_number("XYZ-1-3")
+        assert ex.exception.args[0] == "Reference number must start with BOOTCAMP-"
+
+        with self.assertRaises(ParseException) as ex:
+            get_new_order_by_reference_number("BOOTCAMP-no_dashes_here")
+        assert ex.exception.args[0] == "Unable to find order number in reference number"
+
+        with self.assertRaises(ParseException) as ex:
+            get_new_order_by_reference_number("BOOTCAMP-something-NaN")
+        assert ex.exception.args[0] == "Unable to parse order number"
+
+        with self.assertRaises(ParseException) as ex:
+            get_new_order_by_reference_number("BOOTCAMP-not_matching-3")
+        assert ex.exception.args[0] == "CyberSource prefix doesn't match"
+
+    def test_status(self):
+        """
+        get_order_by_reference_number should only get orders with status=CREATED
+        """
+        klass, user = create_purchasable_klass()
+        order = create_unfulfilled_order(user, klass.klass_id, 123)
+
+        order.status = Order.FAILED
+        order.save()
+
+        with self.assertRaises(EcommerceException) as ex:
+            # change order number to something not likely to already exist in database
+            order.id = 98765432
+            assert not Order.objects.filter(id=order.id).exists()
+            get_new_order_by_reference_number(make_reference_id(order))
+        assert ex.exception.args[0] == "Unable to find order {}".format(order.id)
