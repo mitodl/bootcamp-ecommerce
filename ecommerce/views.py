@@ -114,7 +114,7 @@ class OrderFulfillmentView(APIView):
                     )
         else:
             order.status = Order.FULFILLED
-        order.save_and_log(None)
+        order.save_and_log(acting_user=None)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)
