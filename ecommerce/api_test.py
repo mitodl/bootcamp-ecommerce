@@ -273,6 +273,7 @@ class CybersourceTests(TestCase):
         now_mock.assert_called_with(tz=pytz.UTC)
 
 
+@ddt.ddt
 @override_settings(CYBERSOURCE_REFERENCE_PREFIX=CYBERSOURCE_REFERENCE_PREFIX)
 class ReferenceNumberTests(TestCase):
     """
@@ -296,25 +297,20 @@ class ReferenceNumberTests(TestCase):
         same_order = get_new_order_by_reference_number(make_reference_id(order))
         assert same_order.id == order.id
 
-    def test_parse(self):
+    @ddt.data(
+        ("XYZ-1-3", "Reference number must start with BOOTCAMP-"),
+        ("BOOTCAMP-no_dashes_here", "Unable to find order number in reference number"),
+        ("BOOTCAMP-something-NaN", "Unable to parse order number"),
+        ("BOOTCAMP-not_matching-3", "CyberSource prefix doesn't match"),
+    )
+    @ddt.unpack
+    def test_parse(self, reference_number, exception_message):
         """
         Test parse errors are handled well
         """
         with self.assertRaises(ParseException) as ex:
-            get_new_order_by_reference_number("XYZ-1-3")
-        assert ex.exception.args[0] == "Reference number must start with BOOTCAMP-"
-
-        with self.assertRaises(ParseException) as ex:
-            get_new_order_by_reference_number("BOOTCAMP-no_dashes_here")
-        assert ex.exception.args[0] == "Unable to find order number in reference number"
-
-        with self.assertRaises(ParseException) as ex:
-            get_new_order_by_reference_number("BOOTCAMP-something-NaN")
-        assert ex.exception.args[0] == "Unable to parse order number"
-
-        with self.assertRaises(ParseException) as ex:
-            get_new_order_by_reference_number("BOOTCAMP-not_matching-3")
-        assert ex.exception.args[0] == "CyberSource prefix doesn't match"
+            get_new_order_by_reference_number(reference_number)
+        assert ex.exception.args[0] == exception_message
 
     def test_status(self):
         """
