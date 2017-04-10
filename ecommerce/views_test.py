@@ -1,6 +1,7 @@
 """Tests for ecommerce views"""
 from unittest.mock import patch
 
+import ddt
 from django.core.urlresolvers import (
     resolve,
     reverse,
@@ -9,9 +10,20 @@ from django.test import (
     override_settings,
     TestCase,
 )
+import faker
 from rest_framework import status as statuses
 
+from ecommerce.api import (
+    create_unfulfilled_order,
+    make_reference_id,
+)
 from ecommerce.api_test import create_purchasable_klass
+from ecommerce.exceptions import EcommerceException
+from ecommerce.models import (
+    Order,
+    OrderAudit,
+    Receipt,
+)
 from ecommerce.serializers import PaymentSerializer
 from profiles.factories import UserFactory
 
@@ -19,6 +31,7 @@ from profiles.factories import UserFactory
 CYBERSOURCE_SECURITY_KEY = '🔑'
 CYBERSOURCE_SECURE_ACCEPTANCE_URL = 'http://fake'
 CYBERSOURCE_REFERENCE_PREFIX = 'fake'
+FAKE = faker.Factory.create()
 
 
 class PaymentTests(TestCase):
@@ -79,3 +92,170 @@ class PaymentTests(TestCase):
         generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/")
         assert create_unfulfilled_order_mock.call_count == 1
         create_unfulfilled_order_mock.assert_any_call(user, klass.klass_id, klass.price)
+
+
+@override_settings(
+    CYBERSOURCE_REFERENCE_PREFIX=CYBERSOURCE_REFERENCE_PREFIX,
+    ECOMMERCE_EMAIL='ecommerce@example.com'
+)
+@ddt.ddt
+class OrderFulfillmentViewTests(TestCase):
+    """
+    Tests for order fulfillment
+    """
+    def test_order_fulfilled(self):
+        """
+        Test the happy case
+        """
+        klass, user = create_purchasable_klass()
+        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        data_before = order.to_dict()
+
+        data = {}
+        for _ in range(5):
+            data[FAKE.text()] = FAKE.text()
+
+        data['req_reference_number'] = make_reference_id(order)
+        data['decision'] = 'ACCEPT'
+
+        with patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True), patch(
+            'ecommerce.views.MailgunClient.send_individual_email',
+        ) as send_email:
+            resp = self.client.post(reverse('order-fulfillment'), data=data)
+
+        assert len(resp.content) == 0
+        assert resp.status_code == statuses.HTTP_200_OK
+        order.refresh_from_db()
+        assert order.status == Order.FULFILLED
+        assert order.receipt_set.count() == 1
+        assert order.receipt_set.first().data == data
+
+        assert send_email.call_count == 0
+
+        assert OrderAudit.objects.count() == 2
+        order_audit = OrderAudit.objects.last()
+        assert order_audit.order == order
+        assert order_audit.data_before == data_before
+        assert order_audit.data_after == order.to_dict()
+
+    def test_missing_fields(self):
+        """
+        If CyberSource POSTs with fields missing, we should at least save it in a receipt.
+        It is very unlikely for Cybersource to POST invalid data but it also provides a way to test
+        that we save a Receipt in the event of an error.
+        """
+        data = {}
+        for _ in range(5):
+            data[FAKE.text()] = FAKE.text()
+        with patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True):
+            try:
+                # Missing fields from Cybersource POST will cause the KeyError.
+                # In this test we just care that we saved the data in Receipt for later
+                # analysis.
+                self.client.post(reverse('order-fulfillment'), data=data)
+            except KeyError:
+                pass
+
+        assert Order.objects.count() == 0
+        assert Receipt.objects.count() == 1
+        assert Receipt.objects.first().data == data
+
+    @ddt.data(
+        ('CANCEL', False),
+        ('something else', True),
+    )
+    @ddt.unpack
+    def test_not_accept(self, decision, should_send_email):
+        """
+        If the decision is not ACCEPT then the order should be marked as failed
+        """
+        klass, user = create_purchasable_klass()
+        order = create_unfulfilled_order(user, klass.klass_id, 123)
+
+        data = {
+            'req_reference_number': make_reference_id(order),
+            'decision': decision,
+        }
+        with patch(
+            'ecommerce.views.IsSignedByCyberSource.has_permission',
+            return_value=True
+        ), patch(
+            'ecommerce.views.MailgunClient.send_individual_email',
+        ) as send_email:
+            resp = self.client.post(reverse('order-fulfillment'), data=data)
+        assert resp.status_code == statuses.HTTP_200_OK
+        assert len(resp.content) == 0
+        order.refresh_from_db()
+        assert Order.objects.count() == 1
+        assert order.status == Order.FAILED
+
+        if should_send_email:
+            assert send_email.call_count == 1
+            assert send_email.call_args[0] == (
+                'Order fulfillment failed, decision={decision}'.format(decision='something else'),
+                'Order fulfillment failed for order {order}'.format(order=order),
+                'ecommerce@example.com',
+            )
+        else:
+            assert send_email.call_count == 0
+
+    def test_ignore_duplicate_cancel(self):
+        """
+        If the decision is CANCEL and we already have a duplicate failed order, don't change anything.
+        """
+        klass, user = create_purchasable_klass()
+        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order.status = Order.FAILED
+        order.save()
+
+        data = {
+            'req_reference_number': make_reference_id(order),
+            'decision': 'CANCEL',
+        }
+        with patch(
+            'ecommerce.views.IsSignedByCyberSource.has_permission',
+            return_value=True
+        ):
+            resp = self.client.post(reverse('order-fulfillment'), data=data)
+        assert resp.status_code == statuses.HTTP_200_OK
+
+        assert Order.objects.count() == 1
+        assert Order.objects.get(id=order.id).status == Order.FAILED
+
+    @ddt.data(
+        (Order.FAILED, 'ERROR'),
+        (Order.FULFILLED, 'ERROR'),
+        (Order.FULFILLED, 'SUCCESS'),
+    )
+    @ddt.unpack
+    def test_error_on_duplicate_order(self, order_status, decision):
+        """If there is a duplicate message (except for CANCEL), raise an exception"""
+        klass, user = create_purchasable_klass()
+        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order.status = order_status
+        order.save()
+
+        data = {
+            'req_reference_number': make_reference_id(order),
+            'decision': decision,
+        }
+        with patch(
+            'ecommerce.views.IsSignedByCyberSource.has_permission',
+            return_value=True
+        ), self.assertRaises(EcommerceException) as ex:
+            self.client.post(reverse('order-fulfillment'), data=data)
+
+        assert Order.objects.count() == 1
+        assert Order.objects.get(id=order.id).status == order_status
+
+        assert ex.exception.args[0] == "Order {id} is expected to have status 'created'".format(
+            id=order.id,
+        )
+
+    def test_no_permission(self):
+        """
+        If the permission class didn't give permission we shouldn't get access to the POST
+        """
+        with patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=False):
+            resp = self.client.post(reverse('order-fulfillment'), data={})
+        assert resp.status_code == statuses.HTTP_403_FORBIDDEN
