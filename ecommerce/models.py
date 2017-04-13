@@ -8,6 +8,7 @@ from django.db.models import (
     IntegerField,
     SET_NULL,
     TextField,
+    Sum,
 )
 
 
@@ -108,6 +109,27 @@ class Line(TimestampedModel):
             klass_id=self.klass_id,
             description=self.description,
         )
+
+    @classmethod
+    def fulfilled_for_user(cls, user):
+        """
+        Returns the list of lines for fulfilled orders for a specific user
+        """
+        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED).order_by('klass_id')
+
+    @classmethod
+    def for_user_klass(cls, user, klass_id):
+        """
+        Returns all the orders that are associated to the payment of a specific klass_id
+        """
+        return cls.fulfilled_for_user(user).filter(klass_id=klass_id).order_by('order__created_on')
+
+    @classmethod
+    def total_paid_for_klass(cls, user, klass_id):
+        """
+        Returns the total amount paid for a klass
+        """
+        return cls.for_user_klass(user, klass_id).aggregate(total=Sum('price'))
 
 
 class Receipt(TimestampedModel):
