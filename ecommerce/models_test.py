@@ -12,6 +12,7 @@ from ecommerce.factories import (
     OrderFactory,
     ReceiptFactory,
 )
+from ecommerce.models import Order, Line
 from klasses.factories import KlassFactory
 from klasses.models import Klass
 
@@ -97,3 +98,41 @@ class KlassTitleTests(TestCase):
         klass = KlassFactory.create()
         line = LineFactory.create(klass_id=klass.klass_id)
         assert line.order.klass_title == klass.title
+
+
+class LineTest(TestCase):
+    """
+    Tests for Line helper classmethods
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.order_fulfilled_1 = OrderFactory.create(status=Order.FULFILLED)
+        cls.line_fulfilled_1 = LineFactory.create(order=cls.order_fulfilled_1)
+        cls.user = cls.order_fulfilled_1.user
+        cls.klass_id = cls.line_fulfilled_1.klass_id
+        cls.order_fulfilled_2 = OrderFactory.create(user=cls.user, status=Order.FULFILLED)
+        cls.line_fulfilled_2 = LineFactory.create(order=cls.order_fulfilled_2)
+        cls.order_created = OrderFactory.create(user=cls.user, status=Order.CREATED)
+        cls.line_created = LineFactory.create(order=cls.order_created, klass_id=cls.klass_id)
+
+    def test_fulfilled_for_user(self):
+        """
+        Test for the fulfilled_for_user classmethod
+        """
+        assert list(Line.fulfilled_for_user(self.user)) == sorted(
+            [self.line_fulfilled_1, self.line_fulfilled_2], key=lambda x: x.klass_id)
+
+    def test_for_user_klass(self):
+        """
+        Test for the for_user_klass classmethod
+        """
+        assert list(Line.for_user_klass(self.user, self.klass_id)) == [self.line_fulfilled_1]
+
+    def test_total_paid_for_klass(self):
+        """
+        Test for the total_paid_for_klass classmethod
+        """
+        assert Line.total_paid_for_klass(self.user, self.klass_id).get('total') == self.line_fulfilled_1.price

@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url('', include('ecommerce.urls')),
     url('', include('social_django.urls', namespace='social')),
+    url('', include('klasses.urls')),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
 ]

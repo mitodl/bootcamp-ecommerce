@@ -6,8 +6,15 @@ from ddt import (
     ddt,
     unpack,
 )
+from django.test import TestCase as DjangoTestCase
 
-from ecommerce.serializers import PaymentSerializer
+from bootcamp.utils_test import format_as_iso8601
+from ecommerce.factories import LineFactory
+from ecommerce.serializers import (
+    PaymentSerializer,
+    OrderPartialSerializer,
+    LineSerializer,
+)
 
 
 @ddt
@@ -26,3 +33,41 @@ class PaymentSerializersTests(TestCase):
         Assert that validation is turned on for the things we care about
         """
         assert is_valid == PaymentSerializer(data=payload).is_valid()
+
+
+class LineOrderSerializerTests(DjangoTestCase):
+    """
+    Tests for Line and Order serializers
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.line = LineFactory.create()
+
+    def test_orderpartial_serializer(self):
+        """
+        Test order partial serializer result
+        """
+        expected = {
+            'status': self.line.order.status,
+            'created_on': format_as_iso8601(self.line.order.created_on, remove_microseconds=False),
+            'updated_on': format_as_iso8601(self.line.order.updated_on, remove_microseconds=False),
+        }
+        assert OrderPartialSerializer(self.line.order).data == expected
+
+    def test_line_serializer(self):
+        """
+        Test for line serializer result
+        """
+        expected = {
+            'klass_id': self.line.klass_id,
+            'description': self.line.description,
+            'order': {
+                'status': self.line.order.status,
+                'created_on': format_as_iso8601(self.line.order.created_on, remove_microseconds=False),
+                'updated_on': format_as_iso8601(self.line.order.updated_on, remove_microseconds=False),
+            }
+        }
+
+        assert LineSerializer(self.line).data == expected
