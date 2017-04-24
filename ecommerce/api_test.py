@@ -38,7 +38,7 @@ from ecommerce.models import (
     OrderAudit,
 )
 from klasses.factories import InstallmentFactory
-from profiles.factories import UserFactory
+from profiles.factories import UserFactory, ProfileFactory
 
 
 def create_purchasable_klass():
@@ -47,7 +47,8 @@ def create_purchasable_klass():
     """
     installment_1 = InstallmentFactory.create(amount=200)
     InstallmentFactory.create(klass=installment_1.klass)
-    user = UserFactory.create()
+    profile = ProfileFactory.create()
+    user = profile.user
     user.social_auth.create(
         provider=EdxOrgOAuth2.name,
         uid="{}_edx".format(user.username),
@@ -266,9 +267,14 @@ class CybersourceTests(TestCase):
             'transaction_type': 'sale',
             'transaction_uuid': transaction_uuid,
             'unsigned_field_names': '',
-            'merchant_defined_data1': 'klass',
-            'merchant_defined_data2': '{}'.format(klass.title),
-            'merchant_defined_data3': '{}'.format(klass.klass_id),
+            'merchant_defined_data1': 'bootcamp',
+            'merchant_defined_data2': '{}'.format(klass.bootcamp.title),
+            'merchant_defined_data3': 'klass',
+            'merchant_defined_data4': '{}'.format(klass.title),
+            'merchant_defined_data5': '{}'.format(klass.klass_id),
+            'merchant_defined_data6': 'learner',
+            'merchant_defined_data7': '{}'.format(order.user.profile.name),
+            'merchant_defined_data8': '{}'.format(order.user.email),
         }
         now_mock.assert_called_with(tz=pytz.UTC)
 
