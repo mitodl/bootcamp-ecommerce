@@ -1,0 +1,14 @@
+{% extends "base_error.html" %}
+{% load i18n static %}
+
+{% block error_header %}
+404
+{% endblock %}
+
+{% block error_content %}
+<div id="page-not-found">
+	<p>Page not found</p>
+	<p>Whatever you were looking for, isn't here</p>
+	<p>Please <a href="mailto:{{ support_email }}">contact us</a> if this continues to happen</p>
+</div>
+{% endblock %}

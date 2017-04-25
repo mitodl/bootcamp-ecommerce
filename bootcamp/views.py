@@ -38,3 +38,33 @@ def pay(request):
     return render(request, "bootcamp/pay.html", context={
         "js_settings_json": json.dumps(_serialize_js_settings(request)),
     })
+
+
+def standard_error_page(request, status_code, template_filename):
+    """
+    Returns an error page with a given template filename and provides necessary context variables
+    """
+    response = render(
+        request,
+        template_filename,
+        context={
+            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            "support_email": settings.EMAIL_SUPPORT,
+        }
+    )
+    response.status_code = status_code
+    return response
+
+
+def page_404(request, *args, **kwargs):  # pylint: disable=unused-argument
+    """
+    Overridden handler for the 404 error pages.
+    """
+    return standard_error_page(request, 404, "404.html")
+
+
+def page_500(request, *args, **kwargs):  # pylint: disable=unused-argument
+    """
+    Overridden handler for the 404 error pages.
+    """
+    return standard_error_page(request, 500, "500.html")

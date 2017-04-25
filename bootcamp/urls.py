@@ -21,3 +21,6 @@ urlpatterns = [
     url('', include('klasses.urls')),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
 ]
+
+handler404 = 'bootcamp.views.page_404'
+handler500 = 'bootcamp.views.page_500'
