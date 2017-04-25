@@ -1,0 +1,24 @@
+{% extends "base_error.html" %}
+{% load i18n static %}
+
+{% block error_header %}
+oops&hellip;
+{% endblock %}
+
+{% block error_content %}
+<div id="page-not-found">
+	<p>There has been an error (500).</p>
+	<p>Please <a href="mailto:{{ support_email }}">contact us</a> if this continues to happen</p>
+</div>
+{% endblock %}
+
+{% if request.sentry.id %}
+<script>
+ Raven.showReportDialog({
+     eventId: '{{ request.sentry.id }}',
+
+     // use the public DSN (dont include your secret!)
+     dsn: '{{ sentry_public_dsn }}'
+ });
+</script>
+{% endif %}
