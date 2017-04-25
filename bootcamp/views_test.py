@@ -16,9 +16,13 @@ class TestViews(TestCase):
     """
     Test that the views work as expected.
     """
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = ProfileFactory.create().user
 
-    def test_index(self):
-        """Verify the index view is as expected"""
+    def test_index_anonymous(self):
+        """Verify the index view is as expected when user is anonymous"""
 
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
@@ -49,6 +53,11 @@ class TestViews(TestCase):
             'public_path': '/static/bundles/',
         }
 
+    def test_index_logged_in(self):
+        """Verify the user is redirected to pay if logged in"""
+        self.client.force_login(self.user)
+        assert self.client.get(reverse('bootcamp-index')).status_code == HTTP_302_FOUND
+
     def test_pay_anonymous(self):
         """
         Test that anonymous users can't see the anonymous view
@@ -59,8 +68,7 @@ class TestViews(TestCase):
         """
         Test that logged in users can see the payment page
         """
-        user = ProfileFactory.create().user
-        self.client.force_login(user)
+        self.client.force_login(self.user)
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
         version = '0.0.1'
@@ -82,7 +90,7 @@ class TestViews(TestCase):
         js_settings = json.loads(resp.context['js_settings_json'])
         assert js_settings == {
             'environment': environment,
-            'full_name': user.profile.name,
+            'full_name': self.user.profile.name,
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',
