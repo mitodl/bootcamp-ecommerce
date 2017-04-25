@@ -5,7 +5,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from raven.contrib.django.raven_compat.models import client as sentry
 
 from bootcamp.templatetags.render_bundle import public_path
@@ -15,6 +15,9 @@ def index(request):
     """
     The index view. Display available programs
     """
+    # if the user is logged in, there is no need to see the home page
+    if request.user.is_authenticated():
+        return redirect(to='pay')
 
     js_settings = {
         "release_version": settings.VERSION,
