@@ -14,6 +14,7 @@
     {% render_bundle 'common' %}
     {% render_bundle 'sentry_client' %}
     {% render_bundle 'style' %}
+    {% include "analytics.html" %}
     <title>{% block title %}{% endblock %}</title>
     {% block extrahead %}
     {% endblock %}
