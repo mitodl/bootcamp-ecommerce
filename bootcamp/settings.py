@@ -450,6 +450,11 @@ CYBERSOURCE_PROFILE_ID = get_var("CYBERSOURCE_PROFILE_ID", None)
 CYBERSOURCE_REFERENCE_PREFIX = get_var("CYBERSOURCE_REFERENCE_PREFIX", None)
 
 
+# BOOTCAMP ADMISSION
+BOOTCAMP_ADMISSION_BASE_URL = get_var("BOOTCAMP_ADMISSION_BASE_URL", "http://bootcamp-admission.example.com")
+BOOTCAMP_ADMISSION_KEY = get_var("BOOTCAMP_ADMISSION_KEY", "")
+
+
 # features flags
 def get_all_config_keys():
     """Returns all the configuration keys from both environment and configuration files"""

@@ -10,6 +10,7 @@ from rest_framework import status
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
+from klasses.conftest import patch_get_admissions
 from klasses.factories import KlassFactory
 from profiles.factories import UserFactory
 
@@ -33,7 +34,7 @@ KLASS_FIELDS = [
 
 
 @pytest.fixture()
-def setup_test_data():
+def test_data(mocker):
     """
     Sets up the data for all the tests in this module
     """
@@ -48,15 +49,16 @@ def setup_test_data():
     for _ in range(3):
         klass = KlassFactory.create()
 
+    patch_get_admissions(mocker, user)
     # just need one klass, so returning the last created
     return user, other_user, klass
 
 
-def test_only_self_can_access_apis(setup_test_data, client):
+def test_only_self_can_access_apis(test_data, client):
     """
     Only the the requester user can access her own info
     """
-    user, other_user, klass = setup_test_data
+    user, other_user, klass = test_data
     detail_url_user = reverse('klass-detail', kwargs={'username': user.username, 'klass_id': klass.klass_id})
     detail_url_other_user = reverse(
         'klass-detail', kwargs={'username': other_user.username, 'klass_id': klass.klass_id})
@@ -80,11 +82,11 @@ def test_only_self_can_access_apis(setup_test_data, client):
     assert client.get(list_url_other_user).status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_klass_detail(setup_test_data, client):
+def test_klass_detail(test_data, client):
     """
     Test for klass detail view in happy path
     """
-    user, _, klass = setup_test_data
+    user, _, klass = test_data
     klass_detail_url = reverse('klass-detail', kwargs={'username': user.username, 'klass_id': klass.klass_id})
     client.force_login(user)
 
@@ -95,21 +97,21 @@ def test_klass_detail(setup_test_data, client):
     assert response_json['klass_id'] == klass.klass_id
 
 
-def test_klass_detail_fake_klass(setup_test_data, client):
+def test_klass_detail_fake_klass(test_data, client):
     """
     Test if a request is made for a not existing klass
     """
-    user, _, _ = setup_test_data
+    user, _, _ = test_data
     klass_detail_url = reverse('klass-detail', kwargs={'username': user.username, 'klass_id': 123456789})
     client.force_login(user)
     assert client.get(klass_detail_url).status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_klass_list(setup_test_data, client):
+def test_klass_list(test_data, client):
     """
     Test for klass list view in happy path
     """
-    user, _, _ = setup_test_data
+    user, _, _ = test_data
     klass_list_url = reverse('klass-list', kwargs={'username': user.username})
     client.force_login(user)
 
@@ -121,11 +123,11 @@ def test_klass_list(setup_test_data, client):
         assert sorted(list(klass_resp.keys())) == sorted(KLASS_FIELDS)
 
 
-def test_klass_list_with_no_authorized_klasses(setup_test_data, client, mocker):
+def test_klass_list_with_no_authorized_klasses(test_data, client, mocker):
     """
     The view returns an empty list if no authorized klasses for the user are found
     """
-    user, _, _ = setup_test_data
+    user, _, _ = test_data
     mocker.patch(
         'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_ids',
         new_callable=PropertyMock,
@@ -139,11 +141,11 @@ def test_klass_list_with_no_authorized_klasses(setup_test_data, client, mocker):
     assert response.json() == []
 
 
-def test_klass_list_paid_klass_with_no_authorized_klasses(setup_test_data, client, mocker):
+def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, client, mocker):
     """
     The view returns the paid klasses even if if no authorized klasses for the user are found
     """
-    user, _, klass = setup_test_data
+    user, _, klass = test_data
     mocker.patch(
         'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_ids',
         new_callable=PropertyMock,

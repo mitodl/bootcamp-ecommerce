@@ -1,7 +1,15 @@
 """
 APIs to access the remote bootcamp app that controls the admissions
 """
-from klasses.models import Bootcamp
+import logging
+from urllib.parse import urljoin
+
+import requests
+from django.conf import settings
+from rest_framework import status
+
+
+log = logging.getLogger(__name__)
 
 
 class BootcampAdmissionClient:
@@ -9,7 +17,7 @@ class BootcampAdmissionClient:
     Client for the bootcamp admission portal
     """
 
-    admissions = []
+    admissions = {}
     payable_klasses = {}
     payable_klasses_ids = []
 
@@ -24,27 +32,57 @@ class BootcampAdmissionClient:
         """
         Requests the bootcamp klasses where the user has been admitted.
 
-        For now it just returns the first of the klasses in the local database for all the users.
-        Eventually this should make requests to the remote app and be fault tolerant
-        """
-        # this is the expected structure according to
-        # https://github.com/mitodl/bootcamp-ecommerce/issues/15
-        return {
-            "user": self.user_email,
-            "bootcamps": [
+        This should return a response like:
+        {
+            "user":"foo@example.com",
+            "bootcamps":[
                 {
-                    "bootcamp_id": None,  # NOTE:this is the ID on the remote web service (we do not need it)
-                    "bootcamp_title": bootcamp.title,
-                    "klasses":  [
+                    "bootcamp_id":6,
+                    "bootcamp_title":"Master of Law",
+                    "klasses":[
                         {
-                            "klass_id": klass.klass_id,  # NOTE: this is the ID on the remote web service
-                            "klass_name": klass.title,
-                            "is_user_eligible_to_pay": True
-                        } for klass in bootcamp.klass_set.order_by('id')
+                            "klass_id":13,
+                            "klass_name":"Class 2 (Student)",
+                            "status":"no_show",
+                            "is_user_eligible_to_pay":false
+                        },
+                        {
+                            "klass_id":16,
+                            "klass_name":"Class 1",
+                            "status":"scholarship_not_awarded",
+                            "is_user_eligible_to_pay":true
+                        }
                     ]
-                } for bootcamp in Bootcamp.objects.all().order_by('id')
+                }
             ]
         }
+        """
+        url = "{base_url}?email={user_email}&key={key}".format(
+            base_url=urljoin(settings.BOOTCAMP_ADMISSION_BASE_URL, '/api/v1/user/'),
+            user_email=self.user_email,
+            key=settings.BOOTCAMP_ADMISSION_KEY,
+        )
+
+        try:
+            resp = requests.get(url)
+        except:  # pylint: disable=bare-except
+            log.exception('request to bootcamp admission service failed')
+            # in case of errors return an empty response
+            return {}
+
+        if resp.status_code != status.HTTP_200_OK:
+            log.error(
+                'request to bootcamp admission service for user %s returned unexpected code %s',
+                self.user_email,
+                resp.status_code,
+            )
+            return {}
+
+        try:
+            return resp.json()
+        except:  # pylint: disable=bare-except
+            log.exception('impossible to parse the JSON response')
+            return {}
 
     def _get_payable_klasses(self):
         """
