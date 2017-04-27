@@ -23,10 +23,13 @@ describe('rest', () => {
   const fakeEndpoint = {
     name: 'fake',
     url: '/api/v0/fake/',
-    makeOptions: (...args) => ({
+    fetchOptions: (params) => ({
       method: 'POST',
-      body: JSON.stringify([...args])
-    }),
+      body: JSON.stringify({
+        param1: params.param1,
+        param2: params.param2,
+      })
+    })
   };
 
   let sandbox, store;
@@ -101,10 +104,13 @@ describe('rest', () => {
 
     it('dispatches a success action if the API returned successfully', () => {
       const fetchAction = makeAction(fakeEndpoint);
-      const args = ["arg1", "arg2"];
+      const params = {
+        param1: '1',
+        param2: '2'
+      };
       fetchMock.returns(Promise.resolve("data"));
 
-      return dispatchThen(fetchAction(...args), [
+      return dispatchThen(fetchAction(params), [
         makeRequestActionType(fakeEndpoint.name),
         makeReceiveSuccessActionType(fakeEndpoint.name),
       ]).then(state => {
@@ -117,17 +123,20 @@ describe('rest', () => {
 
         sinon.assert.calledWith(fetchMock, '/api/v0/fake/', {
           method: "POST",
-          body: JSON.stringify(args),
+          body: JSON.stringify(params),
         });
       });
     });
 
     it('dispatches a failure action if the API failed', () => {
       const fetchAction = makeAction(fakeEndpoint);
-      const args = ["arg1", "arg2"];
+      const params = {
+        param1: '1',
+        param2: '2'
+      };
       fetchMock.returns(Promise.reject("error"));
 
-      return dispatchThen(fetchAction(...args), [
+      return dispatchThen(fetchAction(params), [
         makeRequestActionType(fakeEndpoint.name),
         makeReceiveFailureActionType(fakeEndpoint.name),
       ]).then(state => {
@@ -140,22 +149,26 @@ describe('rest', () => {
 
         sinon.assert.calledWith(fetchMock, '/api/v0/fake/', {
           method: "POST",
-          body: JSON.stringify(args),
+          body: JSON.stringify(params),
         });
       });
     });
   });
 
   describe("endpoints", () => {
-    it('has /api/v0/payment/', () => {
+    it('include /api/v0/payment/', () => {
       let endpoint = endpoints.find(endpoint => endpoint.name === 'payment');
       assert.equal(endpoint.url, '/api/v0/payment/');
-      assert.deepEqual(endpoint.makeOptions("123"), {
-        method: 'POST',
-        body: JSON.stringify({
-          total: "123"
-        })
-      });
+      assert.deepEqual(
+        endpoint.fetchOptions({klassId: 1, paymentAmount: "123"}),
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            klass_id: 1,
+            payment_amount: "123"
+          })
+        }
+      );
     });
   });
 });

@@ -9,25 +9,24 @@ from django.shortcuts import render, redirect
 from raven.contrib.django.raven_compat.models import client as sentry
 
 from bootcamp.templatetags.render_bundle import public_path
+from bootcamp.serializers import serialize_maybe_user
 
 
-def index(request):
-    """
-    The index view. Display available programs
-    """
-    # if the user is logged in, there is no need to see the home page
-    if request.user.is_authenticated():
-        return redirect(to='pay')
-
-    js_settings = {
+def _serialize_js_settings(request):  # pylint: disable=missing-docstring
+    return {
         "release_version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
         "sentry_dsn": sentry.get_public_dsn(),
-        'public_path': public_path(request),
+        "public_path": public_path(request),
+        "user": serialize_maybe_user(request.user)
     }
 
+
+def index(request):  # pylint: disable=missing-docstring
+    if request.user.is_authenticated():
+        return redirect(to='pay')
     return render(request, "bootcamp/index.html", context={
-        "js_settings_json": json.dumps(js_settings),
+        "js_settings_json": json.dumps(_serialize_js_settings(request)),
     })
 
 
@@ -36,14 +35,6 @@ def pay(request):
     """
     View for the payment page
     """
-    js_settings = {
-        "release_version": settings.VERSION,
-        "environment": settings.ENVIRONMENT,
-        "sentry_dsn": sentry.get_public_dsn(),
-        'public_path': public_path(request),
-        'full_name': request.user.profile.name,
-    }
-
     return render(request, "bootcamp/pay.html", context={
-        "js_settings_json": json.dumps(js_settings),
+        "js_settings_json": json.dumps(_serialize_js_settings(request)),
     })

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import { createForm } from './util';
+import { createForm, isNilOrBlank } from './util';
 
 describe('util', () => {
   describe('createForm', () => {
@@ -20,6 +20,18 @@ describe('util', () => {
       assert.deepEqual(clone, {});
       assert.equal(form.getAttribute("action"), url);
       assert.equal(form.getAttribute("method"), "post");
+    });
+  });
+
+  describe('isNilOrBlank', () => {
+    it('returns true for undefined, null, and a blank string', () => {
+      [undefined, null, ''].forEach(value => {
+        assert.isTrue(isNilOrBlank(value));
+      });
+    });
+
+    it('returns false for a non-blank string', () => {
+      assert.isFalse(isNilOrBlank('not blank'));
     });
   });
 });

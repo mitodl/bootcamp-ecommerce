@@ -2,8 +2,8 @@ import configureTestStore from 'redux-asserts';
 import sinon from 'sinon';
 
 import {
-  setKlassId,
-  setTotal,
+  setSelectedKlassIndex,
+  setPaymentAmount,
 } from '../actions';
 import rootReducer from '../reducers';
 import { createAssertReducerResultState } from '../util/test_utils';
@@ -22,12 +22,12 @@ describe('reducers', () => {
   });
 
   describe('ui', () => {
-    it('should set the total price', () => {
-      assertReducerResultState(setTotal, ui => ui.total, '');
+    it('should set the payment amount', () => {
+      assertReducerResultState(setPaymentAmount, ui => ui.paymentAmount, '');
     });
 
-    it('should set the klass id', () => {
-      assertReducerResultState(setKlassId, ui => ui.klassId, '');
+    it('should set the selected klass index', () => {
+      assertReducerResultState(setSelectedKlassIndex, ui => ui.selectedKlassIndex, undefined);
     });
   });
 

@@ -1,6 +1,9 @@
 // @flow
 declare var SETTINGS: {
-  full_name: string,
+  user: {
+    full_name: string,
+    username: string
+  }
 };
 
 // mocha

@@ -52,7 +52,7 @@ def get_total_paid(user, klass_id):
 
 
 @transaction.atomic
-def create_unfulfilled_order(user, klass_id, total):
+def create_unfulfilled_order(user, klass_id, payment_amount):
     """
     Create a new Order which is not fulfilled for a klass.
 
@@ -61,25 +61,25 @@ def create_unfulfilled_order(user, klass_id, total):
             The purchaser of the klass
         klass_id (int):
             A klass id, a class within a bootcamp
-        total (Decimal): The payment of the user
+        payment_amount (Decimal): The payment of the user
     Returns:
         Order: A newly created Order for the klass
     """
-    total = Decimal(total)
+    payment_amount = Decimal(payment_amount)
     try:
         klass = Klass.objects.get(klass_id=klass_id)
     except Klass.DoesNotExist:
         # In the near future we should do other checking here based on information from Bootcamp REST API
         raise ValidationError("Incorrect klass id {}".format(klass_id))
-    if total <= 0:
+    if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
 
     already_paid = get_total_paid(user, klass_id)
-    if total + already_paid > klass.price:
+    if payment_amount + already_paid > klass.price:
         raise ValidationError(
-            "Payment of ${total} plus already paid ${already_paid} for {klass} would be"
+            "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
             " greater than total price of ${klass_price}".format(
-                total=total,
+                payment_amount=payment_amount,
                 klass=klass.title,
                 already_paid=already_paid,
                 klass_price=klass.price,
@@ -88,14 +88,14 @@ def create_unfulfilled_order(user, klass_id, total):
 
     order = Order.objects.create(
         status=Order.CREATED,
-        total_price_paid=total,
+        total_price_paid=payment_amount,
         user=user,
     )
     Line.objects.create(
         order=order,
         klass_id=klass_id,
         description='Installment for {}'.format(klass.title),
-        price=total,
+        price=payment_amount,
     )
     order.save_and_log(user)
     return order

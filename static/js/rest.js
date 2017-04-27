@@ -1,6 +1,7 @@
 // @flow
 import { createAction } from 'redux-actions';
 import type { Dispatch } from 'redux';
+import _ from 'lodash';
 
 import type { Action, Dispatcher } from './flow/reduxTypes';
 import { fetchJSONWithCSRF } from './lib/api';
@@ -12,8 +13,9 @@ import {
 
 export type Endpoint = {
   name: string,
-  url: string,
-  makeOptions: (...args: any) => Object
+  url?: string,
+  urlTemplate?: (params?: Object) => string,
+  fetchOptions: (params?: Object) => Object
 };
 
 export const makeRequestActionType = (reducerName: string) => `REQUEST_${reducerName.toUpperCase()}`;
@@ -29,11 +31,11 @@ export type RestState = {
   fetchStatus?: string,
 };
 
-const INITIAL_STATE: RestState = {
+const INITIAL_REST_STATE: RestState = {
   loaded: false,
   processing: false,
 };
-export const makeReducer = (endpoint: Endpoint, initialState: RestState = INITIAL_STATE) => {
+export const makeReducer = (endpoint: Endpoint, initialState: RestState = INITIAL_REST_STATE) => {
   const reducerName = endpoint.name;
   const requestType = makeRequestActionType(reducerName);
   const receiveSuccessType = makeReceiveSuccessActionType(reducerName);
@@ -73,21 +75,24 @@ export const makeReducer = (endpoint: Endpoint, initialState: RestState = INITIA
   };
 };
 
-export function makeFetchFunc(endpoint: Endpoint): (...args: any) => Promise<*> {
-  return (...args) => fetchJSONWithCSRF(endpoint.url, endpoint.makeOptions(...args));
+export function makeFetchFunc(endpoint: Endpoint): (params?: Object) => Promise<*> {
+  return (params = {}) => {
+    let url = endpoint.urlTemplate ? endpoint.urlTemplate(params) : endpoint.url;
+    return fetchJSONWithCSRF(url || '', endpoint.fetchOptions(params));
+  };
 }
 
-export const makeAction = (endpoint: Endpoint): ((...params: any) => Dispatcher<*>) => {
+export const makeAction = (endpoint: Endpoint): ((params?: Object) => Dispatcher<*>) => {
   const requestAction = createAction(makeRequestActionType(endpoint.name));
   const receiveSuccessAction = createAction(makeReceiveSuccessActionType(endpoint.name));
   const receiveFailureAction = createAction(makeReceiveFailureActionType(endpoint.name));
 
   const fetchFunc = makeFetchFunc(endpoint);
 
-  return (...params) => {
+  return (params) => {
     return (dispatch: Dispatch): Promise<*> => {
       dispatch(requestAction());
-      return fetchFunc(...params).then(data => {
+      return fetchFunc(params).then(data => {
         dispatch(receiveSuccessAction(data));
         return Promise.resolve(data);
       }).catch(error => {
@@ -102,12 +107,18 @@ export const endpoints: Array<Endpoint> = [
   {
     name: 'payment',
     url: '/api/v0/payment/',
-    makeOptions: (total, klassId) => ({
+    fetchOptions: (params = {}) => ({
       method: 'POST',
       body: JSON.stringify({
-        total: total,
-        klass_id: klassId,
+        klass_id: params.klassId,
+        payment_amount: params.paymentAmount,
       })
+    }),
+  }, {
+    name: 'klasses',
+    urlTemplate: _.template('/api/v0/klasses/<%=username%>/'),
+    fetchOptions: () => ({
+      method: 'GET',
     }),
   },
 ];
