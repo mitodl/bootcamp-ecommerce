@@ -1,4 +1,5 @@
 // @flow
+import R from 'ramda';
 
 /**
  * Creates a POST form with hidden input fields
@@ -21,3 +22,5 @@ export function createForm(url: string, payload: Object): HTMLFormElement {
   }
   return form;
 }
+
+export const isNilOrBlank = R.either(R.isNil, R.isEmpty);

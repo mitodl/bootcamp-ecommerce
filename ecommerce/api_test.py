@@ -81,13 +81,13 @@ class PurchasableTests(TestCase):
 
         with self.assertRaises(ValidationError) as ex:
             # payment is $15 here but there is only $10 left to pay
-            total = 15
-            create_unfulfilled_order(self.user, self.klass.klass_id, total)
+            payment_amount = 15
+            create_unfulfilled_order(self.user, self.klass.klass_id, payment_amount)
 
         message = (
-            "Payment of ${total} plus already paid ${already_paid} for {klass} would be"
+            "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
             " greater than total price of ${klass_price}".format(
-                total=total,
+                payment_amount=payment_amount,
                 already_paid=self.klass.price - 10,
                 klass=self.klass.title,
                 klass_price=self.klass.price,
@@ -96,12 +96,12 @@ class PurchasableTests(TestCase):
         assert ex.exception.args[0] == message
 
     @ddt.data(0, -1.23)
-    def test_less_or_equal_to_zero(self, total):
+    def test_less_or_equal_to_zero(self, payment_amount):
         """
         An order may not have a negative or zero price
         """
         with self.assertRaises(ValidationError) as ex:
-            create_unfulfilled_order(self.user, self.klass.klass_id, total)
+            create_unfulfilled_order(self.user, self.klass.klass_id, payment_amount)
 
         assert ex.exception.args[0] == 'Payment is less than or equal to zero'
 

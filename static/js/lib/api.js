@@ -111,4 +111,3 @@ export const fetchJSONWithCSRF = (input: string, init: Object = {}, loginOnError
     return Promise.reject(respJson);
   });
 };
-

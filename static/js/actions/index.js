@@ -1,11 +1,14 @@
 // @flow
 import { createAction } from 'redux-actions';
 
-export const SET_TOTAL = 'SET_TOTAL';
-export const setTotal = createAction(SET_TOTAL);
+export const CLEAR_UI = 'CLEAR_UI';
+export const clearUI = createAction(CLEAR_UI);
 
-export const SET_KLASS_ID = 'SET_KLASS_ID';
-export const setKlassId = createAction(SET_KLASS_ID);
+export const SET_PAYMENT_AMOUNT = 'SET_PAYMENT_AMOUNT';
+export const setPaymentAmount = createAction(SET_PAYMENT_AMOUNT);
+
+export const SET_SELECTED_KLASS_INDEX = 'SET_SELECTED_KLASS_INDEX';
+export const setSelectedKlassIndex = createAction(SET_SELECTED_KLASS_INDEX);
 
 export const FETCH_PROCESSING = 'FETCH_PROCESSING';
 export const FETCH_SUCCESS = 'FETCH_SUCCESS';

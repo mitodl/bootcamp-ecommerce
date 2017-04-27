@@ -48,12 +48,12 @@ class PaymentTests(TestCase):
         user = UserFactory.create()
         self.client.force_login(user)
         resp = self.client.post(payment_url, data={
-            "total": "-1",
+            "payment_amount": "-1",
             "klass_id": 3,
         })
         assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
         assert resp.json() == {
-            "total": ["Ensure this value is greater than or equal to 0.01."]
+            "payment_amount": ["Ensure this value is greater than or equal to 0.01."]
         }
 
     def test_login_required(self):
@@ -80,7 +80,7 @@ class PaymentTests(TestCase):
             'ecommerce.views.create_unfulfilled_order', autospec=True, return_value=fake_order
         ) as create_unfulfilled_order_mock:
             resp = self.client.post(reverse('create-payment'), data={
-                "total": klass.price,
+                "payment_amount": klass.price,
                 "klass_id": klass.klass_id,
             })
         assert resp.status_code == statuses.HTTP_200_OK

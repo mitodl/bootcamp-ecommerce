@@ -51,6 +51,7 @@ class TestViews(TestCase):
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',
+            'user': None
         }
 
     def test_index_logged_in(self):
@@ -90,8 +91,11 @@ class TestViews(TestCase):
         js_settings = json.loads(resp.context['js_settings_json'])
         assert js_settings == {
             'environment': environment,
-            'full_name': self.user.profile.name,
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',
+            'user': {
+                'full_name': self.user.profile.name,
+                'username': None
+            },
         }

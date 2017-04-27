@@ -47,10 +47,10 @@ class PaymentView(CreateAPIView):
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        total = Decimal(serializer.data['total'])
+        payment_amount = Decimal(serializer.data['payment_amount'])
         klass_id = serializer.data['klass_id']
 
-        order = create_unfulfilled_order(self.request.user, klass_id, total)
+        order = create_unfulfilled_order(self.request.user, klass_id, payment_amount)
         redirect_url = self.request.build_absolute_uri(reverse('bootcamp-index'))
 
         return Response({

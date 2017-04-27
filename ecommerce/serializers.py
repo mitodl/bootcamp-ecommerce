@@ -8,7 +8,7 @@ class PaymentSerializer(serializers.Serializer):
     """
     Serializer for payment API, used to do basic validation.
     """
-    total = serializers.DecimalField(max_digits=20, decimal_places=2, min_value=0.01)
+    payment_amount = serializers.DecimalField(max_digits=20, decimal_places=2, min_value=0.01)
     klass_id = serializers.IntegerField()
 
 

@@ -22,9 +22,9 @@ class PaymentSerializersTests(TestCase):
     """Tests for payment serializers"""
 
     @data(
-        [{"total": "345", "klass_id": 3}, True],
-        [{"total": "-3", "klass_id": 3}, False],
-        [{"total": "345"}, False],
+        [{"payment_amount": "345", "klass_id": 3}, True],
+        [{"payment_amount": "-3", "klass_id": 3}, False],
+        [{"payment_amount": "345"}, False],
         [{"klass_id": "345"}, False],
     )
     @unpack
