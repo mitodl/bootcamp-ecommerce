@@ -2,3 +2,8 @@
 .body-inner-content {
   background: url({% static "images/bootcamp-logo.png" %}) top left no-repeat;
 }
+
+.body-content.photo-bg {
+  background: url({% static "images/background1.jpg" %}) top right no-repeat;
+  background-size: cover;
+}

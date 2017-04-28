@@ -1,5 +1,7 @@
 @import "breakpoints";
+@import "button";
 @import "footer";
+@import "login";
 
 body {
   margin: 0;
@@ -28,8 +30,4 @@ body {
     margin: 25px auto 0 auto;
     padding-top: 50px;
   }
-}
-
-#home {
-  justify-content: center;
 }

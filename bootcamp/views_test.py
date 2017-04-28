@@ -35,7 +35,7 @@ class TestViews(TestCase):
             resp = self.client.get('/')
         self.assertContains(
             resp,
-            "Log in using your edx.org account",
+            "Pay Here for your MIT Bootcamp",
             status_code=200
         )
 

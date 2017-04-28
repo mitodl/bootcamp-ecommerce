@@ -55,35 +55,20 @@
     }
   }
 
-  .footer-button {
-    background: #386082 !important;
+  .btn.give-btn {
+    background: #386082;
     font-size: 14px;
-    color: #fff;
     height: 42px;
     line-height: 41px;
     font-weight: 400;
     border-radius: 2px;
-    border: none;
-    margin: 0;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    text-transform: uppercase;
-    vertical-align: middle;
-    letter-spacing: normal;
-
-    a {
-      color: #fff;
-    }
+    margin-bottom: 50px;
+    padding: 0;
+    width: 100%;
 
     &:hover {
-      background: #1d67a7 !important;
+      background: #1d67a7;
       text-decoration: none;
-    }
-
-    &.give-btn {
-      margin-bottom: 50px;
-      padding: 0;
     }
   }
 
