@@ -1,0 +1,111 @@
+.footer-row {
+  background: #000;
+  padding: 40px 30px 60px 30px;
+  text-align: left;
+  color: #808080;
+  font-size: .83em;
+  line-height: 1.2em;
+
+  .container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    @include breakpoint(phone) {
+      width: 100%;
+    }
+
+    .row {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      width: 100%;
+
+      @include breakpoint(phone) {
+        flex-direction: column;
+      }
+
+      .col {
+        min-width: 150px;
+
+        &.left-col {
+          width: 240px;
+        }
+
+        &.right-col {
+          min-width: 150px;
+          max-width: 350px;
+          flex-grow: 1;
+          flex-shrink: 1;
+
+          @include breakpoint(phone) {
+            max-width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  a {
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .footer-button {
+    background: #386082 !important;
+    font-size: 14px;
+    color: #fff;
+    height: 42px;
+    line-height: 41px;
+    font-weight: 400;
+    border-radius: 2px;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    vertical-align: middle;
+    letter-spacing: normal;
+
+    a {
+      color: #fff;
+    }
+
+    &:hover {
+      background: #1d67a7 !important;
+      text-decoration: none;
+    }
+
+    &.give-btn {
+      margin-bottom: 50px;
+      padding: 0;
+    }
+  }
+
+  @include breakpoint(phone) {
+    padding: 40px 15px 60px 15px;
+  }
+
+  .footer-links {
+    margin: 24px 0;
+
+    a {
+      display: inline-block;
+      margin: 0 24px 0 0;
+      color: #4c8399;
+    }
+  }
+
+  .footer-address, .footer-copy {
+    margin-bottom: 24px;
+    display: block;
+    font-size: 12px;
+    font-style: normal;
+    line-height: 1;
+  }
+}

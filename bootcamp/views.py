@@ -6,6 +6,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views.generic import TemplateView
 from raven.contrib.django.raven_compat.models import client as sentry
 
 from bootcamp.templatetags.render_bundle import public_path
@@ -38,6 +39,15 @@ def pay(request):
     return render(request, "bootcamp/pay.html", context={
         "js_settings_json": json.dumps(_serialize_js_settings(request)),
     })
+
+
+class BackgroundImagesCSSView(TemplateView):
+    """
+    Pass a CSS file through Django's template system, so that we can make
+    the URLs point to a CDN.
+    """
+    template_name = "background-images.css"
+    content_type = "text/css"
 
 
 def standard_error_page(request, status_code, template_filename):

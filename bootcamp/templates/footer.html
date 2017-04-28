@@ -1,0 +1,25 @@
+{% load static %}
+<footer class="footer-row">
+  <div class="container">
+    <div class="row">
+      <div class="col left-col">
+        <a href="http://www.mit.edu" target="_blank"><img src="{% static 'images/mit-logo-ltgray-white@72x38.svg' %}" alt="MIT" width="72" height="38"></a>
+        <div class="footer-links">
+          <a href="https://www.edx.org/" target="_blank">edX</a>
+          <a href="https://odl.mit.edu/" target="_blank">Office of Digital Learning</a>
+        </div>
+        <address class="footer-address">
+          Massachusetts Institute of Technology<br/> Cambridge, MA 02139
+        </address>
+      </div>
+      <div class="col right-col">
+        <div class="footer-button give-btn">
+          <a href="https://giving.mit.edu/explore/campus-student-life/digital-learning" target="_blank">
+            Give to MIT
+          </a>
+        </div>
+        <div class="footer-copy">&copy; 2016-{% now "Y" %} Massachusetts Institute of Technology</div>
+      </div>
+    </div>
+  </div>
+</footer>

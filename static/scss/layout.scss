@@ -1,19 +1,35 @@
-#home {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 800px;
+@import "breakpoints";
+@import "footer";
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
 }
 
-#pay {
+.body-row {
   display: flex;
-  align-items: center;
-  flex-direction: column;
+}
 
-  .payment {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+.body-content {
+  /* background-image from background-images.css */
+  flex-direction: column;
+  align-items: center;
+  background-color: #202020;
+  min-height: 800px;
+  width: 88%;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .body-inner-content {
+    width: 95%;
+    margin: 25px auto 0 auto;
+    padding-top: 50px;
   }
+}
+
+#home {
+  justify-content: center;
 }
