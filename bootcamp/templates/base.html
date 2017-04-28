@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load raven %}
     <link rel="icon" href="{% static 'images/favicon.ico' %}" />
+    <link rel="stylesheet" type="text/css" href="{% url 'background-images-css' %}" />
     <script type="text/javascript">
     var SETTINGS = {{ js_settings_json|safe }};
     </script>
@@ -21,7 +22,10 @@
     {% endspaceless %}
   </head>
   <body>
-    {% block content %}
-    {% endblock %}
+    <div class="body-row">
+      {% block content %}
+      {% endblock %}
+    </div>
+    {% include "footer.html" %}
   </body>
 </html>
