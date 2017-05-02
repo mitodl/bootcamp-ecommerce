@@ -5,7 +5,8 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from raven.contrib.django.raven_compat.models import client as sentry
 
@@ -23,9 +24,16 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
     }
 
 
-def index(request):  # pylint: disable=missing-docstring
+@csrf_exempt
+def index(request):
+    """
+    Index page
+    """
     if request.user.is_authenticated():
-        return redirect(to='pay')
+        to_url = reverse('pay')
+        if request.GET:
+            to_url = "{}?{}".format(to_url, request.GET.urlencode())
+        return redirect(to=to_url)
     return render(request, "bootcamp/index.html", context={
         "js_settings_json": json.dumps(_serialize_js_settings(request)),
     })

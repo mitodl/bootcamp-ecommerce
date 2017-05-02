@@ -59,6 +59,16 @@ class TestViews(TestCase):
         self.client.force_login(self.user)
         assert self.client.get(reverse('bootcamp-index')).status_code == HTTP_302_FOUND
 
+    def test_index_logged_in_post(self):
+        """
+        Verify the user is redirected to pay if logged in on a POST request without CSRF token
+        and that the GET parameters are kept
+        """
+        self.client.force_login(self.user)
+        resp = self.client.post(reverse('bootcamp-index')+'?foo=bar')
+        assert resp.status_code == HTTP_302_FOUND
+        assert resp.url == reverse('pay') + '?foo=bar'
+
     def test_pay_anonymous(self):
         """
         Test that anonymous users can't see the anonymous view
