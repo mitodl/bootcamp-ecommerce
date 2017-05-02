@@ -1,0 +1,35 @@
+.body-content .body-inner-content#home {
+  padding-top: 13%;
+}
+
+#home {
+  text-align: center;
+
+  h1 {
+    font-size: 48px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  p {
+    font-family: "Times New Roman", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    letter-spacing: 1px;
+    line-height: 35px;
+    max-width: 725px;
+    margin: 0 auto 60px auto;
+  }
+
+  .btn.login-btn {
+    background-image: linear-gradient(to right, rgb(223, 17, 56) 0%, rgb(217, 71, 32) 100%);
+    border-radius: 5px;
+    font-size: 18px;
+    height: 65px;
+    line-height: 65px;
+    font-weight: 500;
+    width: 265px;
+    letter-spacing: 2px;
+  }
+}
+
+
