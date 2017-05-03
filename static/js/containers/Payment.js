@@ -62,7 +62,7 @@ class Payment extends React.Component {
     dispatch(
       actions.payment({
         paymentAmount: paymentAmount,
-        klassId: selectedKlass.klass_id
+        klassKey: selectedKlass.klass_key
       })
     ).then(result => {
       const { url, payload } = result;

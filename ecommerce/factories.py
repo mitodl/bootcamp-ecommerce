@@ -46,7 +46,7 @@ class LineFactory(DjangoModelFactory):
     """Factory for Line"""
     order = SubFactory(OrderFactory)
     price = SelfAttribute('order.total_price_paid')
-    klass_id = FuzzyInteger(low=1, high=1234)
+    klass_key = FuzzyInteger(low=1, high=1234)
     description = FuzzyText(prefix="Line ")
 
     class Meta:

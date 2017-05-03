@@ -36,7 +36,7 @@ class KlassFactory(DjangoModelFactory):
     """Factory for Klass"""
     title = FuzzyText(prefix="Klass ")
     bootcamp = SubFactory(BootcampFactory)
-    klass_id = FuzzyInteger(low=1, high=1234)
+    klass_key = FuzzyInteger(low=1, high=1234)
     start_date = Faker('date_time_this_year', before_now=True, after_now=False, tzinfo=pytz.UTC)
     end_date = Faker('date_time_this_year', before_now=False, after_now=True, tzinfo=pytz.UTC)
 

@@ -57,8 +57,8 @@ class UserKlassDetail(GenericAPIView):
         permissions.IsAuthenticated,
         CanReadIfSelf,
     )
-    lookup_field = "klass_id"
-    lookup_url_kwarg = "klass_id"
+    lookup_field = "klass_key"
+    lookup_url_kwarg = "klass_key"
     queryset = Klass.objects.all()
 
     def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument

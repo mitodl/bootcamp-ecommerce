@@ -27,12 +27,12 @@ def serialize_user_klasses(user):
         list: list of dictionaries describing a klass and payments for it by the user
     """
     # extract the payments already done.
-    klass_ids_in_lines = list(Line.fulfilled_for_user(user).values_list(
-        'klass_id', flat=True).distinct())
+    klass_keys_in_lines = list(Line.fulfilled_for_user(user).values_list(
+        'klass_key', flat=True).distinct())
 
     bootcamp_client = BootcampAdmissionClient(user.email)
-    all_klasses_ids = list(set(klass_ids_in_lines).union(set(bootcamp_client.payable_klasses_ids)))
-    klasses_qset = Klass.objects.filter(klass_id__in=all_klasses_ids).order_by('klass_id')
+    all_klasses_keys = list(set(klass_keys_in_lines).union(set(bootcamp_client.payable_klasses_keys)))
+    klasses_qset = Klass.objects.filter(klass_key__in=all_klasses_keys).order_by('klass_key')
 
     return [serialize_user_klass(user, klass, bootcamp_client) for klass in klasses_qset]
 
@@ -54,14 +54,14 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
         bootcamp_client = BootcampAdmissionClient(user.email)
 
     return {
-        "klass_id": klass.klass_id,
+        "klass_key": klass.klass_key,
         "klass_name": klass.title,
         "start_date": klass.start_date,
         "end_date": klass.end_date,
         "payment_deadline": klass.payment_deadline,
         "price": klass.price,
-        "is_user_eligible_to_pay": bootcamp_client.can_pay_klass(klass.klass_id),
-        "total_paid": Line.total_paid_for_klass(user, klass.klass_id).get('total') or Decimal('0.00'),
-        "payments": LineSerializer(Line.for_user_klass(user, klass.klass_id), many=True).data,
+        "is_user_eligible_to_pay": bootcamp_client.can_pay_klass(klass.klass_key),
+        "total_paid": Line.total_paid_for_klass(user, klass.klass_key).get('total') or Decimal('0.00'),
+        "payments": LineSerializer(Line.for_user_klass(user, klass.klass_key), many=True).data,
         "installments": InstallmentSerializer(klass.installment_set.order_by('installment_number'), many=True).data,
     }

@@ -59,7 +59,7 @@ class Order(AuditableModel, TimestampedModel):
         line = self.line_set.first()
         if not line:
             return ""
-        klass = Klass.objects.filter(klass_id=line.klass_id).first()
+        klass = Klass.objects.filter(klass_key=line.klass_key).first()
         if not klass:
             return ""
         return klass.title
@@ -97,16 +97,16 @@ class Line(TimestampedModel):
     Represents a line item in the order
     """
     order = ForeignKey(Order)
-    klass_id = IntegerField()
+    klass_key = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
 
     def __str__(self):
         """Description for Line"""
-        return "Line for {order}, price={price}, klass_id={klass_id}, description={description}".format(
+        return "Line for {order}, price={price}, klass_key={klass_key}, description={description}".format(
             order=self.order,
             price=self.price,
-            klass_id=self.klass_id,
+            klass_key=self.klass_key,
             description=self.description,
         )
 
@@ -115,21 +115,21 @@ class Line(TimestampedModel):
         """
         Returns the list of lines for fulfilled orders for a specific user
         """
-        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED).order_by('klass_id')
+        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED).order_by('klass_key')
 
     @classmethod
-    def for_user_klass(cls, user, klass_id):
+    def for_user_klass(cls, user, klass_key):
         """
-        Returns all the orders that are associated to the payment of a specific klass_id
+        Returns all the orders that are associated to the payment of a specific klass_key
         """
-        return cls.fulfilled_for_user(user).filter(klass_id=klass_id).order_by('order__created_on')
+        return cls.fulfilled_for_user(user).filter(klass_key=klass_key).order_by('order__created_on')
 
     @classmethod
-    def total_paid_for_klass(cls, user, klass_id):
+    def total_paid_for_klass(cls, user, klass_key):
         """
         Returns the total amount paid for a klass
         """
-        return cls.for_user_klass(user, klass_id).aggregate(total=Sum('price'))
+        return cls.for_user_klass(user, klass_key).aggregate(total=Sum('price'))
 
 
 class Receipt(TimestampedModel):
