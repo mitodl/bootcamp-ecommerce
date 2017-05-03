@@ -29,6 +29,13 @@ class Klass(models.Model):
         """
         return self.installment_set.aggregate(price=models.Sum('amount'))['price']
 
+    @property
+    def payment_deadline(self):
+        """
+        Get the overall payment deadline
+        """
+        return self.installment_set.aggregate(payment_deadline=models.Max('deadline'))['payment_deadline']
+
     def __str__(self):
         return "Klass {title} of {bootcamp}".format(
             title=self.title,

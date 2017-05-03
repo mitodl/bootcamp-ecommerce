@@ -1,0 +1,91 @@
+$input-color: $med-dark-gray;
+$input-font-size: 18px;
+
+.btn {
+  border: none;
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+  letter-spacing: normal;
+  color: #fff;
+  cursor: pointer;
+
+  &.large-cta {
+    background-image: linear-gradient(to right, rgb(223, 17, 56) 0%, rgb(217, 71, 32) 100%);
+    border-radius: 5px;
+    font-size: 18px;
+    height: 65px;
+    line-height: 65px;
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+}
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+input {
+  padding: 15px;
+  color: $input-color;
+  font-size: $input-font-size;
+}
+
+// Adapted from http://codepen.io/fil_dev/pen/oZNXzw
+.styled-select-container {
+  $select-padding: 15px;
+  $select-padding-l: $select-padding * 1.4;
+  $select-border: 1px solid ;
+  $select-border-radius: 0px;
+  $select-color: $med-dark-gray;
+  $caret-size: 8px;
+
+  position: relative;
+  display: inline-block;
+  background-color: #fff;
+
+  &:before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    margin-top: $caret-size * -0.3;
+    right: $select-padding-l;
+    width: 0;
+    height: 0;
+    border: $caret-size solid transparent;
+    border-top-color: $input-color;
+  }
+
+  select {
+    color: $input-color;
+    display: inline-block;
+    position: relative;
+    box-shadow: none;
+    appearance: none;
+    padding: $select-padding ($caret-size * 3 + $select-padding-l) $select-padding $select-padding-l;
+    border: $select-border;
+    border-radius: $select-border-radius;
+    background: transparent;
+    font-size: $input-font-size;
+
+    &:focus {
+      outline: transparent;
+    }
+
+    &:-moz-focusring { // sass-lint:disable-line no-vendor-prefixes
+      color: transparent;
+      text-shadow: 0 0 0 #000;
+    }
+
+    option {
+      background-color: #fff;
+    }
+  }
+}

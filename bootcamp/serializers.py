@@ -13,7 +13,7 @@ def serialize_maybe_user(user):
     if user.is_anonymous():
         return None
     try:
-        full_name = user.profile.name
+        full_name = user.profile.name.strip()
     except ObjectDoesNotExist:
         full_name = None
     return {

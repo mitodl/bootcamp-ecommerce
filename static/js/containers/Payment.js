@@ -4,6 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import type { Dispatch } from 'redux';
 import _ from 'lodash';
+import moment from 'moment';
 
 import type {
   UIState,
@@ -100,46 +101,65 @@ class Payment extends React.Component {
       {defaultValue: ""};
 
     return (
-      <select
-        className="klass-select"
-        onChange={this.setSelectedKlassIndex}
-        {...valueProp}
-      >
-        {options}
-      </select>
+      <div className="klass-select-section">
+        <p className="desc">
+          Which Bootcamp do you want to pay for?
+        </p>
+        <div className="styled-select-container">
+          <select
+            className="klass-select"
+            onChange={this.setSelectedKlassIndex}
+            {...valueProp}
+          >
+            {options}
+          </select>
+        </div>
+      </div>
     );
   };
 
-  renderSelectedKlass() {
+  renderSelectedKlass = () => {
     const {
       ui: { paymentAmount },
       payment: { processing },
       selectedKlass
     } = this.props;
 
-    return <div>
-      <h2 className="klass-title">{selectedKlass.klass_name}</h2>
-      <span>You have paid ${selectedKlass.total_paid} out of ${selectedKlass.price}</span>
+    let deadlineDateText;
+    if (!_.isEmpty(selectedKlass.payment_deadline)) {
+      let deadlineDate = moment(selectedKlass.payment_deadline).format("MMM D, YYYY");
+      deadlineDateText = `You can pay any amount, but the full payment must be complete by ${deadlineDate}`;
+    } else {
+      deadlineDateText = 'You can pay any amount toward the total cost.';
+    }
+
+    return <div className="klass-display-section">
+      <p className="desc">
+        You have been accepted to the <strong>{selectedKlass.klass_name}</strong> Bootcamp.<br />
+        You have paid ${selectedKlass.total_paid} out of ${selectedKlass.price}.
+      </p>
+      <p className="deadline-date">{deadlineDateText}</p>
       <div className="payment">
-        <span>Make a payment of:</span>
-        <span>
-          $<input type="number" id="payment-amount" value={paymentAmount} onChange={this.setPaymentAmount}/>
-        </span>
-        <button className="payment-button" onClick={this.sendPayment} disabled={processing}>
-          Pay
+        <input
+          type="number"
+          id="payment-amount"
+          value={paymentAmount}
+          onChange={this.setPaymentAmount}
+          placeholder="Enter $ amount"
+        />
+        <button className="btn large-cta" onClick={this.sendPayment} disabled={processing}>
+          Pay Now
         </button>
       </div>
-      <a href="#">Print your statement</a>
     </div>;
-  }
+  };
 
   render() {
     const { klasses, selectedKlass } = this.props;
 
-    let welcomeMessage = "Welcome to MIT Bootcamps";
-    if (!isNilOrBlank(SETTINGS.user.full_name)) {
-      welcomeMessage = `${SETTINGS.user.full_name}, ${welcomeMessage}`;
-    }
+    let welcomeMessage = !isNilOrBlank(SETTINGS.user.full_name) ?
+      <h1 className="greeting">Hi {SETTINGS.user.full_name}!</h1> :
+      null;
     let renderedKlassDropdown = (klasses.data && klasses.data.length > 1) ?
       this.renderKlassDropdown() :
       null;
@@ -147,8 +167,8 @@ class Payment extends React.Component {
       this.renderSelectedKlass() :
       null;
 
-    return <div className="payment">
-      <h3 className="intro">{welcomeMessage}</h3>
+    return <div>
+      {welcomeMessage}
       {renderedKlassDropdown}
       {renderedSelectedKlass}
     </div>;
