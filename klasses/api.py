@@ -49,7 +49,6 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
 
     Returns:
         dict: a dictionary describing a klass and payments for it by the user
-
     """
     if bootcamp_client is None:
         bootcamp_client = BootcampAdmissionClient(user.email)
@@ -59,6 +58,7 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
         "klass_name": klass.title,
         "start_date": klass.start_date,
         "end_date": klass.end_date,
+        "payment_deadline": klass.payment_deadline,
         "price": klass.price,
         "is_user_eligible_to_pay": bootcamp_client.can_pay_klass(klass.klass_id),
         "total_paid": Line.total_paid_for_klass(user, klass.klass_id).get('total') or Decimal('0.00'),

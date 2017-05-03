@@ -29,6 +29,7 @@ KLASS_FIELDS = [
     'payments',
     'klass_name',
     'is_user_eligible_to_pay',
+    'payment_deadline',
     'price',
 ]
 

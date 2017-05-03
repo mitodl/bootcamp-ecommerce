@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { assert } from 'chai';
 import sinon from 'sinon';
 import _ from 'lodash';
+import moment from 'moment';
 
 import * as api from '../lib/api';
 import {
@@ -28,11 +29,19 @@ const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
 const generateFakeKlasses = (numKlasses = 1) => {
   return _.times(numKlasses, (i) => ({
     klass_name: `Bootcamp 1 Klass ${i}`,
-    klass_id: i
+    klass_id: i + 1,
+    payment_deadline: moment()
   }));
 };
 
 describe('Payment container', () => {
+  const klassTitleSelector = '.klass-display-section p strong',
+    klassDropdownSelector = 'select.klass-select',
+    welcomeMsgSelector = 'h1.greeting',
+    paymentInputSelector = 'input[id="payment-amount"]',
+    paymentBtnSelector = 'button.large-cta',
+    deadlineMsgSelector = '.deadline-date';
+
   let store, listenForActions, sandbox, fetchStub,
     klassesUrl, klassesStub; // eslint-disable-line no-unused-vars
 
@@ -92,9 +101,16 @@ describe('Payment container', () => {
   });
 
   describe('UI', () => {
-    const klassTitleSelector = 'h2.klass-title',
-      klassDropdownSelector = 'select.klass-select',
-      welcomeMessageSelector = 'h3.intro';
+    it('shows the name of the user in a welcome message', () => {
+      let fakeKlasses = generateFakeKlasses();
+      klassesStub = fetchStub.withArgs(klassesUrl)
+        .returns(Promise.resolve(fakeKlasses));
+
+      return renderFullPaymentPage().then((wrapper) => {
+        let welcomeMsg = wrapper.find(welcomeMsgSelector);
+        assert.include(welcomeMsg.text(), SETTINGS.user.full_name);
+      });
+    });
 
     it('shows the selected klass', () => {
       let fakeKlasses = generateFakeKlasses(3);
@@ -108,11 +124,21 @@ describe('Payment container', () => {
       });
     });
 
-    it('shows a dropdown if multiple klasses are available', () => {
-      [
-        [1, false],
-        [2, true]
-      ].forEach((numKlasses, shouldShowDropdown) => {
+    it('does not show the welcome message if the name of the user is blank', () => {
+      SETTINGS.user.full_name = '';
+      klassesStub = fetchStub
+        .withArgs(klassesUrl)
+        .returns(Promise.resolve(generateFakeKlasses(1)));
+      return renderFullPaymentPage().then((wrapper) => {
+        assert.isFalse(wrapper.find(welcomeMsgSelector).exists());
+      });
+    });
+
+    [
+      [1, false],
+      [2, true]
+    ].forEach(([numKlasses, shouldShowDropdown]) => {
+      it(`dropdown is ${shouldShowDropdown ? '' : 'not'} visible when ${numKlasses} klasses available`, () => {
         let fakeKlasses = generateFakeKlasses(numKlasses);
         klassesStub = fetchStub.withArgs(klassesUrl)
           .returns(Promise.resolve(fakeKlasses));
@@ -123,14 +149,24 @@ describe('Payment container', () => {
       });
     });
 
-    it('does not show the name of the user if it is blank', () => {
-      SETTINGS.user.full_name = '';
-      klassesStub = fetchStub
-        .withArgs(klassesUrl)
-        .returns(Promise.resolve(generateFakeKlasses(1)));
-      return renderFullPaymentPage().then((wrapper) => {
-        let welcomeMessage = wrapper.find(welcomeMessageSelector);
-        assert.equal(welcomeMessage.text(), "Welcome to MIT Bootcamps");
+    [
+      [moment().format(), 'non-null date message'],
+      [null, 'null date message']
+    ].forEach(([deadlineDateISO, deadlineDateDesc]) => {
+      it(`shows payment due date message with ${deadlineDateDesc}`, () => {
+        let fakeKlasses = generateFakeKlasses(1);
+        fakeKlasses[0].payment_deadline = deadlineDateISO;
+        klassesStub = fetchStub.withArgs(klassesUrl)
+          .returns(Promise.resolve(fakeKlasses));
+        store.dispatch(setSelectedKlassIndex(0));
+
+        return renderFullPaymentPage().then((wrapper) => {
+          let deadlineText = wrapper.find(deadlineMsgSelector).text();
+          assert.include(deadlineText, 'You can pay any amount');
+          if (!_.isEmpty(deadlineDateISO)) {
+            assert.include(deadlineText, moment(deadlineDateISO).format("MMM D, YYYY"));
+          }
+        });
       });
     });
   });
@@ -145,7 +181,7 @@ describe('Payment container', () => {
 
     it('sets a price', () => {
       return renderFullPaymentPage().then((wrapper) => {
-        wrapper.find('input[id="payment-amount"]').props().onChange({
+        wrapper.find(paymentInputSelector).props().onChange({
           target: {
             value: "123"
           }
@@ -159,7 +195,7 @@ describe('Payment container', () => {
       fetchStub.withArgs('/api/v0/payment/').returns(Promise.resolve());
       return renderFullPaymentPage().then((wrapper) => {
         return listenForActions([REQUEST_PAYMENT, RECEIVE_PAYMENT_SUCCESS], () => {
-          wrapper.find('.payment-button').simulate('click');
+          wrapper.find(paymentBtnSelector).simulate('click');
         });
       });
     });
@@ -182,7 +218,7 @@ describe('Payment container', () => {
 
       return renderFullPaymentPage().then((wrapper) => {
         return listenForActions([REQUEST_PAYMENT, RECEIVE_PAYMENT_SUCCESS], () => {
-          wrapper.find('.payment-button').simulate('click');
+          wrapper.find(paymentBtnSelector).simulate('click');
         }).then(() => {
           return new Promise(resolve => {
             setTimeout(() => {

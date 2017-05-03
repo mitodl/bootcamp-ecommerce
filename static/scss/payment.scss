@@ -1,0 +1,30 @@
+.body-content .body-inner-content#pay {
+  padding-top: 8%;
+}
+
+#pay {
+  text-align: center;
+
+  .klass-select-section {
+    padding-bottom: 50px;
+  }
+
+  .deadline-date {
+    font-family: $artsy-font;
+    color: $med-gray;
+    font-size: 18px;
+    padding-top: 15px;
+  }
+
+  .payment {
+    display: flex;
+    flex-direction: column;
+    max-width: 285px;
+    margin: 0 auto;
+    padding: 25px 0 75px 0;
+
+    input {
+      margin-bottom: 25px;
+    }
+  }
+}

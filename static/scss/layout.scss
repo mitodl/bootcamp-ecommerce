@@ -1,14 +1,16 @@
+@import "variables";
 @import "breakpoints";
-@import "button";
+@import "inputs";
 @import "footer";
 @import "login";
+@import "payment";
 
 body {
   margin: 0;
   padding: 0;
   background-color: #000;
   color: #fff;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: Lato, Roboto, Helvetica, Arial, sans-serif;
 }
 
 .body-row {
@@ -30,4 +32,17 @@ body {
     margin: 25px auto 0 auto;
     padding-top: 50px;
   }
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.desc {
+  font-family: $artsy-font;
+  font-size: 24px;
+  letter-spacing: 1px;
+  line-height: 35px;
 }
