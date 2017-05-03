@@ -1,4 +1,6 @@
 """Models for klasses"""
+from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -61,3 +63,49 @@ class Installment(models.Model):
             amount=self.amount,
             klass=self.klass,
         )
+
+
+class BootcampAdmissionCache(models.Model):
+    """
+    The cached data from the bootcamp admission
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    klass = models.ForeignKey(Klass)
+    data = JSONField()
+
+    class Meta:
+        unique_together = (('user', 'klass'), )
+
+    def __str__(self):
+        """Object representation"""
+        return 'Admission for user "{user}" in klass "{klass}"'.format(
+            user=self.user.email,
+            klass=self.klass.title
+        )
+
+    @classmethod
+    def user_qset(cls, user):
+        """
+        Returns a queryset for the records associated with an User
+
+        Args:
+            user (User): an User object
+
+        Returns:
+            QuerySet: a queryset of all records for the provided user
+        """
+        return cls.objects.filter(user=user)
+
+    @classmethod
+    def delete_all_but(cls, user, klass_keys_list):
+        """
+        Given an user, deletes all her object in the cache but the provided klass keys
+
+        Args:
+            user (User): an User object
+            course_ids_list (list): a list of course IDs to NOT be deleted
+
+        Returns:
+            None
+        """
+        cls.user_qset(user).exclude(klass__klass_key__in=klass_keys_list).delete()
