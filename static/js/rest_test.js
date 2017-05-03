@@ -160,11 +160,11 @@ describe('rest', () => {
       let endpoint = endpoints.find(endpoint => endpoint.name === 'payment');
       assert.equal(endpoint.url, '/api/v0/payment/');
       assert.deepEqual(
-        endpoint.fetchOptions({klassId: 1, paymentAmount: "123"}),
+        endpoint.fetchOptions({klassKey: 1, paymentAmount: "123"}),
         {
           method: 'POST',
           body: JSON.stringify({
-            klass_id: 1,
+            klass_key: 1,
             payment_amount: "123"
           })
         }

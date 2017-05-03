@@ -19,14 +19,14 @@ class BootcampAdmissionClient:
 
     admissions = {}
     payable_klasses = {}
-    payable_klasses_ids = []
+    payable_klasses_keys = []
 
     def __init__(self, user_email):
         self.user_email = user_email
         # this call should be somehow fault tolerant
         self.admissions = self._get_admissions()
         self.payable_klasses = self._get_payable_klasses()
-        self.payable_klasses_ids = list(self.payable_klasses.keys())
+        self.payable_klasses_keys = list(self.payable_klasses.keys())
 
     def _get_admissions(self):
         """
@@ -95,8 +95,8 @@ class BootcampAdmissionClient:
                     adm_klasses[klass["klass_id"]] = klass
         return adm_klasses
 
-    def can_pay_klass(self, klass_id):
+    def can_pay_klass(self, klass_key):
         """
         Whether the user can pay for a specific klass
         """
-        return klass_id in self.payable_klasses_ids
+        return klass_key in self.payable_klasses_keys

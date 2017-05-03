@@ -29,7 +29,7 @@ const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
 const generateFakeKlasses = (numKlasses = 1) => {
   return _.times(numKlasses, (i) => ({
     klass_name: `Bootcamp 1 Klass ${i}`,
-    klass_id: i + 1,
+    klass_key: i + 1,
     payment_deadline: moment()
   }));
 };

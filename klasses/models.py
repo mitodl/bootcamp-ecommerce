@@ -18,7 +18,7 @@ class Klass(models.Model):
     """
     bootcamp = models.ForeignKey(Bootcamp)
     title = models.TextField(blank=True)
-    klass_id = models.IntegerField(unique=True)
+    klass_key = models.IntegerField(unique=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 

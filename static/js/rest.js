@@ -110,7 +110,7 @@ export const endpoints: Array<Endpoint> = [
     fetchOptions: (params = {}) => ({
       method: 'POST',
       body: JSON.stringify({
-        klass_id: params.klassId,
+        klass_key: params.klassKey,
         payment_amount: params.paymentAmount,
       })
     }),

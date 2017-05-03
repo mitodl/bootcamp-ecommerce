@@ -32,9 +32,9 @@ class OrderTests(TestCase):
         """Test Line.__str__"""
         line = LineFactory.create()
         assert str(line) == (
-            "Line for {order}, price={price}, klass_id={klass_id}, description={description}".format(
+            "Line for {order}, price={price}, klass_key={klass_key}, description={description}".format(
                 order=line.order,
-                klass_id=line.klass_id,
+                klass_key=line.klass_key,
                 price=line.price,
                 description=line.description,
             )
@@ -90,13 +90,13 @@ class KlassTitleTests(TestCase):
     def test_no_klass(self):
         """If there is no Klass there should be an empty string"""
         line = LineFactory.create()
-        assert Klass.objects.filter(klass_id=line.klass_id).exists() is False
+        assert Klass.objects.filter(klass_key=line.klass_key).exists() is False
         assert line.order.klass_title == ""
 
     def test_klass_title(self):
-        """klass_title should be klass.title for the given klass_id"""
+        """klass_title should be klass.title for the given klass_key"""
         klass = KlassFactory.create()
-        line = LineFactory.create(klass_id=klass.klass_id)
+        line = LineFactory.create(klass_key=klass.klass_key)
         assert line.order.klass_title == klass.title
 
 
@@ -112,27 +112,27 @@ class LineTest(TestCase):
         cls.order_fulfilled_1 = OrderFactory.create(status=Order.FULFILLED)
         cls.line_fulfilled_1 = LineFactory.create(order=cls.order_fulfilled_1)
         cls.user = cls.order_fulfilled_1.user
-        cls.klass_id = cls.line_fulfilled_1.klass_id
+        cls.klass_key = cls.line_fulfilled_1.klass_key
         cls.order_fulfilled_2 = OrderFactory.create(user=cls.user, status=Order.FULFILLED)
         cls.line_fulfilled_2 = LineFactory.create(order=cls.order_fulfilled_2)
         cls.order_created = OrderFactory.create(user=cls.user, status=Order.CREATED)
-        cls.line_created = LineFactory.create(order=cls.order_created, klass_id=cls.klass_id)
+        cls.line_created = LineFactory.create(order=cls.order_created, klass_key=cls.klass_key)
 
     def test_fulfilled_for_user(self):
         """
         Test for the fulfilled_for_user classmethod
         """
         assert list(Line.fulfilled_for_user(self.user)) == sorted(
-            [self.line_fulfilled_1, self.line_fulfilled_2], key=lambda x: x.klass_id)
+            [self.line_fulfilled_1, self.line_fulfilled_2], key=lambda x: x.klass_key)
 
     def test_for_user_klass(self):
         """
         Test for the for_user_klass classmethod
         """
-        assert list(Line.for_user_klass(self.user, self.klass_id)) == [self.line_fulfilled_1]
+        assert list(Line.for_user_klass(self.user, self.klass_key)) == [self.line_fulfilled_1]
 
     def test_total_paid_for_klass(self):
         """
         Test for the total_paid_for_klass classmethod
         """
-        assert Line.total_paid_for_klass(self.user, self.klass_id).get('total') == self.line_fulfilled_1.price
+        assert Line.total_paid_for_klass(self.user, self.klass_key).get('total') == self.line_fulfilled_1.price

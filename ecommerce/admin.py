@@ -18,7 +18,7 @@ class LineAdmin(admin.ModelAdmin):
     model = Line
 
     readonly_fields = get_field_names(Line)
-    list_display = ('description', 'klass_id', 'price', 'order', )
+    list_display = ('description', 'klass_key', 'price', 'order', )
 
     def has_add_permission(self, request):
         return False

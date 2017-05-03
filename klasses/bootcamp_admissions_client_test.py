@@ -102,7 +102,7 @@ def test_happy_path(test_data, mocked_get_200):
             "is_user_eligible_to_pay": True
         }
     }
-    assert boot_client.payable_klasses_ids == [16]
+    assert boot_client.payable_klasses_keys == [16]
 
 
 def test_get_raises(test_data, mocked_get_200):
@@ -116,7 +116,7 @@ def test_get_raises(test_data, mocked_get_200):
     mocked_get_200.request.assert_called_once_with(url)
     assert boot_client.admissions == {}
     assert boot_client.payable_klasses == {}
-    assert boot_client.payable_klasses_ids == []
+    assert boot_client.payable_klasses_keys == []
 
 
 def test_status_code_not_200(test_data, mocked_get_400):
@@ -129,7 +129,7 @@ def test_status_code_not_200(test_data, mocked_get_400):
     mocked_get_400.request.assert_called_once_with(url)
     assert boot_client.admissions == {}
     assert boot_client.payable_klasses == {}
-    assert boot_client.payable_klasses_ids == []
+    assert boot_client.payable_klasses_keys == []
 
 
 def test_json_raises(test_data, mocked_get_200):
@@ -144,7 +144,7 @@ def test_json_raises(test_data, mocked_get_200):
     mocked_get_200.request.assert_called_once_with(url)
     assert boot_client.admissions == {}
     assert boot_client.payable_klasses == {}
-    assert boot_client.payable_klasses_ids == []
+    assert boot_client.payable_klasses_keys == []
 
 
 def test_can_pay_klass(test_data, mocked_get_200):

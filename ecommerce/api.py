@@ -32,14 +32,14 @@ log = logging.getLogger(__name__)
 _REFERENCE_NUMBER_PREFIX = 'BOOTCAMP-'
 
 
-def get_total_paid(user, klass_id):
+def get_total_paid(user, klass_key):
     """
     Get total paid for a klass for a user
     Args:
         user (User):
             The purchaser of the klass
-        klass_id (int):
-            A klass id, a class within a bootcamp
+        klass_key (int):
+            A klass key, a class within a bootcamp
 
     Returns:
         Decimal: The total amount paid by a user for a klass
@@ -47,34 +47,34 @@ def get_total_paid(user, klass_id):
     return Line.objects.filter(
         order__status=Order.FULFILLED,
         order__user=user,
-        klass_id=klass_id,
+        klass_key=klass_key,
     ).aggregate(price=Sum('price'))['price'] or Decimal(0)
 
 
 @transaction.atomic
-def create_unfulfilled_order(user, klass_id, payment_amount):
+def create_unfulfilled_order(user, klass_key, payment_amount):
     """
     Create a new Order which is not fulfilled for a klass.
 
     Args:
         user (User):
             The purchaser of the klass
-        klass_id (int):
-            A klass id, a class within a bootcamp
+        klass_key (int):
+            A klass key, a class within a bootcamp
         payment_amount (Decimal): The payment of the user
     Returns:
         Order: A newly created Order for the klass
     """
     payment_amount = Decimal(payment_amount)
     try:
-        klass = Klass.objects.get(klass_id=klass_id)
+        klass = Klass.objects.get(klass_key=klass_key)
     except Klass.DoesNotExist:
         # In the near future we should do other checking here based on information from Bootcamp REST API
-        raise ValidationError("Incorrect klass id {}".format(klass_id))
+        raise ValidationError("Incorrect klass key {}".format(klass_key))
     if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
 
-    already_paid = get_total_paid(user, klass_id)
+    already_paid = get_total_paid(user, klass_key)
     if payment_amount + already_paid > klass.price:
         raise ValidationError(
             "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
@@ -93,7 +93,7 @@ def create_unfulfilled_order(user, klass_id, payment_amount):
     )
     Line.objects.create(
         order=order,
-        klass_id=klass_id,
+        klass_key=klass_key,
         description='Installment for {}'.format(klass.title),
         price=payment_amount,
     )
@@ -137,11 +137,11 @@ def generate_cybersource_sa_payload(order, redirect_url):
     # http://apps.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_WM/Secure_Acceptance_WM.pdf
     # Section: API Fields
 
-    klass_id = None
+    klass_key = None
     line = order.line_set.first()
     if line is not None:
-        klass_id = line.klass_id
-    klass = Klass.objects.get(klass_id=klass_id)
+        klass_key = line.klass_key
+    klass = Klass.objects.get(klass_key=klass_key)
 
     # NOTE: be careful about max length here, many (all?) string fields have a max
     # length of 255. At the moment none of these fields should go over that, due to database
@@ -156,7 +156,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'item_0_code': 'klass',
         'item_0_name': '{}'.format(klass.title),
         'item_0_quantity': 1,
-        'item_0_sku': '{}'.format(klass_id),
+        'item_0_sku': '{}'.format(klass_key),
         'item_0_tax_amount': '0',
         'item_0_unit_price': str(order.total_price_paid),
         'line_item_count': 1,
@@ -172,7 +172,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'merchant_defined_data2': '{}'.format(klass.bootcamp.title),
         'merchant_defined_data3': 'klass',
         'merchant_defined_data4': '{}'.format(klass.title),
-        'merchant_defined_data5': '{}'.format(klass_id),
+        'merchant_defined_data5': '{}'.format(klass_key),
         'merchant_defined_data6': 'learner',
         'merchant_defined_data7': '{}'.format(order.user.profile.name),
         'merchant_defined_data8': '{}'.format(order.user.email),

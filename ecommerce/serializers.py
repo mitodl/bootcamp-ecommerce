@@ -9,7 +9,7 @@ class PaymentSerializer(serializers.Serializer):
     Serializer for payment API, used to do basic validation.
     """
     payment_amount = serializers.DecimalField(max_digits=20, decimal_places=2, min_value=0.01)
-    klass_id = serializers.IntegerField()
+    klass_key = serializers.IntegerField()
 
 
 class OrderPartialSerializer(serializers.ModelSerializer):
@@ -35,6 +35,6 @@ class LineSerializer(serializers.ModelSerializer):
         model = Line
         fields = (
             'order',
-            'klass_id',
+            'klass_key',
             'description',
         )

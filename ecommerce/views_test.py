@@ -49,7 +49,7 @@ class PaymentTests(TestCase):
         self.client.force_login(user)
         resp = self.client.post(payment_url, data={
             "payment_amount": "-1",
-            "klass_id": 3,
+            "klass_key": 3,
         })
         assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
         assert resp.json() == {
@@ -81,7 +81,7 @@ class PaymentTests(TestCase):
         ) as create_unfulfilled_order_mock:
             resp = self.client.post(reverse('create-payment'), data={
                 "payment_amount": klass.price,
-                "klass_id": klass.klass_id,
+                "klass_key": klass.klass_key,
             })
         assert resp.status_code == statuses.HTTP_200_OK
         assert resp.json() == {
@@ -91,7 +91,7 @@ class PaymentTests(TestCase):
         assert generate_cybersource_sa_payload_mock.call_count == 1
         generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/")
         assert create_unfulfilled_order_mock.call_count == 1
-        create_unfulfilled_order_mock.assert_any_call(user, klass.klass_id, klass.price)
+        create_unfulfilled_order_mock.assert_any_call(user, klass.klass_key, klass.price)
 
 
 @override_settings(
@@ -108,7 +108,7 @@ class OrderFulfillmentViewTests(TestCase):
         Test the happy case
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
         data_before = order.to_dict()
 
         data = {}
@@ -170,7 +170,7 @@ class OrderFulfillmentViewTests(TestCase):
         If the decision is not ACCEPT then the order should be marked as failed
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
 
         data = {
             'req_reference_number': make_reference_id(order),
@@ -204,7 +204,7 @@ class OrderFulfillmentViewTests(TestCase):
         If the decision is CANCEL and we already have a duplicate failed order, don't change anything.
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
         order.status = Order.FAILED
         order.save()
 
@@ -231,7 +231,7 @@ class OrderFulfillmentViewTests(TestCase):
     def test_error_on_duplicate_order(self, order_status, decision):
         """If there is a duplicate message (except for CANCEL), raise an exception"""
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
         order.status = order_status
         order.save()
 

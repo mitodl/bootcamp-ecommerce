@@ -12,7 +12,7 @@ from klasses.views import (
 urlpatterns = [
     url(r'^api/v0/klasses/(?P<username>[-\w.]+)/$', UserKlassList.as_view(), name='klass-list'),
     url(
-        r'^api/v0/klasses/(?P<username>[-\w.]+)/(?P<klass_id>[\d]+)/$',
+        r'^api/v0/klasses/(?P<username>[-\w.]+)/(?P<klass_key>[\d]+)/$',
         UserKlassDetail.as_view(),
         name='klass-detail'
     ),

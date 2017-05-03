@@ -75,14 +75,14 @@ class PurchasableTests(TestCase):
         LineFactory.create(
             order__status=Order.FULFILLED,
             order__user=self.user,
-            klass_id=self.klass.klass_id,
+            klass_key=self.klass.klass_key,
             order__total_price_paid=self.klass.price - 10
         )
 
         with self.assertRaises(ValidationError) as ex:
             # payment is $15 here but there is only $10 left to pay
             payment_amount = 15
-            create_unfulfilled_order(self.user, self.klass.klass_id, payment_amount)
+            create_unfulfilled_order(self.user, self.klass.klass_key, payment_amount)
 
         message = (
             "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
@@ -101,7 +101,7 @@ class PurchasableTests(TestCase):
         An order may not have a negative or zero price
         """
         with self.assertRaises(ValidationError) as ex:
-            create_unfulfilled_order(self.user, self.klass.klass_id, payment_amount)
+            create_unfulfilled_order(self.user, self.klass.klass_key, payment_amount)
 
         assert ex.exception.args[0] == 'Payment is less than or equal to zero'
 
@@ -110,7 +110,7 @@ class PurchasableTests(TestCase):
         Create Order from a purchasable klass
         """
         payment = 123
-        order = create_unfulfilled_order(self.user, self.klass.klass_id, payment)
+        order = create_unfulfilled_order(self.user, self.klass.klass_key, payment)
 
         assert Order.objects.count() == 1
         assert order.status == Order.CREATED
@@ -119,7 +119,7 @@ class PurchasableTests(TestCase):
 
         assert order.line_set.count() == 1
         line = order.line_set.first()
-        assert line.klass_id == self.klass.klass_id
+        assert line.klass_key == self.klass.klass_key
         assert line.description == 'Installment for {}'.format(self.klass.title)
         assert line.price == payment
 
@@ -146,7 +146,7 @@ class GetPaidTests(TestCase):
 
         cls.klass, cls.user = create_purchasable_klass()
         cls.payment = 123
-        order = create_unfulfilled_order(cls.user, cls.klass.klass_id, cls.payment)
+        order = create_unfulfilled_order(cls.user, cls.klass.klass_key, cls.payment)
         order.status = Order.FULFILLED
         order.save()
 
@@ -156,34 +156,34 @@ class GetPaidTests(TestCase):
         """
         # Multiple payments should be added together
         next_payment = 50
-        order = create_unfulfilled_order(self.user, self.klass.klass_id, next_payment)
+        order = create_unfulfilled_order(self.user, self.klass.klass_key, next_payment)
         order.status = Order.FULFILLED
         order.save()
-        assert get_total_paid(self.user, self.klass.klass_id) == self.payment + next_payment
+        assert get_total_paid(self.user, self.klass.klass_key) == self.payment + next_payment
 
     def test_other_user(self):
         """other_user's payments shouldn't affect user"""
         other_user = UserFactory.create()
-        assert get_total_paid(other_user, self.klass.klass_id) == 0
+        assert get_total_paid(other_user, self.klass.klass_key) == 0
 
     def test_skip_unfulfilled(self):
         """Unfulfilled orders should be ignored"""
-        create_unfulfilled_order(self.user, self.klass.klass_id, 45)
-        assert get_total_paid(self.user, self.klass.klass_id) == self.payment
+        create_unfulfilled_order(self.user, self.klass.klass_key, 45)
+        assert get_total_paid(self.user, self.klass.klass_key) == self.payment
 
     def test_skip_other_klass(self):
         """Orders for other klasses should be ignored"""
         other_klass, other_user = create_purchasable_klass()
-        other_order = create_unfulfilled_order(other_user, other_klass.klass_id, 50)
+        other_order = create_unfulfilled_order(other_user, other_klass.klass_key, 50)
         other_order.status = Order.FULFILLED
         other_order.save()
 
-        assert get_total_paid(self.user, self.klass.klass_id) == self.payment
+        assert get_total_paid(self.user, self.klass.klass_key) == self.payment
 
     def test_no_payments(self):
         """If there are no payments get_total_paid should return 0"""
         Order.objects.all().update(status=Order.REFUNDED)
-        assert get_total_paid(self.user, self.klass.klass_id) == 0
+        assert get_total_paid(self.user, self.klass.klass_key) == 0
 
 
 CYBERSOURCE_ACCESS_KEY = 'access'
@@ -229,7 +229,7 @@ class CybersourceTests(TestCase):
         """
         klass, user = create_purchasable_klass()
         payment = 123.45
-        order = create_unfulfilled_order(user, klass.klass_id, payment)
+        order = create_unfulfilled_order(user, klass.klass_key, payment)
         username = 'username'
         transaction_uuid = 'hex'
 
@@ -253,7 +253,7 @@ class CybersourceTests(TestCase):
             'item_0_code': 'klass',
             'item_0_name': '{}'.format(klass.title),
             'item_0_quantity': 1,
-            'item_0_sku': '{}'.format(klass.klass_id),
+            'item_0_sku': '{}'.format(klass.klass_key),
             'item_0_tax_amount': '0',
             'item_0_unit_price': str(order.total_price_paid),
             'line_item_count': 1,
@@ -271,7 +271,7 @@ class CybersourceTests(TestCase):
             'merchant_defined_data2': '{}'.format(klass.bootcamp.title),
             'merchant_defined_data3': 'klass',
             'merchant_defined_data4': '{}'.format(klass.title),
-            'merchant_defined_data5': '{}'.format(klass.klass_id),
+            'merchant_defined_data5': '{}'.format(klass.klass_key),
             'merchant_defined_data6': 'learner',
             'merchant_defined_data7': '{}'.format(order.user.profile.name),
             'merchant_defined_data8': '{}'.format(order.user.email),
@@ -291,7 +291,7 @@ class ReferenceNumberTests(TestCase):
         make_reference_id should concatenate the reference prefix and the order id
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
         assert "BOOTCAMP-{}-{}".format(CYBERSOURCE_REFERENCE_PREFIX, order.id) == make_reference_id(order)
 
     def test_get_new_order_by_reference_number(self):
@@ -299,7 +299,7 @@ class ReferenceNumberTests(TestCase):
         get_new_order_by_reference_number returns an Order with status created
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
         same_order = get_new_order_by_reference_number(make_reference_id(order))
         assert same_order.id == order.id
 
@@ -323,7 +323,7 @@ class ReferenceNumberTests(TestCase):
         get_order_by_reference_number should only get orders with status=CREATED
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_id, 123)
+        order = create_unfulfilled_order(user, klass.klass_key, 123)
 
         order.status = Order.FAILED
         order.save()

@@ -24,7 +24,7 @@ def patch_get_admissions(mocker, user):
                     "bootcamp_title": bootcamp.title,
                     "klasses": [
                         {
-                            "klass_id": klass.klass_id,  # NOTE: this is the ID on the remote web service
+                            "klass_id": klass.klass_key,  # NOTE: this is the ID on the remote web service
                             "klass_name": klass.title,
                             "is_user_eligible_to_pay": True
                         } for klass in bootcamp.klass_set.order_by('id')

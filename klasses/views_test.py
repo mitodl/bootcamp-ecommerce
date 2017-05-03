@@ -21,7 +21,7 @@ pytestmark = pytest.mark.django_db
 
 
 KLASS_FIELDS = [
-    'klass_id',
+    'klass_key',
     'start_date',
     'end_date',
     'total_paid',
@@ -60,9 +60,9 @@ def test_only_self_can_access_apis(test_data, client):
     Only the the requester user can access her own info
     """
     user, other_user, klass = test_data
-    detail_url_user = reverse('klass-detail', kwargs={'username': user.username, 'klass_id': klass.klass_id})
+    detail_url_user = reverse('klass-detail', kwargs={'username': user.username, 'klass_key': klass.klass_key})
     detail_url_other_user = reverse(
-        'klass-detail', kwargs={'username': other_user.username, 'klass_id': klass.klass_id})
+        'klass-detail', kwargs={'username': other_user.username, 'klass_key': klass.klass_key})
     list_url_user = reverse('klass-list', kwargs={'username': user.username})
     list_url_other_user = reverse('klass-list', kwargs={'username': other_user.username})
 
@@ -88,14 +88,14 @@ def test_klass_detail(test_data, client):
     Test for klass detail view in happy path
     """
     user, _, klass = test_data
-    klass_detail_url = reverse('klass-detail', kwargs={'username': user.username, 'klass_id': klass.klass_id})
+    klass_detail_url = reverse('klass-detail', kwargs={'username': user.username, 'klass_key': klass.klass_key})
     client.force_login(user)
 
     response = client.get(klass_detail_url)
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()
     assert sorted(list(response_json.keys())) == sorted(KLASS_FIELDS)
-    assert response_json['klass_id'] == klass.klass_id
+    assert response_json['klass_key'] == klass.klass_key
 
 
 def test_klass_detail_fake_klass(test_data, client):
@@ -103,7 +103,7 @@ def test_klass_detail_fake_klass(test_data, client):
     Test if a request is made for a not existing klass
     """
     user, _, _ = test_data
-    klass_detail_url = reverse('klass-detail', kwargs={'username': user.username, 'klass_id': 123456789})
+    klass_detail_url = reverse('klass-detail', kwargs={'username': user.username, 'klass_key': 123456789})
     client.force_login(user)
     assert client.get(klass_detail_url).status_code == status.HTTP_404_NOT_FOUND
 
@@ -130,7 +130,7 @@ def test_klass_list_with_no_authorized_klasses(test_data, client, mocker):
     """
     user, _, _ = test_data
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_ids',
+        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
         new_callable=PropertyMock,
         return_value=[],
     )
@@ -148,12 +148,12 @@ def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, client, moc
     """
     user, _, klass = test_data
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_ids',
+        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
         new_callable=PropertyMock,
         return_value=[],
     )
     order = OrderFactory.create(user=user, status=Order.FULFILLED)
-    LineFactory.create(order=order, klass_id=klass.klass_id, price=123.45)
+    LineFactory.create(order=order, klass_key=klass.klass_key, price=123.45)
 
     klass_list_url = reverse('klass-list', kwargs={'username': user.username})
     client.force_login(user)
@@ -161,5 +161,5 @@ def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, client, moc
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()
     assert len(response_json) == 1
-    assert response_json[0]['klass_id'] == klass.klass_id
+    assert response_json[0]['klass_key'] == klass.klass_key
     assert response_json[0]['is_user_eligible_to_pay'] is False

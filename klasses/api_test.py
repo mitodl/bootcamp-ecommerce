@@ -37,7 +37,7 @@ def test_data(mocker):
     InstallmentFactory.create(klass=klass_not_paid)
 
     order = OrderFactory.create(user=user, status=Order.FULFILLED)
-    LineFactory.create(order=order, klass_id=klass_paid.klass_id, price=627.34)
+    LineFactory.create(order=order, klass_key=klass_paid.klass_key, price=627.34)
 
     patch_get_admissions(mocker, user)
 
@@ -61,7 +61,7 @@ def test_serialize_user_klass_paid(test_data):
     user, klass_paid, _ = test_data
 
     expected_ret = {
-        "klass_id": klass_paid.klass_id,
+        "klass_key": klass_paid.klass_key,
         "klass_name": klass_paid.title,
         "start_date": klass_paid.start_date,
         "end_date": klass_paid.end_date,
@@ -69,7 +69,7 @@ def test_serialize_user_klass_paid(test_data):
         "price": klass_paid.price,
         "is_user_eligible_to_pay": True,
         "total_paid": Decimal('627.34'),
-        "payments": LineSerializer(Line.for_user_klass(user, klass_paid.klass_id), many=True).data,
+        "payments": LineSerializer(Line.for_user_klass(user, klass_paid.klass_key), many=True).data,
         "installments": InstallmentSerializer(
             klass_paid.installment_set.order_by('installment_number'), many=True).data,
     }
@@ -83,7 +83,7 @@ def test_serialize_user_klass_not_paid(test_data):
     user, _, klass_not_paid = test_data
 
     expected_ret = {
-        "klass_id": klass_not_paid.klass_id,
+        "klass_key": klass_not_paid.klass_key,
         "klass_name": klass_not_paid.title,
         "start_date": klass_not_paid.start_date,
         "end_date": klass_not_paid.end_date,
@@ -105,7 +105,7 @@ def test_serialize_user_klasses(test_data):
     user, klass_paid, klass_not_paid = test_data
     expected_ret = [
         {
-            "klass_id": klass_paid.klass_id,
+            "klass_key": klass_paid.klass_key,
             "klass_name": klass_paid.title,
             "start_date": klass_paid.start_date,
             "end_date": klass_paid.end_date,
@@ -113,12 +113,12 @@ def test_serialize_user_klasses(test_data):
             "price": klass_paid.price,
             "is_user_eligible_to_pay": True,
             "total_paid": Decimal('627.34'),
-            "payments": LineSerializer(Line.for_user_klass(user, klass_paid.klass_id), many=True).data,
+            "payments": LineSerializer(Line.for_user_klass(user, klass_paid.klass_key), many=True).data,
             "installments": InstallmentSerializer(
                 klass_paid.installment_set.order_by('installment_number'), many=True).data,
         },
         {
-            "klass_id": klass_not_paid.klass_id,
+            "klass_key": klass_not_paid.klass_key,
             "klass_name": klass_not_paid.title,
             "start_date": klass_not_paid.start_date,
             "end_date": klass_not_paid.end_date,
@@ -131,7 +131,7 @@ def test_serialize_user_klasses(test_data):
                 klass_not_paid.installment_set.order_by('installment_number'), many=True).data,
         }
     ]
-    assert sorted(expected_ret, key=lambda x: x['klass_id']) == serialize_user_klasses(user)
+    assert sorted(expected_ret, key=lambda x: x['klass_key']) == serialize_user_klasses(user)
 
 
 def test_serialize_user_klasses_paid_not_payable(test_data, mocker):
@@ -140,13 +140,13 @@ def test_serialize_user_klasses_paid_not_payable(test_data, mocker):
     """
     user, klass_paid, klass_not_paid = test_data
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_ids',
+        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
         new_callable=PropertyMock,
-        return_value=[klass_not_paid.klass_id],
+        return_value=[klass_not_paid.klass_key],
     )
     res = serialize_user_klasses(user)
-    assert klass_paid.klass_id in [klass['klass_id'] for klass in res]
+    assert klass_paid.klass_key in [klass['klass_key'] for klass in res]
     for klass in res:
-        if klass['klass_id'] == klass_paid.klass_id:
+        if klass['klass_key'] == klass_paid.klass_key:
             break
     assert klass['is_user_eligible_to_pay'] is False  # pylint: disable=undefined-loop-variable
