@@ -1,5 +1,5 @@
-$input-color: #333;
-$input-font-size: 16px;
+$input-color: $med-dark-gray;
+$input-font-size: 18px;
 
 .btn {
   border: none;
@@ -10,38 +10,31 @@ $input-font-size: 16px;
   letter-spacing: normal;
   color: #fff;
   cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
 
   &.large-cta {
     background-image: linear-gradient(to right, rgb(223, 17, 56) 0%, rgb(217, 71, 32) 100%);
-    border-radius: 3px;
-    font-size: 16px;
-    height: 60px;
-    line-height: 60px;
-    font-weight: 400;
+    border-radius: 5px;
+    font-size: 18px;
+    height: 65px;
+    line-height: 65px;
+    font-weight: 500;
     letter-spacing: 2px;
-  }
-
-  &:hover {
-    text-decoration: none;
-    background: #dc032c;
   }
 }
 
-button.btn.large-cta {
-  line-height: 53px;
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 input {
   padding: 15px;
   color: $input-color;
   font-size: $input-font-size;
-  border: none;
-}
-
-::placeholder {
-  color: #bbb;
 }
 
 // Adapted from http://codepen.io/fil_dev/pen/oZNXzw
