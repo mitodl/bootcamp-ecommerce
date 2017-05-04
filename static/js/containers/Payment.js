@@ -135,7 +135,7 @@ class Payment extends React.Component {
 
     return <div className="klass-display-section">
       <p className="desc">
-        You have been accepted to the <strong>{selectedKlass.klass_name}</strong> Bootcamp.<br />
+        You have been accepted to the {selectedKlass.klass_name} Bootcamp.<br />
         You have paid ${selectedKlass.total_paid} out of ${selectedKlass.price}.
       </p>
       <p className="deadline-date">{deadlineDateText}</p>
@@ -145,7 +145,7 @@ class Payment extends React.Component {
           id="payment-amount"
           value={paymentAmount}
           onChange={this.setPaymentAmount}
-          placeholder="Enter $ amount"
+          placeholder="Enter amount"
         />
         <button className="btn large-cta" onClick={this.sendPayment} disabled={processing}>
           Pay Now

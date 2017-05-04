@@ -35,7 +35,7 @@ const generateFakeKlasses = (numKlasses = 1) => {
 };
 
 describe('Payment container', () => {
-  const klassTitleSelector = '.klass-display-section p strong',
+  const klassTitleSelector = '.klass-display-section',
     klassDropdownSelector = 'select.klass-select',
     welcomeMsgSelector = 'h1.greeting',
     paymentInputSelector = 'input[id="payment-amount"]',
@@ -120,7 +120,7 @@ describe('Payment container', () => {
 
       return renderFullPaymentPage().then((wrapper) => {
         let title = wrapper.find(klassTitleSelector);
-        assert.equal(title.text(), fakeKlasses[0].klass_name);
+        assert.include(title.text(), fakeKlasses[0].klass_name);
       });
     });
 
