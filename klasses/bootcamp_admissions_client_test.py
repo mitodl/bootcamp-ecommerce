@@ -1,7 +1,7 @@
 """
 Tests for the bootcamp_admission_client module
 """
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlencode
 
 import pytest
 from django.conf import settings
@@ -57,10 +57,12 @@ def test_data():
     """
 
     user_email = JSON_RESP_OBJ['user']
-    url = "{base_url}?email={user_email}&key={key}".format(
+    url = "{base_url}?{params}".format(
         base_url=urljoin(settings.BOOTCAMP_ADMISSION_BASE_URL, '/api/v1/user/'),
-        user_email=user_email,
-        key=settings.BOOTCAMP_ADMISSION_KEY,
+        params=urlencode({
+            'email': user_email,
+            'key': settings.BOOTCAMP_ADMISSION_KEY,
+        })
     )
     return user_email, url
 

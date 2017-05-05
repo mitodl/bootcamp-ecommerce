@@ -2,7 +2,7 @@
 APIs to access the remote bootcamp app that controls the admissions
 """
 import logging
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlencode
 
 import requests
 from django.conf import settings
@@ -61,10 +61,12 @@ class BootcampAdmissionClient:
             ]
         }
         """
-        url = "{base_url}?email={user_email}&key={key}".format(
+        url = "{base_url}?{params}".format(
             base_url=urljoin(settings.BOOTCAMP_ADMISSION_BASE_URL, '/api/v1/user/'),
-            user_email=self.user_email,
-            key=settings.BOOTCAMP_ADMISSION_KEY,
+            params=urlencode({
+                'email': self.user_email,
+                'key': settings.BOOTCAMP_ADMISSION_KEY,
+            })
         )
 
         try:
