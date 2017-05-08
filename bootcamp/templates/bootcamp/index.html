@@ -4,14 +4,16 @@
 {% block title %}MIT Bootcamps{% endblock %}
 
 {% block content %}
-<div class="body-content photo-bg">
-  <div id="home" class="body-inner-content">
-    <h1>Pay Here for your MIT Bootcamp</h1>
-    <p class="desc">
-      We are excited that you want to join us! To pay for MIT Bootcamps, you need to
-      login with your edX account below.
-    </p>
-    <a href="{% url 'social:begin' 'edxorg' %}" class="btn large-cta">Login with edX</a>
+<div class="body-row">
+  <div class="photo-bg top-content-container">
+    <div id="home" class="top-content">
+      <h1>Pay Here for your MIT Bootcamp</h1>
+      <p class="desc">
+        We are excited that you want to join us! To pay for MIT Bootcamps, you need to
+        login with your edX account below.
+      </p>
+      <a href="{% url 'social:begin' 'edxorg' %}" class="btn large-cta">Login with edX</a>
+    </div>
   </div>
 </div>
 {% endblock %}

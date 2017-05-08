@@ -24,3 +24,12 @@ export function createForm(url: string, payload: Object): HTMLFormElement {
 }
 
 export const isNilOrBlank = R.either(R.isNil, R.isEmpty);
+
+export const formatDollarAmount = (amount: ?number): string => {
+  amount = amount || 0;
+  return amount.toLocaleString('en-US', {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+  });
+};
