@@ -28,9 +28,9 @@ def patch_get_admissions(mocker, user):
                             "klass_name": klass.title,
                             "is_user_eligible_to_pay": True
                         } for klass in bootcamp.klass_set.order_by('id')
-                        ]
+                    ]
                 } for bootcamp in Bootcamp.objects.all().order_by('id')
-                ]
+            ]
         }
     )
 

@@ -4,14 +4,14 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import configureStore from '../store/configureStore';
-import Payment from '../containers/Payment';
+import PaymentPage from '../containers/PaymentPage';
 
 const store = configureStore();
 
 const rootEl = document.getElementById("pay");
 ReactDOM.render(
   <Provider store={store}>
-    <Payment />
+    <PaymentPage />
   </Provider>,
   rootEl,
 );

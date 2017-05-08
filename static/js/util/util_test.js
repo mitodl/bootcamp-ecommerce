@@ -1,6 +1,10 @@
 import { assert } from 'chai';
 
-import { createForm, isNilOrBlank } from './util';
+import {
+  createForm,
+  isNilOrBlank,
+  formatDollarAmount
+} from './util';
 
 describe('util', () => {
   describe('createForm', () => {
@@ -32,6 +36,16 @@ describe('util', () => {
 
     it('returns false for a non-blank string', () => {
       assert.isFalse(isNilOrBlank('not blank'));
+    });
+  });
+
+  describe('formatDollarAmount', () => {
+    it('returns a properly formatted dollar value', () => {
+      [undefined, null].forEach((nilValue) => {
+        assert.equal(formatDollarAmount(nilValue), '$0');
+      });
+      assert.equal(formatDollarAmount(100), '$100');
+      assert.equal(formatDollarAmount(10000), '$10,000');
     });
   });
 });

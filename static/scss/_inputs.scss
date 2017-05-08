@@ -1,6 +1,3 @@
-$input-color: #333;
-$input-font-size: 16px;
-
 .btn {
   border: none;
   margin: 0;
@@ -10,22 +7,28 @@ $input-font-size: 16px;
   letter-spacing: normal;
   color: #fff;
   cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
 
   &.large-cta {
-    background-image: linear-gradient(to right, rgb(223, 17, 56) 0%, rgb(217, 71, 32) 100%);
+    background-image: linear-gradient(to right, $red 0%, $red-fade-to 100%);
     border-radius: 3px;
     font-size: 16px;
     height: 60px;
-    line-height: 60px;
     font-weight: 400;
     letter-spacing: 2px;
   }
 
   &:hover {
     text-decoration: none;
-    background: #dc032c;
+    background: $red-hover;
+  }
+}
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+
+  &.large-cta {
+    line-height: 60px;
   }
 }
 
@@ -41,8 +44,40 @@ input {
 }
 
 ::placeholder {
-  color: #bbb;
+  color: $placeholder-color;
 }
+
+// Styles for hiding up/down arrows in number-type input
+// sass-lint:disable no-vendor-prefixes
+input[type=number] {
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    cursor: pointer;
+    display: block;
+    width: 8px;
+    color: #333;
+    text-align: center;
+    position: relative;
+  }
+
+  &::-webkit-inner-spin-button:before,
+  &::-webkit-inner-spin-button:after {
+    content: "^";
+    position: absolute;
+    right: 0;
+    font-family: monospace;
+  }
+
+  &::-webkit-inner-spin-button:before {
+    top: 0;
+  }
+
+  &::-webkit-inner-spin-button:after {
+    bottom: 0;
+    -webkit-transform: rotate(180deg);
+  }
+}
+// sass-lint:enable no-vendor-prefixes
 
 // Adapted from http://codepen.io/fil_dev/pen/oZNXzw
 .styled-select-container {

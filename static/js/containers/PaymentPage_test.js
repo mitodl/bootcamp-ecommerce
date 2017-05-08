@@ -14,8 +14,9 @@ import {
   setSelectedKlassIndex
 } from '../actions';
 import rootReducer from '../reducers';
-import Payment from '../containers/Payment';
+import PaymentPage from './PaymentPage';
 import * as util from '../util/util';
+import { generateFakeKlasses } from '../factories';
 import {
   makeRequestActionType,
   makeReceiveSuccessActionType
@@ -26,16 +27,8 @@ const RECEIVE_PAYMENT_SUCCESS = makeReceiveSuccessActionType('payment');
 const REQUEST_KLASSES = makeRequestActionType('klasses');
 const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
 
-const generateFakeKlasses = (numKlasses = 1) => {
-  return _.times(numKlasses, (i) => ({
-    klass_name: `Bootcamp 1 Klass ${i}`,
-    klass_key: i + 1,
-    payment_deadline: moment()
-  }));
-};
-
 describe('Payment container', () => {
-  const klassTitleSelector = '.klass-display-section',
+  const klassTitleSelector = '.klass-display-section .desc',
     klassDropdownSelector = 'select.klass-select',
     welcomeMsgSelector = 'h1.greeting',
     paymentInputSelector = 'input[id="payment-amount"]',
@@ -65,7 +58,7 @@ describe('Payment container', () => {
   let renderPaymentComponent = (props = {}) => (
     mount(
       <Provider store={store}>
-        <Payment {...props} />
+        <PaymentPage {...props} />
       </Provider>
     )
   );
@@ -85,7 +78,7 @@ describe('Payment container', () => {
       .returns(Promise.resolve(fakeKlasses));
 
     return renderFullPaymentPage().then((wrapper) => {
-      assert.isUndefined(wrapper.find('Payment').prop('selectedKlass'));
+      assert.isUndefined(wrapper.find('PaymentPage').prop('selectedKlass'));
     });
   });
 
@@ -96,7 +89,7 @@ describe('Payment container', () => {
     store.dispatch(setSelectedKlassIndex(2));
 
     return renderFullPaymentPage().then((wrapper) => {
-      assert.deepEqual(wrapper.find('Payment').prop('selectedKlass'), fakeKlasses[2]);
+      assert.deepEqual(wrapper.find('PaymentPage').prop('selectedKlass'), fakeKlasses[2]);
     });
   });
 
@@ -138,7 +131,7 @@ describe('Payment container', () => {
       [1, false],
       [2, true]
     ].forEach(([numKlasses, shouldShowDropdown]) => {
-      it(`dropdown is ${shouldShowDropdown ? '' : 'not'} visible when ${numKlasses} klasses available`, () => {
+      it(`should ${shouldShowDropdown ? '' : 'not'} show dropdown when ${numKlasses} klasses available`, () => {
         let fakeKlasses = generateFakeKlasses(numKlasses);
         klassesStub = fetchStub.withArgs(klassesUrl)
           .returns(Promise.resolve(fakeKlasses));
@@ -166,6 +159,24 @@ describe('Payment container', () => {
           if (!_.isEmpty(deadlineDateISO)) {
             assert.include(deadlineText, moment(deadlineDateISO).format("MMM D, YYYY"));
           }
+        });
+      });
+    });
+
+    [
+      [100, true, "past payments should"],
+      [0, false, "no past payments should not"]
+    ].forEach(([totalPaid, shouldShowPayHistory, testDesciption]) => {
+      it(`for user with ${testDesciption} include payment history component`, () => {
+        let fakeKlasses = generateFakeKlasses(2);
+        for (let klass of fakeKlasses) {
+          klass.total_paid = totalPaid;
+        }
+        klassesStub = fetchStub.withArgs(klassesUrl)
+          .returns(Promise.resolve(fakeKlasses));
+
+        return renderFullPaymentPage().then((wrapper) => {
+          assert.equal(wrapper.find('PaymentHistory').exists(), shouldShowPayHistory);
         });
       });
     });
@@ -209,6 +220,7 @@ describe('Payment container', () => {
         'url': url,
         'payload': payload
       }));
+      store.dispatch(setPaymentAmount("123"));
 
       let submitStub = sandbox.stub();
       let fakeForm = document.createElement("form");
