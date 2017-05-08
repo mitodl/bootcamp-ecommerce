@@ -59,11 +59,20 @@
       "required": true
     },
     "MAILGUN_KEY": {
-      "description": "The token for authenticating against the Mailgun API"
+      "description": "The token for authenticating against the Mailgun API",
+      "required": true
     },
     "BOOTCAMP_ADMIN_EMAIL": {
       "description": "E-mail to send 500 reports to.",
       "required": false
+    },
+    "BOOTCAMP_ADMISSION_BASE_URL": {
+      "description": "The base url for the bootcamp admissions portal",
+      "required": true
+    },
+    "BOOTCAMP_ADMISSION_KEY": {
+      "description": "The token for authenticating against the bootcamp admissions portal",
+      "required": true
     },
     "BOOTCAMP_DB_CONN_MAX_AGE": {
       "required": true,
@@ -72,6 +81,10 @@
     "BOOTCAMP_DB_DISABLE_SSL": {
       "required": true,
       "value": "true"
+    },
+    "BOOTCAMP_ECOMMERCE_BASE_URL": {
+      "description": "The base url of this application to be used in emails",
+      "required": true,
     },
     "BOOTCAMP_EMAIL_HOST": {
       "description": "Outgoing e-mail settings",
@@ -105,6 +118,10 @@
       "description": "Application-level SSL redirect setting.",
       "required": false,
       "value": "True"
+    },
+    "BOOTCAMP_SUPPORT_EMAIL": {
+      "description": "Bootcamp support email",
+      "required": true
     },
     "NEW_RELIC_APP_NAME": {
       "default": "Bootcamp e-commerce",

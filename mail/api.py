@@ -2,14 +2,14 @@
 Provides functions for sending and retrieving data about in-app email
 """
 import logging
-from itertools import islice
 import json
-import requests
 
+import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import status
 
+from bootcamp.utils import chunks
 from mail.exceptions import SendBatchException
 
 
@@ -71,24 +71,6 @@ class MailgunClient:
         return response
 
     @classmethod
-    def _recipient_override(cls, body, recipients):
-        """
-        Helper method to override body and recipients of an email.
-        If the MAILGUN_RECIPIENT_OVERRIDE setting is specified, the list of recipients
-        will be ignored in favor of the recipients in that setting value.
-
-        Args:
-            body (str): Text email body
-            recipients (list): A list of recipient emails
-        Returns:
-            tuple: A tuple of the (possibly) overridden recipients list and email body
-        """
-        if settings.MAILGUN_RECIPIENT_OVERRIDE is not None:
-            body = '{0}\n\n[overridden recipient]\n{1}'.format(body, '\n'.join(recipients))
-            recipients = [settings.MAILGUN_RECIPIENT_OVERRIDE]
-        return body, recipients
-
-    @classmethod
     def send_batch(cls, subject, body, recipients,  # pylint: disable=too-many-arguments, too-many-locals
                    sender_address=None, sender_name=None, chunk_size=settings.MAILGUN_BATCH_CHUNK_SIZE,
                    raise_for_status=True):
@@ -98,7 +80,10 @@ class MailgunClient:
         Args:
             subject (str): Email subject
             body (str): Text email body
-            recipients (iterable): A list of recipient emails
+            recipients (iterable of (recipient, context)):
+                A list where each tuple is:
+                    (recipient, context)
+                Where the recipient is an email address and context is a dict of variables for templating
             sender_address (str): Sender email address
             sender_name (str): Sender name
             chunk_size (int): The maximum amount of emails to be sent at the same time
@@ -113,27 +98,36 @@ class MailgunClient:
                If there is at least one exception, this exception is raised with all other exceptions in a list
                along with recipients we failed to send to.
         """
-        original_recipients = recipients
-        body, recipients = cls._recipient_override(body, original_recipients)
+        # Convert null contexts to empty dicts
+        recipients = (
+            (email, context or {}) for email, context in recipients
+        )
+
+        if settings.MAILGUN_RECIPIENT_OVERRIDE is not None:
+            # This is used for debugging only
+            body = '{body}\n\n[overridden recipient]\n{recipient_data}'.format(
+                body=body,
+                recipient_data='\n'.join(
+                    ["{}: {}".format(recipient, json.dumps(context)) for recipient, context in recipients]
+                ),
+            )
+            recipients = [(settings.MAILGUN_RECIPIENT_OVERRIDE, {})]
+
         responses = []
         exception_pairs = []
 
-        recipients = iter(recipients)
-        chunk = list(islice(recipients, chunk_size))
-        while len(chunk) > 0:
-            params = dict(
-                to=chunk,
-                subject=subject,
-                text=body
-            )
-            params['recipient-variables'] = json.dumps({email: {} for email in chunk})
+        for chunk in chunks(recipients, chunk_size=chunk_size):
+            chunk_dict = {email: context for email, context in chunk}
+            emails = list(chunk_dict.keys())
+
+            params = {
+                'to': emails,
+                'subject': subject,
+                'text': body,
+                'recipient-variables': json.dumps(chunk_dict),
+            }
             if sender_address:
                 params['from'] = sender_address
-
-            if settings.MAILGUN_RECIPIENT_OVERRIDE is not None:
-                original_recipients_chunk = original_recipients
-            else:
-                original_recipients_chunk = chunk
 
             try:
                 response = cls._mailgun_request(
@@ -149,9 +143,8 @@ class MailgunClient:
                 raise
             except Exception as exception:  # pylint: disable=broad-except
                 exception_pairs.append(
-                    (original_recipients_chunk, exception)
+                    (emails, exception)
                 )
-            chunk = list(islice(recipients, chunk_size))
 
         if len(exception_pairs) > 0:
             raise SendBatchException(exception_pairs)
@@ -160,6 +153,7 @@ class MailgunClient:
 
     @classmethod
     def send_individual_email(cls, subject, body, recipient,  # pylint: disable=too-many-arguments
+                              recipient_variables=None,
                               sender_address=None, sender_name=None, raise_for_status=True):
         """
         Sends a text email to a single recipient.
@@ -168,6 +162,7 @@ class MailgunClient:
             subject (str): email subject
             body (str): email body
             recipient (str): email recipient
+            recipient_variables (dict): A dict of template variables to use (may be None for empty)
             sender_address (str): Sender email address
             sender_name (str): Sender name
             raise_for_status (bool): If true and a non-zero response was received,
@@ -179,7 +174,7 @@ class MailgunClient:
         responses = cls.send_batch(
             subject,
             body,
-            [recipient],
+            [(recipient, recipient_variables)],
             sender_address=sender_address,
             sender_name=sender_name,
             raise_for_status=raise_for_status,

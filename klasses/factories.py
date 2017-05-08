@@ -14,12 +14,8 @@ from factory.fuzzy import (
 import faker
 import pytz
 
-from klasses.models import (
-    Bootcamp,
-    Installment,
-    Klass,
-)
-
+from klasses import models
+from profiles.factories import UserFactory
 
 FAKE = faker.Factory.create()
 
@@ -29,7 +25,7 @@ class BootcampFactory(DjangoModelFactory):
     title = FuzzyText(prefix="Bootcamp ")
 
     class Meta:
-        model = Bootcamp
+        model = models.Bootcamp
 
 
 class KlassFactory(DjangoModelFactory):
@@ -41,7 +37,7 @@ class KlassFactory(DjangoModelFactory):
     end_date = Faker('date_time_this_year', before_now=False, after_now=True, tzinfo=pytz.UTC)
 
     class Meta:
-        model = Klass
+        model = models.Klass
 
 
 class InstallmentFactory(DjangoModelFactory):
@@ -52,4 +48,14 @@ class InstallmentFactory(DjangoModelFactory):
     deadline = Faker('date_time_this_month', before_now=False, after_now=True, tzinfo=pytz.UTC)
 
     class Meta:
-        model = Installment
+        model = models.Installment
+
+
+class BootcampAdmissionCacheFactory(DjangoModelFactory):
+    """Factory for BootcampAdmissionCache"""
+    user = SubFactory(UserFactory)
+    klass = SubFactory(KlassFactory)
+    data = {'foo': 'bar'}
+
+    class Meta:
+        model = models.BootcampAdmissionCache

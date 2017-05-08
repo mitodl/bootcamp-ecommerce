@@ -1,4 +1,7 @@
 """Models for klasses"""
+import datetime
+
+import pytz
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -82,6 +85,35 @@ class Klass(models.Model):
         """
         return self.installment_set.aggregate(payment_deadline=models.Max('deadline'))['payment_deadline']
 
+    @property
+    def next_installment(self):
+        """
+        Get the next installment
+        """
+        return self.installment_set.filter(deadline__gte=datetime.datetime.now(tz=pytz.UTC)).first()
+
+    @property
+    def next_payment_deadline_days(self):
+        """
+        Returns the number of days until the next payment is due
+        """
+        next_installment = self.next_installment
+        if next_installment is None:
+            return
+        due_in = next_installment.deadline - datetime.datetime.now(tz=pytz.UTC)
+        return due_in.days
+
+    @property
+    def total_due_by_next_deadline(self):
+        """
+        Returns the total amount due by the next deadline
+        """
+        next_installment = self.next_installment
+        if next_installment is None:
+            return self.price
+        return self.installment_set.filter(
+            deadline__lte=next_installment.deadline).aggregate(price=models.Sum('amount'))['price']
+
     def __str__(self):
         return "Klass {title} of {bootcamp}".format(
             title=self.title,
@@ -96,10 +128,11 @@ class Installment(models.Model):
     klass = models.ForeignKey(Klass)
     installment_number = models.IntegerField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
-    deadline = models.DateTimeField(null=True)
+    deadline = models.DateTimeField(null=False)
 
     class Meta:
         unique_together = ('klass', 'installment_number')
+        ordering = ['klass', 'deadline', ]
 
     def __str__(self):
         return "Installment {installment_number} for {amount} for {klass}".format(

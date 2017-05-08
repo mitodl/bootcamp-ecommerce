@@ -18,6 +18,8 @@ from urllib.parse import urljoin
 
 import dj_database_url
 import yaml
+from celery.schedules import crontab
+from django.core.exceptions import ImproperlyConfigured
 
 
 VERSION = "0.0.0"
@@ -157,6 +159,11 @@ AUTHENTICATION_BACKENDS = (
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
+# the full URL of the current application is mandatory
+BOOTCAMP_ECOMMERCE_BASE_URL = get_var('BOOTCAMP_ECOMMERCE_BASE_URL', None)
+if BOOTCAMP_ECOMMERCE_BASE_URL is None:
+    raise ImproperlyConfigured('Environment variable BOOTCAMP_ECOMMERCE_BASE_URL not set')
+
 EDXORG_BASE_URL = get_var('EDXORG_BASE_URL', 'https://courses.edx.org/')
 SOCIAL_AUTH_EDXORG_KEY = get_var('EDXORG_CLIENT_ID', '')
 SOCIAL_AUTH_EDXORG_SECRET = get_var('EDXORG_CLIENT_SECRET', '')
@@ -284,7 +291,7 @@ EMAIL_USE_TLS = get_var('BOOTCAMP_EMAIL_TLS', False)
 EMAIL_SUPPORT = get_var('BOOTCAMP_SUPPORT_EMAIL', 'support@example.com')
 DEFAULT_FROM_EMAIL = get_var('BOOTCAMP_FROM_EMAIL', 'webmaster@localhost')
 ECOMMERCE_EMAIL = get_var('BOOTCAMP_ECOMMERCE_EMAIL', 'support@example.com')
-MAILGUN_URL = get_var('MAILGUN_URL', None)
+MAILGUN_URL = get_var('MAILGUN_URL', 'https://api.mailgun.net/v3/micromasters.odl.mit.edu')
 MAILGUN_KEY = get_var('MAILGUN_KEY', None)
 MAILGUN_BATCH_CHUNK_SIZE = get_var('MAILGUN_BATCH_CHUNK_SIZE', 1000)
 MAILGUN_RECIPIENT_OVERRIDE = get_var('MAILGUN_RECIPIENT_OVERRIDE', None)
@@ -420,10 +427,16 @@ CELERY_RESULT_BACKEND = get_var(
     "CELERY_RESULT_BACKEND", get_var("REDISCLOUD_URL", None)
 )
 CELERY_TIMEZONE = 'UTC'
-CELERY_ACCEPT_CONTENT = ['pickle']
-CELERYBEAT_SCHEDULE = {}
+CELERYBEAT_SCHEDULE = {
+    'send-payment-email-reminder-every-24-hrs': {
+        'task': 'mail.tasks.async_cache_admissions',
+        'schedule': crontab(minute=0, hour='3')
+    },
+}
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
 USE_CELERY = True
-
 
 # django cache back-ends
 CACHES = {

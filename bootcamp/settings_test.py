@@ -85,6 +85,7 @@ class TestSettings(TestCase):
         """Verify that we configure email with environment variable"""
 
         with mock.patch.dict('os.environ', {
+            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': ''
         }, clear=True):
             settings_vars = self.reload_settings()
@@ -92,6 +93,7 @@ class TestSettings(TestCase):
 
         test_admin_email = 'cuddle_bunnies@example.com'
         with mock.patch.dict('os.environ', {
+            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': test_admin_email,
         }, clear=True):
             settings_vars = self.reload_settings()
@@ -110,6 +112,7 @@ class TestSettings(TestCase):
 
         # Check default state is SSL on
         with mock.patch.dict('os.environ', {
+            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': ''
         }, clear=True):
             settings_vars = self.reload_settings()
@@ -120,6 +123,7 @@ class TestSettings(TestCase):
 
         # Check enabling the setting explicitly
         with mock.patch.dict('os.environ', {
+            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': 'True'
         }, clear=True):
             settings_vars = self.reload_settings()
@@ -130,6 +134,7 @@ class TestSettings(TestCase):
 
         # Disable it
         with mock.patch.dict('os.environ', {
+            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': 'False'
         }, clear=True):
             settings_vars = self.reload_settings()

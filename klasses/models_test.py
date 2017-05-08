@@ -1,8 +1,8 @@
 """Tests for klass related models"""
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
-from pytz import utc
+from pytz import UTC
 
 from klasses.factories import InstallmentFactory, KlassFactory
 from klasses.models import BootcampAdmissionCache
@@ -12,6 +12,8 @@ from profiles.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
+
+# Klass model tests
 
 def test_klass_price():
     """Price should be sum total of all installments for that klass"""
@@ -26,15 +28,11 @@ def test_klass_price():
 
 def test_klass_payment_deadline():
     """Price should be sum total of all installments for that klass"""
-    installment_1 = InstallmentFactory.create(deadline=None)
+    installment_1 = InstallmentFactory.create(deadline=datetime(year=2017, month=1, day=1, tzinfo=UTC))
     klass = installment_1.klass
-    InstallmentFactory.create(
-        klass=klass,
-        deadline=datetime(year=2017, month=1, day=1, tzinfo=utc)
-    )
     installment_2 = InstallmentFactory.create(
         klass=klass,
-        deadline=datetime(year=2017, month=2, day=1, tzinfo=utc)
+        deadline=datetime(year=2017, month=2, day=1, tzinfo=UTC)
     )
 
     assert klass.payment_deadline == installment_2.deadline
@@ -66,6 +64,43 @@ def test_klass_display_title():
     klass_without_dates = KlassFactory.build(bootcamp__title=bootcamp_title, start_date=None, end_date=None)
     assert klass_without_dates.display_title == bootcamp_title
 
+
+def test_next_installment():
+    """
+    It should return the installment with the closest date to now in the future
+    """
+    installment_past = InstallmentFactory.create(deadline=datetime.now(tz=UTC)-timedelta(weeks=1))
+    klass = installment_past.klass
+    assert klass.next_installment is None
+    installment = InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(weeks=1))
+    InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(weeks=2))
+    assert klass.next_installment == installment
+
+
+def test_next_payment_deadline_days():
+    """
+    Number of days until the next deadline
+    """
+    installment_past = InstallmentFactory.create(deadline=datetime.now(tz=UTC)-timedelta(weeks=1))
+    klass = installment_past.klass
+    assert klass.next_payment_deadline_days is None
+    InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(days=3, hours=1))
+    assert klass.next_payment_deadline_days == 3
+
+
+def test_total_due_by_next_deadline():
+    """
+    The total amount of money that should be paid until the next deadline
+    """
+    installment_past = InstallmentFactory.create(deadline=datetime.now(tz=UTC)-timedelta(weeks=1))
+    klass = installment_past.klass
+    assert klass.total_due_by_next_deadline == klass.price
+    installment_next = InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(days=3))
+    InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(weeks=3))
+    assert klass.total_due_by_next_deadline == installment_past.amount + installment_next.amount
+
+
+# BootcampAdmissionCache model tests
 
 @pytest.fixture()
 def test_data():
