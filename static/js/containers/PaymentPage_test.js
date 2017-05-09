@@ -71,7 +71,7 @@ describe('Payment container', () => {
     )
   );
 
-  let renderFullPaymentPage = (props = {}, extraActions=[]) => {
+  let renderFullPaymentPage = (props = {}, extraActions = []) => {
     let wrapper;
     let actions = [REQUEST_KLASSES, RECEIVE_KLASSES_SUCCESS].concat(extraActions);
     return listenForActions(actions, () => {

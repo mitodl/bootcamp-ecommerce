@@ -16,7 +16,6 @@ import {
   setToastMessage,
 } from '../actions';
 import {
-  ORDER_FULFILLED,
   TOAST_SUCCESS,
   TOAST_FAILURE,
 } from '../constants';
@@ -177,7 +176,7 @@ class PaymentPage extends React.Component {
       }));
     }
     window.history.pushState({}, null, new URI().query({}).toString());
- };
+  };
 
   clearMessage = (): void => {
     const { dispatch } = this.props;
