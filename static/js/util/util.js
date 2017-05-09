@@ -37,7 +37,7 @@ export const formatDollarAmount = (amount: ?number): string => {
   });
 };
 
-export const getKlassWithFulfilledOrder = (klassData: Array<Object>, orderId: number) => (
+export const getKlassWithFulfilledOrder = (klassData: ?Array<Object>, orderId: number) => (
   R.find(
     klass => R.any(
       payment => payment.order.status === ORDER_FULFILLED && payment.order.id === orderId,
