@@ -11,7 +11,7 @@ import moment from 'moment';
 import * as api from '../lib/api';
 import {
   setPaymentAmount,
-  setSelectedKlassIndex
+  setSelectedKlassKey
 } from '../actions';
 import rootReducer from '../reducers';
 import PaymentPage from './PaymentPage';
@@ -86,7 +86,7 @@ describe('Payment container', () => {
     let fakeKlasses = generateFakeKlasses(3);
     klassesStub = fetchStub.withArgs(klassesUrl)
       .returns(Promise.resolve(fakeKlasses));
-    store.dispatch(setSelectedKlassIndex(2));
+    store.dispatch(setSelectedKlassKey(3));
 
     return renderFullPaymentPage().then((wrapper) => {
       assert.deepEqual(wrapper.find('PaymentPage').prop('selectedKlass'), fakeKlasses[2]);
@@ -109,7 +109,7 @@ describe('Payment container', () => {
       let fakeKlasses = generateFakeKlasses(3);
       klassesStub = fetchStub.withArgs(klassesUrl)
         .returns(Promise.resolve(fakeKlasses));
-      store.dispatch(setSelectedKlassIndex(0));
+      store.dispatch(setSelectedKlassKey(1));
 
       return renderFullPaymentPage().then((wrapper) => {
         let title = wrapper.find(klassTitleSelector);
@@ -142,6 +142,17 @@ describe('Payment container', () => {
       });
     });
 
+    it('only shows payable klasses in the klass dropdown', () => {
+      let fakeKlasses = generateFakeKlasses(3);
+      fakeKlasses[1].is_user_eligible_to_pay = false;
+      klassesStub = fetchStub.withArgs(klassesUrl)
+        .returns(Promise.resolve(fakeKlasses));
+
+      return renderFullPaymentPage().then((wrapper) => {
+        assert.lengthOf(wrapper.find('Payment').prop('payableKlassesData'), 2);
+      });
+    });
+
     [
       [moment().format(), 'non-null date message'],
       [null, 'null date message']
@@ -151,7 +162,7 @@ describe('Payment container', () => {
         fakeKlasses[0].payment_deadline = deadlineDateISO;
         klassesStub = fetchStub.withArgs(klassesUrl)
           .returns(Promise.resolve(fakeKlasses));
-        store.dispatch(setSelectedKlassIndex(0));
+        store.dispatch(setSelectedKlassKey(1));
 
         return renderFullPaymentPage().then((wrapper) => {
           let deadlineText = wrapper.find(deadlineMsgSelector).text();
@@ -187,7 +198,7 @@ describe('Payment container', () => {
       klassesStub = fetchStub
         .withArgs(klassesUrl)
         .returns(Promise.resolve(generateFakeKlasses(1)));
-      store.dispatch(setSelectedKlassIndex(0));
+      store.dispatch(setSelectedKlassKey(1));
     });
 
     it('sets a price', () => {

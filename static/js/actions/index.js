@@ -7,8 +7,8 @@ export const clearUI = createAction(CLEAR_UI);
 export const SET_PAYMENT_AMOUNT = 'SET_PAYMENT_AMOUNT';
 export const setPaymentAmount = createAction(SET_PAYMENT_AMOUNT);
 
-export const SET_SELECTED_KLASS_INDEX = 'SET_SELECTED_KLASS_INDEX';
-export const setSelectedKlassIndex = createAction(SET_SELECTED_KLASS_INDEX);
+export const SET_SELECTED_KLASS_KEY = 'SET_SELECTED_KLASS_KEY';
+export const setSelectedKlassKey = createAction(SET_SELECTED_KLASS_KEY);
 
 export const FETCH_PROCESSING = 'FETCH_PROCESSING';
 export const FETCH_SUCCESS = 'FETCH_SUCCESS';

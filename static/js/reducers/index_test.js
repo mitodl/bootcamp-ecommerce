@@ -2,7 +2,7 @@ import configureTestStore from 'redux-asserts';
 import sinon from 'sinon';
 
 import {
-  setSelectedKlassIndex,
+  setSelectedKlassKey,
   setPaymentAmount,
 } from '../actions';
 import rootReducer from '../reducers';
@@ -27,7 +27,7 @@ describe('reducers', () => {
     });
 
     it('should set the selected klass index', () => {
-      assertReducerResultState(setSelectedKlassIndex, ui => ui.selectedKlassIndex, undefined);
+      assertReducerResultState(setSelectedKlassKey, ui => ui.selectedKlassKey, undefined);
     });
   });
 
