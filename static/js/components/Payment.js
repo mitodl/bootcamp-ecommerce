@@ -13,29 +13,29 @@ export default class Payment extends React.Component {
   props: {
     ui: UIState,
     payment: RestState,
-    klasses: RestState,
+    payableKlassesData: Array<Object>,
     selectedKlass: Object,
     sendPayment: () => void,
     setPaymentAmount: (event: InputEvent) => void,
-    setSelectedKlassIndex: (event: InputEvent) => void
+    setSelectedKlassKey: (event: InputEvent) => void
   };
 
   renderKlassDropdown = () => {
     const {
-      klasses,
-      ui: { selectedKlassIndex },
-      setSelectedKlassIndex
+      payableKlassesData,
+      ui: { selectedKlassKey },
+      setSelectedKlassKey
     } = this.props;
 
     let options = _.map(
-      klasses.data,
-      (klass, i) => (<option value={i} key={i}>{ klass.klass_name }</option>)
+      payableKlassesData,
+      (klass) => (<option value={klass.klass_key} key={klass.klass_key}>{ klass.klass_name }</option>)
     );
     options.unshift(
       <option value="" key="default" disabled style={{display: 'none'}}>Select...</option>
     );
-    let valueProp = selectedKlassIndex ?
-      {value: selectedKlassIndex} :
+    let valueProp = selectedKlassKey ?
+      {value: selectedKlassKey} :
       {defaultValue: ""};
 
     return (
@@ -46,7 +46,7 @@ export default class Payment extends React.Component {
         <div className="styled-select-container">
           <select
             className="klass-select"
-            onChange={setSelectedKlassIndex}
+            onChange={setSelectedKlassKey}
             {...valueProp}
           >
             {options}
@@ -97,12 +97,12 @@ export default class Payment extends React.Component {
   };
 
   render() {
-    const { klasses, selectedKlass } = this.props;
+    const { payableKlassesData, selectedKlass } = this.props;
 
     let welcomeMessage = !isNilOrBlank(SETTINGS.user.full_name) ?
       <h1 className="greeting">Hi {SETTINGS.user.full_name}!</h1> :
       null;
-    let renderedKlassDropdown = (klasses.data && klasses.data.length > 1) ?
+    let renderedKlassDropdown = (payableKlassesData.length > 1) ?
       this.renderKlassDropdown() :
       null;
     let renderedSelectedKlass = selectedKlass ?

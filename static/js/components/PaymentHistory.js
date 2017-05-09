@@ -4,11 +4,10 @@ import React from 'react';
 import R from 'ramda';
 
 import { formatDollarAmount } from '../util/util';
-import type { RestState } from '../rest';
 
 export default class PaymentHistory extends React.Component {
   props: {
-    klasses: RestState
+    klassDataWithPayments: Array<Object>
   };
 
   renderPaymentRow = (klass: Object) => {
@@ -25,19 +24,8 @@ export default class PaymentHistory extends React.Component {
     </tr>;
   };
 
-  renderPaymentRows = R.pipe(
-    R.filter(
-      R.compose(
-        R.not,
-        R.equals(0),
-        R.propOr(0, 'total_paid')
-      )
-    ),
-    R.map(this.renderPaymentRow)
-  );
-
   render() {
-    const { klasses } = this.props;
+    const { klassDataWithPayments } = this.props;
 
     return <div className="payment-history-section">
       <div className="payment-history-block">
@@ -51,7 +39,7 @@ export default class PaymentHistory extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.renderPaymentRows(klasses.data)}
+            {R.map(this.renderPaymentRow, klassDataWithPayments)}
           </tbody>
         </table>
       </div>

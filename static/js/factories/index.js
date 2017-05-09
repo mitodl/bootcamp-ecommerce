@@ -7,6 +7,7 @@ export const generateFakeKlasses = (numKlasses = 1) => {
     klass_key: i + 1,
     payment_deadline: moment(),
     total_paid: 0,
-    price: 1000
+    price: 1000,
+    is_user_eligible_to_pay: true
   }));
 };

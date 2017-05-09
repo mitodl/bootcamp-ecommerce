@@ -9,7 +9,7 @@ import R from 'ramda';
 import {
   clearUI,
   setPaymentAmount,
-  setSelectedKlassIndex
+  setSelectedKlassKey
 } from '../actions';
 import { actions } from '../rest';
 import { createForm } from '../util/util';
@@ -25,6 +25,7 @@ class PaymentPage extends React.Component {
     ui: UIState,
     payment: RestState,
     klasses: RestState,
+    payableKlassesData: Array<Object>,
     selectedKlass: Object,
   };
 
@@ -81,37 +82,33 @@ class PaymentPage extends React.Component {
     dispatch(setPaymentAmount(event.target.value));
   };
 
-  setSelectedKlassIndex = (event: InputEvent) => {
+  setSelectedKlassKey = (event: InputEvent) => {
     const { dispatch } = this.props;
-    dispatch(setSelectedKlassIndex(parseInt(event.target.value)));
+    dispatch(setSelectedKlassKey(parseInt(event.target.value)));
   };
 
-  hasPastPayments = () => {
-    const { klasses } = this.props;
-
-    if (!klasses.data) return false;
-
-    let totalPaid = R.compose(
-      R.sum,
-      R.map(
-        R.propOr(0, 'total_paid')
-      )
-    )(klasses.data);
-    return totalPaid > 0;
-  };
+  getKlassDataWithPayments = R.filter(
+    R.compose(
+      R.not,
+      R.equals(0),
+      R.propOr(0, 'total_paid')
+    )
+  );
 
   render() {
     const {
       ui,
       payment,
       klasses,
+      payableKlassesData,
       selectedKlass
     } = this.props;
 
-    let renderedPaymentHistory = this.hasPastPayments()
+    let klassDataWithPayments = this.getKlassDataWithPayments(klasses.data || []);
+    let renderedPaymentHistory = klassDataWithPayments.length > 0
       ? (
         <div className="body-row">
-          <PaymentHistory klasses={klasses} />
+          <PaymentHistory klassDataWithPayments={klassDataWithPayments} />
         </div>
       )
       : null;
@@ -122,11 +119,11 @@ class PaymentPage extends React.Component {
           <Payment
             ui={ui}
             payment={payment}
-            klasses={klasses}
+            payableKlassesData={payableKlassesData}
             selectedKlass={selectedKlass}
             sendPayment={this.sendPayment}
             setPaymentAmount={this.setPaymentAmount}
-            setSelectedKlassIndex={this.setSelectedKlassIndex}
+            setSelectedKlassKey={this.setSelectedKlassKey}
           />
         </div>
       </div>
@@ -135,30 +132,44 @@ class PaymentPage extends React.Component {
   }
 }
 
-const deriveSelectedKlass = state => {
-  let {
-    klasses,
-    ui: { selectedKlassIndex }
-  } = state;
-
-  let klassesExist = klasses.data && klasses.data.length > 0;
-  // If there's only one klass available, set selectedKlassIndex such that the one klass
-  // will be set as the selected klass.
-  if (klassesExist && klasses.data.length === 1) {
-    selectedKlassIndex = 0;
-  }
-  return klassesExist && _.isNumber(selectedKlassIndex)
-    ? klasses.data[selectedKlassIndex]
-    : undefined;
-};
-
-const mapStateToProps = state => {
+const withPayableKlasses = state => {
   return {
-    payment: state.payment,
-    klasses: state.klasses,
-    ui: state.ui,
-    selectedKlass: deriveSelectedKlass(state),
+    ...state,
+    payableKlassesData: R.filter(
+      R.propEq('is_user_eligible_to_pay', true)
+    )(state.klasses.data || [])
   };
 };
+
+const withDerivedSelectedKlass = state => {
+  let {
+    payableKlassesData,
+    ui: { selectedKlassKey }
+  } = state;
+
+  let selectedKlass;
+  if (_.isNumber(selectedKlassKey)) {
+    selectedKlass = R.find(
+      R.propEq('klass_key', selectedKlassKey)
+    )(payableKlassesData);
+  }
+  else if (payableKlassesData.length === 1) {
+    selectedKlass = payableKlassesData[0];
+  }
+
+  return selectedKlass
+    ? { ...state, selectedKlass: selectedKlass }
+    : state;
+};
+
+const mapStateToProps = R.compose(
+  withDerivedSelectedKlass,
+  withPayableKlasses,
+  (state) => ({
+    payment: state.payment,
+    klasses: state.klasses,
+    ui: state.ui
+  })
+);
 
 export default connect(mapStateToProps)(PaymentPage);

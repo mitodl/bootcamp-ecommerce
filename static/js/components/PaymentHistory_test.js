@@ -7,13 +7,9 @@ import PaymentHistory from './PaymentHistory';
 import { generateFakeKlasses } from '../factories';
 
 describe("PaymentHistory", () => {
-  let renderPaymentHistory = (klassesData) => (
+  let renderPaymentHistory = (klassDataWithPayments) => (
     shallow(
-      <PaymentHistory
-        klasses={{
-          data: klassesData
-        }}
-      />
+      <PaymentHistory klassDataWithPayments={klassDataWithPayments} />
     )
   );
 
@@ -37,18 +33,5 @@ describe("PaymentHistory", () => {
     assert.equal(paymentHistoryTableRows.length, klassCount);
     assert.include(paymentHistoryTableRows.at(0).html(), `$${paymentAmount} out of $1,000`);
     assert.include(paymentHistoryTableRows.at(1).html(), `$${paymentAmount}`);
-  });
-
-  it('should now show payment history information for klasses with no payments', () => {
-    let klassCount = 3;
-    let fakeKlasses = generateFakeKlasses(klassCount);
-    // Set all fake klasses to have payments
-    fakeKlasses = setPaymentValues(fakeKlasses, 100);
-    // Set one of the klasses to have no payment
-    fakeKlasses[1].total_paid = 0;
-
-    let wrapper = renderPaymentHistory(fakeKlasses);
-    let paymentHistoryTableRows = wrapper.find('tbody tr');
-    assert.equal(paymentHistoryTableRows.length, klassCount - 1);
   });
 });
