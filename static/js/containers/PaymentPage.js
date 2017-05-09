@@ -136,7 +136,7 @@ class PaymentPage extends React.Component {
     if (toastMessage === null) {
       dispatch(setToastMessage({
         title: 'Order Complete!',
-        message: `You are now enrolled in ${klass.klass_name}`,
+        message: `You are now enrolled in ${klass.full_klass_title}`,
         icon: TOAST_SUCCESS,
       }));
     }
