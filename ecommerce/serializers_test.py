@@ -50,6 +50,7 @@ class LineOrderSerializerTests(DjangoTestCase):
         Test order partial serializer result
         """
         expected = {
+            'id': self.line.order.id,
             'status': self.line.order.status,
             'created_on': format_as_iso8601(self.line.order.created_on, remove_microseconds=False),
             'updated_on': format_as_iso8601(self.line.order.updated_on, remove_microseconds=False),
@@ -64,6 +65,7 @@ class LineOrderSerializerTests(DjangoTestCase):
             'klass_key': self.line.klass_key,
             'description': self.line.description,
             'order': {
+                'id': self.line.order.id,
                 'status': self.line.order.status,
                 'created_on': format_as_iso8601(self.line.order.created_on, remove_microseconds=False),
                 'updated_on': format_as_iso8601(self.line.order.updated_on, remove_microseconds=False),

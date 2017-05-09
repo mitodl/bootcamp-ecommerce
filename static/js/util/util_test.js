@@ -1,9 +1,11 @@
 import { assert } from 'chai';
 
+import { generateFakeKlasses } from '../factories';
 import {
   createForm,
   isNilOrBlank,
-  formatDollarAmount
+  formatDollarAmount,
+  getKlassWithFulfilledOrder,
 } from './util';
 
 describe('util', () => {
@@ -47,6 +49,35 @@ describe('util', () => {
       assert.equal(formatDollarAmount(100), '$100');
       assert.equal(formatDollarAmount(10000), '$10,000');
       assert.equal(formatDollarAmount(100.12), '$100.12');
+    });
+  });
+
+  describe('getKlassWithFulfilledOrder', () => {
+    it('gets a fulfilled order from the payments in the klasses', () => {
+      const klasses = generateFakeKlasses(1, true);
+      const klass = klasses[0];
+      assert.deepEqual(
+        getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
+        klass,
+      );
+    });
+
+    it("returns undefined if the order doesn't exist", () => {
+      const klasses = generateFakeKlasses(1);
+      assert.deepEqual(
+        getKlassWithFulfilledOrder(klasses, 3),
+        undefined,
+      );
+    });
+
+    it("returns undefined if the order is not fulfilled", () => {
+      const klasses = generateFakeKlasses(1, true);
+      const klass = klasses[0];
+      klass.payments[0].order.status = 'created';
+      assert.deepEqual(
+        getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
+        undefined,
+      );
     });
   });
 });

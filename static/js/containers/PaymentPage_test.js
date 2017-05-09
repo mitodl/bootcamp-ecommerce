@@ -11,8 +11,16 @@ import moment from 'moment';
 import * as api from '../lib/api';
 import {
   setPaymentAmount,
-  setSelectedKlassKey
+  setSelectedKlassKey,
+  setInitialTime,
+  setToastMessage,
+  SET_TIMEOUT_ACTIVE,
+  SET_TOAST_MESSAGE,
 } from '../actions';
+import {
+  TOAST_SUCCESS,
+  TOAST_FAILURE,
+} from '../constants';
 import rootReducer from '../reducers';
 import PaymentPage from './PaymentPage';
 import * as util from '../util/util';
@@ -63,9 +71,10 @@ describe('Payment container', () => {
     )
   );
 
-  let renderFullPaymentPage = (props = {}) => {
+  let renderFullPaymentPage = (props = {}, extraActions=[]) => {
     let wrapper;
-    return listenForActions([REQUEST_KLASSES, RECEIVE_KLASSES_SUCCESS], () => {
+    let actions = [REQUEST_KLASSES, RECEIVE_KLASSES_SUCCESS].concat(extraActions);
+    return listenForActions(actions, () => {
       wrapper = renderPaymentComponent(props);
     }).then(() => {
       return Promise.resolve(wrapper);
@@ -254,6 +263,95 @@ describe('Payment container', () => {
 
               resolve();
             }, 50);
+          });
+        });
+      });
+    });
+  });
+
+  describe('order receipt and cancellation pages', () => {
+    const TOAST_ACTIONS = [SET_TOAST_MESSAGE];
+    const TIMEOUT_ACTIONS = [SET_TIMEOUT_ACTIVE];
+    let orderId, klass;
+
+    beforeEach(() => {
+      const klasses = generateFakeKlasses(1, true);
+      klass = klasses[0];
+      orderId = klass.payments[0].order.id;
+      klassesStub = fetchStub
+        .withArgs(klassesUrl)
+        .returns(Promise.resolve(klasses));
+    });
+
+    it('shows the order status toast when the query param is set for a cancellation', () => {
+      window.location = '/pay/?status=cancel';
+      return renderFullPaymentPage(TOAST_ACTIONS).then(() => {
+        assert.deepEqual(store.getState().ui.toastMessage, {
+          message: "Order was cancelled",
+          icon: TOAST_FAILURE
+        });
+      });
+    });
+
+    it('shows the order status toast when the query param is set for a success', () => {
+      window.location = `/pay?status=receipt&order=${orderId}`;
+      return renderFullPaymentPage(TOAST_ACTIONS).then(() => {
+        assert.deepEqual(store.getState().ui.toastMessage, {
+          title: "Order Complete!",
+          message: `You are now enrolled in ${klass.klass_name}`,
+          icon: TOAST_SUCCESS
+        });
+      });
+    });
+
+    describe('toast loop', () => {
+      it("doesn't have a toast message loop on success", () => {
+        const customMessage = {
+          "message": "Custom toast message was not replaced"
+        };
+        store.dispatch(setToastMessage(customMessage));
+        window.location = `/pay?status=receipt&order=${orderId}`;
+        return renderFullPaymentPage().then(() => {
+          assert.deepEqual(store.getState().ui.toastMessage, customMessage);
+        });
+      });
+
+      it("doesn't have a toast message loop on failure", () => {
+        const customMessage = {
+          "message": "Custom toast message was not replaced"
+        };
+        store.dispatch(setToastMessage(customMessage));
+        window.location = '/dashboard?status=cancel';
+        return renderFullPaymentPage().then(() => {
+          assert.deepEqual(store.getState().ui.toastMessage, customMessage);
+        });
+      });
+    });
+
+    describe('fake timer tests', function() {
+      let clock;
+      beforeEach(() => {
+        clock = sandbox.useFakeTimers(moment('2016-09-01').valueOf());
+      });
+
+      it('refetches the klasses after 3 seconds if 30 seconds has not passed', () => {
+        window.location = `/pay?status=receipt&order=missing`;
+        return renderFullPaymentPage(TIMEOUT_ACTIONS).then(() => {
+          assert.equal(klassesStub.callCount, 1);
+          clock.tick(3501);
+          assert.equal(klassesStub.callCount, 2);
+        });
+      });
+
+      it('shows an error message if more than 30 seconds have passed', () => {
+        window.location = '/pay?status=receipt&order=missing';
+        return renderFullPaymentPage(TIMEOUT_ACTIONS).then(() => {
+          let past = moment().add(-125, 'seconds').toISOString();
+          store.dispatch(setInitialTime(past));
+          clock.tick(3500);
+          assert.deepEqual(store.getState().ui.toastMessage, {
+            message: `Order was not processed`,
+            icon: TOAST_FAILURE
           });
         });
       });

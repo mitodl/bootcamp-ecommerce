@@ -19,6 +19,7 @@ class OrderPartialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'id',
             'status',
             'created_on',
             'updated_on',
