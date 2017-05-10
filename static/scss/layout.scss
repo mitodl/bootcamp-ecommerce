@@ -17,6 +17,11 @@ body {
 .photo-bg {
   /* background-image from background-images.css */
   min-height: 500px;
+
+  @include breakpoint(phone) {
+    height: 500px;
+    min-height: none;
+  }
 }
 
 .top-content-container {
@@ -27,6 +32,10 @@ h1 {
   font-size: 2.5em;
   font-weight: 400;
   letter-spacing: 1px;
+
+  @include breakpoint(phone) {
+    font-size: 2em;
+  }
 }
 
 .desc {
@@ -34,6 +43,11 @@ h1 {
   line-height: 32px;
   font-weight: 300;
   color: rgba(255,255,255,1);
+
+  @include breakpoint(phone) {
+    font-size: 20px;
+    line-height: 25px;
+  }
 }
 
 
@@ -43,6 +57,10 @@ h1 {
   height: auto;
   min-height: 45px;
   padding: 10px 27px 8px 33px;
+
+  @include breakpoint(phone) {
+    padding: 10px 18px;
+  }
 }
 
 .navbar-brand {
@@ -51,12 +69,17 @@ h1 {
 
 .navbar-header {
   width: 100%;
-  padding: 0 15px;
+  padding: 0;
 
   .pull-left {
     position: relative;
     top: 2px;
-    float: left !important;
+    float: left;
+
+    @include breakpoint(phone) {
+      float: none;
+      width: 100%;
+    }
 
     .brand-logo {
       top: 5px;
@@ -68,6 +91,10 @@ h1 {
       overflow: visible;
       position: relative;
       background-image: url(/static/images/mit_logo.svg);
+
+      @include breakpoint(phone) {
+        margin-right: 10px;
+      }
     }
 
     .divider-large {
@@ -76,11 +103,15 @@ h1 {
       margin: 3px 18px 0 0;
       border-left: 1px solid rgba(255, 255, 255, 0.5);
       float: left;
+
+      @include breakpoint(phone) {
+        margin: 3px 10px 0 0;
+      }
     }
 
     .bootcamp-logo {
       height: 46px;
-      width: 375px;
+      width: 250px;
       top: 0;
       float: left;
       background-repeat: no-repeat;
@@ -92,7 +123,7 @@ h1 {
   }
 
   .pull-right {
-    float: right !important;
+    float: right;
 
     a.header-dashboard-link {
       display: inline-block;
@@ -103,7 +134,26 @@ h1 {
       color: #fff;
       text-decoration: none;
       position: relative;
+
+      @include breakpoint(phone) {
+        padding: 10px 12px;
+        background: rgba(0,0,0,.1);
+        border-radius: 3px;
+        color: rgba(255,255,255,.8);
+        margin-right: 0;
+      }
     }
   }
+}
+
+
+
+.btn-group-vertical>.btn-group:after, .btn-group-vertical>.btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .modal-header:after, .modal-header:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+    display: table;
+    content: " ";
+}
+
+.btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after, .container-fluid:after, .container:after, .dl-horizontal dd:after, .form-horizontal .form-group:after, .modal-footer:after, .modal-header:after, .nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after, .panel-body:after, .row:after {
+    clear: both;
 }
 
