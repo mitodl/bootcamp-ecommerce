@@ -298,7 +298,7 @@ describe('Payment container', () => {
       return renderFullPaymentPage(TOAST_ACTIONS).then(() => {
         assert.deepEqual(store.getState().ui.toastMessage, {
           title: "Order Complete!",
-          message: `You are now enrolled in ${klass.full_klass_title}`,
+          message: `You have made a successful payment for ${klass.display_title}`,
           icon: TOAST_SUCCESS
         });
       });
