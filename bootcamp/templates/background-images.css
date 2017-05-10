@@ -2,5 +2,5 @@
 .photo-bg {
   background: url({% static "images/background1.jpg" %}) top right no-repeat;
   background-size: cover;
-  height: 83vh;
+  height: calc(98vh - 63px);
 }
