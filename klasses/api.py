@@ -32,7 +32,10 @@ def serialize_user_klasses(user):
 
     bootcamp_client = BootcampAdmissionClient(user.email)
     all_klasses_keys = list(set(klass_keys_in_lines).union(set(bootcamp_client.payable_klasses_keys)))
-    klasses_qset = Klass.objects.filter(klass_key__in=all_klasses_keys).order_by('klass_key')
+    klasses_qset = (
+        Klass.objects.filter(klass_key__in=all_klasses_keys)
+        .select_related('bootcamp').order_by('klass_key')
+    )
 
     return [serialize_user_klass(user, klass, bootcamp_client) for klass in klasses_qset]
 
@@ -56,6 +59,7 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
     return {
         "klass_key": klass.klass_key,
         "klass_name": klass.title,
+        "display_title": klass.display_title,
         "start_date": klass.start_date,
         "end_date": klass.end_date,
         "payment_deadline": klass.payment_deadline,

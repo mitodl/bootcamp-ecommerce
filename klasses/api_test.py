@@ -63,6 +63,7 @@ def test_serialize_user_klass_paid(test_data):
     expected_ret = {
         "klass_key": klass_paid.klass_key,
         "klass_name": klass_paid.title,
+        "display_title": klass_paid.display_title,
         "start_date": klass_paid.start_date,
         "end_date": klass_paid.end_date,
         "payment_deadline": klass_paid.payment_deadline,
@@ -85,6 +86,7 @@ def test_serialize_user_klass_not_paid(test_data):
     expected_ret = {
         "klass_key": klass_not_paid.klass_key,
         "klass_name": klass_not_paid.title,
+        "display_title": klass_not_paid.display_title,
         "start_date": klass_not_paid.start_date,
         "end_date": klass_not_paid.end_date,
         "payment_deadline": klass_not_paid.payment_deadline,
@@ -107,6 +109,7 @@ def test_serialize_user_klasses(test_data):
         {
             "klass_key": klass_paid.klass_key,
             "klass_name": klass_paid.title,
+            "display_title": klass_paid.display_title,
             "start_date": klass_paid.start_date,
             "end_date": klass_paid.end_date,
             "payment_deadline": klass_paid.payment_deadline,
@@ -120,6 +123,7 @@ def test_serialize_user_klasses(test_data):
         {
             "klass_key": klass_not_paid.klass_key,
             "klass_name": klass_not_paid.title,
+            "display_title": klass_not_paid.display_title,
             "start_date": klass_not_paid.start_date,
             "end_date": klass_not_paid.end_date,
             "payment_deadline": klass_not_paid.payment_deadline,

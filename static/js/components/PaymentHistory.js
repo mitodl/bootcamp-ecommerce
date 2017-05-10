@@ -16,7 +16,7 @@ export default class PaymentHistory extends React.Component {
       `${formatDollarAmount(klass.total_paid)}`;
 
     return <tr key={klass.klass_key}>
-      <td>{klass.klass_name}</td>
+      <td>{klass.display_title}</td>
       <td>{paymentAmountMsg}</td>
       <td className="statement-column">
         <i className="material-icons">print</i><a href="#" className="statement-link">View Statement</a>

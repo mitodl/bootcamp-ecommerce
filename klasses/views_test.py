@@ -28,6 +28,7 @@ KLASS_FIELDS = [
     'installments',
     'payments',
     'klass_name',
+    'display_title',
     'is_user_eligible_to_pay',
     'payment_deadline',
     'price',

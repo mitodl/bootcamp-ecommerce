@@ -113,7 +113,7 @@ describe('Payment container', () => {
 
       return renderFullPaymentPage().then((wrapper) => {
         let title = wrapper.find(klassTitleSelector);
-        assert.include(title.text(), fakeKlasses[0].klass_name);
+        assert.include(title.text(), fakeKlasses[0].display_title);
       });
     });
 
