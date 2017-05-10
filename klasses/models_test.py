@@ -40,6 +40,33 @@ def test_klass_payment_deadline():
     assert klass.payment_deadline == installment_2.deadline
 
 
+def test_klass_formatted_date_range():
+    """Test that the formatted_date_range property returns expected values with various start/end dates"""
+    base_date = datetime(year=2017, month=1, day=1)
+    date_same_month = datetime(year=2017, month=1, day=10)
+    date_different_month = datetime(year=2017, month=2, day=1)
+    date_different_year = datetime(year=2018, month=1, day=1)
+    klass = KlassFactory.build(start_date=base_date, end_date=date_same_month)
+    assert klass.formatted_date_range == 'Jan 1 - 10 2017'
+    klass = KlassFactory.build(start_date=base_date, end_date=date_different_month)
+    assert klass.formatted_date_range == 'Jan 1 - Feb 1 2017'
+    klass = KlassFactory.build(start_date=base_date, end_date=date_different_year)
+    assert klass.formatted_date_range == 'Jan 1 2017 - Jan 1 2018'
+    klass = KlassFactory.build(start_date=base_date, end_date=None)
+    assert klass.formatted_date_range == 'Jan 1 2017'
+    klass = KlassFactory.build(start_date=None, end_date=None)
+    assert klass.formatted_date_range == ''
+
+
+def test_klass_display_title():
+    """Test that the display_title property matches expectations"""
+    bootcamp_title = 'Bootcamp 1'
+    klass_with_date = KlassFactory.build(bootcamp__title=bootcamp_title, start_date=datetime.now())
+    assert klass_with_date.display_title == '{}, {}'.format(bootcamp_title, klass_with_date.formatted_date_range)
+    klass_without_dates = KlassFactory.build(bootcamp__title=bootcamp_title, start_date=None, end_date=None)
+    assert klass_without_dates.display_title == bootcamp_title
+
+
 @pytest.fixture()
 def test_data():
     """

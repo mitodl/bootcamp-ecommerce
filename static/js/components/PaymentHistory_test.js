@@ -31,7 +31,11 @@ describe("PaymentHistory", () => {
     let wrapper = renderPaymentHistory(fakeKlasses);
     let paymentHistoryTableRows = wrapper.find('tbody tr');
     assert.equal(paymentHistoryTableRows.length, klassCount);
-    assert.include(paymentHistoryTableRows.at(0).html(), `$${paymentAmount} out of $1,000`);
-    assert.include(paymentHistoryTableRows.at(1).html(), `$${paymentAmount}`);
+    let firstRowHtml = paymentHistoryTableRows.at(0).html();
+    assert.include(firstRowHtml, fakeKlasses[0].display_title);
+    assert.include(firstRowHtml, `$${paymentAmount} out of $1,000`);
+    let secondRowHtml = paymentHistoryTableRows.at(1).html();
+    assert.include(secondRowHtml, fakeKlasses[1].display_title);
+    assert.include(secondRowHtml, `$${paymentAmount}`);
   });
 });

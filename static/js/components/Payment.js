@@ -29,7 +29,7 @@ export default class Payment extends React.Component {
 
     let options = _.map(
       payableKlassesData,
-      (klass) => (<option value={klass.klass_key} key={klass.klass_key}>{ klass.klass_name }</option>)
+      (klass) => (<option value={klass.klass_key} key={klass.klass_key}>{ klass.display_title }</option>)
     );
     options.unshift(
       <option value="" key="default" disabled style={{display: 'none'}}>Select...</option>
@@ -76,7 +76,7 @@ export default class Payment extends React.Component {
 
     return <div className="klass-display-section">
       <p className="desc">
-        You have been accepted to the {selectedKlass.klass_name} Bootcamp.<br />
+        You have been accepted to {selectedKlass.display_title}.<br />
         You have paid {formatDollarAmount(totalPaid)} out
         of {formatDollarAmount(selectedKlass.price)}.
       </p>
