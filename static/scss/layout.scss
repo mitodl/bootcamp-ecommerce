@@ -35,3 +35,77 @@ h1 {
   font-weight: 300;
   color: rgba(255,255,255,1);
 }
+
+
+.navbar {
+  background-color: $mit-brand;
+  border-radius: 0;
+  height: auto;
+  min-height: 45px;
+  padding: 10px 27px 8px 33px;
+}
+
+.navbar-brand {
+  padding: 22px 20px;
+}
+
+.navbar-header {
+  width: 100%;
+  padding: 0 15px;
+
+  .pull-left {
+    position: relative;
+    top: 2px;
+    float: left!important;
+
+    .brand-logo {
+      height: 36px;
+      width: 51px;
+      top: 5px;
+      margin-right: 15px;
+      float: left;
+      background-repeat: no-repeat;
+      height: 36px;
+      width: 51px;
+      overflow: visible;
+      position: relative;
+      background-image: url(/static/images/mit_logo.svg);
+    }
+
+    .divider-large {
+      width: 1px;
+      height: 32px;
+      margin: 3px 18px 0 0;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+      float: left;
+    }
+
+    .bootcamp-logo {
+      height: 46px;
+      width: 375px;
+      top: 0;
+      float: left;
+      background-repeat: no-repeat;
+      background-size: 250px;
+      overflow: visible;
+      position: relative;
+      background-image: url(/static/images/bootcamp-logo.png);
+    }
+  }
+
+  .pull-right {
+    float: right!important;
+
+    a.header-dashboard-link {
+      display: inline-block;
+      margin: 0 25px 0 0;
+      padding: 12px 0;
+      font-weight: 400;
+      font-size: 16px;
+      color: #fff;
+      text-decoration: none;
+      position: relative;
+    }
+  }
+}
+
