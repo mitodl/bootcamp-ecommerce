@@ -2,7 +2,8 @@
   padding: 17vh 0 25px 0;
 
   @include breakpoint(phone) {
-    padding: 40px 0 25px 0;  }
+    padding: 40px 0 25px 0;
+  }
 
   p {
     max-width: 725px;
