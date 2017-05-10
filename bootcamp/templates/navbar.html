@@ -1,0 +1,17 @@
+{% load static %}
+  <nav class="navbar" role="navigation">
+      <div class="navbar-header">
+        <div class="pull-left">
+          <a class="brand-logo" href="http://www.mit.edu"></a>
+          <div class="divider-large">&nbsp;</div>
+          <a class="bootcamp-logo" href="/"></a>
+          </div>
+        <div class="pull-right">
+          {% if authenticated %}
+          <a class="header-dashboard-link" href="/logout">
+            Sign Out
+          </a>
+          {% endif %}
+        </div>
+      </div>
+  </nav>
