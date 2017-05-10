@@ -56,11 +56,9 @@ h1 {
   .pull-left {
     position: relative;
     top: 2px;
-    float: left!important;
+    float: left !important;
 
     .brand-logo {
-      height: 36px;
-      width: 51px;
       top: 5px;
       margin-right: 15px;
       float: left;
@@ -94,7 +92,7 @@ h1 {
   }
 
   .pull-right {
-    float: right!important;
+    float: right !important;
 
     a.header-dashboard-link {
       display: inline-block;
