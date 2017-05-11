@@ -27,7 +27,9 @@
     padding-top: 25px;
 
     input {
-      margin-bottom: 25px;
+      margin: 0 0 25px 0;
+      width: 100%;
+      box-sizing: border-box;
     }
   }
 
