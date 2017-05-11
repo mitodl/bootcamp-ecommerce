@@ -1,6 +1,8 @@
 // @flow
 import R from 'ramda';
 
+import { ORDER_FULFILLED } from '../constants';
+
 /**
  * Creates a POST form with hidden input fields
  * @param url the url for the form action
@@ -34,3 +36,13 @@ export const formatDollarAmount = (amount: ?number): string => {
     maximumFractionDigits: 2
   });
 };
+
+export const getKlassWithFulfilledOrder = (klassData: ?Array<Object>, orderId: number) => (
+  R.find(
+    klass => R.any(
+      payment => payment.order.status === ORDER_FULFILLED && payment.order.id === orderId,
+      klass.payments,
+    ),
+    klassData,
+  )
+);
