@@ -297,8 +297,7 @@ describe('Payment container', () => {
       window.location = `/pay?status=receipt&order=${orderId}`;
       return renderFullPaymentPage(TOAST_ACTIONS).then(() => {
         assert.deepEqual(store.getState().ui.toastMessage, {
-          title: "Order Complete!",
-          message: `You have made a successful payment for ${klass.display_title}`,
+          title: "Payment Complete!",
           icon: TOAST_SUCCESS
         });
       });

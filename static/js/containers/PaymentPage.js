@@ -122,7 +122,7 @@ class PaymentPage extends React.Component {
       const orderId = parseInt(query.order);
       const klass = getKlassWithFulfilledOrder(klasses.data, orderId);
       if (klass) {
-        this.handleOrderSuccess(klass);
+        this.handleOrderSuccess();
       } else {
         this.handleOrderPending();
       }
@@ -131,12 +131,11 @@ class PaymentPage extends React.Component {
     }
   };
 
-  handleOrderSuccess = (klass: Object): void => {
+  handleOrderSuccess = (): void => {
     const { dispatch, ui: { toastMessage } } = this.props;
     if (toastMessage === null) {
       dispatch(setToastMessage({
-        title: 'Order Complete!',
-        message: `You have made a successful payment for ${klass.display_title}`,
+        title: 'Payment Complete!',
         icon: TOAST_SUCCESS,
       }));
     }
