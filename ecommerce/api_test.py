@@ -8,6 +8,7 @@ import hmac
 from unittest.mock import (
     MagicMock,
     patch,
+    PropertyMock,
 )
 
 import ddt
@@ -56,6 +57,18 @@ def create_purchasable_klass():
     return installment_1.klass, user
 
 
+def create_test_order(user, klass_key, payment_amount):
+    """
+    Pass through arguments to create_unfulfilled_order and mock payable_klasses_keys
+    """
+    with patch(
+        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
+        new_callable=PropertyMock,
+        return_value=[klass_key],
+    ):
+        return create_unfulfilled_order(user, klass_key, payment_amount)
+
+
 @ddt.ddt
 class PurchasableTests(TestCase):
     """
@@ -82,7 +95,7 @@ class PurchasableTests(TestCase):
         with self.assertRaises(ValidationError) as ex:
             # payment is $15 here but there is only $10 left to pay
             payment_amount = 15
-            create_unfulfilled_order(self.user, self.klass.klass_key, payment_amount)
+            create_test_order(self.user, self.klass.klass_key, payment_amount)
 
         message = (
             "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
@@ -101,7 +114,7 @@ class PurchasableTests(TestCase):
         An order may not have a negative or zero price
         """
         with self.assertRaises(ValidationError) as ex:
-            create_unfulfilled_order(self.user, self.klass.klass_key, payment_amount)
+            create_test_order(self.user, self.klass.klass_key, payment_amount)
 
         assert ex.exception.args[0] == 'Payment is less than or equal to zero'
 
@@ -110,7 +123,7 @@ class PurchasableTests(TestCase):
         Create Order from a purchasable klass
         """
         payment = 123
-        order = create_unfulfilled_order(self.user, self.klass.klass_key, payment)
+        order = create_test_order(self.user, self.klass.klass_key, payment)
 
         assert Order.objects.count() == 1
         assert order.status == Order.CREATED
@@ -136,6 +149,19 @@ class PurchasableTests(TestCase):
         del dict_before['updated_on']
         assert data_before == dict_before
 
+    def test_not_eligible_to_pay(self):
+        """
+        A validation error should be thrown if the user is not eligible to pay
+        """
+        payment = 123
+        with patch(
+            'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
+            new_callable=PropertyMock,
+            return_value=[],
+        ), self.assertRaises(ValidationError) as ex:
+            create_unfulfilled_order(self.user, self.klass.klass_key, payment)
+        assert ex.exception.args[0] == "User is unable to pay for klass {}".format(self.klass.klass_key)
+
 
 class GetPaidTests(TestCase):
     """Tests for get_total_paid"""
@@ -146,7 +172,7 @@ class GetPaidTests(TestCase):
 
         cls.klass, cls.user = create_purchasable_klass()
         cls.payment = 123
-        order = create_unfulfilled_order(cls.user, cls.klass.klass_key, cls.payment)
+        order = create_test_order(cls.user, cls.klass.klass_key, cls.payment)
         order.status = Order.FULFILLED
         order.save()
 
@@ -156,7 +182,7 @@ class GetPaidTests(TestCase):
         """
         # Multiple payments should be added together
         next_payment = 50
-        order = create_unfulfilled_order(self.user, self.klass.klass_key, next_payment)
+        order = create_test_order(self.user, self.klass.klass_key, next_payment)
         order.status = Order.FULFILLED
         order.save()
         assert get_total_paid(self.user, self.klass.klass_key) == self.payment + next_payment
@@ -168,13 +194,13 @@ class GetPaidTests(TestCase):
 
     def test_skip_unfulfilled(self):
         """Unfulfilled orders should be ignored"""
-        create_unfulfilled_order(self.user, self.klass.klass_key, 45)
+        create_test_order(self.user, self.klass.klass_key, 45)
         assert get_total_paid(self.user, self.klass.klass_key) == self.payment
 
     def test_skip_other_klass(self):
         """Orders for other klasses should be ignored"""
         other_klass, other_user = create_purchasable_klass()
-        other_order = create_unfulfilled_order(other_user, other_klass.klass_key, 50)
+        other_order = create_test_order(other_user, other_klass.klass_key, 50)
         other_order.status = Order.FULFILLED
         other_order.save()
 
@@ -229,7 +255,7 @@ class CybersourceTests(TestCase):
         """
         klass, user = create_purchasable_klass()
         payment = 123.45
-        order = create_unfulfilled_order(user, klass.klass_key, payment)
+        order = create_test_order(user, klass.klass_key, payment)
         username = 'username'
         transaction_uuid = 'hex'
 
@@ -291,7 +317,7 @@ class ReferenceNumberTests(TestCase):
         make_reference_id should concatenate the reference prefix and the order id
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
         assert "BOOTCAMP-{}-{}".format(CYBERSOURCE_REFERENCE_PREFIX, order.id) == make_reference_id(order)
 
     def test_get_new_order_by_reference_number(self):
@@ -299,7 +325,7 @@ class ReferenceNumberTests(TestCase):
         get_new_order_by_reference_number returns an Order with status created
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
         same_order = get_new_order_by_reference_number(make_reference_id(order))
         assert same_order.id == order.id
 
@@ -323,7 +349,7 @@ class ReferenceNumberTests(TestCase):
         get_order_by_reference_number should only get orders with status=CREATED
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
 
         order.status = Order.FAILED
         order.save()

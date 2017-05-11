@@ -24,6 +24,7 @@ from ecommerce.models import (
     Line,
     Order,
 )
+from klasses.bootcamp_admissions_client import BootcampAdmissionClient
 from klasses.models import Klass
 
 
@@ -71,6 +72,11 @@ def create_unfulfilled_order(user, klass_key, payment_amount):
     except Klass.DoesNotExist:
         # In the near future we should do other checking here based on information from Bootcamp REST API
         raise ValidationError("Incorrect klass key {}".format(klass_key))
+
+    bootcamp_client = BootcampAdmissionClient(user.email)
+    if not bootcamp_client.can_pay_klass(klass_key):
+        raise ValidationError("User is unable to pay for klass {}".format(klass_key))
+
     if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
 

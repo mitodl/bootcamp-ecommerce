@@ -13,11 +13,11 @@ from django.test import (
 import faker
 from rest_framework import status as statuses
 
-from ecommerce.api import (
-    create_unfulfilled_order,
-    make_reference_id,
+from ecommerce.api import make_reference_id
+from ecommerce.api_test import (
+    create_purchasable_klass,
+    create_test_order,
 )
-from ecommerce.api_test import create_purchasable_klass
 from ecommerce.exceptions import EcommerceException
 from ecommerce.models import (
     Order,
@@ -108,7 +108,7 @@ class OrderFulfillmentViewTests(TestCase):
         Test the happy case
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
         data_before = order.to_dict()
 
         data = {}
@@ -170,7 +170,7 @@ class OrderFulfillmentViewTests(TestCase):
         If the decision is not ACCEPT then the order should be marked as failed
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
 
         data = {
             'req_reference_number': make_reference_id(order),
@@ -204,7 +204,7 @@ class OrderFulfillmentViewTests(TestCase):
         If the decision is CANCEL and we already have a duplicate failed order, don't change anything.
         """
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
         order.status = Order.FAILED
         order.save()
 
@@ -231,7 +231,7 @@ class OrderFulfillmentViewTests(TestCase):
     def test_error_on_duplicate_order(self, order_status, decision):
         """If there is a duplicate message (except for CANCEL), raise an exception"""
         klass, user = create_purchasable_klass()
-        order = create_unfulfilled_order(user, klass.klass_key, 123)
+        order = create_test_order(user, klass.klass_key, 123)
         order.status = order_status
         order.save()
 
