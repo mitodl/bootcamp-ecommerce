@@ -4,8 +4,12 @@
 {% block title %}MIT Bootcamps{% endblock %}
 
 {% block content %}
-<div id="pay">
+{% include "navbar.html" %}
+<div class="body-rows standard-layout">
+  <div id="pay">
+  </div>
 </div>
+{% include "footer.html" %}
 {% load render_bundle %}
 {% render_bundle "payment" %}
 {% endblock %}

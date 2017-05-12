@@ -42,29 +42,8 @@
       margin: 0 auto;
       padding: 60px 10px;
 
-      h3 {
-        padding: 0 0 45px 0;
-        margin: 0;
-        color: #000;
-        font-family: $sans-serif-font;
-        font-size: 15px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-
-        &::after {
-          content: " ";
-          display: inline-block;
-          background-color: $med-gray;
-          margin-left: 15px;
-          height: 1px;
-          width: 70px;
-          position: relative;
-          bottom: 5px;
-        }
-      }
-
       table {
-        margin: 0;
+        margin: 45px 0 0 0;
         padding: 0;
         border-collapse: collapse;
         color: $med-dark-gray;
@@ -73,9 +52,7 @@
         width: 100%;
 
         th {
-          font-family: $sans-serif-font;
-          font-size: 13px;
-          font-weight: normal;
+          font: $table-header-font;
           text-transform: uppercase;
           padding-bottom: 10px;
         }

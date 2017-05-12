@@ -6,6 +6,7 @@ from django.conf.urls import url
 from klasses.views import (
     UserKlassList,
     UserKlassDetail,
+    UserKlassStatement,
 )
 
 
@@ -16,4 +17,5 @@ urlpatterns = [
         UserKlassDetail.as_view(),
         name='klass-detail'
     ),
+    url(r'^statement/(?P<klass_key>[0-9]+)/$', UserKlassStatement.as_view(), name='klass-statement'),
 ]

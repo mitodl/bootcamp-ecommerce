@@ -47,6 +47,7 @@ describe('util', () => {
         assert.equal(formatDollarAmount(nilValue), '$0');
       });
       assert.equal(formatDollarAmount(100), '$100');
+      assert.equal(formatDollarAmount(100.5), '$100.50');
       assert.equal(formatDollarAmount(10000), '$10,000');
       assert.equal(formatDollarAmount(100.12), '$100.12');
     });

@@ -7,6 +7,8 @@ import PaymentHistory from './PaymentHistory';
 import { generateFakeKlasses } from '../factories';
 
 describe("PaymentHistory", () => {
+  let statementLinkSelector = 'a.statement-link';
+
   let renderPaymentHistory = (klassDataWithPayments) => (
     shallow(
       <PaymentHistory klassDataWithPayments={klassDataWithPayments} />
@@ -37,5 +39,12 @@ describe("PaymentHistory", () => {
     let secondRowHtml = paymentHistoryTableRows.at(1).html();
     assert.include(secondRowHtml, fakeKlasses[1].display_title);
     assert.include(secondRowHtml, `$${paymentAmount}`);
+  });
+
+  it('should show a link to view a payment statement', () => {
+    let fakeKlasses = generateFakeKlasses(1);
+    let wrapper = renderPaymentHistory(fakeKlasses);
+    let statementLink = wrapper.find(statementLinkSelector);
+    assert.equal(statementLink.prop('href'), `/statement/${fakeKlasses[0].klass_key}`);
   });
 });

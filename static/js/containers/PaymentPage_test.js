@@ -35,7 +35,7 @@ const RECEIVE_PAYMENT_SUCCESS = makeReceiveSuccessActionType('payment');
 const REQUEST_KLASSES = makeRequestActionType('klasses');
 const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
 
-describe('Payment container', () => {
+describe('PaymentPage', () => {
   const klassTitleSelector = '.klass-display-section .desc',
     klassDropdownSelector = 'select.klass-select',
     welcomeMsgSelector = 'h1.greeting',
@@ -177,7 +177,7 @@ describe('Payment container', () => {
           let deadlineText = wrapper.find(deadlineMsgSelector).text();
           assert.include(deadlineText, 'You can pay any amount');
           if (!_.isEmpty(deadlineDateISO)) {
-            assert.include(deadlineText, moment(deadlineDateISO).format("MMM D, YYYY"));
+            assert.include(deadlineText, util.formatReadableDate(moment(deadlineDateISO)));
           }
         });
       });

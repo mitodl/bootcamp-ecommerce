@@ -1,0 +1,31 @@
+.desc {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 300;
+  color: rgba(255,255,255,1);
+
+  @include breakpoint(phone) {
+    font-size: 20px;
+    line-height: 25px;
+  }
+}
+
+h3.section-header {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: #000;
+  font: bold 15px $sans-serif-font;
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 1px;
+
+  hr {
+    display: inline-block;
+    border: none;
+    height: 1px;
+    background-color: $med-gray;
+    margin-left: 15px;
+    width: 70px;
+  }
+}

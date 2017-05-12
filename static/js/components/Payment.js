@@ -4,7 +4,11 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { isNilOrBlank, formatDollarAmount } from '../util/util';
+import {
+  isNilOrBlank,
+  formatDollarAmount,
+  formatReadableDate
+} from '../util/util';
 import type { UIState } from '../reducers';
 import type { RestState } from '../rest';
 import type { InputEvent } from '../flow/events';
@@ -67,7 +71,7 @@ export default class Payment extends React.Component {
 
     let deadlineDateText;
     if (!_.isEmpty(selectedKlass.payment_deadline)) {
-      let deadlineDate = moment(selectedKlass.payment_deadline).format("MMM D, YYYY");
+      let deadlineDate = formatReadableDate(moment(selectedKlass.payment_deadline));
       deadlineDateText = `You can pay any amount, but the full payment must be complete by ${deadlineDate}`;
     } else {
       deadlineDateText = 'You can pay any amount toward the total cost.';

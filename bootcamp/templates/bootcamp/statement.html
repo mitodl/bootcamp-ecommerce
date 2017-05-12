@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n static parse_date dollar_format %}
+
+{% block title %}MIT Bootcamps - Payment Statement{% endblock %}
+
+{% block content %}
+<div id="statement">
+  <header>
+    <div class="left">
+      <img src="{% static 'images/bootcamp-logo-black.png' %}" alt="MIT Bootcamps" />
+    </div>
+    <div class="right">
+      {% now "F d, Y" %}
+    </div>
+  </header>
+  <section>
+    <h3 class="section-header">Participant<hr /></h3>
+    <p>{{ user.full_name }}</p>
+  </section>
+  <section>
+    <h3 class="section-header">Bootcamp<hr /></h3>
+    <p>{{ klass.display_title }}</p>
+  </section>
+  <section>
+    <h3 class="section-header">Payment History<hr /></h3>
+    <table class="payment-history">
+      <thead>
+        <tr>
+          <th class="col1">Date Paid</th>
+          <th class="col2">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for payment in klass.payments %}
+          <tr>
+            <td>{{ payment.order.created_on|parse_iso_datetime|date:"F d, Y" }}</td>
+            <td>{{ payment.price|dollar_format }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Total</td>
+          <td>{{ klass.total_paid|dollar_format }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+  <footer>
+    MIT Office of Digital Learning - 77 Massachusetts Avenue, Cambridge, MA 02139
+  </footer>
+</div>
+{% endblock %}
