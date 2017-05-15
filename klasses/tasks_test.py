@@ -14,26 +14,28 @@ from profiles.factories import UserFactory
 pytestmark = pytest.mark.django_db
 
 
-expected_payable_klasses = {
-    16: {
+expected_payable_klasses = [
+    {
         "klass_id": 16,
         "klass_name": "Class 1",
         "status": "scholarship_not_awarded",
         "is_user_eligible_to_pay": True
     },
-    23: {
+    {
         "klass_id": 23,
         "klass_name": "Class 2 Student",
         "status": "admitted",
         "is_user_eligible_to_pay": True
     },
-    44: {
+    {
         "klass_id": 44,
         "klass_name": "Class 44 Student",
         "status": "admitted",
         "is_user_eligible_to_pay": True
     }
-}
+]
+expected_payable_klass_keys = [klass['klass_id'] for klass in expected_payable_klasses]
+expected_payable_klass_lookup = {klass['klass_id']: klass for klass in expected_payable_klasses}
 
 
 @pytest.fixture()
@@ -42,7 +44,7 @@ def test_data():
     Sets up the data for all the tests in this module
     """
     user = UserFactory.create(email='foo@example.com')
-    cacheable_klasses_keys = list(expected_payable_klasses.keys())[:-1]
+    cacheable_klasses_keys = expected_payable_klass_keys[:-1]
     for klass_key in cacheable_klasses_keys:
         KlassFactory.create(klass_key=klass_key)
     return user, cacheable_klasses_keys
@@ -69,9 +71,9 @@ def test_cache_admissions_happy_path(test_data):
         BootcampAdmissionCache.objects.filter(user=user).values_list('klass__klass_key', flat=True)
     ) == cacheable_klasses_keys
     for cached_elem in BootcampAdmissionCache.objects.filter(user=user):
-        assert cached_elem.data == expected_payable_klasses[cached_elem.klass.klass_key]
+        assert cached_elem.data == expected_payable_klass_lookup[cached_elem.klass.klass_key]
     assert BootcampAdmissionCache.objects.filter(user=user).filter(
-        klass__klass_key=list(expected_payable_klasses.keys())[-1]).exists() is False
+        klass__klass_key=expected_payable_klass_keys[-1]).exists() is False
 
 
 def test_cache_admissions_no_user():
