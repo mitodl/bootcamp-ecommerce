@@ -25,8 +25,8 @@ def _cache_admissions(user_email, payable_klasses):
         log.exception('User with email %s does not exists', user_email)
         return
 
-    payable_klasses_keys = [klass['klass_id'] for klass in payable_klasses]
     payable_klasses_lookup = {klass['klass_id']: klass for klass in payable_klasses}
+    payable_klasses_keys = list(payable_klasses_lookup.keys())
     local_klasses = Klass.objects.filter(klass_key__in=payable_klasses_keys)
 
     for klass in local_klasses:
