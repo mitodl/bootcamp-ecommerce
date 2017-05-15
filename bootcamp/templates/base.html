@@ -23,11 +23,7 @@
     {% endspaceless %}
   </head>
   <body>
-    {% include "navbar.html" %}
-    <div class="body-rows">
-      {% block content %}
-      {% endblock %}
-    </div>
-    {% include "footer.html" %}
+    {% block content %}
+    {% endblock %}
   </body>
 </html>

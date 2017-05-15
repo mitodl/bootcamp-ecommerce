@@ -19,7 +19,10 @@ export default class PaymentHistory extends React.Component {
       <td>{klass.display_title}</td>
       <td>{paymentAmountMsg}</td>
       <td className="statement-column">
-        <i className="material-icons">print</i><a href="#" className="statement-link">View Statement</a>
+        <i className="material-icons">print</i>
+        <a href={`/statement/${klass.klass_key}`} target="_blank" rel="noopener" className="statement-link">
+          View Statement
+        </a>
       </td>
     </tr>;
   };
@@ -29,7 +32,7 @@ export default class PaymentHistory extends React.Component {
 
     return <div className="payment-history-section">
       <div className="payment-history-block">
-        <h3>Payment History</h3>
+        <h3 className="section-header">Payment History<hr /></h3>
         <table>
           <thead>
             <tr>

@@ -1,0 +1,76 @@
+#statement {
+  background-color: #fff;
+  color: $med-dark-gray;
+  font-family: $artsy-font;
+  font-size: 18px;
+  padding: 20px;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 50px;
+    width: 100%;
+
+    .left {
+      text-align: left;
+
+      img {
+        width: 230px;
+      }
+    }
+
+    .right {
+      text-align: right;
+    }
+  }
+
+  section p, table.payment-history {
+    margin: 45px 0;
+    padding: 0;
+  }
+
+  table.payment-history {
+    $table-cell-padding: 20px;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 0 $table-cell-padding $table-cell-padding 0;
+    }
+
+    .col1 {
+      min-width: 300px;
+    }
+
+    thead th {
+      font: $table-header-font;
+      text-transform: uppercase;
+      text-align: left;
+    }
+
+    tfoot {
+      text-transform: uppercase;
+
+      td {
+        border-top: 1px solid $med-gray;
+        padding-top: $table-cell-padding;
+      }
+    }
+  }
+
+  footer {
+    padding-top: 30px;
+  }
+}
+
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  body, #statement {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}

@@ -29,13 +29,20 @@ export const isNilOrBlank = R.either(R.isNil, R.isEmpty);
 
 export const formatDollarAmount = (amount: ?number): string => {
   amount = amount || 0;
-  return amount.toLocaleString('en-US', {
+  let formattedAmount = amount.toLocaleString('en-US', {
     style: "currency",
     currency: "USD",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
+  return formattedAmount.endsWith(".00")
+    ? formattedAmount.substring(0, formattedAmount.length - 3)
+    : formattedAmount;
 };
+
+export const formatReadableDate = (datetime: moment$Moment): string => (
+  datetime.format("MMM D, YYYY")
+);
 
 export const getKlassWithFulfilledOrder = (klassData: ?Array<Object>, orderId: number) => (
   R.find(

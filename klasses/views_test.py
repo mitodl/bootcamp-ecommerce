@@ -12,7 +12,7 @@ from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
 from klasses.conftest import patch_get_admissions
 from klasses.factories import KlassFactory
-from profiles.factories import UserFactory
+from profiles.factories import ProfileFactory
 
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
@@ -40,13 +40,14 @@ def test_data(mocker):
     """
     Sets up the data for all the tests in this module
     """
-    user = UserFactory.create()
+    profile = ProfileFactory.create()
+    user = profile.user
     user.social_auth.create(
         provider=EdxOrgOAuth2.name,
         uid=user.username,
         extra_data={"access_token": "fooooootoken"}
     )
-    other_user = UserFactory.create()
+    other_user = ProfileFactory.create().user
 
     for _ in range(3):
         klass = KlassFactory.create()
@@ -54,6 +55,14 @@ def test_data(mocker):
     patch_get_admissions(mocker, user)
     # just need one klass, so returning the last created
     return user, other_user, klass
+
+
+@pytest.fixture()
+def fulfilled_order(test_data):
+    user, _, klass = test_data
+    order = OrderFactory.create(user=user, status=Order.FULFILLED)
+    LineFactory.create(order=order, klass_key=klass.klass_key, price=123.45)
+    return order
 
 
 def test_only_self_can_access_apis(test_data, client):
@@ -143,7 +152,7 @@ def test_klass_list_with_no_authorized_klasses(test_data, client, mocker):
     assert response.json() == []
 
 
-def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, client, mocker):
+def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, fulfilled_order, client, mocker):
     """
     The view returns the paid klasses even if if no authorized klasses for the user are found
     """
@@ -153,8 +162,6 @@ def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, client, moc
         new_callable=PropertyMock,
         return_value=[],
     )
-    order = OrderFactory.create(user=user, status=Order.FULFILLED)
-    LineFactory.create(order=order, klass_key=klass.klass_key, price=123.45)
 
     klass_list_url = reverse('klass-list', kwargs={'username': user.username})
     client.force_login(user)
@@ -164,3 +171,36 @@ def test_klass_list_paid_klass_with_no_authorized_klasses(test_data, client, moc
     assert len(response_json) == 1
     assert response_json[0]['klass_key'] == klass.klass_key
     assert response_json[0]['is_user_eligible_to_pay'] is False
+
+
+def test_user_klass_statement(test_data, fulfilled_order, client):
+    """
+    Test that the user klass statement view returns the expected filled-in template
+    """
+    user, _, klass = test_data
+    klass_statement_url = reverse('klass-statement', kwargs={'klass_key': klass.klass_key})
+    client.force_login(user)
+
+    response = client.get(klass_statement_url)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.template_name == 'bootcamp/statement.html'
+    rendered_template_content = response.content.decode('utf-8')
+    # User's full name should be in the statement
+    assert response.data['user']['full_name'] in rendered_template_content
+    # Bootcamp klass title should be in the statement
+    assert response.data['klass']['display_title'] in rendered_template_content
+    # Total payment amount should be in the statement
+    assert '${}'.format(response.data['klass']['total_paid']) in rendered_template_content
+    # Each individual payment should be in the statement
+    line_payments = fulfilled_order.line_set.values_list('price', flat=True)
+    for line_payment in line_payments:
+        assert '${}'.format(line_payment) in rendered_template_content
+
+
+def test_user_klass_statement_without_order(test_data, client):
+    user, _, klass = test_data
+    klass_statement_url = reverse('klass-statement', kwargs={'klass_key': klass.klass_key})
+    client.force_login(user)
+
+    response = client.get(klass_statement_url)
+    assert response.status_code == status.HTTP_404_NOT_FOUND

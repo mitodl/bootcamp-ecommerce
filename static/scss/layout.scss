@@ -1,18 +1,23 @@
 @import "variables";
 @import "breakpoints";
 @import "inputs";
+@import "shared";
 @import "footer";
 @import "login";
 @import "payment";
 @import "toast";
+@import "statement";
 
 body {
   margin: 0;
   padding: 0;
-  background-color: $dark-gray;
-  color: #fff;
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  text-align: center;
+
+  .standard-layout {
+    background-color: $dark-gray;
+    color: #fff;
+    text-align: center;
+  }
 }
 
 .photo-bg {
@@ -38,19 +43,6 @@ h1 {
     font-size: 2em;
   }
 }
-
-.desc {
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 300;
-  color: rgba(255,255,255,1);
-
-  @include breakpoint(phone) {
-    font-size: 20px;
-    line-height: 25px;
-  }
-}
-
 
 .navbar {
   background-color: $mit-brand;
@@ -155,4 +147,3 @@ h1 {
 .btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after, .container-fluid:after, .container:after, .dl-horizontal dd:after, .form-horizontal .form-group:after, .modal-footer:after, .modal-header:after, .nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after, .panel-body:after, .row:after {
   clear: both;
 }
-

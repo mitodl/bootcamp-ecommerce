@@ -37,5 +37,6 @@ class LineSerializer(serializers.ModelSerializer):
         fields = (
             'order',
             'klass_key',
+            'price',
             'description',
         )
