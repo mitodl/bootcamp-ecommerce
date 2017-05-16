@@ -20,14 +20,14 @@ class BootcampAdmissionClient:
     """
 
     admissions = {}
-    payable_klasses = {}
+    payable_klasses = []
     payable_klasses_keys = []
 
     def __init__(self, user_email):
         self.user_email = user_email
         self.admissions = self._get_admissions()
         self.payable_klasses = self._get_payable_klasses()
-        self.payable_klasses_keys = list(self.payable_klasses.keys())
+        self.payable_klasses_keys = [klass['klass_id'] for klass in self.payable_klasses]
         # trigger the async task to cache the info
         if self.payable_klasses:
             async_cache_admissions.delay(self.user_email, self.payable_klasses)
@@ -94,11 +94,11 @@ class BootcampAdmissionClient:
         """
         Returns a list of the payable klasses.
         """
-        adm_klasses = {}
+        adm_klasses = []
         for bootcamp in self.admissions.get("bootcamps", []):
             for klass in bootcamp.get("klasses", []):
                 if klass.get("is_user_eligible_to_pay") is True:
-                    adm_klasses[klass["klass_id"]] = klass
+                    adm_klasses.append(klass)
         return adm_klasses
 
     def can_pay_klass(self, klass_key):
