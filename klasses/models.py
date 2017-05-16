@@ -126,19 +126,17 @@ class Installment(models.Model):
     A payment installment
     """
     klass = models.ForeignKey(Klass)
-    installment_number = models.IntegerField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     deadline = models.DateTimeField(null=False)
 
     class Meta:
-        unique_together = ('klass', 'installment_number')
         ordering = ['klass', 'deadline', ]
 
     def __str__(self):
-        return "Installment {installment_number} for {amount} for {klass}".format(
-            installment_number=self.installment_number,
+        return "Installment {amount} for {klass}, deadline {deadline}".format(
             amount=self.amount,
             klass=self.klass,
+            deadline=self.deadline.strftime('%b %d %Y'),
         )
 
 
