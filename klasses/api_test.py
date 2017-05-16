@@ -72,7 +72,7 @@ def test_serialize_user_klass_paid(test_data):
         "total_paid": Decimal('627.34'),
         "payments": LineSerializer(Line.for_user_klass(user, klass_paid.klass_key), many=True).data,
         "installments": InstallmentSerializer(
-            klass_paid.installment_set.order_by('installment_number'), many=True).data,
+            klass_paid.installment_set.order_by('deadline'), many=True).data,
     }
     assert expected_ret == serialize_user_klass(user, klass_paid)
 
@@ -95,7 +95,7 @@ def test_serialize_user_klass_not_paid(test_data):
         "total_paid": Decimal('0.00'),
         "payments": [],
         "installments": InstallmentSerializer(
-            klass_not_paid.installment_set.order_by('installment_number'), many=True).data,
+            klass_not_paid.installment_set.order_by('deadline'), many=True).data,
     }
     assert expected_ret == serialize_user_klass(user, klass_not_paid)
 
@@ -118,7 +118,7 @@ def test_serialize_user_klasses(test_data):
             "total_paid": Decimal('627.34'),
             "payments": LineSerializer(Line.for_user_klass(user, klass_paid.klass_key), many=True).data,
             "installments": InstallmentSerializer(
-                klass_paid.installment_set.order_by('installment_number'), many=True).data,
+                klass_paid.installment_set.order_by('deadline'), many=True).data,
         },
         {
             "klass_key": klass_not_paid.klass_key,
@@ -132,7 +132,7 @@ def test_serialize_user_klasses(test_data):
             "total_paid": Decimal('0.00'),
             "payments": [],
             "installments": InstallmentSerializer(
-                klass_not_paid.installment_set.order_by('installment_number'), many=True).data,
+                klass_not_paid.installment_set.order_by('deadline'), many=True).data,
         }
     ]
     assert sorted(expected_ret, key=lambda x: x['klass_key']) == serialize_user_klasses(user)

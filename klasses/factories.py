@@ -43,7 +43,6 @@ class KlassFactory(DjangoModelFactory):
 class InstallmentFactory(DjangoModelFactory):
     """Factory for Installment"""
     klass = SubFactory(KlassFactory)
-    installment_number = Sequence(lambda n: n)
     amount = FuzzyDecimal(low=1, high=2000)
     deadline = Faker('date_time_this_month', before_now=False, after_now=True, tzinfo=pytz.UTC)
 

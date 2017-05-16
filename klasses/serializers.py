@@ -14,7 +14,6 @@ class InstallmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Installment
         fields = (
-            'installment_number',
             'amount',
             'deadline',
         )

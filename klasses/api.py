@@ -67,5 +67,5 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
         "is_user_eligible_to_pay": bootcamp_client.can_pay_klass(klass.klass_key),
         "total_paid": Line.total_paid_for_klass(user, klass.klass_key).get('total') or Decimal('0.00'),
         "payments": LineSerializer(Line.for_user_klass(user, klass.klass_key), many=True).data,
-        "installments": InstallmentSerializer(klass.installment_set.order_by('installment_number'), many=True).data,
+        "installments": InstallmentSerializer(klass.installment_set.order_by('deadline'), many=True).data,
     }
