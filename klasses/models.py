@@ -115,10 +115,7 @@ class Klass(models.Model):
             deadline__lte=next_installment.deadline).aggregate(price=models.Sum('amount'))['price']
 
     def __str__(self):
-        return "Klass {title} of {bootcamp}".format(
-            title=self.title,
-            bootcamp=self.bootcamp,
-        )
+        return self.display_title
 
 
 class Installment(models.Model):
