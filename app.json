@@ -84,7 +84,7 @@
     },
     "BOOTCAMP_ECOMMERCE_BASE_URL": {
       "description": "The base url of this application to be used in emails",
-      "required": true,
+      "required": true
     },
     "BOOTCAMP_EMAIL_HOST": {
       "description": "Outgoing e-mail settings",
