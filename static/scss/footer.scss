@@ -29,7 +29,7 @@
         min-width: 150px;
 
         &.left-col {
-          width: 240px;
+          width: 430px;
         }
 
         &.right-col {
@@ -77,12 +77,22 @@
   }
 
   .footer-links {
-    margin: 24px 0;
+    margin: 16px 0;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 
     a {
       display: inline-block;
       margin: 0 24px 0 0;
+      line-height: 30px;
+      flex-shrink: 0;
       color: #4c8399;
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 

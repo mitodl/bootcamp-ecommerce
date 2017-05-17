@@ -147,3 +147,18 @@ h1 {
 .btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after, .container-fluid:after, .container:after, .dl-horizontal dd:after, .form-horizontal .form-group:after, .modal-footer:after, .modal-header:after, .nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after, .panel-body:after, .row:after {
   clear: both;
 }
+
+#tos {
+  $tos-margin: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 15px 0;
+
+  h2, p, li {
+    margin-bottom: $tos-margin;
+  }
+
+  li ul {
+    margin-top: $tos-margin;
+  }
+}
