@@ -64,7 +64,7 @@ class LineOrderSerializerTests(DjangoTestCase):
         expected = {
             'klass_key': self.line.klass_key,
             'description': self.line.description,
-            'price': str(self.line.price),
+            'price': self.line.price,
             'order': {
                 'id': self.line.order.id,
                 'status': self.line.order.status,

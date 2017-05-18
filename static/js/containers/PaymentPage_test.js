@@ -41,7 +41,7 @@ describe('PaymentPage', () => {
     welcomeMsgSelector = 'h1.greeting',
     paymentInputSelector = 'input[id="payment-amount"]',
     paymentBtnSelector = 'button.large-cta',
-    deadlineMsgSelector = '.deadline-date';
+    deadlineMsgSelector = '.deadline-message';
 
   let store, listenForActions, sandbox, fetchStub,
     klassesUrl, klassesStub; // eslint-disable-line no-unused-vars
@@ -275,7 +275,7 @@ describe('PaymentPage', () => {
     let orderId, klass;
 
     beforeEach(() => {
-      const klasses = generateFakeKlasses(1, true);
+      const klasses = generateFakeKlasses(1, {hasPayment: true});
       klass = klasses[0];
       orderId = klass.payments[0].order.id;
       klassesStub = fetchStub

@@ -18,7 +18,7 @@ def test_installment_serializer():
     inst = InstallmentFactory.create()
 
     expected = {
-        'amount': str(inst.amount),
+        'amount': inst.amount,
         'deadline': inst.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
     }
     assert InstallmentSerializer(inst).data == expected

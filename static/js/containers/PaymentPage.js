@@ -247,6 +247,7 @@ class PaymentPage extends React.Component {
             payment={payment}
             payableKlassesData={payableKlassesData}
             selectedKlass={selectedKlass}
+            now={moment()}
             sendPayment={this.sendPayment}
             setPaymentAmount={this.setPaymentAmount}
             setSelectedKlassKey={this.setSelectedKlassKey}

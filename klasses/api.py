@@ -62,7 +62,6 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
         "display_title": klass.display_title,
         "start_date": klass.start_date,
         "end_date": klass.end_date,
-        "payment_deadline": klass.payment_deadline,
         "price": klass.price,
         "is_user_eligible_to_pay": bootcamp_client.can_pay_klass(klass.klass_key),
         "total_paid": Line.total_paid_for_klass(user, klass.klass_key).get('total') or Decimal('0.00'),

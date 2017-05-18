@@ -1,11 +1,14 @@
 import { assert } from 'chai';
+import moment from 'moment';
+import _ from 'lodash';
 
-import { generateFakeKlasses } from '../factories';
+import { generateFakeKlasses, generateFakeInstallment } from '../factories';
 import {
   createForm,
   isNilOrBlank,
   formatDollarAmount,
   getKlassWithFulfilledOrder,
+  getInstallmentDeadlineDates,
 } from './util';
 
 describe('util', () => {
@@ -55,7 +58,7 @@ describe('util', () => {
 
   describe('getKlassWithFulfilledOrder', () => {
     it('gets a fulfilled order from the payments in the klasses', () => {
-      const klasses = generateFakeKlasses(1, true);
+      const klasses = generateFakeKlasses(1, {hasPayment: true});
       const klass = klasses[0];
       assert.deepEqual(
         getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
@@ -72,13 +75,31 @@ describe('util', () => {
     });
 
     it("returns undefined if the order is not fulfilled", () => {
-      const klasses = generateFakeKlasses(1, true);
+      const klasses = generateFakeKlasses(1, {hasPayment: true});
       const klass = klasses[0];
       klass.payments[0].order.status = 'created';
       assert.deepEqual(
         getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
         undefined,
       );
+    });
+  });
+
+  describe('getInstallmentDeadlineDates', () => {
+    it('returns a list of parsed deadline dates when given an array of installment data', () => {
+      let moments = [
+        moment({milliseconds: 0}),
+        moment({milliseconds: 0}).add(5, 'days')
+      ];
+      let installments = [
+        generateFakeInstallment({deadline: moments[0].format()}),
+        generateFakeInstallment({deadline: moments[1].format()})
+      ];
+      // Assert that the arrays of dates are equivalent (using this approach since moment objects
+      // store a bunch of extra properties that make assert.deepEqual unusable)
+      _.each(getInstallmentDeadlineDates(installments), (installment, i) => {
+        assert.isTrue(installment.isSame(moments[i]));
+      });
     });
   });
 });

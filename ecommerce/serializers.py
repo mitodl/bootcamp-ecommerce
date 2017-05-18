@@ -31,6 +31,7 @@ class LineSerializer(serializers.ModelSerializer):
     Serializer for Line
     """
     order = OrderPartialSerializer(read_only=True)
+    price = serializers.DecimalField(decimal_places=2, max_digits=20)
 
     class Meta:
         model = Line
