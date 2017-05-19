@@ -271,6 +271,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
+    'COERCE_DECIMAL_TO_STRING': False
 }
 
 # Request files from the webpack dev server

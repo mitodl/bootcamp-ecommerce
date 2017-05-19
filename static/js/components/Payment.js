@@ -1,13 +1,14 @@
 // @flow
 /* global SETTINGS: false */
 import React from 'react';
+import R from 'ramda';
 import _ from 'lodash';
-import moment from 'moment';
 
 import {
   isNilOrBlank,
   formatDollarAmount,
-  formatReadableDate
+  formatReadableDate,
+  getInstallmentDeadlineDates
 } from '../util/util';
 import type { UIState } from '../reducers';
 import type { RestState } from '../rest';
@@ -19,9 +20,57 @@ export default class Payment extends React.Component {
     payment: RestState,
     payableKlassesData: Array<Object>,
     selectedKlass: Object,
+    now: moment$Moment,
     sendPayment: () => void,
     setPaymentAmount: (event: InputEvent) => void,
     setSelectedKlassKey: (event: InputEvent) => void
+  };
+
+  getTotalOwedUpToInstallment = (nextInstallmentIndex: number): number => {
+    const {
+      selectedKlass: { installments }
+    } = this.props;
+
+    return R.compose(
+      R.sum,
+      R.map(R.prop('amount')),
+      R.slice(0, nextInstallmentIndex + 1)
+    )(installments);
+  };
+
+  hasMissedPreviousInstallment = (nextInstallmentIndex: number): boolean => {
+    const { selectedKlass } = this.props;
+
+    return nextInstallmentIndex > 0 &&
+      selectedKlass.total_paid < this.getTotalOwedUpToInstallment(nextInstallmentIndex - 1);
+  };
+
+  getPaymentDeadlineText = (): string => {
+    const { selectedKlass, now } = this.props;
+
+    let installments = selectedKlass.installments;
+    let installmentDeadlineText = '';
+    let deadlineDates = getInstallmentDeadlineDates(installments);
+    let finalInstallmentDeadline = formatReadableDate(R.last(deadlineDates));
+
+    if (installments.length > 1) {
+      let nextInstallmentIndex = R.findIndex(R.lt(now), deadlineDates),
+        lastInstallmentIndex = installments.length - 1;
+      if (nextInstallmentIndex !== lastInstallmentIndex) {
+        let totalOwedForInstallment = this.getTotalOwedUpToInstallment(nextInstallmentIndex);
+        if (selectedKlass.total_paid < totalOwedForInstallment) {
+          installmentDeadlineText =
+            `A total downpayment of ${formatDollarAmount(totalOwedForInstallment)} ` +
+            `is due ${formatReadableDate(deadlineDates[nextInstallmentIndex])}.`;
+        }
+      }
+      if (this.hasMissedPreviousInstallment(nextInstallmentIndex)) {
+        installmentDeadlineText = `You missed the previous payment deadline. ${installmentDeadlineText}`;
+      }
+    }
+
+    return `${installmentDeadlineText} You can pay any amount now. ` +
+      `Full payment must be complete by ${finalInstallmentDeadline}.`;
   };
 
   renderKlassDropdown = () => {
@@ -69,13 +118,6 @@ export default class Payment extends React.Component {
       sendPayment
     } = this.props;
 
-    let deadlineDateText;
-    if (!_.isEmpty(selectedKlass.payment_deadline)) {
-      let deadlineDate = formatReadableDate(moment(selectedKlass.payment_deadline));
-      deadlineDateText = `You can pay any amount, but the full payment must be complete by ${deadlineDate}`;
-    } else {
-      deadlineDateText = 'You can pay any amount toward the total cost.';
-    }
     let totalPaid = selectedKlass.total_paid || 0;
 
     return <div className="klass-display-section">
@@ -84,7 +126,7 @@ export default class Payment extends React.Component {
         You have paid {formatDollarAmount(totalPaid)} out
         of {formatDollarAmount(selectedKlass.price)}.
       </p>
-      <p className="deadline-date">{deadlineDateText}</p>
+      <p className="deadline-message">{this.getPaymentDeadlineText()}</p>
       <div className="payment">
         <input
           type="number"

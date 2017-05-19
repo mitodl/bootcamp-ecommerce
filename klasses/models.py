@@ -126,17 +126,19 @@ class Installment(models.Model):
     A payment installment
     """
     klass = models.ForeignKey(Klass)
-    amount = models.DecimalField(max_digits=20, decimal_places=2)
     deadline = models.DateTimeField(null=False)
+    amount = models.DecimalField(max_digits=20, decimal_places=2)
 
     class Meta:
+        index_together = ['klass', 'deadline']
+        unique_together = ('klass', 'deadline')
         ordering = ['klass', 'deadline', ]
 
     def __str__(self):
-        return "Installment {amount} for {klass}, deadline {deadline}".format(
+        return "Installment for '{klass}'; ${amount}; deadline {deadline}".format(
+            klass=self.klass.title,
             amount=self.amount,
-            klass=self.klass,
-            deadline=self.deadline.strftime('%b %d %Y'),
+            deadline=self.deadline.strftime('%b %d %Y')
         )
 
 

@@ -1,5 +1,6 @@
 // @flow
 import R from 'ramda';
+import moment from 'moment';
 
 import { ORDER_FULFILLED } from '../constants';
 
@@ -44,6 +45,10 @@ export const formatReadableDate = (datetime: moment$Moment): string => (
   datetime.format("MMM D, YYYY")
 );
 
+export const formatReadableDateFromStr = (datetimeString: string): string => (
+  formatReadableDate(moment(datetimeString))
+);
+
 export const getKlassWithFulfilledOrder = (klassData: ?Array<Object>, orderId: number) => (
   R.find(
     klass => R.any(
@@ -51,5 +56,12 @@ export const getKlassWithFulfilledOrder = (klassData: ?Array<Object>, orderId: n
       klass.payments,
     ),
     klassData,
+  )
+);
+
+export const getInstallmentDeadlineDates = R.map(
+  R.compose(
+    moment,
+    R.prop('deadline')
   )
 );
