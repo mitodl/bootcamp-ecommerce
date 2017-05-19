@@ -16,13 +16,14 @@ import {
 } from '../util/util';
 
 describe("Payment", () => {
-  const deadlineMsgSelector = '.deadline-message';
+  const deadlineMsgSelector = '.deadline-message',
+    klassDropdownSelector = 'select.klass-select';
 
   let defaultProps = {
     ui: {},
     payment: {},
     payableKlassesData: [],
-    selectedKlass: {},
+    selectedKlass: undefined,
     now: moment(),
     sendPayment: () => {},
     setPaymentAmount: () => {},
@@ -34,6 +35,24 @@ describe("Payment", () => {
       <Payment {...defaultProps} {...props} />
     );
   };
+
+  it('should show the user a message when no klasses are eligible for payment', () => {
+    let wrapper = renderPayment({payableKlassesData: []});
+    assert.include(wrapper.html(), 'No payment is required at this time.');
+  });
+
+  describe('klass dropdown', () => {
+    [
+      [1, false],
+      [2, true]
+    ].forEach(([numKlasses, shouldShowDropdown]) => {
+      it(`should${shouldShowDropdown ? '' : ' not'} be shown when ${numKlasses} klasses available`, () => {
+        let fakeKlasses = generateFakeKlasses(numKlasses);
+        let wrapper = renderPayment({payableKlassesData: fakeKlasses});
+        assert.equal(wrapper.find(klassDropdownSelector).exists(), shouldShowDropdown);
+      });
+    });
+  });
 
   describe('deadline message', () => {
     it('should show the final payment deadline date and no installment deadline with one installment', () => {

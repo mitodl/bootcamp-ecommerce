@@ -37,7 +37,6 @@ const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
 
 describe('PaymentPage', () => {
   const klassTitleSelector = '.klass-display-section .desc',
-    klassDropdownSelector = 'select.klass-select',
     welcomeMsgSelector = 'h1.greeting',
     paymentInputSelector = 'input[id="payment-amount"]',
     paymentBtnSelector = 'button.large-cta',
@@ -102,6 +101,17 @@ describe('PaymentPage', () => {
     });
   });
 
+  it('only passes payable klasses to the Payment component', () => {
+    let fakeKlasses = generateFakeKlasses(3);
+    fakeKlasses[1].is_user_eligible_to_pay = false;
+    klassesStub = fetchStub.withArgs(klassesUrl)
+      .returns(Promise.resolve(fakeKlasses));
+
+    return renderFullPaymentPage().then((wrapper) => {
+      assert.lengthOf(wrapper.find('Payment').prop('payableKlassesData'), 2);
+    });
+  });
+
   describe('UI', () => {
     it('shows the name of the user in a welcome message', () => {
       let fakeKlasses = generateFakeKlasses();
@@ -133,32 +143,6 @@ describe('PaymentPage', () => {
         .returns(Promise.resolve(generateFakeKlasses(1)));
       return renderFullPaymentPage().then((wrapper) => {
         assert.isFalse(wrapper.find(welcomeMsgSelector).exists());
-      });
-    });
-
-    [
-      [1, false],
-      [2, true]
-    ].forEach(([numKlasses, shouldShowDropdown]) => {
-      it(`should ${shouldShowDropdown ? '' : 'not'} show dropdown when ${numKlasses} klasses available`, () => {
-        let fakeKlasses = generateFakeKlasses(numKlasses);
-        klassesStub = fetchStub.withArgs(klassesUrl)
-          .returns(Promise.resolve(fakeKlasses));
-
-        return renderFullPaymentPage().then((wrapper) => {
-          assert.equal(wrapper.find(klassDropdownSelector).exists(), shouldShowDropdown);
-        });
-      });
-    });
-
-    it('only shows payable klasses in the klass dropdown', () => {
-      let fakeKlasses = generateFakeKlasses(3);
-      fakeKlasses[1].is_user_eligible_to_pay = false;
-      klassesStub = fetchStub.withArgs(klassesUrl)
-        .returns(Promise.resolve(fakeKlasses));
-
-      return renderFullPaymentPage().then((wrapper) => {
-        assert.lengthOf(wrapper.find('Payment').prop('payableKlassesData'), 2);
       });
     });
 

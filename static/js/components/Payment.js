@@ -150,7 +150,7 @@ export default class Payment extends React.Component {
       null;
     let renderedKlassDropdown = (payableKlassesData.length > 1) ?
       this.renderKlassDropdown() :
-      null;
+      <p className="desc">No payment is required at this time.</p>;
     let renderedSelectedKlass = selectedKlass ?
       this.renderSelectedKlass() :
       null;
