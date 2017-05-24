@@ -15,23 +15,37 @@ body {
 
   .standard-layout {
     background-color: $dark-gray;
-    color: #fff;
+    color: $default-text-color;
     text-align: center;
   }
+}
+
+.top-content-container {
+  padding: 20px 30px 0 30px;
 }
 
 .photo-bg {
   /* background-image from background-images.css */
   min-height: 500px;
 
+  &.top-content-container {
+    padding: 17vh 0 25px 0;
+  }
+
+  p {
+    max-width: 725px;
+    margin: 0 auto 60px auto;
+    color: $default-subtext-color;
+  }
+
+  a:link, a:hover, a:visited {
+    color: $default-subtext-color;
+  }
+
   @include breakpoint(phone) {
     height: 500px;
     min-height: none;
   }
-}
-
-.top-content-container {
-  padding: 20px 30px 0 30px;
 }
 
 h1 {
@@ -146,19 +160,4 @@ h1 {
 
 .btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after, .container-fluid:after, .container:after, .dl-horizontal dd:after, .form-horizontal .form-group:after, .modal-footer:after, .modal-header:after, .nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after, .panel-body:after, .row:after {
   clear: both;
-}
-
-#tos {
-  $tos-margin: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 15px 0;
-
-  h2, p, li {
-    margin-bottom: $tos-margin;
-  }
-
-  li ul {
-    margin-top: $tos-margin;
-  }
 }

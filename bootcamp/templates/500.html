@@ -1,24 +1,28 @@
-{% extends "base_error.html" %}
-{% load i18n static %}
+{% extends "base.html" %}
+{% load i18n %}
 
-{% block error_header %}
-oops&hellip;
-{% endblock %}
+{% block title %}MIT Bootcamps - Error{% endblock %}
 
-{% block error_content %}
-<div id="page-not-found">
-	<p>There has been an error (500).</p>
-	<p>Please <a href="mailto:{{ support_email }}">contact us</a> if this continues to happen</p>
+{% block content %}
+{% include "navbar.html" %}
+<div class="body-rows standard-layout">
+  <div class="body-row">
+    <div class="photo-bg photo-2 top-content-container">
+      <div id="error" class="text-info-page">
+        <h1>There has been an error (500).</h1>
+        <p class="desc">Please <a href="mailto:{{ support_email }}">contact us</a> if this continues to happen</p>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
-
+{% include "footer.html" %}
 {% if request.sentry.id %}
 <script>
- Raven.showReportDialog({
-     eventId: '{{ request.sentry.id }}',
-
-     // use the public DSN (dont include your secret!)
-     dsn: '{{ sentry_public_dsn }}'
- });
+  Raven.showReportDialog({
+    eventId: '{{ request.sentry.id }}',
+    // use the public DSN (dont include your secret!)
+    dsn: '{{ js_settings_json.sentry_dsn }}'
+  });
 </script>
 {% endif %}
+{% endblock %}

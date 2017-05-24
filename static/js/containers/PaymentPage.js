@@ -241,18 +241,16 @@ class PaymentPage extends React.Component {
     return <div>
       <div className="body-row top-content-container">
         {this.renderToast()}
-        <div className="top-content">
-          <Payment
-            ui={ui}
-            payment={payment}
-            payableKlassesData={payableKlassesData}
-            selectedKlass={selectedKlass}
-            now={moment()}
-            sendPayment={this.sendPayment}
-            setPaymentAmount={this.setPaymentAmount}
-            setSelectedKlassKey={this.setSelectedKlassKey}
-          />
-        </div>
+        <Payment
+          ui={ui}
+          payment={payment}
+          payableKlassesData={payableKlassesData}
+          selectedKlass={selectedKlass}
+          now={moment()}
+          sendPayment={this.sendPayment}
+          setPaymentAmount={this.setPaymentAmount}
+          setSelectedKlassKey={this.setSelectedKlassKey}
+        />
       </div>
       { renderedPaymentHistory }
     </div>;

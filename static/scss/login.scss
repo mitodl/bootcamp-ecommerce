@@ -1,14 +1,6 @@
 #home {
-  padding: 17vh 0 25px 0;
-
   @include breakpoint(phone) {
     padding: 40px 0 25px 0;
-  }
-
-  p {
-    max-width: 725px;
-    margin: 0 auto 60px auto;
-    color: rgba(255,255,255,.9);
   }
 
   .btn {
