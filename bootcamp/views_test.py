@@ -4,7 +4,7 @@ Test end to end django views.
 import json
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
 from factory.fuzzy import FuzzyText
 from rest_framework.status import HTTP_302_FOUND
@@ -21,6 +21,7 @@ class TestViews(TestCase):
         super().setUpTestData()
         cls.user = ProfileFactory.create().user
 
+    @override_settings(USE_WEBPACK_DEV_SERVER=False)
     def test_index_anonymous(self):
         """Verify the index view is as expected when user is anonymous"""
 
@@ -75,6 +76,7 @@ class TestViews(TestCase):
         """
         assert self.client.get(reverse('pay')).status_code == HTTP_302_FOUND
 
+    @override_settings(USE_WEBPACK_DEV_SERVER=False)
     def test_pay(self):
         """
         Test that logged in users can see the payment page

@@ -1,14 +1,22 @@
-{% extends "base_error.html" %}
-{% load i18n static %}
+{% extends "base.html" %}
+{% load i18n %}
 
-{% block error_header %}
-404
-{% endblock %}
+{% block title %}MIT Bootcamps - Page Not Found{% endblock %}
 
-{% block error_content %}
-<div id="page-not-found">
-	<p>Page not found</p>
-	<p>Whatever you were looking for, isn't here</p>
-	<p>Please <a href="mailto:{{ support_email }}">contact us</a> if this continues to happen</p>
+{% block content %}
+{% include "navbar.html" %}
+<div class="body-rows standard-layout">
+  <div class="body-row">
+    <div class="photo-bg photo-2 top-content-container">
+      <div id="error" class="text-info-page">
+        <h1>Page not found</h1>
+        <p class="desc">
+          Whatever you were looking for isn't here. <br/>
+          Please <a href="mailto:{{ support_email }}">contact us</a> if you need support.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
+{% include "footer.html" %}
 {% endblock %}

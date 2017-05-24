@@ -1,6 +1,13 @@
 {% load static %}
-.photo-bg {
-  background: url({% static "images/background1.jpg" %}) top right no-repeat;
+
+.photo-bg.photo-1 {
+  background: url({% static "images/background1.jpg" %}) top center no-repeat;
   background-size: cover;
   height: calc(98vh - 63px);
+}
+
+.photo-bg.photo-2 {
+  background: url({% static "images/background2.jpg" %}) top center no-repeat;
+  background-size: cover;
+  height: calc(65vh);
 }

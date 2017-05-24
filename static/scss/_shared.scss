@@ -2,7 +2,7 @@
   font-size: 24px;
   line-height: 32px;
   font-weight: 300;
-  color: rgba(255,255,255,1);
+  color: $default-text-color;
 
   @include breakpoint(phone) {
     font-size: 20px;
@@ -27,5 +27,20 @@ h3.section-header {
     background-color: $med-gray;
     margin-left: 15px;
     width: 70px;
+  }
+}
+
+.text-info-page {
+  $text-page-margin: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 15px 0;
+
+  h2, p, li {
+    margin-bottom: $text-page-margin;
+  }
+
+  li ul {
+    margin-top: $text-page-margin;
   }
 }
