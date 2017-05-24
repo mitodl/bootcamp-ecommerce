@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+Version 0.1.2
+-------------
+
+- Added styling to error pages
+- Added better configuration for klasses Admin
+- Added message for users with no payment-eligible klasses
+- Added Terms of Service page
+- Change installation and payment deadline logic
+- Fixed app.json
+
 Version 0.1.1
 -------------
 
