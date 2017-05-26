@@ -148,16 +148,19 @@ export default class Payment extends React.Component {
     let welcomeMessage = !isNilOrBlank(SETTINGS.user.full_name) ?
       <h1 className="greeting">Hi {SETTINGS.user.full_name}!</h1> :
       null;
-    let renderedKlassDropdown = (payableKlassesData.length > 1) ?
-      this.renderKlassDropdown() :
-      <p className="desc">No payment is required at this time.</p>;
+    let renderedKlassChoice;
+    if (payableKlassesData.length > 1) {
+      renderedKlassChoice = this.renderKlassDropdown();
+    } else if (payableKlassesData.length === 0) {
+      renderedKlassChoice = <p className="desc">No payment is required at this time.</p>;
+    }
     let renderedSelectedKlass = selectedKlass ?
       this.renderSelectedKlass() :
       null;
 
     return <div className="payment-section">
       {welcomeMessage}
-      {renderedKlassDropdown}
+      {renderedKlassChoice}
       {renderedSelectedKlass}
     </div>;
   }
