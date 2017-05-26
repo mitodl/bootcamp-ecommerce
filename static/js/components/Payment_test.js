@@ -16,7 +16,8 @@ import {
 } from '../util/util';
 
 describe("Payment", () => {
-  const deadlineMsgSelector = '.deadline-message',
+  const paymentSectionSelector = '.payment-section',
+    deadlineMsgSelector = '.deadline-message',
     klassDropdownSelector = 'select.klass-select';
 
   let defaultProps = {
@@ -53,6 +54,22 @@ describe("Payment", () => {
       });
     });
   });
+
+  describe('"No payments required" message', () => {
+    let noPaymentMsg = "No payment is required at this time";
+    [
+      [0, true],
+      [1, false],
+      [2, false]
+    ].forEach(([numKlasses, shouldShowMessage]) => {
+      it(`should${shouldShowMessage ? '' : ' not'} be shown when ${numKlasses} klasses available`, () => {
+        let fakeKlasses = generateFakeKlasses(numKlasses);
+        let wrapper = renderPayment({payableKlassesData: fakeKlasses});
+        assert.equal(wrapper.find(paymentSectionSelector).html().indexOf(noPaymentMsg) >= 0, shouldShowMessage);
+      });
+    });
+  });
+
 
   describe('deadline message', () => {
     it('should show the final payment deadline date and no installment deadline with one installment', () => {
