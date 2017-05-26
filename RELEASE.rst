@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.1.3
+-------------
+
+- Fixed bug with &#39;no payment&#39; message
+
 Version 0.1.2
 -------------
 
