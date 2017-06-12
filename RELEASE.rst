@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.1.4
+-------------
+
+- Fixed bug in settings configuration 🤦
+
 Version 0.1.3
 -------------
 
