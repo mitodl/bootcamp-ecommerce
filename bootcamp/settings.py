@@ -19,7 +19,6 @@ from urllib.parse import urljoin
 import dj_database_url
 import yaml
 from celery.schedules import crontab
-from django.core.exceptions import ImproperlyConfigured
 
 
 VERSION = "0.1.4"
@@ -161,8 +160,6 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # the full URL of the current application is mandatory
 BOOTCAMP_ECOMMERCE_BASE_URL = get_var('BOOTCAMP_ECOMMERCE_BASE_URL', None)
-if BOOTCAMP_ECOMMERCE_BASE_URL is None:
-    raise ImproperlyConfigured('Environment variable BOOTCAMP_ECOMMERCE_BASE_URL not set')
 
 EDXORG_BASE_URL = get_var('EDXORG_BASE_URL', 'https://courses.edx.org/')
 SOCIAL_AUTH_EDXORG_KEY = get_var('EDXORG_CLIENT_ID', '')
