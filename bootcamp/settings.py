@@ -430,7 +430,7 @@ CELERY_RESULT_BACKEND = get_var(
 CELERY_TIMEZONE = 'UTC'
 CELERYBEAT_SCHEDULE = {
     'send-payment-email-reminder-every-24-hrs': {
-        'task': 'mail.tasks.async_cache_admissions',
+        'task': 'mail.tasks.async_send_reminder_payment_emails',
         'schedule': crontab(minute=0, hour='3')
     },
 }
