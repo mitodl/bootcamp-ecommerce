@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.1.5
+-------------
+
+- Upgraded requirements and fixed tests
+
 Version 0.1.4
 -------------
 

@@ -21,7 +21,7 @@ import yaml
 from celery.schedules import crontab
 
 
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 
 CONFIG_PATHS = [
     os.environ.get('BOOTCAMP_CONFIG', ''),
