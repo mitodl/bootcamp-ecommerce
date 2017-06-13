@@ -16,19 +16,18 @@ from django.conf import settings  # noqa pylint: disable=wrong-import-position
 
 log = logging.getLogger(__name__)
 
+client = Client(**settings.RAVEN_CONFIG)
 
-class CustomCelery(Celery):
-    """Custom celery class to handle Sentry setup."""
+register_logger_signal(client, loglevel=settings.LOG_LEVEL)
 
-    def on_configure(self):
-        """Automatically register Sentry client for use with Celery tasks."""
-        client = Client(**settings.RAVEN_CONFIG)
-        register_logger_signal(client)
-        register_signal(client)
+# The register_signal function can also take an optional argument
+# `ignore_expected` which causes exception classes specified in Task.throws
+# to be ignored
+register_signal(client, ignore_expected=True)
 
-async = CustomCelery('bootcamp')
+app = Celery('bootcamp')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
-async.config_from_object('django.conf:settings')
-async.autodiscover_tasks(lambda: settings.INSTALLED_APPS)  # pragma: no cover
+app.config_from_object('django.conf:settings', namespace='CELERY')
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)  # pragma: no cover

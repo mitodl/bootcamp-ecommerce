@@ -5,7 +5,7 @@ import logging
 
 from django.contrib.auth.models import User
 
-from bootcamp.celery import async
+from bootcamp.celery import app
 from klasses.models import Klass, BootcampAdmissionCache
 
 log = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ def _cache_admissions(user_email, payable_klasses):
     BootcampAdmissionCache.delete_all_but(user, payable_klasses_keys)
 
 
-@async.task
+@app.task
 def async_cache_admissions(user_email, payable_klasses):
     """
     Takes care of calling the function to cache the admissions for which the user is allowed to pay.

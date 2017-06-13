@@ -417,15 +417,16 @@ SL_TRACKING_ID = get_var("SL_TRACKING_ID", "")
 REACT_GA_DEBUG = get_var("REACT_GA_DEBUG", False)
 
 # Celery
-BROKER_URL = get_var("BROKER_URL", get_var("REDISCLOUD_URL", None))
-CELERY_ALWAYS_EAGER = get_var("CELERY_ALWAYS_EAGER", False)
-CELERY_EAGER_PROPAGATES_EXCEPTIONS = get_var(
-    "CELERY_EAGER_PROPAGATES_EXCEPTIONS", True)
+CELERY_BROKER_URL = get_var(
+    "CELERY_BROKER_URL", get_var("REDISCLOUD_URL", None)) or get_var("BROKER_URL", get_var("REDISCLOUD_URL", None))
+CELERY_TASK_ALWAYS_EAGER = get_var("CELERY_TASK_ALWAYS_EAGER", False) or get_var("CELERY_ALWAYS_EAGER", False)
+CELERY_TASK_EAGER_PROPAGATES = get_var(
+    "CELERY_TASK_EAGER_PROPAGATES", True) or get_var("CELERY_EAGER_PROPAGATES_EXCEPTIONS", True)
 CELERY_RESULT_BACKEND = get_var(
     "CELERY_RESULT_BACKEND", get_var("REDISCLOUD_URL", None)
 )
 CELERY_TIMEZONE = 'UTC'
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'send-payment-email-reminder-every-24-hrs': {
         'task': 'mail.tasks.async_send_reminder_payment_emails',
         'schedule': crontab(minute=0, hour='3')
@@ -444,7 +445,7 @@ CACHES = {
     },
     'redis': {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": BROKER_URL,
+        "LOCATION": CELERY_BROKER_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         },

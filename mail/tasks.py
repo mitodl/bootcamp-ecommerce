@@ -6,7 +6,7 @@ from decimal import Decimal
 
 from django.conf import settings
 
-from bootcamp.celery import async
+from bootcamp.celery import app
 from ecommerce.models import Line
 from klasses.models import Klass, BootcampAdmissionCache
 from mail.api import MailgunClient
@@ -77,7 +77,7 @@ def send_reminder_payment_emails():
         )
 
 
-@async.task
+@app.task
 def async_send_reminder_payment_emails():
     """
     Takes care of calling the function to send payment reminders
