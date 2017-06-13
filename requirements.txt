@@ -4,10 +4,9 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-amqp==1.4.9               # via kombu
-anyjson==0.3.3            # via kombu
-billiard==3.3.0.23        # via celery
-celery==3.1.25
+amqp==2.1.4               # via kombu
+billiard==3.5.0.2         # via celery
+celery==4.0.2
 contextlib2==0.5.5        # via raven
 decorator==4.0.11         # via ipython, traitlets
 defusedxml==0.5.0         # via python3-openid, social-auth-core
@@ -21,12 +20,12 @@ djangorestframework==3.5.2
 edx-api-client==0.3.0
 elasticsearch==5.4.0      # via django-server-status
 factory-boy==2.8.1
-faker==0.7.16
+faker==0.7.17
 html5lib==0.999999999
 ipython-genutils==0.2.0   # via traitlets
 ipython==6.1.0
 jedi==0.10.2              # via ipython
-kombu==3.0.37             # via celery, django-server-status
+kombu==4.0.2              # via celery, django-server-status
 newrelic==2.86.3.70
 oauthlib==2.0.2           # via requests-oauthlib, social-auth-core
 pexpect==4.2.1            # via ipython
@@ -52,5 +51,6 @@ static3==0.5.1
 traitlets==4.3.2          # via ipython
 urllib3==1.21.1           # via elasticsearch
 uwsgi==2.0.15
+vine==1.1.3               # via amqp
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
