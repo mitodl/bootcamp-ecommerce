@@ -60,7 +60,7 @@ export default class Payment extends React.Component {
         let totalOwedForInstallment = this.getTotalOwedUpToInstallment(nextInstallmentIndex);
         if (selectedKlass.total_paid < totalOwedForInstallment) {
           installmentDeadlineText =
-            `A total downpayment of ${formatDollarAmount(totalOwedForInstallment)} ` +
+            `A deposit of ${formatDollarAmount(totalOwedForInstallment)} ` +
             `is due ${formatReadableDate(deadlineDates[nextInstallmentIndex])}.`;
         }
       }
@@ -69,7 +69,7 @@ export default class Payment extends React.Component {
       }
     }
 
-    return `${installmentDeadlineText} You can pay any amount now. ` +
+    return `${installmentDeadlineText}. ` +
       `Full payment must be complete by ${finalInstallmentDeadline}.`;
   };
 
