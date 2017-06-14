@@ -159,7 +159,6 @@ describe('PaymentPage', () => {
 
         return renderFullPaymentPage().then((wrapper) => {
           let deadlineText = wrapper.find(deadlineMsgSelector).text();
-          assert.include(deadlineText, 'You can pay any amount');
           if (!_.isEmpty(deadlineDateISO)) {
             assert.include(deadlineText, util.formatReadableDate(moment(deadlineDateISO)));
           }
