@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.1.6
+-------------
+
+- Upgraded celery to 4
+
 Version 0.1.5
 -------------
 
