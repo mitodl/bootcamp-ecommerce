@@ -42,7 +42,7 @@ class Klass(models.Model):
         Example return values:
         - Start/end in same month: "May 5 - 10, 2017"
         - Start/end in different months: "May 5 - June 10, 2017"
-        - Start/end in different years: "May 5 2017 - May 5, 2018"
+        - Start/end in different years: "May 5, 2017 - May 5, 2018"
         - No end date: "May 5, 2017"
         """
         month_day_format = '%b %-d'
