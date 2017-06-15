@@ -78,7 +78,7 @@ describe("Payment", () => {
       let deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html();
       let expectedFinalDeadline = formatReadableDateFromStr(fakeKlass.installments[0].deadline);
       assert.include(deadlineMsgHtml, `Full payment must be complete by ${expectedFinalDeadline}`);
-      assert.notInclude(deadlineMsgHtml, 'A total downpayment of');
+      assert.notInclude(deadlineMsgHtml, 'A deposit of');
     });
 
     it('should show the final payment deadline date with multiple installments', () => {
@@ -106,7 +106,7 @@ describe("Payment", () => {
       let installmentAmount = formatDollarAmount(fakeKlass.installments[0].amount);
       assert.include(
         deadlineMsgHtml,
-        `A total downpayment of ${installmentAmount} is due ${formatReadableDate(nextInstallmentDate)}`
+        `A deposit of ${installmentAmount} is due ${formatReadableDate(nextInstallmentDate)}`
       );
     });
 
@@ -131,7 +131,7 @@ describe("Payment", () => {
         let installmentAmount = formatDollarAmount(amt * 3);
         assert.include(
           deadlineMsgHtml,
-          `A total downpayment of ${installmentAmount} is due ${formatReadableDate(nextInstallmentDate)}`
+          `A deposit of ${installmentAmount} is due ${formatReadableDate(nextInstallmentDate)}`
         );
       });
 
@@ -153,7 +153,7 @@ describe("Payment", () => {
         fakeKlass.installments = _.slice(fakeKlass.installments, 0, fakeKlass.installments.length - 1);
         let wrapper = renderPayment({selectedKlass: fakeKlass});
         let deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html();
-        assert.notInclude(deadlineMsgHtml, 'A total downpayment of ');
+        assert.notInclude(deadlineMsgHtml, 'A deposit of ');
       });
     });
   });
