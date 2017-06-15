@@ -40,10 +40,10 @@ class Klass(models.Model):
         Returns a formatted date range.
 
         Example return values:
-        - Start/end in same month: "May 5 - 10 2017"
-        - Start/end in different months: "May 5 - June 10 2017"
-        - Start/end in different years: "May 5 2017 - May 5 2018"
-        - No end date: "May 5 2017"
+        - Start/end in same month: "May 5 - 10, 2017"
+        - Start/end in different months: "May 5 - June 10, 2017"
+        - Start/end in different years: "May 5 2017 - May 5, 2018"
+        - No end date: "May 5, 2017"
         """
         month_day_format = '%b %-d'
         if self.start_date and self.end_date:
@@ -54,16 +54,16 @@ class Klass(models.Model):
                     formatted_end_date = self.end_date.day
                 else:
                     formatted_end_date = end_date_month_day
-                return '{} - {} {}'.format(start_date_month_day, formatted_end_date, self.end_date.year)
+                return '{} - {}, {}'.format(start_date_month_day, formatted_end_date, self.end_date.year)
             else:
-                return '{} {} - {} {}'.format(
+                return '{}, {} - {}, {}'.format(
                     start_date_month_day,
                     self.start_date.year,
                     end_date_month_day,
                     self.end_date.year
                 )
         elif self.start_date:
-            return '{} {}'.format(self.start_date.strftime(month_day_format), self.start_date.year)
+            return '{}, {}'.format(self.start_date.strftime(month_day_format), self.start_date.year)
         else:
             return ''
 

@@ -45,13 +45,13 @@ def test_klass_formatted_date_range():
     date_different_month = datetime(year=2017, month=2, day=1)
     date_different_year = datetime(year=2018, month=1, day=1)
     klass = KlassFactory.build(start_date=base_date, end_date=date_same_month)
-    assert klass.formatted_date_range == 'Jan 1 - 10 2017'
+    assert klass.formatted_date_range == 'Jan 1 - 10, 2017'
     klass = KlassFactory.build(start_date=base_date, end_date=date_different_month)
-    assert klass.formatted_date_range == 'Jan 1 - Feb 1 2017'
+    assert klass.formatted_date_range == 'Jan 1 - Feb 1, 2017'
     klass = KlassFactory.build(start_date=base_date, end_date=date_different_year)
-    assert klass.formatted_date_range == 'Jan 1 2017 - Jan 1 2018'
+    assert klass.formatted_date_range == 'Jan 1, 2017 - Jan 1, 2018'
     klass = KlassFactory.build(start_date=base_date, end_date=None)
-    assert klass.formatted_date_range == 'Jan 1 2017'
+    assert klass.formatted_date_range == 'Jan 1, 2017'
     klass = KlassFactory.build(start_date=None, end_date=None)
     assert klass.formatted_date_range == ''
 
