@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.1.7
+-------------
+
+- text changes (#117)
+
 Version 0.1.6
 -------------
 
