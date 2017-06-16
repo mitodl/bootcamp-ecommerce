@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.1.8
+-------------
+
+- remove stray period (#122)
+
 Version 0.1.7
 -------------
 
