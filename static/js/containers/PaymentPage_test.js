@@ -5,7 +5,6 @@ import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { assert } from 'chai';
 import sinon from 'sinon';
-import _ from 'lodash';
 import moment from 'moment';
 
 import * as api from '../lib/api';
@@ -37,11 +36,8 @@ const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
 
 
 describe('PaymentPage', () => {
-  const klassTitleSelector = '.klass-display-section .desc',
-    welcomeMsgSelector = 'h1.greeting',
-    paymentInputSelector = 'input[id="payment-amount"]',
-    paymentBtnSelector = 'button.large-cta',
-    deadlineMsgSelector = '.deadline-message';
+  const paymentInputSelector = 'input[id="payment-amount"]',
+    paymentBtnSelector = 'button.large-cta';
 
   let store, listenForActions, sandbox, fetchStub,
     klassesUrl, klassesStub; // eslint-disable-line no-unused-vars
@@ -103,7 +99,7 @@ describe('PaymentPage', () => {
     store.dispatch(setSelectedKlassKey(3));
 
     return renderFullPaymentPage().then((wrapper) => {
-      assert.deepEqual(wrapper.find('PaymentPage').prop('selectedKlass'), fakeKlasses[2]);
+      assert.deepEqual(wrapper.find('Payment').prop('selectedKlass'), fakeKlasses[2]);
     });
   });
 
@@ -118,86 +114,31 @@ describe('PaymentPage', () => {
     });
   });
 
-  describe('UI', () => {
-    it('does not show the payment & payment history sections while API results are still pending', () => {
-      klassesStub = fetchStub
-        .withArgs(klassesUrl)
-        .returns(new Promise(() => { }));
+  it('does not show the payment & payment history sections while API results are still pending', () => {
+    klassesStub = fetchStub
+      .withArgs(klassesUrl)
+      .returns(new Promise(() => { }));
 
-      return renderFullPaymentPage({expectKlassSuccess: false}).then((wrapper) => {
-        assert.isFalse(wrapper.find('Payment').exists());
-        assert.isFalse(wrapper.find('PaymentHistory').exists());
-      });
+    return renderFullPaymentPage({expectKlassSuccess: false}).then((wrapper) => {
+      assert.isFalse(wrapper.find('Payment').exists());
+      assert.isFalse(wrapper.find('PaymentHistory').exists());
     });
+  });
 
-    it('shows the name of the user in a welcome message', () => {
-      let fakeKlasses = generateFakeKlasses();
+  [
+    [100, true, "past payments should"],
+    [0, false, "no past payments should not"]
+  ].forEach(([totalPaid, shouldShowPayHistory, testDesciption]) => {
+    it(`for user with ${testDesciption} include payment history component`, () => {
+      let fakeKlasses = generateFakeKlasses(2);
+      for (let klass of fakeKlasses) {
+        klass.total_paid = totalPaid;
+      }
       klassesStub = fetchStub.withArgs(klassesUrl)
         .returns(Promise.resolve(fakeKlasses));
 
       return renderFullPaymentPage().then((wrapper) => {
-        let welcomeMsg = wrapper.find(welcomeMsgSelector);
-        assert.include(welcomeMsg.text(), SETTINGS.user.full_name);
-      });
-    });
-
-    it('shows the selected klass', () => {
-      let fakeKlasses = generateFakeKlasses(3);
-      klassesStub = fetchStub.withArgs(klassesUrl)
-        .returns(Promise.resolve(fakeKlasses));
-      store.dispatch(setSelectedKlassKey(1));
-
-      return renderFullPaymentPage().then((wrapper) => {
-        let title = wrapper.find(klassTitleSelector);
-        assert.include(title.text(), fakeKlasses[0].display_title);
-      });
-    });
-
-    it('does not show the welcome message if the name of the user is blank', () => {
-      SETTINGS.user.full_name = '';
-      klassesStub = fetchStub
-        .withArgs(klassesUrl)
-        .returns(Promise.resolve(generateFakeKlasses(1)));
-      return renderFullPaymentPage().then((wrapper) => {
-        assert.isFalse(wrapper.find(welcomeMsgSelector).exists());
-      });
-    });
-
-    [
-      [moment().format(), 'non-null date message'],
-      [null, 'null date message']
-    ].forEach(([deadlineDateISO, deadlineDateDesc]) => {
-      it(`shows payment due date message with ${deadlineDateDesc}`, () => {
-        let fakeKlasses = generateFakeKlasses(1);
-        fakeKlasses[0].payment_deadline = deadlineDateISO;
-        klassesStub = fetchStub.withArgs(klassesUrl)
-          .returns(Promise.resolve(fakeKlasses));
-        store.dispatch(setSelectedKlassKey(1));
-
-        return renderFullPaymentPage().then((wrapper) => {
-          let deadlineText = wrapper.find(deadlineMsgSelector).text();
-          if (!_.isEmpty(deadlineDateISO)) {
-            assert.include(deadlineText, util.formatReadableDate(moment(deadlineDateISO)));
-          }
-        });
-      });
-    });
-
-    [
-      [100, true, "past payments should"],
-      [0, false, "no past payments should not"]
-    ].forEach(([totalPaid, shouldShowPayHistory, testDesciption]) => {
-      it(`for user with ${testDesciption} include payment history component`, () => {
-        let fakeKlasses = generateFakeKlasses(2);
-        for (let klass of fakeKlasses) {
-          klass.total_paid = totalPaid;
-        }
-        klassesStub = fetchStub.withArgs(klassesUrl)
-          .returns(Promise.resolve(fakeKlasses));
-
-        return renderFullPaymentPage().then((wrapper) => {
-          assert.equal(wrapper.find('PaymentHistory').exists(), shouldShowPayHistory);
-        });
+        assert.equal(wrapper.find('PaymentHistory').exists(), shouldShowPayHistory);
       });
     });
   });
