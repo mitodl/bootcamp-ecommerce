@@ -27,13 +27,14 @@ import * as util from '../util/util';
 import { generateFakeKlasses } from '../factories';
 import {
   makeRequestActionType,
-  makeReceiveSuccessActionType
+  makeReceiveSuccessActionType,
 } from '../rest';
 
 const REQUEST_PAYMENT = makeRequestActionType('payment');
 const RECEIVE_PAYMENT_SUCCESS = makeReceiveSuccessActionType('payment');
 const REQUEST_KLASSES = makeRequestActionType('klasses');
 const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType('klasses');
+
 
 describe('PaymentPage', () => {
   const klassTitleSelector = '.klass-display-section .desc',
@@ -70,9 +71,14 @@ describe('PaymentPage', () => {
     )
   );
 
-  let renderFullPaymentPage = (props = {}, extraActions = []) => {
+  let renderFullPaymentPage = ({props = {}, extraActions = [], expectKlassSuccess = true} = {}) => {
     let wrapper;
-    let actions = [REQUEST_KLASSES, RECEIVE_KLASSES_SUCCESS].concat(extraActions);
+    let actions = [REQUEST_KLASSES];
+    if (expectKlassSuccess) {
+      actions.push(RECEIVE_KLASSES_SUCCESS);
+    }
+    actions = actions.concat(extraActions);
+
     return listenForActions(actions, () => {
       wrapper = renderPaymentComponent(props);
     }).then(() => {
@@ -113,6 +119,17 @@ describe('PaymentPage', () => {
   });
 
   describe('UI', () => {
+    it('does not show the payment & payment history sections while API results are still pending', () => {
+      klassesStub = fetchStub
+        .withArgs(klassesUrl)
+        .returns(new Promise(() => { }));
+
+      return renderFullPaymentPage({expectKlassSuccess: false}).then((wrapper) => {
+        assert.isFalse(wrapper.find('Payment').exists());
+        assert.isFalse(wrapper.find('PaymentHistory').exists());
+      });
+    });
+
     it('shows the name of the user in a welcome message', () => {
       let fakeKlasses = generateFakeKlasses();
       klassesStub = fetchStub.withArgs(klassesUrl)
@@ -268,7 +285,7 @@ describe('PaymentPage', () => {
 
     it('shows the order status toast when the query param is set for a cancellation', () => {
       window.location = '/pay/?status=cancel';
-      return renderFullPaymentPage(TOAST_ACTIONS).then(() => {
+      return renderFullPaymentPage({extraActions: TOAST_ACTIONS}).then(() => {
         assert.deepEqual(store.getState().ui.toastMessage, {
           message: "Order was cancelled",
           icon: TOAST_FAILURE
@@ -278,7 +295,7 @@ describe('PaymentPage', () => {
 
     it('shows the order status toast when the query param is set for a success', () => {
       window.location = `/pay?status=receipt&order=${orderId}`;
-      return renderFullPaymentPage(TOAST_ACTIONS).then(() => {
+      return renderFullPaymentPage({extraActions: TOAST_ACTIONS}).then(() => {
         assert.deepEqual(store.getState().ui.toastMessage, {
           title: "Payment Complete!",
           icon: TOAST_SUCCESS
@@ -318,7 +335,7 @@ describe('PaymentPage', () => {
 
       it('refetches the klasses after 3 seconds if 30 seconds has not passed', () => {
         window.location = `/pay?status=receipt&order=missing`;
-        return renderFullPaymentPage(TIMEOUT_ACTIONS).then(() => {
+        return renderFullPaymentPage({extraActions: TIMEOUT_ACTIONS}).then(() => {
           assert.equal(klassesStub.callCount, 1);
           clock.tick(3501);
           assert.equal(klassesStub.callCount, 2);
@@ -327,7 +344,7 @@ describe('PaymentPage', () => {
 
       it('shows an error message if more than 30 seconds have passed', () => {
         window.location = '/pay?status=receipt&order=missing';
-        return renderFullPaymentPage(TIMEOUT_ACTIONS).then(() => {
+        return renderFullPaymentPage({extraActions: TIMEOUT_ACTIONS}).then(() => {
           let past = moment().add(-125, 'seconds').toISOString();
           store.dispatch(setInitialTime(past));
           clock.tick(3500);
