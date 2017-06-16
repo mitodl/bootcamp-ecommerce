@@ -69,7 +69,7 @@ export default class Payment extends React.Component {
       }
     }
 
-    return `${installmentDeadlineText}. ` +
+    return `${installmentDeadlineText} ` +
       `Full payment must be complete by ${finalInstallmentDeadline}.`;
   };
 
