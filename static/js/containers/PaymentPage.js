@@ -14,6 +14,7 @@ import {
   setSelectedKlassKey,
   setTimeoutActive,
   setToastMessage,
+  FETCH_SUCCESS,
 } from '../actions';
 import {
   TOAST_SUCCESS,
@@ -229,18 +230,11 @@ class PaymentPage extends React.Component {
       selectedKlass
     } = this.props;
 
-    let klassDataWithPayments = this.getKlassDataWithPayments(klasses.data || []);
-    let renderedPaymentHistory = klassDataWithPayments.length > 0
-      ? (
-        <div className="body-row">
-          <PaymentHistory klassDataWithPayments={klassDataWithPayments} />
-        </div>
-      )
-      : null;
+    let renderedPayment = null,
+      renderedPaymentHistory = null;
 
-    return <div>
-      <div className="body-row top-content-container">
-        {this.renderToast()}
+    if (klasses.fetchStatus === FETCH_SUCCESS) {
+      renderedPayment = (
         <Payment
           ui={ui}
           payment={payment}
@@ -251,8 +245,24 @@ class PaymentPage extends React.Component {
           setPaymentAmount={this.setPaymentAmount}
           setSelectedKlassKey={this.setSelectedKlassKey}
         />
+      );
+
+      let klassDataWithPayments = this.getKlassDataWithPayments(klasses.data || []);
+      renderedPaymentHistory = klassDataWithPayments.length > 0
+        ? (
+          <div className="body-row">
+            <PaymentHistory klassDataWithPayments={klassDataWithPayments}/>
+          </div>
+        )
+        : null;
+    }
+
+    return <div>
+      <div className="body-row top-content-container">
+        {this.renderToast()}
+        {renderedPayment}
       </div>
-      { renderedPaymentHistory }
+      {renderedPaymentHistory}
     </div>;
   }
 }
