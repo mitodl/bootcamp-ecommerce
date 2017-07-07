@@ -1,3 +1,4 @@
+/* global SETTINGS: false */
 import React from 'react';
 import { shallow } from 'enzyme';
 import { assert } from 'chai';
@@ -18,7 +19,9 @@ import {
 describe("Payment", () => {
   const paymentSectionSelector = '.payment-section',
     deadlineMsgSelector = '.deadline-message',
-    klassDropdownSelector = 'select.klass-select';
+    klassDropdownSelector = 'select.klass-select',
+    welcomeMsgSelector = 'h1.greeting',
+    klassTitleSelector = '.klass-display-section .desc';
 
   let defaultProps = {
     ui: {},
@@ -40,6 +43,42 @@ describe("Payment", () => {
   it('should show the user a message when no klasses are eligible for payment', () => {
     let wrapper = renderPayment({payableKlassesData: []});
     assert.include(wrapper.html(), 'No payment is required at this time.');
+  });
+
+  it('shows the name of the user in a welcome message', () => {
+    let fakeKlasses = generateFakeKlasses();
+    let wrapper = renderPayment({payableKlassesData: fakeKlasses});
+    let welcomeMsg = wrapper.find(welcomeMsgSelector);
+    assert.include(welcomeMsg.text(), SETTINGS.user.full_name);
+  });
+
+  it('does not show the welcome message if the name of the user is blank', () => {
+    SETTINGS.user.full_name = '';
+    let fakeKlasses = generateFakeKlasses();
+    let wrapper = renderPayment({payableKlassesData: fakeKlasses});
+    assert.isFalse(wrapper.find(welcomeMsgSelector).exists());
+  });
+
+  it('shows the selected klass', () => {
+    let fakeKlasses = generateFakeKlasses(3);
+    let wrapper = renderPayment({payableKlassesData: fakeKlasses, selectedKlass: fakeKlasses[0]});
+    let title = wrapper.find(klassTitleSelector);
+    assert.include(title.text(), fakeKlasses[0].display_title);
+  });
+
+  [
+    [moment().format(), 'non-null date message'],
+    [null, 'null date message']
+  ].forEach(([deadlineDateISO, deadlineDateDesc]) => {
+    it(`shows payment due date message with ${deadlineDateDesc}`, () => {
+      let fakeKlasses = generateFakeKlasses(1);
+      fakeKlasses[0].payment_deadline = deadlineDateISO;
+      let wrapper = renderPayment({payableKlassesData: fakeKlasses, selectedKlass: fakeKlasses[0]});
+      let deadlineText = wrapper.find(deadlineMsgSelector).text();
+      if (!_.isEmpty(deadlineDateISO)) {
+        assert.include(deadlineText, formatReadableDate(moment(deadlineDateISO)));
+      }
+    });
   });
 
   describe('klass dropdown', () => {
