@@ -18,7 +18,6 @@ from urllib.parse import urljoin
 
 import dj_database_url
 import yaml
-from celery.schedules import crontab
 
 
 VERSION = "0.1.8"
@@ -426,12 +425,6 @@ CELERY_RESULT_BACKEND = get_var(
     "CELERY_RESULT_BACKEND", get_var("REDISCLOUD_URL", None)
 )
 CELERY_TIMEZONE = 'UTC'
-CELERY_BEAT_SCHEDULE = {
-    'send-payment-email-reminder-every-24-hrs': {
-        'task': 'mail.tasks.async_send_reminder_payment_emails',
-        'schedule': crontab(minute=0, hour='3')
-    },
-}
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
