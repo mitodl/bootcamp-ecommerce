@@ -138,6 +138,13 @@ export default class Payment extends React.Component {
         <button className="btn large-cta" onClick={sendPayment} disabled={processing}>
           Pay Now
         </button>
+        <br/>
+        <p className="tac">
+          By making a payment I certify that I agree with the <a href="/terms_and_conditions/" target="_blank"
+            className="tac-link">
+            MIT Bootcamps Terms and Conditions
+          </a>
+        </p>
       </div>
     </div>;
   };

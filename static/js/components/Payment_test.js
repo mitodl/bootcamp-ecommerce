@@ -81,6 +81,19 @@ describe("Payment", () => {
     });
   });
 
+  it('should show terms and conditions message', () => {
+    const fakeKlass = generateFakeKlasses(1, {hasInstallment: true})[0];
+    const wrapper = renderPayment({selectedKlass: fakeKlass});
+    const termsText = wrapper.find(".tac").text();
+    const termsLink = wrapper.find(".tac-link");
+
+    assert.include(
+      termsText,
+      'By making a payment I certify that I agree with the MIT Bootcamps Terms and Conditions'
+    );
+    assert.equal(termsLink.prop('href'), '/terms_and_conditions/');
+  });
+
   describe('klass dropdown', () => {
     [
       [1, false],
