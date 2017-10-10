@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+Version 0.2.0
+-------------
+
+- Updated the yarn.lock after failed deployment
+- remove models with migration
+- removed models file
+- remove models
+- Update code with celery settings
+- Deactivated reminder emails
+- Moved js tests from payment container tests to component tests
+- Fixed bug w/ &#39;no klasses&#39; message being shown while API results were still pending
+
 Version 0.1.8
 -------------
 
