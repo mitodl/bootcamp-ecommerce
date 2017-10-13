@@ -14,27 +14,27 @@
   }
 
   .deadline-message {
-    color: rgba(255,255,255,.7);
+    color: $default-subtext-color;
     font-size: 16px;
     padding-top: 15px;
   }
 
   .tac {
-    color: rgba(255, 255, 255, .7);
+    color: $default-subtext-color;
 
     a {
-      color: rgba(255, 255, 255, .7);
+      color: $default-subtext-color;
 
       &:visited {
-        color: rgba(255, 255, 255, .7);
+        color: $default-subtext-color;
       }
 
       &:hover {
-        color: rgba(255, 250, 255, .7);
+        color: $default-subtext-color;
       }
 
       &:active {
-        color: rgba(255, 255, 255,.7);
+        color: $default-subtext-color;
       }
     }
   }
