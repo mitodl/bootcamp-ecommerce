@@ -14,9 +14,29 @@
   }
 
   .deadline-message {
-    color: rgba(255,255,255,.7);
+    color: $default-subtext-color;
     font-size: 16px;
     padding-top: 15px;
+  }
+
+  .tac {
+    color: $default-subtext-color;
+
+    a {
+      color: $default-subtext-color;
+
+      &:visited {
+        color: $default-subtext-color;
+      }
+
+      &:hover {
+        color: $default-subtext-color;
+      }
+
+      &:active {
+        color: $default-subtext-color;
+      }
+    }
   }
 
   .payment {
