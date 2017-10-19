@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.2.1
+-------------
+
+- Added terms and conditions (#130)
+
 Version 0.2.0
 -------------
 
