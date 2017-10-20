@@ -23,4 +23,4 @@ RUN chown -R mitodl:mitodl /src
 
 USER mitodl
 
-RUN yarn install --pure-lockfile
+RUN yarn install --frozen-lockfile
