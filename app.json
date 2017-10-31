@@ -114,6 +114,11 @@
     "BOOTCAMP_FROM_EMAIL": {
       "value": "MIT Bootcamps <micromasters-support@mit.edu>"
     },
+    "BOOTCAMP_LOG_LEVEL": {
+      "description": "The logging level for the application",
+      "required": true,
+      "value": "INFO"
+    },
     "BOOTCAMP_SECURE_SSL_REDIRECT": {
       "description": "Application-level SSL redirect setting.",
       "required": false,
