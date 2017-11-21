@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   db:
     image: postgres
@@ -80,7 +80,7 @@ services:
     command: >
       /bin/bash -c '
       sleep 3;
-      celery -A bootcamp worker -B -l debug'
+      celery -A bootcamp worker -B -l ${BOOTCAMP_LOG_LEVEL:-INFO}'
     links:
       - db
       - redis
