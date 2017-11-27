@@ -15,7 +15,6 @@ import faker
 import pytz
 
 from klasses import models
-from profiles.factories import UserFactory
 
 FAKE = faker.Factory.create()
 
@@ -48,13 +47,3 @@ class InstallmentFactory(DjangoModelFactory):
 
     class Meta:
         model = models.Installment
-
-
-class BootcampAdmissionCacheFactory(DjangoModelFactory):
-    """Factory for BootcampAdmissionCache"""
-    user = SubFactory(UserFactory)
-    klass = SubFactory(KlassFactory)
-    data = {'foo': 'bar'}
-
-    class Meta:
-        model = models.BootcampAdmissionCache

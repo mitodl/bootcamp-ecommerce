@@ -8,8 +8,6 @@ import requests
 from django.conf import settings
 from rest_framework import status
 
-from klasses.tasks import async_cache_admissions
-
 
 log = logging.getLogger(__name__)
 
@@ -28,9 +26,6 @@ class BootcampAdmissionClient:
         self.admissions = self._get_admissions()
         self.payable_klasses = self._get_payable_klasses()
         self.payable_klasses_keys = [klass['klass_id'] for klass in self.payable_klasses]
-        # trigger the async task to cache the info
-        if self.payable_klasses:
-            async_cache_admissions.delay(self.user_email, self.payable_klasses)
 
     def _get_admissions(self):
         """

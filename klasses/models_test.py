@@ -5,8 +5,6 @@ import pytest
 from pytz import UTC
 
 from klasses.factories import InstallmentFactory, KlassFactory
-from klasses.models import BootcampAdmissionCache
-from profiles.factories import UserFactory
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument,protected-access
 
@@ -98,43 +96,3 @@ def test_total_due_by_next_deadline():
     installment_next = InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(days=3))
     InstallmentFactory.create(klass=klass, deadline=datetime.now(tz=UTC)+timedelta(weeks=3))
     assert klass.total_due_by_next_deadline == installment_past.amount + installment_next.amount
-
-
-# BootcampAdmissionCache model tests
-
-@pytest.fixture()
-def test_data():
-    """
-    Sets up the data for all the tests in this module
-    """
-    user1 = UserFactory.create(email='foo@example.com')
-    user2 = UserFactory.create(email='bar@example.com')
-    num_klasses = 3
-    for klass_key in range(100, 100+num_klasses):
-        klass = KlassFactory.create(klass_key=klass_key)
-        for user in (user1, user2, ):
-            BootcampAdmissionCache.objects.create(user=user, klass=klass, data={'foo': 'bar'})
-    return user1, num_klasses
-
-
-def test_bootcamp_adm_cache_user_qset(test_data):
-    """
-    Tests the user_qset filter
-    """
-    user, num_klasses = test_data
-    assert BootcampAdmissionCache.objects.count() == num_klasses*2
-    assert BootcampAdmissionCache.user_qset(user).count() == num_klasses
-    for adm_cache in BootcampAdmissionCache.user_qset(user):
-        assert adm_cache.user == user
-
-
-def test_bootcamp_adm_cache_delete_all_but(test_data):
-    """
-    Tests the delete_all_but classmethod
-    """
-    user, num_klasses = test_data
-    assert BootcampAdmissionCache.objects.count() == num_klasses*2
-    assert BootcampAdmissionCache.user_qset(user).count() == num_klasses
-    BootcampAdmissionCache.delete_all_but(user, [100])
-    assert BootcampAdmissionCache.user_qset(user).count() == 1
-    assert BootcampAdmissionCache.user_qset(user).first().klass.klass_key == 100

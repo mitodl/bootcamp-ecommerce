@@ -87,15 +87,7 @@ def mocked_get_400(mocked_requests_get):
     return mocked_requests_get
 
 
-@pytest.fixture()
-def mocked_update_cache(mocker):
-    """
-    Mocked async_cache_admissions task
-    """
-    return mocker.patch('klasses.tasks.async_cache_admissions.delay', autospec=True)
-
-
-def test_happy_path(test_data, mocked_get_200, mocked_update_cache):
+def test_happy_path(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient with a normal response
     """
@@ -113,10 +105,9 @@ def test_happy_path(test_data, mocked_get_200, mocked_update_cache):
     ]
     assert boot_client.payable_klasses == expected_payable_klasses
     assert boot_client.payable_klasses_keys == [16]
-    mocked_update_cache.assert_called_once_with(user_email, expected_payable_klasses)
 
 
-def test_get_raises(test_data, mocked_get_200, mocked_update_cache):
+def test_get_raises(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient in case the GET request to the service fails raising anything
     """
@@ -128,10 +119,9 @@ def test_get_raises(test_data, mocked_get_200, mocked_update_cache):
     assert boot_client.admissions == {}
     assert boot_client.payable_klasses == []
     assert boot_client.payable_klasses_keys == []
-    assert mocked_update_cache.call_count == 0
 
 
-def test_status_code_not_200(test_data, mocked_get_400, mocked_update_cache):
+def test_status_code_not_200(test_data, mocked_get_400):
     """
     Test BootcampAdmissionClient in case the GET returns a status code different from 200
     """
@@ -142,10 +132,9 @@ def test_status_code_not_200(test_data, mocked_get_400, mocked_update_cache):
     assert boot_client.admissions == {}
     assert boot_client.payable_klasses == []
     assert boot_client.payable_klasses_keys == []
-    assert mocked_update_cache.call_count == 0
 
 
-def test_json_raises(test_data, mocked_get_200, mocked_update_cache):
+def test_json_raises(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient in case the GET request to the service fails raising anything
     """
@@ -158,7 +147,6 @@ def test_json_raises(test_data, mocked_get_200, mocked_update_cache):
     assert boot_client.admissions == {}
     assert boot_client.payable_klasses == []
     assert boot_client.payable_klasses_keys == []
-    assert mocked_update_cache.call_count == 0
 
 
 def test_can_pay_klass(test_data, mocked_get_200):
