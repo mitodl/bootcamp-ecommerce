@@ -58,6 +58,10 @@ h1 {
   }
 }
 
+.body-rows {
+  min-height: calc(100vh - 251px);
+}
+
 .navbar {
   background-color: $mit-brand;
   border-radius: 0;
