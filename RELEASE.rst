@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.3.0
+-------------
+
+- footer css fix (#144)
+- Remove BootcampAdmissionCache (#141)
+- Use application logging level for Celery (#135)
+- Use yarn install --frozen-lockfile (#134)
+
 Version 0.2.1
 -------------
 
