@@ -152,6 +152,26 @@
     "STATUS_TOKEN": {
       "description": "Token to access the status API.",
       "required": true
+    },
+     "FLUIDREVIEW_CLIENT_ID": {
+      "description": "Client ID for FluidReview API",
+      "required": true
+    },
+     "FLUIDREVIEW_CLIENT_SECRET": {
+      "description": "Client secret for FluidReview API",
+      "required": true
+    },
+     "FLUIDREVIEW_ACCESS_TOKEN": {
+      "description": "Access token for FluidReview API",
+      "required": true
+    },
+     "FLUIDREVIEW_REFRESH_TOKEN": {
+      "description": "Refresh token for FluidReview API",
+      "required": true
+    },
+     "FLUIDREVIEW_BASE_URL": {
+      "description": "Base URL for FluidReview API",
+      "required": true
     }
   },
   "keywords": [
