@@ -4,6 +4,7 @@ OAuth token model
 from django.db import models
 from django.db.models import TextField, CharField, DateTimeField, IntegerField
 
+from bootcamp.models import TimestampedModel
 from fluidreview.utils import utc_now
 
 
@@ -33,3 +34,13 @@ class OAuthToken(models.Model):
             'token_type': self.token_type,
             'expires_in': int((self.expires_on - utc_now()).total_seconds())
         }
+
+
+class WebhookRequest(TimestampedModel):
+    """
+    Store the webhook request from FluidReview
+    """
+    body = TextField(blank=True)
+
+    def __str__(self):
+        return "<WebhookRequest created_on={} >".format(self.created_on)

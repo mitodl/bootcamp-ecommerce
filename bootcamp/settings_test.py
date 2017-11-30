@@ -17,6 +17,11 @@ import yaml
 from bootcamp.settings import load_fallback, get_var
 
 
+REQUIRED = {
+    'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN': 'asdfasdf',
+}
+
+
 class TestSettings(TestCase):
     """Validate that settings work as expected."""
 
@@ -86,7 +91,8 @@ class TestSettings(TestCase):
 
         with mock.patch.dict('os.environ', {
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_ADMIN_EMAIL': ''
+            'BOOTCAMP_ADMIN_EMAIL': '',
+            **REQUIRED,
         }, clear=True):
             settings_vars = self.reload_settings()
             self.assertFalse(settings_vars.get('ADMINS', False))
@@ -95,6 +101,7 @@ class TestSettings(TestCase):
         with mock.patch.dict('os.environ', {
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': test_admin_email,
+            **REQUIRED,
         }, clear=True):
             settings_vars = self.reload_settings()
             self.assertEqual(
@@ -113,7 +120,8 @@ class TestSettings(TestCase):
         # Check default state is SSL on
         with mock.patch.dict('os.environ', {
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_DB_DISABLE_SSL': ''
+            'BOOTCAMP_DB_DISABLE_SSL': '',
+            **REQUIRED,
         }, clear=True):
             settings_vars = self.reload_settings()
             self.assertEqual(
@@ -124,7 +132,8 @@ class TestSettings(TestCase):
         # Check enabling the setting explicitly
         with mock.patch.dict('os.environ', {
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_DB_DISABLE_SSL': 'True'
+            'BOOTCAMP_DB_DISABLE_SSL': 'True',
+            **REQUIRED,
         }, clear=True):
             settings_vars = self.reload_settings()
             self.assertEqual(
@@ -135,7 +144,8 @@ class TestSettings(TestCase):
         # Disable it
         with mock.patch.dict('os.environ', {
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_DB_DISABLE_SSL': 'False'
+            'BOOTCAMP_DB_DISABLE_SSL': 'False',
+            **REQUIRED,
         }, clear=True):
             settings_vars = self.reload_settings()
             self.assertEqual(
