@@ -99,7 +99,7 @@ def test_happy_path(test_data, mocked_get_200):
     boot_client = BootcampAdmissionClient(user)
     mocked_get_200.request.assert_called_once_with(url)
     assert fetch_legacy_admissions(user) == JSON_RESP_OBJ
-    assert boot_client.payable_klasses_keys == JSON_RESP_OBJ['bootcamps'][1]['klasses']
+    assert boot_client.payable_klasses_keys == [JSON_RESP_OBJ['bootcamps'][1]['klasses'][0]['klass_id']]
 
 
 def test_get_raises(test_data, mocked_get_200):
