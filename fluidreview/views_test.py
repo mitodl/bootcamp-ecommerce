@@ -6,8 +6,11 @@ from rest_framework import status
 from fluidreview.models import WebhookRequest
 
 
+pytestmark = pytest.mark.django_db
+
+
 @pytest.mark.parametrize("data", ['', "some data", '{"json": "body"}'])
-def test_webhook(db, data, client, settings):  # pylint: disable=unused-argument
+def test_webhook(data, client, settings):  # pylint: disable=unused-argument
     """
     The fluidreview webhook should store its data in the WebhookRequest model, no matter what the data is
     """
@@ -22,7 +25,7 @@ def test_webhook(db, data, client, settings):  # pylint: disable=unused-argument
 
 
 @pytest.mark.parametrize("token_missing", [True, False])
-def test_webhook_fail_auth(db, client, settings, token_missing):  # pylint: disable=unused-argument
+def test_webhook_fail_auth(client, settings, token_missing):  # pylint: disable=unused-argument
     """
     If the token doesn't match we should return a 403 and not record the webhook
     """
