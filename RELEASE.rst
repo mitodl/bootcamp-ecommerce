@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.3.1
+-------------
+
+- OAuth requests for FluidReview API
+
 Version 0.3.0
 -------------
 
