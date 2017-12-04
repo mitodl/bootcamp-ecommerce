@@ -73,7 +73,7 @@ def create_unfulfilled_order(user, klass_key, payment_amount):
         # In the near future we should do other checking here based on information from Bootcamp REST API
         raise ValidationError("Incorrect klass key {}".format(klass_key))
 
-    bootcamp_client = BootcampAdmissionClient(user.email)
+    bootcamp_client = BootcampAdmissionClient(user)
     if not bootcamp_client.can_pay_klass(klass_key):
         raise ValidationError("User is unable to pay for klass {}".format(klass_key))
 

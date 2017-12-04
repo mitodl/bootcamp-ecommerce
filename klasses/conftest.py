@@ -14,7 +14,7 @@ def patch_get_admissions(mocker, user):
     Helper function to build admission service responses based on the local database.
     """
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient._get_admissions',
+        'klasses.bootcamp_admissions_client.fetch_legacy_admissions',
         autospec=True,
         return_value={
             "user": user.email,

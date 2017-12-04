@@ -12,89 +12,106 @@ from rest_framework import status
 log = logging.getLogger(__name__)
 
 
+def fetch_legacy_admissions(user_email):
+    """
+    Requests the bootcamp klasses where the user has been admitted.
+
+    Args:
+        user_email (str): A user's email address
+
+    Returns:
+        dict:
+            This should return a response like:
+            {
+                "user":"foo@example.com",
+                "bootcamps":[
+                    {
+                        "bootcamp_id":6,
+                        "bootcamp_title":"Master of Law",
+                        "klasses":[
+                            {
+                                "klass_id":13,
+                                "klass_name":"Class 2 (Student)",
+                                "status":"no_show",
+                                "is_user_eligible_to_pay":false
+                            },
+                            {
+                                "klass_id":16,
+                                "klass_name":"Class 1",
+                                "status":"scholarship_not_awarded",
+                                "is_user_eligible_to_pay":true
+                            }
+                        ]
+                    }
+                ]
+            }
+    """
+    url = "{base_url}?{params}".format(
+        base_url=urljoin(settings.BOOTCAMP_ADMISSION_BASE_URL, '/api/v1/user/'),
+        params=urlencode({
+            'email': user_email,
+            'key': settings.BOOTCAMP_ADMISSION_KEY,
+        })
+    )
+
+    try:
+        resp = requests.get(url)
+    except:  # pylint: disable=bare-except
+        log.exception('request to bootcamp admission service failed')
+        # in case of errors return an empty response
+        return {}
+
+    if resp.status_code != status.HTTP_200_OK:
+        log.error(
+            'request to bootcamp admission service for user %s returned unexpected code %s',
+            user_email,
+            resp.status_code,
+        )
+        return {}
+
+    try:
+        return resp.json()
+    except:  # pylint: disable=bare-except
+        log.exception('impossible to parse the JSON response')
+        return {}
+
+
+def get_legacy_payable_klass_ids(admissions):
+    """
+    Returns a list of the payable klass ids.
+
+    Args:
+        admissions (dict): The legacy
+    """
+    adm_klasses = []
+    for bootcamp in admissions.get("bootcamps", []):
+        for klass in bootcamp.get("klasses", []):
+            if klass.get("is_user_eligible_to_pay") is True:
+                adm_klasses.append(klass['klass_id'])
+    return adm_klasses
+
+
 class BootcampAdmissionClient:
     """
     Client for the bootcamp admission portal
     """
 
-    admissions = {}
-    payable_klasses = []
-    payable_klasses_keys = []
-
-    def __init__(self, user_email):
-        self.user_email = user_email
-        self.admissions = self._get_admissions()
-        self.payable_klasses = self._get_payable_klasses()
-        self.payable_klasses_keys = [klass['klass_id'] for klass in self.payable_klasses]
-
-    def _get_admissions(self):
+    def __init__(self, user):
         """
-        Requests the bootcamp klasses where the user has been admitted.
+        Fetch information about a user's admissions for the bootcamp
 
-        This should return a response like:
-        {
-            "user":"foo@example.com",
-            "bootcamps":[
-                {
-                    "bootcamp_id":6,
-                    "bootcamp_title":"Master of Law",
-                    "klasses":[
-                        {
-                            "klass_id":13,
-                            "klass_name":"Class 2 (Student)",
-                            "status":"no_show",
-                            "is_user_eligible_to_pay":false
-                        },
-                        {
-                            "klass_id":16,
-                            "klass_name":"Class 1",
-                            "status":"scholarship_not_awarded",
-                            "is_user_eligible_to_pay":true
-                        }
-                    ]
-                }
-            ]
-        }
+        Args:
+            user (User): A user
         """
-        url = "{base_url}?{params}".format(
-            base_url=urljoin(settings.BOOTCAMP_ADMISSION_BASE_URL, '/api/v1/user/'),
-            params=urlencode({
-                'email': self.user_email,
-                'key': settings.BOOTCAMP_ADMISSION_KEY,
-            })
-        )
+        legacy_admissions = fetch_legacy_admissions(user.email)
+        self._klass_keys = get_legacy_payable_klass_ids(legacy_admissions)
 
-        try:
-            resp = requests.get(url)
-        except:  # pylint: disable=bare-except
-            log.exception('request to bootcamp admission service failed')
-            # in case of errors return an empty response
-            return {}
-
-        if resp.status_code != status.HTTP_200_OK:
-            log.error(
-                'request to bootcamp admission service for user %s returned unexpected code %s',
-                self.user_email,
-                resp.status_code,
-            )
-            return {}
-
-        try:
-            return resp.json()
-        except:  # pylint: disable=bare-except
-            log.exception('impossible to parse the JSON response')
-            return {}
-
-    def _get_payable_klasses(self):
+    @property
+    def payable_klasses_keys(self):
         """
-        Returns a list of the payable klasses.
+        A list of klass keys which the user can pay for
         """
-        adm_klasses = []
-        for bootcamp in self.admissions.get("bootcamps", []):
-            for klass in bootcamp.get("klasses", []):
-                if klass.get("is_user_eligible_to_pay") is True:
-                    adm_klasses.append(klass)
-        return adm_klasses
+        return self._klass_keys
 
     def can_pay_klass(self, klass_key):
         """

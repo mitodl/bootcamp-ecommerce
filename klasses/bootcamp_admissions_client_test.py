@@ -7,7 +7,11 @@ import pytest
 from django.conf import settings
 from rest_framework import status
 
-from klasses.bootcamp_admissions_client import BootcampAdmissionClient
+from klasses.bootcamp_admissions_client import (
+    BootcampAdmissionClient,
+    fetch_legacy_admissions,
+)
+from profiles.factories import UserFactory
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 
@@ -51,7 +55,7 @@ JSON_RESP_OBJ = {
 
 
 @pytest.fixture()
-def test_data():
+def test_data(db):
     """
     Sets up the data for all the tests in this module
     """
@@ -64,7 +68,7 @@ def test_data():
             'key': settings.BOOTCAMP_ADMISSION_KEY,
         })
     )
-    return user_email, url
+    return UserFactory.create(email=user_email), url
 
 
 @pytest.fixture()
@@ -91,33 +95,22 @@ def test_happy_path(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient with a normal response
     """
-    user_email, url = test_data
-    boot_client = BootcampAdmissionClient(user_email)
+    user, url = test_data
+    boot_client = BootcampAdmissionClient(user)
     mocked_get_200.request.assert_called_once_with(url)
-    assert boot_client.admissions == JSON_RESP_OBJ
-    expected_payable_klasses = [
-        {
-            "klass_id": 16,
-            "klass_name": "Class 1",
-            "status": "scholarship_not_awarded",
-            "is_user_eligible_to_pay": True
-        }
-    ]
-    assert boot_client.payable_klasses == expected_payable_klasses
-    assert boot_client.payable_klasses_keys == [16]
+    assert fetch_legacy_admissions(user) == JSON_RESP_OBJ
+    assert boot_client.payable_klasses_keys == [JSON_RESP_OBJ['bootcamps'][1]['klasses'][0]['klass_id']]
 
 
 def test_get_raises(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient in case the GET request to the service fails raising anything
     """
-    user_email, url = test_data
+    user, url = test_data
     mocked_get_200.request.side_effect = ZeroDivisionError
 
-    boot_client = BootcampAdmissionClient(user_email)
+    boot_client = BootcampAdmissionClient(user)
     mocked_get_200.request.assert_called_once_with(url)
-    assert boot_client.admissions == {}
-    assert boot_client.payable_klasses == []
     assert boot_client.payable_klasses_keys == []
 
 
@@ -125,12 +118,10 @@ def test_status_code_not_200(test_data, mocked_get_400):
     """
     Test BootcampAdmissionClient in case the GET returns a status code different from 200
     """
-    user_email, url = test_data
+    user, url = test_data
 
-    boot_client = BootcampAdmissionClient(user_email)
+    boot_client = BootcampAdmissionClient(user)
     mocked_get_400.request.assert_called_once_with(url)
-    assert boot_client.admissions == {}
-    assert boot_client.payable_klasses == []
     assert boot_client.payable_klasses_keys == []
 
 
@@ -138,14 +129,12 @@ def test_json_raises(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient in case the GET request to the service fails raising anything
     """
-    user_email, url = test_data
+    user, url = test_data
 
     mocked_get_200.response.json.side_effect = ZeroDivisionError
 
-    boot_client = BootcampAdmissionClient(user_email)
+    boot_client = BootcampAdmissionClient(user)
     mocked_get_200.request.assert_called_once_with(url)
-    assert boot_client.admissions == {}
-    assert boot_client.payable_klasses == []
     assert boot_client.payable_klasses_keys == []
 
 
@@ -153,9 +142,9 @@ def test_can_pay_klass(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient.can_pay_klass
     """
-    user_email, _ = test_data
+    user, _ = test_data
 
-    boot_client = BootcampAdmissionClient(user_email)
+    boot_client = BootcampAdmissionClient(user)
     assert boot_client.can_pay_klass(16) is True
     assert boot_client.can_pay_klass(12) is False
     assert boot_client.can_pay_klass('foo') is False

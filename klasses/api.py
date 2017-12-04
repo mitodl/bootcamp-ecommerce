@@ -30,7 +30,7 @@ def serialize_user_klasses(user):
     klass_keys_in_lines = list(Line.fulfilled_for_user(user).values_list(
         'klass_key', flat=True).distinct())
 
-    bootcamp_client = BootcampAdmissionClient(user.email)
+    bootcamp_client = BootcampAdmissionClient(user)
     all_klasses_keys = list(set(klass_keys_in_lines).union(set(bootcamp_client.payable_klasses_keys)))
     klasses_qset = (
         Klass.objects.filter(klass_key__in=all_klasses_keys)
@@ -54,7 +54,7 @@ def serialize_user_klass(user, klass, bootcamp_client=None):
         dict: a dictionary describing a klass and payments for it by the user
     """
     if bootcamp_client is None:
-        bootcamp_client = BootcampAdmissionClient(user.email)
+        bootcamp_client = BootcampAdmissionClient(user)
 
     return {
         "klass_key": klass.klass_key,

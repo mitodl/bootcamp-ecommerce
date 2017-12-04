@@ -51,7 +51,7 @@ def test_serialize_user_klass_bootclient_equivalent(test_data):
     user, klass_paid, _ = test_data
 
     assert serialize_user_klass(user, klass_paid) == serialize_user_klass(
-        user, klass_paid, BootcampAdmissionClient(user.email))
+        user, klass_paid, BootcampAdmissionClient(user))
 
 
 def test_serialize_user_klass_paid(test_data):
