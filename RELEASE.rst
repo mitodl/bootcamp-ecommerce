@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.4.0
+-------------
+
+- Refactor BootcampAdmissionsClient (#149)
+- Handle webhooks from FluidReview (#147)
+
 Version 0.3.1
 -------------
 
