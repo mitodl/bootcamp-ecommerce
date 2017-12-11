@@ -315,10 +315,6 @@ LOG_HOST = get_var('BOOTCAMP_LOG_HOST', 'localhost')
 LOG_HOST_PORT = get_var('BOOTCAMP_LOG_HOST_PORT', 514)
 
 HOSTNAME = platform.node().split('.')[0]
-DEFAULT_LOG_STANZA = {
-    'handlers': ['console', 'syslog'],
-    'level': LOG_LEVEL,
-}
 
 # nplusone profiler logger configuration
 NPLUSONE_LOGGER = logging.getLogger('nplusone')
@@ -326,7 +322,7 @@ NPLUSONE_LOG_LEVEL = logging.ERROR
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
@@ -367,7 +363,6 @@ LOGGING = {
         }
     },
     'loggers': {
-        'root': DEFAULT_LOG_STANZA,
         'django': {
             'propagate': True,
             'level': DJANGO_LOG_LEVEL,
@@ -389,6 +384,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'ERROR',
         },
+    },
+    'root': {
+        'handlers': ['console', 'syslog'],
+        'level': LOG_LEVEL,
     },
 }
 
