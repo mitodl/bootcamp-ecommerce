@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.5.0
+-------------
+
+- Fix root log handler (#158)
+- Expand README, describe how to set up &amp; run Bootcamp
+- Upgrade psycopg2 (#156)
+
 Version 0.4.0
 -------------
 
