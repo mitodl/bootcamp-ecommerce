@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 from bootcamp.utils import get_field_names
-from fluidreview.models import WebhookRequest
+from fluidreview.models import WebhookRequest, OAuthToken
 
 
 class WebhookRequestAdmin(admin.ModelAdmin):
@@ -17,4 +17,10 @@ class WebhookRequestAdmin(admin.ModelAdmin):
         return False
 
 
+class OAuthTokenAdmin(admin.ModelAdmin):
+    """Admin for OAuthToken"""
+    model = OAuthToken
+
+
 admin.site.register(WebhookRequest, WebhookRequestAdmin)
+admin.site.register(OAuthToken, OAuthTokenAdmin)

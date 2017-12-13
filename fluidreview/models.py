@@ -2,9 +2,9 @@
 OAuth token model
 """
 from django.db import models
-from django.db.models import TextField, CharField, DateTimeField, IntegerField
-
+from django.db.models import TextField, CharField, DateTimeField, IntegerField, DecimalField
 from bootcamp.models import TimestampedModel
+from fluidreview.constants import WebhookParseStatus
 from fluidreview.utils import utc_now
 
 
@@ -41,6 +41,20 @@ class WebhookRequest(TimestampedModel):
     Store the webhook request from FluidReview
     """
     body = TextField(blank=True)
+    status = models.CharField(
+        null=False,
+        default=WebhookParseStatus.CREATED,
+        choices=[(status, status) for status in WebhookParseStatus.ALL_STATUSES],
+        max_length=10,
+    )
+    # FluidReview allows invalid emails so store as a regular CharField
+    user_email = CharField(null=True, blank=True, max_length=254)
+    user_id = IntegerField(null=True, blank=True)
+    submission_id = IntegerField(null=True, blank=True)
+    award_id = IntegerField(null=True, blank=True)
+    award_name = CharField(blank=True, max_length=512)
+    award_cost = DecimalField(null=True, blank=True, max_digits=20, decimal_places=2)
+    amount_to_pay = DecimalField(null=True, blank=True, max_digits=20, decimal_places=2)
 
     def __str__(self):
-        return "<WebhookRequest created_on={} >".format(self.created_on)
+        return '<WebhookRequest created_on={} >'.format(self.created_on)
