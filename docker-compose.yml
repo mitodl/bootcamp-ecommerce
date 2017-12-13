@@ -49,6 +49,7 @@ services:
     command: >
       /bin/bash -c '
       sleep 3 &&
+      python3 manage.py collectstatic --noinput &&
       python3 manage.py migrate --noinput &&
       uwsgi uwsgi.ini'
     ports:

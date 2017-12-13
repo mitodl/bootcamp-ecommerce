@@ -1,15 +1,31 @@
 """
 FluidReview API backend
 """
-from urllib.parse import urljoin
+import json
+import logging
+from urllib.parse import urljoin, urlparse
 from datetime import timedelta
+
+from decimal import Decimal
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
+
+from profiles.models import Profile
+from fluidreview.constants import WebhookParseStatus
 from fluidreview.models import OAuthToken
 from fluidreview.utils import utc_now
 
+log = logging.getLogger(__name__)
 
 BASE_API_URL = urljoin(settings.FLUIDREVIEW_BASE_URL, '/api/v2/')
+
+
+class FluidReviewException(Exception):
+    """
+    Custom exception for FluidReview
+    """
 
 
 class FluidReviewAPI:
@@ -138,4 +154,68 @@ class FluidReviewAPI:
             # saved to the database by another instance. Re-initialize session and try again.
             self.session = self.initialize_session()
             response = getattr(self.session, method)(urljoin(BASE_API_URL, url_suffix), **kwargs)
+        response.raise_for_status()
         return response
+
+
+def process_user(fluid_user):
+    """
+    Create/update User and Profile model objects based on FluidReview user info
+
+    Args:
+        fluid_user (ReturnDict): Data from a fluidreview.serializers.UserSerializer object
+    """
+    user, _ = User.objects.get_or_create(email=fluid_user['email'], defaults={'username': fluid_user['email']})
+    profile, _ = Profile.objects.get_or_create(user=user)
+    if not profile.fluidreview_id:
+        profile.fluidreview_id = fluid_user['id']
+        profile.name = fluid_user['full_name']
+        profile.save()
+
+
+def parse_webhook(webhook):
+    """
+    Attempt to load a WebhookRequest body as JSON and assign its values to other attributes.
+
+    Args:
+        webhook (WebhookRequest): WebhookRequest instance
+
+    """
+    try:
+        body_json = json.loads(smart_text(webhook.body))
+        required_fields = ('user_email', 'user_id')
+        optional_fields = ('submission_id', 'award_id', 'award_name', 'award_cost', 'amount_to_pay')
+        if not set(required_fields).issubset(body_json.keys()):
+            raise FluidReviewException("Missing required field(s)")
+        for att in required_fields + optional_fields:
+            if att in body_json:
+                if att in ('award_cost', 'amount_to_pay'):
+                    if body_json[att]:
+                        setattr(webhook, att, Decimal(body_json[att]))
+                else:
+                    setattr(webhook, att, body_json[att])
+        webhook.status = WebhookParseStatus.SUCCEEDED
+    except:  # pylint: disable=bare-except
+        webhook.status = WebhookParseStatus.FAILED
+        log.exception('Webhook %s body is not valid JSON or has invalid/missing values.', webhook.id)
+    finally:
+        webhook.save()
+
+
+def list_users():
+    """
+    Generator for all users in FluidReview
+
+    Yields:
+        dict: FluidReview user as dict
+
+    """
+    frapi = FluidReviewAPI()
+    url = 'users'
+    while url:
+        response = frapi.get(url).json()
+        users = response['results']
+        for fluid_user in users:
+            yield fluid_user
+        next_page = urlparse(response['next']).query
+        url = 'users?{}'.format(next_page) if next_page else None
