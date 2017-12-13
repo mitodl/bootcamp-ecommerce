@@ -309,6 +309,7 @@ else:
 # Logging configuration
 LOG_LEVEL = get_var('BOOTCAMP_LOG_LEVEL', 'INFO')
 DJANGO_LOG_LEVEL = get_var('DJANGO_LOG_LEVEL', 'INFO')
+SENTRY_LOG_LEVEL = get_var('SENTRY_LOG_LEVEL', 'ERROR')
 ES_LOG_LEVEL = get_var('ES_LOG_LEVEL', 'INFO')
 
 # For logging to a remote syslog host
@@ -358,7 +359,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler'
         },
         'sentry': {
-            'level': 'ERROR',
+            'level': SENTRY_LOG_LEVEL,
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
             'formatter': 'verbose'
         }
@@ -378,7 +379,7 @@ LOGGING = {
             'level': 'INFO',
         },
         'raven': {
-            'level': 'DEBUG',
+            'level': SENTRY_LOG_LEVEL,
             'handlers': []
         },
         'nplusone': {
