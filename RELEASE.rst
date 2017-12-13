@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.5.1
+-------------
+
+- Add SENTRY_LOG_LEVEL, default to ERROR (#160)
+- Parse WebhookRequests, synchronize FluidReview and OAuth users
+
 Version 0.5.0
 -------------
 
