@@ -107,7 +107,7 @@ class FluidReviewAPI:
             url_suffix(str): The URL fragment to be appended to the base API URL
 
         Returns:
-            dict: The API response
+            requests.Response: The API response
         """
         return self.request('get', url_suffix, **kwargs)
 
@@ -119,7 +119,7 @@ class FluidReviewAPI:
             url_suffix(str): The URL fragment to be appended to the base API URL
 
         Returns:
-            dict: The API response
+            requests.Response: The API response
         """
         return self.request('post', url_suffix, **kwargs)
 
@@ -131,7 +131,7 @@ class FluidReviewAPI:
             url_suffix(str): The URL fragment to be appended to the base API URL
 
         Returns:
-            dict: The API response
+            requests.Response: The API response
         """
         return self.request('put', url_suffix, **kwargs)
 
@@ -144,7 +144,7 @@ class FluidReviewAPI:
             url_suffix(str): The URL fragment to be appended to the base API URL
 
         Returns:
-            dict: The API response
+            requests.Response: The API response
         """
         if url_suffix and url_suffix.startswith('/'):
             url_suffix = url_suffix[1:]
