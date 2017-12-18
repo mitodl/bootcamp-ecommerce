@@ -8,6 +8,8 @@ import requests
 from django.conf import settings
 from rest_framework import status
 
+from fluidreview.constants import WebhookParseStatus
+from fluidreview.models import WebhookRequest
 
 log = logging.getLogger(__name__)
 
@@ -76,6 +78,24 @@ def fetch_legacy_admissions(user_email):
         return {}
 
 
+def fetch_fluidreview_klass_keys(fluid_user_id):
+    """
+    Collect all the unique award ids (== klass ids) from WebhookRequests by user email
+
+    Args:
+        fluid_user_id(int): FluidReview id for a user
+
+    Returns:
+        list: FluidReview award_ids for a user
+    """
+    return list(
+        WebhookRequest.objects.filter(
+            user_id=fluid_user_id,
+            status=WebhookParseStatus.SUCCEEDED
+        ).distinct('award_id').values_list('award_id', flat=True)
+    )
+
+
 def get_legacy_payable_klass_ids(admissions):
     """
     Returns a list of the payable klass ids.
@@ -104,7 +124,8 @@ class BootcampAdmissionClient:
             user (User): A user
         """
         legacy_admissions = fetch_legacy_admissions(user.email)
-        self._klass_keys = get_legacy_payable_klass_ids(legacy_admissions)
+        self._klass_keys = get_legacy_payable_klass_ids(legacy_admissions) + \
+            fetch_fluidreview_klass_keys(user.profile.fluidreview_id)
 
     @property
     def payable_klasses_keys(self):

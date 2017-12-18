@@ -13,6 +13,7 @@ from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
 from profiles.models import Profile
+from fluidreview.serializers import UserSerializer
 from fluidreview.constants import WebhookParseStatus
 from fluidreview.models import OAuthToken
 from fluidreview.utils import utc_now
@@ -194,12 +195,27 @@ def parse_webhook(webhook):
                         setattr(webhook, att, Decimal(body_json[att]))
                 else:
                     setattr(webhook, att, body_json[att])
+        parse_webhook_user(webhook.user_id)
         webhook.status = WebhookParseStatus.SUCCEEDED
     except:  # pylint: disable=bare-except
         webhook.status = WebhookParseStatus.FAILED
         log.exception('Webhook %s body is not valid JSON or has invalid/missing values.', webhook.id)
     finally:
         webhook.save()
+
+
+def parse_webhook_user(fluidreview_id):
+    """
+    Create/update User and Profile objects if necessary for a FluidReview user id
+    Args:
+        fluidreview_id(int): ID of FluidReview user
+    """
+    if not Profile.objects.filter(fluidreview_id=fluidreview_id):
+        # Get user info from FluidReview API (ensures that user id is real).
+        user_info = FluidReviewAPI().get('/users/{}'.format(fluidreview_id)).json()
+        serializer = UserSerializer(data=user_info)
+        serializer.is_valid(raise_exception=True)
+        process_user(serializer.data)
 
 
 def list_users():

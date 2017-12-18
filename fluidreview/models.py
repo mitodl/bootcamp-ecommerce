@@ -57,4 +57,4 @@ class WebhookRequest(TimestampedModel):
     amount_to_pay = DecimalField(null=True, blank=True, max_digits=20, decimal_places=2)
 
     def __str__(self):
-        return '<WebhookRequest created_on={} >'.format(self.created_on)
+        return '<WebhookRequest created_on={} status={} >'.format(self.created_on, self.status)

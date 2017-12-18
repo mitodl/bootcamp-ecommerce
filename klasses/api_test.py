@@ -17,7 +17,7 @@ from klasses.bootcamp_admissions_client import BootcampAdmissionClient
 from klasses.conftest import patch_get_admissions
 from klasses.factories import KlassFactory, InstallmentFactory
 from klasses.serializers import InstallmentSerializer
-from profiles.factories import UserFactory
+from profiles.factories import ProfileFactory
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 
@@ -29,19 +29,19 @@ def test_data(mocker):
     """
     Sets up the data for all the tests in this module
     """
-    user = UserFactory.create()
+    profile = ProfileFactory.create()
     klass_paid = KlassFactory.create()
     klass_not_paid = KlassFactory.create()
 
     InstallmentFactory.create(klass=klass_paid)
     InstallmentFactory.create(klass=klass_not_paid)
 
-    order = OrderFactory.create(user=user, status=Order.FULFILLED)
+    order = OrderFactory.create(user=profile.user, status=Order.FULFILLED)
     LineFactory.create(order=order, klass_key=klass_paid.klass_key, price=627.34)
 
-    patch_get_admissions(mocker, user)
+    patch_get_admissions(mocker, profile.user)
 
-    return user, klass_paid, klass_not_paid
+    return profile.user, klass_paid, klass_not_paid
 
 
 def test_serialize_user_klass_bootclient_equivalent(test_data):
