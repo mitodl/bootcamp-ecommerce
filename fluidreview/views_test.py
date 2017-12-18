@@ -19,7 +19,7 @@ def test_webhook(data, client, settings, mocker):  # pylint: disable=unused-argu
     """
     The fluidreview webhook should store its data in the WebhookRequest model, no matter what the data is
     """
-    mocker.patch('fluidreview.signals.FluidReviewAPI')
+    mocker.patch('fluidreview.api.FluidReviewAPI')
     token = 'zxvbnm'
     settings.FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = token
     url = reverse('fluidreview-webhook')
@@ -34,7 +34,7 @@ def test_webhook_fail_auth(client, settings, token_missing, mocker):  # pylint: 
     """
     If the token doesn't match we should return a 403 and not record the webhook
     """
-    mocker.patch('fluidreview.signals.FluidReviewAPI')
+    mocker.patch('fluidreview.api.FluidReviewAPI')
     headers = {}
     settings.FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = 'xyz'
     if not token_missing:
@@ -69,7 +69,7 @@ def test_webhook_parse_success(email, fluid_id, should_update, settings, client,
         'submissions': [],
         'teams': [],
     }
-    mock_api = mocker.patch('fluidreview.signals.FluidReviewAPI')
+    mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().get.return_value.json.return_value = user_data
 
     existing_user = 'old@mit.edx'

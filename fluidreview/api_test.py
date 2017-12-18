@@ -177,7 +177,9 @@ def test_process_user_both_exist_with_fluid_id(mocker):
 
 def test_parse_success(mocker):
     """Test that a webhookrequest body is successfully parsed into individual fields"""
-    mocker.patch('fluidreview.signals.FluidReviewAPI')
+    mocker.patch('fluidreview.api.FluidReviewAPI')
+    mocker.patch('fluidreview.api.UserSerializer')
+    mocker.patch('fluidreview.api.process_user')
     data = {
         'date_of_birth': '',
         'user_email': 'veteran-grants-9463shC',

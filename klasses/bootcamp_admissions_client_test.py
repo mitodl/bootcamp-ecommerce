@@ -7,11 +7,13 @@ import pytest
 from django.conf import settings
 from rest_framework import status
 
+from fluidreview.constants import WebhookParseStatus
+from fluidreview.factories import WebhookRequestFactory
 from klasses.bootcamp_admissions_client import (
     BootcampAdmissionClient,
     fetch_legacy_admissions,
 )
-from profiles.factories import UserFactory
+from profiles.factories import ProfileFactory
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 
@@ -68,7 +70,10 @@ def test_data(db):
             'key': settings.BOOTCAMP_ADMISSION_KEY,
         })
     )
-    return UserFactory.create(email=user_email), url
+    profile = ProfileFactory.create(user__email=user_email, fluidreview_id=9999)
+    payable_klass = 16
+    unpayable_klass = 12
+    return profile.user, url, payable_klass, unpayable_klass
 
 
 @pytest.fixture()
@@ -95,7 +100,7 @@ def test_happy_path(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient with a normal response
     """
-    user, url = test_data
+    user, url, _, _ = test_data
     boot_client = BootcampAdmissionClient(user)
     mocked_get_200.request.assert_called_once_with(url)
     assert fetch_legacy_admissions(user) == JSON_RESP_OBJ
@@ -106,7 +111,7 @@ def test_get_raises(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient in case the GET request to the service fails raising anything
     """
-    user, url = test_data
+    user, url, _, _ = test_data
     mocked_get_200.request.side_effect = ZeroDivisionError
 
     boot_client = BootcampAdmissionClient(user)
@@ -118,7 +123,7 @@ def test_status_code_not_200(test_data, mocked_get_400):
     """
     Test BootcampAdmissionClient in case the GET returns a status code different from 200
     """
-    user, url = test_data
+    user, url, _, _ = test_data
 
     boot_client = BootcampAdmissionClient(user)
     mocked_get_400.request.assert_called_once_with(url)
@@ -129,7 +134,7 @@ def test_json_raises(test_data, mocked_get_200):
     """
     Test BootcampAdmissionClient in case the GET request to the service fails raising anything
     """
-    user, url = test_data
+    user, url, _, _ = test_data
 
     mocked_get_200.response.json.side_effect = ZeroDivisionError
 
@@ -140,11 +145,37 @@ def test_json_raises(test_data, mocked_get_200):
 
 def test_can_pay_klass(test_data, mocked_get_200):
     """
-    Test BootcampAdmissionClient.can_pay_klass
+    Test BootcampAdmissionClient.can_pay_klass with a mix of legacy and fluidreview klasses
     """
-    user, _ = test_data
+    user, _, payable_klass, unpayable_klass = test_data
+    fluidreview_klass = 19
+    WebhookRequestFactory(
+        award_id=fluidreview_klass,
+        user_email=user.email,
+        user_id=user.profile.fluidreview_id,
+        status=WebhookParseStatus.SUCCEEDED)
 
     boot_client = BootcampAdmissionClient(user)
-    assert boot_client.can_pay_klass(16) is True
-    assert boot_client.can_pay_klass(12) is False
+    assert boot_client.can_pay_klass(payable_klass) is True
+    assert boot_client.can_pay_klass(unpayable_klass) is False
+    assert boot_client.can_pay_klass(fluidreview_klass) is True
     assert boot_client.can_pay_klass('foo') is False
+
+
+@pytest.mark.parametrize('status', [WebhookParseStatus.SUCCEEDED, WebhookParseStatus.FAILED])
+def test_can_pay_klass_webhook_only(test_data, mocked_requests_get, status):
+    """
+    Test BootcampAdmissionClient.can_pay_klass when legacy admissions API is unavailable
+    """
+    mocked_requests_get.side_effect = ConnectionError
+    user, _, payable_klass, _ = test_data
+    fluidreview_klass = 19
+    WebhookRequestFactory(
+        award_id=fluidreview_klass,
+        user_email=user.email,
+        user_id=user.profile.fluidreview_id,
+        status=status)
+
+    boot_client = BootcampAdmissionClient(user)
+    assert boot_client.can_pay_klass(payable_klass) is False
+    assert boot_client.can_pay_klass(fluidreview_klass) is (status == WebhookParseStatus.SUCCEEDED)
