@@ -165,7 +165,10 @@ def process_user(fluid_user):
     Args:
         fluid_user (ReturnDict): Data from a fluidreview.serializers.UserSerializer object
     """
-    user, _ = User.objects.get_or_create(email=fluid_user['email'], defaults={'username': fluid_user['email']})
+    user, _ = User.objects.get_or_create(
+        email__iexact=fluid_user['email'],
+        defaults={'email': fluid_user['email'], 'username': fluid_user['email']}
+    )
     profile, _ = Profile.objects.get_or_create(user=user)
     if not profile.fluidreview_id:
         profile.fluidreview_id = fluid_user['id']

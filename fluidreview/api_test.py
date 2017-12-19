@@ -153,7 +153,7 @@ def test_process_new_profile():
 def test_process_both_exist_no_fluid_id(mocker):
     """Test that no changes are made to an existing user but existing profile is saved with fluid id"""
     ProfileFactory(
-        user=UserFactory(email=fluid_user['email'], username=fluid_user['email']),
+        user=UserFactory(email=fluid_user['email'].upper(), username=fluid_user['email']),
         fluidreview_id=None
     )
     mock_create_user = mocker.patch('fluidreview.api.User.objects.create')
@@ -165,7 +165,7 @@ def test_process_both_exist_no_fluid_id(mocker):
 def test_process_user_both_exist_with_fluid_id(mocker):
     """Test that no changes are made to an existing user and profile with fluidreview id"""
     ProfileFactory(
-        user=UserFactory(email=fluid_user['email'], username=fluid_user['email']),
+        user=UserFactory(email=fluid_user['email'].upper(), username=fluid_user['email']),
         fluidreview_id=1
     )
     mock_create_user = mocker.patch('fluidreview.api.User.objects.create')
