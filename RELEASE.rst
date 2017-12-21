@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.6.0
+-------------
+
+- case-insensitive email matching
+- Look up admissions in WebhookRequest
+- Update docstrings (#166)
+
 Version 0.5.1
 -------------
 
