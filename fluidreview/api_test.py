@@ -14,6 +14,7 @@ from fluidreview.factories import OAuthTokenFactory
 from fluidreview.api import FluidReviewAPI, BASE_API_URL, process_user, parse_webhook, list_users
 from fluidreview.models import OAuthToken, WebhookRequest
 from fluidreview.utils import utc_now
+from klasses.factories import KlassFactory
 from profiles.factories import UserFactory, ProfileFactory
 from profiles.models import Profile
 
@@ -177,14 +178,20 @@ def test_process_user_both_exist_with_fluid_id(mocker):
 
 def test_parse_success(mocker):
     """Test that a webhookrequest body is successfully parsed into individual fields"""
-    mocker.patch('fluidreview.api.FluidReviewAPI')
-    mocker.patch('fluidreview.api.UserSerializer')
-    mocker.patch('fluidreview.api.process_user')
+    klass = KlassFactory.create(klass_key=81265)
+    user_id = 94379385
+    user_price = '543.99'
+    mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
+    mock_api().get.return_value.json.return_value = {
+        'id': 94379385,
+        'full_name': 'Veteran Grants 9463shC',
+        'email': 'veteran-grants-9463shC'
+    }
     data = {
         'date_of_birth': '',
         'user_email': 'veteran-grants-9463shC',
-        'amount_to_pay': '543.99',
-        'user_id': 94379385,
+        'amount_to_pay': user_price,
+        'user_id': user_id,
         'submission_id': 4533767,
         'award_id': 81265,
         'award_cost': '1000',
@@ -198,15 +205,37 @@ def test_parse_success(mocker):
     assert hook.amount_to_pay == Decimal(data['amount_to_pay'])
     assert hook.award_cost == Decimal(data['award_cost'])
     assert hook.status == WebhookParseStatus.SUCCEEDED
+    assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == Decimal(user_price)
+    data['amount_to_pay'] = ''
+    body = json.dumps(data)
+    hook = WebhookRequest(body=body)
+    parse_webhook(hook)
+    assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == klass.price
+    data['amount_to_pay'] = '100'
+    data['award_id'] = None
+    body = json.dumps(data)
+    hook = WebhookRequest(body=body)
+    parse_webhook(hook)
+    assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == klass.price
 
 
 @pytest.mark.parametrize('body', [
     '',
     'hello world',
-    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": 1, "award_cost": "BADVALUE", "submission_id": 1}'
+    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": 1, "award_cost": "BADVALUE", "submission_id": 1}',
+    '{"user_email": "foo@bar.com", "user_id": "", "award_id": 1, "award_cost": "100", "submission_id": 1}',
+    '{"user_email": "foo@bar.com", "user_id": null, "award_id": 1, "award_cost": "100", "submission_id": 1}',
+    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": "a", "award_cost": "", "submission_id": 1}',
+    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": 1, "award_cost": 1, "submission_id": 1}',
 ])
-def test_parse_failure(body):
+def test_parse_failure(mocker, body):
     """Test that a webhookrequest's status is set to FAILED if it cannot be parsed"""
+    mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
+    mock_api().get.return_value.json.return_value = {
+        'id': 94379385,
+        'full_name': 'Veteran Grants 9463shC',
+        'email': 'veteran-grants-9463shC'
+    }
     request = WebhookRequest(body=body)
     parse_webhook(request)
     assert request.status == WebhookParseStatus.FAILED

@@ -4,24 +4,41 @@ from datetime import datetime, timedelta
 import pytest
 from pytz import UTC
 
-from klasses.factories import InstallmentFactory, KlassFactory
+from klasses.factories import InstallmentFactory, KlassFactory, PersonalPriceFactory
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument,protected-access
+from profiles.factories import ProfileFactory
 
 pytestmark = pytest.mark.django_db
 
 
 # Klass model tests
 
-def test_klass_price():
+@pytest.fixture()
+def test_data(db):
+    installment = InstallmentFactory.create()
+    klass = installment.klass
+    return installment, klass
+
+
+def test_klass_price(test_data):
     """Price should be sum total of all installments for that klass"""
-    installment_1 = InstallmentFactory.create()
-    klass = installment_1.klass
+    installment_1, klass = test_data
     installment_2 = InstallmentFactory.create(klass=klass)
     # Create an unrelated installment to show that it doesn't affect the price
     InstallmentFactory.create()
 
     assert klass.price == installment_1.amount + installment_2.amount
+
+
+def test_klass_personal_price(test_data):
+    """Price should be person's custom cost if any or default price"""
+    _, klass = test_data
+    profile = ProfileFactory.create(fluidreview_id=100)
+    assert klass.personal_price(profile.user) == klass.price
+    personal_price = PersonalPriceFactory.create(klass=klass, user=profile.user)
+    assert klass.personal_price(profile.user) == personal_price.price
+    assert profile.user.klass_prices.filter(klass=klass).first().price == personal_price.price
 
 
 def test_klass_payment_deadline():

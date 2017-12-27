@@ -2,6 +2,7 @@
 import datetime
 
 import pytz
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -112,6 +113,21 @@ class Klass(models.Model):
         return self.installment_set.filter(
             deadline__lte=next_installment.deadline).aggregate(price=models.Sum('amount'))['price']
 
+    def personal_price(self, user):
+        """
+        Returns the personal price (if any) or standard price for a klass
+
+        Args:
+            user(User): the user to get a price for
+
+        Returns:
+            Decimal: the price for the klass
+        """
+        personal_price = self.personal_prices.filter(user=user).first()
+        if personal_price is not None:
+            return personal_price.price
+        return self.price
+
     def __str__(self):
         return self.display_title
 
@@ -135,3 +151,21 @@ class Installment(models.Model):
             amount=self.amount,
             deadline=self.deadline.strftime('%b %d %Y')
         )
+
+
+class PersonalPrice(models.Model):
+    """Personal price for a klass"""
+    klass = models.ForeignKey(
+        Klass,
+        on_delete=models.CASCADE,
+        related_name='personal_prices'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='klass_prices'
+    )
+    price = models.DecimalField(max_digits=20, decimal_places=2)
+
+    class Meta:
+        unique_together = ('klass', 'user')
