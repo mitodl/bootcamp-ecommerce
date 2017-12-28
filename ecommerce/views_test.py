@@ -25,6 +25,7 @@ from ecommerce.models import (
     Receipt,
 )
 from ecommerce.serializers import PaymentSerializer
+from fluidreview.api import FluidReviewException
 from profiles.factories import UserFactory
 
 
@@ -103,7 +104,8 @@ class OrderFulfillmentViewTests(TestCase):
     """
     Tests for order fulfillment
     """
-    def test_order_fulfilled(self):
+    @ddt.data(None, FluidReviewException)
+    def test_order_fulfilled(self, side_effect):
         """
         Test the happy case
         """
@@ -120,7 +122,7 @@ class OrderFulfillmentViewTests(TestCase):
 
         with patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True), patch(
             'ecommerce.views.MailgunClient.send_individual_email',
-        ) as send_email:
+        ) as send_email, patch('ecommerce.views.post_payment', side_effect=side_effect) as post_payment:
             resp = self.client.post(reverse('order-fulfillment'), data=data)
 
         assert len(resp.content) == 0
@@ -131,6 +133,8 @@ class OrderFulfillmentViewTests(TestCase):
         assert order.receipt_set.first().data == data
 
         assert send_email.call_count == 0
+        assert post_payment.call_count == 1
+        assert post_payment.call_args[0][0].id == order.id
 
         assert OrderAudit.objects.count() == 2
         order_audit = OrderAudit.objects.last()

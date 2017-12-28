@@ -56,5 +56,8 @@ class WebhookRequest(TimestampedModel):
     award_cost = DecimalField(null=True, blank=True, max_digits=20, decimal_places=2)
     amount_to_pay = DecimalField(null=True, blank=True, max_digits=20, decimal_places=2)
 
+    class Meta:
+        ordering = ['award_id', 'created_on']
+
     def __str__(self):
         return '<WebhookRequest created_on={} status={} >'.format(self.created_on, self.status)

@@ -8,23 +8,47 @@ from decimal import Decimal
 import pytest
 from django.contrib.auth.models import User
 from django.test import override_settings
+from requests import HTTPError
 
+from ecommerce.factories import OrderFactory, LineFactory
+from ecommerce.models import Order
 from fluidreview.constants import WebhookParseStatus
-from fluidreview.factories import OAuthTokenFactory
-from fluidreview.api import FluidReviewAPI, BASE_API_URL, process_user, parse_webhook, list_users
+from fluidreview.factories import OAuthTokenFactory, WebhookRequestFactory
+from fluidreview.api import FluidReviewAPI, BASE_API_URL, process_user, parse_webhook, list_users, post_payment, \
+    FluidReviewException
 from fluidreview.models import OAuthToken, WebhookRequest
 from fluidreview.utils import utc_now
-from klasses.factories import KlassFactory
+from klasses.factories import KlassFactory, InstallmentFactory
+from klasses.models import Bootcamp
 from profiles.factories import UserFactory, ProfileFactory
 from profiles.models import Profile
 
 pytestmark = pytest.mark.django_db
+
+# pylint: disable=redefined-outer-name
 
 fluid_user = {
     'id': 21231,
     'email': 'fluid_user@fluid.xyz',
     'full_name': 'Fluid User'
 }
+
+
+@pytest.fixture()
+def test_payment_data():
+    """
+    Sets up the data for payment tests in this module
+    """
+    klass = KlassFactory()
+    profile = ProfileFactory(fluidreview_id=1)
+    InstallmentFactory(klass=klass)
+    order = OrderFactory(user=profile.user, status=Order.FULFILLED)
+    LineFactory.create(order=order, klass_key=klass.klass_key, price=11.38)
+    webhook = WebhookRequestFactory(
+        award_id=klass.klass_key, status=WebhookParseStatus.SUCCEEDED, user_id=profile.fluidreview_id, submission_id=1
+    )
+
+    return klass, order, webhook
 
 
 def test_get_token_from_settings(settings):
@@ -277,3 +301,46 @@ def test_list_users(mocker):
     mock_api().get.return_value.json.side_effect = mock_api_results
     expected_users = [user for results in mock_api_results for user in results['results']]
     assert expected_users == [user for user in list_users()]
+
+
+@pytest.mark.parametrize('is_legacy', [True, False])
+@pytest.mark.parametrize('is_fulfilled', [True, False])
+def test_post_payment(mocker, is_legacy, is_fulfilled, test_payment_data, settings):
+    """Test that posting a payment is called for non-legacy klasses, with correct data"""
+    settings.FLUIDREVIEW_AMOUNTPAID_ID = 100
+    mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
+    mock_api().put.return_value.status_code = 200
+    klass, order, hook = test_payment_data
+    if not is_fulfilled:
+        order.status = Order.FAILED
+    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=is_legacy)
+    post_payment(order)
+    expected_data = {'value': '11.38'}
+    assert mock_api().put.call_count == (0 if is_legacy or not is_fulfilled else 1)
+    if is_fulfilled and not is_legacy:
+        mock_api().put.assert_called_with(
+            'submissions/{}/metadata/100/'.format(hook.submission_id), data=expected_data
+        )
+
+
+def test_post_payment_bad_response(mocker, test_payment_data):
+    """Test that bad responses from FluidReview raise expected exceptions"""
+    mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
+    mock_api().put.side_effect = HTTPError
+    klass, order, _ = test_payment_data
+    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
+    with pytest.raises(FluidReviewException) as exc:
+        post_payment(order)
+    assert 'Error updating amount paid by user' in str(exc)
+
+
+def test_post_payment_bad_webhook(mocker, test_payment_data):
+    """Test that a webhook without submission id raises expected exception"""
+    mocker.patch('fluidreview.api.FluidReviewAPI')
+    klass, order, hook = test_payment_data
+    hook.submission_id = None
+    hook.save()
+    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
+    with pytest.raises(FluidReviewException) as exc:
+        post_payment(order)
+    assert 'Webhook has no submission id for order' in str(exc)

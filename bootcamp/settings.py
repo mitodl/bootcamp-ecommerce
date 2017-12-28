@@ -16,8 +16,6 @@ import os
 import platform
 from urllib.parse import urljoin
 
-from django.core.exceptions import ImproperlyConfigured
-
 import dj_database_url
 import yaml
 
@@ -467,9 +465,7 @@ FLUIDREVIEW_CLIENT_ID = get_var("FLUIDREVIEW_CLIENT_ID", None)
 FLUIDREVIEW_CLIENT_SECRET = get_var("FLUIDREVIEW_CLIENT_SECRET", None)
 FLUIDREVIEW_BASE_URL = get_var("FLUIDREVIEW_BASE_URL", None)
 FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = get_var("FLUIDREVIEW_WEBHOOK_AUTH_TOKEN", None)
-if not FLUIDREVIEW_WEBHOOK_AUTH_TOKEN:
-    raise ImproperlyConfigured("Missing FLUIDREVIEW_WEBHOOK_AUTH_TOKEN")
-
+FLUIDREVIEW_AMOUNTPAID_ID = get_var("FLUIDREVIEW_AMOUNTPAID_ID", None)
 
 # BOOTCAMP ADMISSION
 BOOTCAMP_ADMISSION_BASE_URL = get_var("BOOTCAMP_ADMISSION_BASE_URL", "http://bootcamp-admission.example.com")
@@ -498,3 +494,13 @@ if DEBUG:
     MIDDLEWARE_CLASSES = (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ) + MIDDLEWARE_CLASSES
+
+MANDATORY_SETTINGS = [
+    'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN',
+    'FLUIDREVIEW_AMOUNTPAID_ID',
+    'FLUIDREVIEW_BASE_URL',
+    'FLUIDREVIEW_CLIENT_ID',
+    'FLUIDREVIEW_CLIENT_SECRET',
+    'FLUIDREVIEW_ACCESS_TOKEN',
+    'FLUIDREVIEW_REFRESH_TOKEN'
+]

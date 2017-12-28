@@ -11,6 +11,7 @@ class Bootcamp(models.Model):
     A bootcamp
     """
     title = models.TextField()
+    legacy = models.BooleanField(default=False)
 
     def __str__(self):
         return "Bootcamp {title}".format(title=self.title)

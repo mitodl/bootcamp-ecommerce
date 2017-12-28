@@ -56,10 +56,7 @@ class Order(AuditableModel, TimestampedModel):
     @property
     def klass_title(self):
         """Title of the klass being paid for"""
-        line = self.line_set.first()
-        if not line:
-            return ""
-        klass = Klass.objects.filter(klass_key=line.klass_key).first()
+        klass = self.get_klass()
         if not klass:
             return ""
         return klass.title
@@ -75,6 +72,19 @@ class Order(AuditableModel, TimestampedModel):
         data = serialize_model_object(self)
         data['lines'] = [serialize_model_object(line) for line in self.line_set.all()]
         return data
+
+    def get_klass(self):
+        """
+        klass being paid for
+
+        Returns:
+            Klass: klass that order is for.
+
+        """
+        line = self.line_set.first()
+        if not line:
+            return None
+        return Klass.objects.filter(klass_key=line.klass_key).first()
 
 
 class OrderAudit(AuditModel):
