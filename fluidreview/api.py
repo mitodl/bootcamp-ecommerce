@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
+from klasses.models import Klass
 from profiles.models import Profile
 from fluidreview.serializers import UserSerializer
 from fluidreview.constants import WebhookParseStatus
@@ -165,6 +166,9 @@ def process_user(fluid_user):
 
     Args:
         fluid_user (ReturnDict): Data from a fluidreview.serializers.UserSerializer object
+
+    Returns:
+        User: user modified or created by the function
     """
     user, _ = User.objects.get_or_create(
         email__iexact=fluid_user['email'],
@@ -175,6 +179,7 @@ def process_user(fluid_user):
         profile.fluidreview_id = fluid_user['id']
         profile.name = fluid_user['full_name']
         profile.save()
+    return user
 
 
 def parse_webhook(webhook):
@@ -185,7 +190,7 @@ def parse_webhook(webhook):
         webhook (WebhookRequest): WebhookRequest instance
 
     """
-    try:
+    try:  # pylint:disable=too-many-nested-blocks
         body_json = json.loads(smart_text(webhook.body))
         required_fields = ('user_email', 'user_id')
         optional_fields = ('submission_id', 'award_id', 'award_name', 'award_cost', 'amount_to_pay')
@@ -196,9 +201,12 @@ def parse_webhook(webhook):
                 if att in ('award_cost', 'amount_to_pay'):
                     if body_json[att]:
                         setattr(webhook, att, Decimal(body_json[att]))
+                elif att in ('user_id', 'award_id'):
+                    if body_json[att]:
+                        setattr(webhook, att, int(body_json[att]))
                 else:
                     setattr(webhook, att, body_json[att])
-        parse_webhook_user(webhook.user_id)
+        parse_webhook_user(webhook)
         webhook.status = WebhookParseStatus.SUCCEEDED
     except:  # pylint: disable=bare-except
         webhook.status = WebhookParseStatus.FAILED
@@ -207,18 +215,32 @@ def parse_webhook(webhook):
         webhook.save()
 
 
-def parse_webhook_user(fluidreview_id):
+def parse_webhook_user(webhook):
     """
     Create/update User and Profile objects if necessary for a FluidReview user id
     Args:
-        fluidreview_id(int): ID of FluidReview user
+        webhook(WebhookRequest): a WebHookRequest object
     """
-    if not Profile.objects.filter(fluidreview_id=fluidreview_id):
+    if webhook.user_id is None:
+        raise FluidReviewException('user_id is required in WebhookRequest')
+    profile = Profile.objects.filter(fluidreview_id=webhook.user_id).first()
+    if not profile:
         # Get user info from FluidReview API (ensures that user id is real).
-        user_info = FluidReviewAPI().get('/users/{}'.format(fluidreview_id)).json()
+        user_info = FluidReviewAPI().get('/users/{}'.format(webhook.user_id)).json()
         serializer = UserSerializer(data=user_info)
         serializer.is_valid(raise_exception=True)
-        process_user(serializer.data)
+        user = process_user(serializer.data)
+    else:
+        user = profile.user
+    if webhook.award_id is not None:
+        klass = Klass.objects.get(klass_key=webhook.award_id)
+        if webhook.amount_to_pay is not None:
+            user.klass_prices.update_or_create(
+                klass=klass,
+                defaults={'price': webhook.amount_to_pay}
+            )
+        else:
+            user.klass_prices.filter(klass=klass).delete()
 
 
 def list_users():

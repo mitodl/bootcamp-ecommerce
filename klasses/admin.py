@@ -8,7 +8,7 @@ from klasses.models import (
     Bootcamp,
     Installment,
     Klass,
-)
+    PersonalPrice)
 
 
 class KlassInline(admin.StackedInline):
@@ -45,6 +45,13 @@ class InstallmentAdmin(admin.ModelAdmin):
     list_display = ('klass', 'deadline', 'amount')
 
 
+class PersonalPriceAdmin(admin.ModelAdmin):
+    """Admin for PersonalPrice"""
+    model = PersonalPrice
+    list_display = ('klass', 'user', 'price')
+
+
 admin.site.register(Bootcamp, BootcampAdmin)
 admin.site.register(Klass, KlassAdmin)
 admin.site.register(Installment, InstallmentAdmin)
+admin.site.register(PersonalPrice, PersonalPriceAdmin)

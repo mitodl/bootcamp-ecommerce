@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from rest_framework import status
 
 from fluidreview.models import WebhookRequest
+from klasses.factories import KlassFactory
 from profiles.factories import ProfileFactory
 from profiles.models import Profile
 
@@ -73,10 +74,11 @@ def test_webhook_parse_success(email, fluid_id, should_update, settings, client,
     mock_api().get.return_value.json.return_value = user_data
 
     existing_user = 'old@mit.edx'
-    ProfileFactory(
+    ProfileFactory.create(
         user__email=existing_user,
         fluidreview_id=None if should_update else fluid_id
     )
+    KlassFactory.create(klass_key=81265)
     data = {
         'date_of_birth': '',
         'user_email': email,

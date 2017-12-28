@@ -9,12 +9,13 @@ from factory import (
 from factory.django import DjangoModelFactory
 from factory.fuzzy import (
     FuzzyDecimal,
-    FuzzyText,
+    FuzzyText
 )
 import faker
 import pytz
 
 from klasses import models
+from profiles.factories import UserFactory
 
 FAKE = faker.Factory.create()
 
@@ -47,3 +48,13 @@ class InstallmentFactory(DjangoModelFactory):
 
     class Meta:
         model = models.Installment
+
+
+class PersonalPriceFactory(DjangoModelFactory):
+    """Factory for PersonalPrice"""
+    klass = SubFactory(KlassFactory)
+    user = SubFactory(UserFactory)
+    price = FuzzyDecimal(low=1, high=2000)
+
+    class Meta:
+        model = models.PersonalPrice
