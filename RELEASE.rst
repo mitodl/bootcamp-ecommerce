@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.6.1
+-------------
+
+- Post payment status to FluidReview
+- Personal prices for klasses
+
 Version 0.6.0
 -------------
 
