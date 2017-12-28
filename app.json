@@ -180,6 +180,10 @@
     "FLUIDREVIEW_WEBHOOK_AUTH_TOKEN": {
       "description": "Authentication token for FluidReview webhooks",
       "required": true
+    },
+    "FLUIDREVIEW_AMOUNTPAID_ID": {
+      "description": "The FluidReview metadata id for Amount Paid",
+      "required": true
     }
   },
   "keywords": [

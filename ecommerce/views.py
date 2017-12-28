@@ -27,6 +27,7 @@ from ecommerce.models import (
 )
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
+from fluidreview.api import post_payment
 from mail.api import MailgunClient
 
 
@@ -114,6 +115,11 @@ class OrderFulfillmentView(APIView):
                     )
         else:
             order.status = Order.FULFILLED
+            try:
+                post_payment(order)
+            except:  # pylint: disable=bare-except
+                log.exception('Error occurred posting payment to FluidReview for order %s', order)
+
         order.save_and_log(acting_user=None)
 
         # The response does not matter to CyberSource

@@ -13,10 +13,11 @@ from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
 from klasses.models import Klass
+from ecommerce.models import Line, Order
 from profiles.models import Profile
 from fluidreview.serializers import UserSerializer
 from fluidreview.constants import WebhookParseStatus
-from fluidreview.models import OAuthToken
+from fluidreview.models import OAuthToken, WebhookRequest
 from fluidreview.utils import utc_now
 
 log = logging.getLogger(__name__)
@@ -260,3 +261,35 @@ def list_users():
             yield fluid_user
         next_page = urlparse(response['next']).query
         url = 'users?{}'.format(next_page) if next_page else None
+
+
+def post_payment(order):
+    """
+    Update amount paid by a user for a class when an order is fulfilled.
+
+    Args:
+        order(Order): the Order object to send payment info about to FluidReview
+
+    """
+    if order.status != Order.FULFILLED:
+        return
+    klass = order.get_klass()
+    user = order.user
+    if not klass or klass.bootcamp.legacy:
+        return
+    total_paid = Line.total_paid_for_klass(order.user, klass.klass_key).get('total') or Decimal('0.00')
+    payment_metadata = {
+        'value': '{:0.2f}'.format(total_paid)
+    }
+    webhook = WebhookRequest.objects.filter(user_id=user.profile.fluidreview_id, award_id=klass.klass_key).last()
+    if webhook.submission_id is None:
+        raise FluidReviewException("Webhook has no submission id for order %s", order.id)
+    try:
+        FluidReviewAPI().put(
+            'submissions/{}/metadata/{}/'.format(webhook.submission_id, settings.FLUIDREVIEW_AMOUNTPAID_ID),
+            data=payment_metadata
+        )
+    except Exception as exc:
+        raise FluidReviewException(
+            "Error updating amount paid by user %s to class %s", user.email, klass.klass_key
+        ) from exc
