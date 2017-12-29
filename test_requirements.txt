@@ -1,3 +1,4 @@
+astroid==1.5.3 # fix https://github.com/PyCQA/pylint/issues/1609
 bpython
 codecov
 ddt
@@ -6,7 +7,7 @@ ipdb
 nplusone
 pdbpp
 pip-tools
-pylint==1.6.5
+pylint==1.7.1
 pylint-django
 pytest
 pytest-cov
