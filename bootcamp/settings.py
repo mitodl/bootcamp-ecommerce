@@ -299,7 +299,7 @@ MAILGUN_BCC_TO_EMAIL = get_var('MAILGUN_BCC_TO_EMAIL', 'no-reply@micromasters.mi
 
 # e-mail configurable admins
 ADMIN_EMAIL = get_var('BOOTCAMP_ADMIN_EMAIL', '')
-if ADMIN_EMAIL is not '':
+if ADMIN_EMAIL != '':
     ADMINS = (('Admins', ADMIN_EMAIL),)
 else:
     ADMINS = ()

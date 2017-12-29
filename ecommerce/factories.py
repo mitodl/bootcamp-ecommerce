@@ -4,13 +4,13 @@ Factories for ecommerce models
 from factory import (
     LazyAttribute,
     SelfAttribute,
+    Sequence,
     SubFactory,
 )
 from factory.django import DjangoModelFactory
 from factory.fuzzy import (
     FuzzyChoice,
     FuzzyDecimal,
-    FuzzyInteger,
     FuzzyText,
 )
 import faker
@@ -46,7 +46,7 @@ class LineFactory(DjangoModelFactory):
     """Factory for Line"""
     order = SubFactory(OrderFactory)
     price = SelfAttribute('order.total_price_paid')
-    klass_key = FuzzyInteger(low=1, high=1234)
+    klass_key = Sequence(lambda n: n)
     description = FuzzyText(prefix="Line ")
 
     class Meta:
