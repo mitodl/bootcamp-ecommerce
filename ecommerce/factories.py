@@ -11,7 +11,6 @@ from factory.django import DjangoModelFactory
 from factory.fuzzy import (
     FuzzyChoice,
     FuzzyDecimal,
-    FuzzyInteger,
     FuzzyText,
 )
 import faker
