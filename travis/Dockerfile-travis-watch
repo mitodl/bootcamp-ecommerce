@@ -8,7 +8,7 @@ COPY yarn.lock /src
 
 ADD ./webpack_if_prod.sh /src
 
-USER mitodl
+USER node
 
 RUN yarn install --frozen-lockfile
 
@@ -16,6 +16,6 @@ COPY . /src
 
 USER root
 
-RUN chown -R mitodl:mitodl /src
+RUN chown -R node:node /src
 
-USER mitodl
+USER node
