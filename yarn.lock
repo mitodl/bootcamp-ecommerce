@@ -3040,10 +3040,6 @@ ieee754@^1.1.4:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
 
-iflow-lodash@^1.1.27:
-  version "1.1.27"
-  resolved "https://registry.yarnpkg.com/iflow-lodash/-/iflow-lodash-1.1.27.tgz#0af626ce584ef95ccaa5ff564f76c7e6ad3ff17d"
-
 ignore@^3.1.2, ignore@^3.2.7, ignore@^3.3.3:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
