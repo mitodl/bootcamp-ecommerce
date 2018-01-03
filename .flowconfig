@@ -9,7 +9,6 @@
 
 [libs]
 ./static/js/flow/declarations.js
-node_modules/iflow-lodash/index.js.flow
 ./flow-typed/npm/
 
 [options]
