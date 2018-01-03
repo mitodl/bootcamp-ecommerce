@@ -1,6 +1,8 @@
 [ignore]
 .*/node_modules/fbjs/.*
 .*.git/.*
+.*/staticfiles/.*
+.*/static/bundles/.*
 
 [include]
 ./static/js
