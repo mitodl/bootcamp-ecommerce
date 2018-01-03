@@ -55,7 +55,7 @@
     "nyc": "^11.4.1",
     "object.entries": "^1.0.4",
     "postcss-loader": "^2.0.9",
-    "ramda": "^0.25.0",
+    "ramda": "^0.24.0",
     "raven-js": "^3.21.0",
     "react": "^15.5.0-rc.2",
     "react-addons-shallow-compare": "^15.6.2",
