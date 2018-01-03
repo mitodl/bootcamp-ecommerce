@@ -14,7 +14,7 @@ import type { UIState } from "../reducers"
 import type { RestState } from "../rest"
 import type { InputEvent } from "../flow/events"
 
-export default class Payment extends React.Component {
+export default class Payment extends React.Component<*, void> {
   props: {
     ui: UIState,
     payment: RestState,

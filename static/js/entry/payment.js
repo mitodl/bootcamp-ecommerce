@@ -9,6 +9,9 @@ import PaymentPage from "../containers/PaymentPage"
 const store = configureStore()
 
 const rootEl = document.getElementById("pay")
+if (!rootEl) {
+  throw new Error("Unable to find 'pay' element")
+}
 ReactDOM.render(
   <Provider store={store}>
     <PaymentPage />

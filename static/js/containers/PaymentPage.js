@@ -26,7 +26,7 @@ import type { UIState } from "../reducers"
 import type { RestState } from "../rest"
 import type { InputEvent } from "../flow/events"
 
-class PaymentPage extends React.Component {
+class PaymentPage extends React.Component<*, void> {
   props: {
     dispatch: Dispatch,
     ui: UIState,
@@ -74,6 +74,10 @@ class PaymentPage extends React.Component {
         const { url, payload } = result
         const form = createForm(url, payload)
         const body = document.querySelector("body")
+        if (!body) {
+          // for flow
+          throw new Error("No body in document")
+        }
         body.appendChild(form)
         form.submit()
       })

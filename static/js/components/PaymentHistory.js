@@ -5,7 +5,7 @@ import R from "ramda"
 
 import { formatDollarAmount } from "../util/util"
 
-export default class PaymentHistory extends React.Component {
+export default class PaymentHistory extends React.Component<*, void> {
   props: {
     klassDataWithPayments: Array<Object>
   }
