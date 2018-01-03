@@ -169,19 +169,6 @@ describe("PaymentPage", () => {
       })
     })
 
-    it("sends a payment when API is contacted", () => {
-      store.dispatch(setPaymentAmount("123"))
-      fetchStub.withArgs("/api/v0/payment/").returns(Promise.resolve())
-      return renderFullPaymentPage().then(wrapper => {
-        return listenForActions(
-          [REQUEST_PAYMENT, RECEIVE_PAYMENT_SUCCESS],
-          () => {
-            wrapper.find(paymentBtnSelector).simulate("click")
-          }
-        )
-      })
-    })
-
     it("constructs a form to be sent to Cybersource and submits it", () => {
       const url = "/x/y/z"
       const payload = {

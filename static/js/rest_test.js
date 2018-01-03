@@ -132,29 +132,32 @@ describe("rest", () => {
       })
     })
 
-    it("dispatches a failure action if the API failed", () => {
+    it("dispatches a failure action if the API failed", async () => {
       const fetchAction = makeAction(fakeEndpoint)
+      const action = dispatch => fetchAction(params)(dispatch).catch(() => {
+        // silence node.js warning about unhandled errors
+      })
       const params = {
         param1: "1",
         param2: "2"
       }
       fetchMock.returns(Promise.reject("error"))
 
-      return dispatchThen(fetchAction(params), [
+      const state = await dispatchThen(action, [
         makeRequestActionType(fakeEndpoint.name),
         makeReceiveFailureActionType(fakeEndpoint.name)
-      ]).then(state => {
-        assert.deepEqual(state, {
-          error:       "error",
-          processing:  false,
-          loaded:      true,
-          fetchStatus: FETCH_FAILURE
-        })
+      ])
 
-        sinon.assert.calledWith(fetchMock, "/api/v0/fake/", {
-          method: "POST",
-          body:   JSON.stringify(params)
-        })
+      assert.deepEqual(state, {
+        error: "error",
+        processing: false,
+        loaded: true,
+        fetchStatus: FETCH_FAILURE
+      })
+
+      sinon.assert.calledWith(fetchMock, "/api/v0/fake/", {
+        method: "POST",
+        body: JSON.stringify(params)
       })
     })
   })
