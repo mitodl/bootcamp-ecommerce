@@ -14,11 +14,10 @@ if (!Object.entries) {
   entries.shim();
 }
 
-require('jsdom-global')();
-
 afterEach(() => { // eslint-disable-line mocha/no-top-level-hooks
   document.body.innerHTML = '';
   global.SETTINGS = _createSettings();
+  window.location = "http://fake/";
 });
 
 // enable chai-as-promised
