@@ -63,7 +63,6 @@ describe("Payment", () => {
     const title = wrapper.find(klassTitleSelector)
     assert.include(title.text(), fakeKlasses[0].display_title)
   })
-
   ;[
     [moment().format(), "non-null date message"],
     [null, "null date message"]

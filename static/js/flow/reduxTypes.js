@@ -1,7 +1,7 @@
 // @flow
 import type {
   Dispatch,
-} from 'redux';
+} from 'redux'
 
 export type Dispatcher<T> = (d: Dispatch) => Promise<T>;
 

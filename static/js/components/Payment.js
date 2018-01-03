@@ -55,7 +55,7 @@ export default class Payment extends React.Component {
     const finalInstallmentDeadline = formatReadableDate(R.last(deadlineDates))
 
     if (installments.length > 1) {
-      let nextInstallmentIndex = R.findIndex(R.lt(now), deadlineDates),
+      const nextInstallmentIndex = R.findIndex(R.lt(now), deadlineDates),
         lastInstallmentIndex = installments.length - 1
       if (nextInstallmentIndex !== lastInstallmentIndex) {
         const totalOwedForInstallment = this.getTotalOwedUpToInstallment(

@@ -14,8 +14,8 @@ if (!Object.entries) {
   entries.shim()
 }
 
+// eslint-disable-next-line mocha/no-top-level-hooks
 afterEach(() => {
-  // eslint-disable-line mocha/no-top-level-hooks
   document.body.innerHTML = ""
   global.SETTINGS = _createSettings()
   window.location = "http://fake/"

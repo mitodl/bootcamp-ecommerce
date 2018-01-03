@@ -125,7 +125,6 @@ describe("PaymentPage", () => {
       }
     )
   })
-
   ;[
     [100, true, "past payments should"],
     [0, false, "no past payments should not"]

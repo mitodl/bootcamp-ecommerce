@@ -82,7 +82,9 @@ export function makeFetchFunc(
   endpoint: Endpoint
 ): (params?: Object) => Promise<*> {
   return (params = {}) => {
-    const url = endpoint.urlTemplate ? endpoint.urlTemplate(params) : endpoint.url
+    const url = endpoint.urlTemplate
+      ? endpoint.urlTemplate(params)
+      : endpoint.url
     return fetchJSONWithCSRF(url || "", endpoint.fetchOptions(params))
   }
 }
