@@ -26,6 +26,8 @@ from ecommerce.models import (
 )
 from ecommerce.serializers import PaymentSerializer
 from fluidreview.api import FluidReviewException
+from fluidreview.constants import WebhookParseStatus
+from fluidreview.factories import WebhookRequestFactory
 from profiles.factories import UserFactory
 
 
@@ -110,7 +112,16 @@ class OrderFulfillmentViewTests(TestCase):
         Test the happy case
         """
         klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        user.profile.fluidreview_id = 999
+        user.profile.save()
+        payment = 123
+        order = create_test_order(user, klass.klass_key, payment)
+        WebhookRequestFactory(
+            user_email=user.email,
+            user_id=user.profile.fluidreview_id,
+            award_id=klass.klass_key,
+            status=WebhookParseStatus.SUCCEEDED
+        )
         data_before = order.to_dict()
 
         data = {}
@@ -119,10 +130,9 @@ class OrderFulfillmentViewTests(TestCase):
 
         data['req_reference_number'] = make_reference_id(order)
         data['decision'] = 'ACCEPT'
-
         with patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True), patch(
             'ecommerce.views.MailgunClient.send_individual_email',
-        ) as send_email, patch('ecommerce.views.post_payment', side_effect=side_effect) as post_payment:
+        ) as send_email, patch('fluidreview.api.FluidReviewAPI.put', side_effect=side_effect) as mockapi:
             resp = self.client.post(reverse('order-fulfillment'), data=data)
 
         assert len(resp.content) == 0
@@ -133,9 +143,8 @@ class OrderFulfillmentViewTests(TestCase):
         assert order.receipt_set.first().data == data
 
         assert send_email.call_count == 0
-        assert post_payment.call_count == 1
-        assert post_payment.call_args[0][0].id == order.id
-
+        mockapi.assert_called_once()
+        assert mockapi.call_args[1] == {'data': {'value': '{}.00'.format(payment)}}
         assert OrderAudit.objects.count() == 2
         order_audit = OrderAudit.objects.last()
         assert order_audit.order == order

@@ -115,12 +115,12 @@ class OrderFulfillmentView(APIView):
                     )
         else:
             order.status = Order.FULFILLED
-            try:
-                post_payment(order)
-            except:  # pylint: disable=bare-except
-                log.exception('Error occurred posting payment to FluidReview for order %s', order)
 
         order.save_and_log(acting_user=None)
+        try:
+            post_payment(order)
+        except:  # pylint: disable=bare-except
+            log.exception('Error occurred posting payment to FluidReview for order %s', order)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)
