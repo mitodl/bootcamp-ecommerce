@@ -1,105 +1,102 @@
-import { assert } from 'chai';
-import moment from 'moment';
-import _ from 'lodash';
+import { assert } from "chai"
+import moment from "moment"
+import _ from "lodash"
 
-import { generateFakeKlasses, generateFakeInstallment } from '../factories';
+import { generateFakeKlasses, generateFakeInstallment } from "../factories"
 import {
   createForm,
   isNilOrBlank,
   formatDollarAmount,
   getKlassWithFulfilledOrder,
-  getInstallmentDeadlineDates,
-} from './util';
+  getInstallmentDeadlineDates
+} from "./util"
 
-describe('util', () => {
-  describe('createForm', () => {
-    it('creates a form with hidden values corresponding to the payload', () => {
-      const url = 'url';
-      const payload = {'pay': 'load'};
-      const form = createForm(url, payload);
+describe("util", () => {
+  describe("createForm", () => {
+    it("creates a form with hidden values corresponding to the payload", () => {
+      const url = "url"
+      const payload = { pay: "load" }
+      const form = createForm(url, payload)
 
-      let clone = {...payload};
-      for (let hidden of form.querySelectorAll("input[type=hidden]")) {
-        const key = hidden.getAttribute('name');
-        const value = hidden.getAttribute('value');
-        assert.equal(clone[key], value);
-        delete clone[key];
+      const clone = { ...payload }
+      for (const hidden of form.querySelectorAll("input[type=hidden]")) {
+        const key = hidden.getAttribute("name")
+        const value = hidden.getAttribute("value")
+        assert.equal(clone[key], value)
+        delete clone[key]
       }
       // all keys exhausted
-      assert.deepEqual(clone, {});
-      assert.equal(form.getAttribute("action"), url);
-      assert.equal(form.getAttribute("method"), "post");
-    });
-  });
+      assert.deepEqual(clone, {})
+      assert.equal(form.getAttribute("action"), url)
+      assert.equal(form.getAttribute("method"), "post")
+    })
+  })
 
-  describe('isNilOrBlank', () => {
-    it('returns true for undefined, null, and a blank string', () => {
-      [undefined, null, ''].forEach(value => {
-        assert.isTrue(isNilOrBlank(value));
-      });
-    });
+  describe("isNilOrBlank", () => {
+    it("returns true for undefined, null, and a blank string", () => {
+      [undefined, null, ""].forEach(value => {
+        assert.isTrue(isNilOrBlank(value))
+      })
+    })
 
-    it('returns false for a non-blank string', () => {
-      assert.isFalse(isNilOrBlank('not blank'));
-    });
-  });
+    it("returns false for a non-blank string", () => {
+      assert.isFalse(isNilOrBlank("not blank"))
+    })
+  })
 
-  describe('formatDollarAmount', () => {
-    it('returns a properly formatted dollar value', () => {
-      [undefined, null].forEach((nilValue) => {
-        assert.equal(formatDollarAmount(nilValue), '$0');
-      });
-      assert.equal(formatDollarAmount(100), '$100');
-      assert.equal(formatDollarAmount(100.5), '$100.50');
-      assert.equal(formatDollarAmount(10000), '$10,000');
-      assert.equal(formatDollarAmount(100.12), '$100.12');
-    });
-  });
+  describe("formatDollarAmount", () => {
+    it("returns a properly formatted dollar value", () => {
+      [undefined, null].forEach(nilValue => {
+        assert.equal(formatDollarAmount(nilValue), "$0")
+      })
+      assert.equal(formatDollarAmount(100), "$100")
+      assert.equal(formatDollarAmount(100.5), "$100.50")
+      assert.equal(formatDollarAmount(10000), "$10,000")
+      assert.equal(formatDollarAmount(100.12), "$100.12")
+    })
+  })
 
-  describe('getKlassWithFulfilledOrder', () => {
-    it('gets a fulfilled order from the payments in the klasses', () => {
-      const klasses = generateFakeKlasses(1, {hasPayment: true});
-      const klass = klasses[0];
+  describe("getKlassWithFulfilledOrder", () => {
+    it("gets a fulfilled order from the payments in the klasses", () => {
+      const klasses = generateFakeKlasses(1, { hasPayment: true })
+      const klass = klasses[0]
       assert.deepEqual(
         getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
-        klass,
-      );
-    });
+        klass
+      )
+    })
 
     it("returns undefined if the order doesn't exist", () => {
-      const klasses = generateFakeKlasses(1);
-      assert.deepEqual(
-        getKlassWithFulfilledOrder(klasses, 3),
-        undefined,
-      );
-    });
+      const klasses = generateFakeKlasses(1)
+      assert.deepEqual(getKlassWithFulfilledOrder(klasses, 3), undefined)
+    })
 
     it("returns undefined if the order is not fulfilled", () => {
-      const klasses = generateFakeKlasses(1, {hasPayment: true});
-      const klass = klasses[0];
-      klass.payments[0].order.status = 'created';
+      const klasses = generateFakeKlasses(1, { hasPayment: true })
+      const klass = klasses[0]
+      klass.payments[0].order.status = "created"
       assert.deepEqual(
         getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
-        undefined,
-      );
-    });
-  });
+        undefined
+      )
+    })
+  })
 
-  describe('getInstallmentDeadlineDates', () => {
-    it('returns a list of parsed deadline dates when given an array of installment data', () => {
-      let moments = [
-        moment({milliseconds: 0}),
-        moment({milliseconds: 0}).add(5, 'days')
-      ];
-      let installments = [
-        generateFakeInstallment({deadline: moments[0].format()}),
-        generateFakeInstallment({deadline: moments[1].format()})
-      ];
+  describe("getInstallmentDeadlineDates", () => {
+    it("returns a list of parsed deadline dates when given an array of installment data", () => {
+      const moments = [
+        moment({ milliseconds: 0 }),
+        moment({ milliseconds: 0 }).add(5, "days")
+      ]
+      const installments = [
+        generateFakeInstallment({ deadline: moments[0].format() }),
+        generateFakeInstallment({ deadline: moments[1].format() })
+      ]
       // Assert that the arrays of dates are equivalent (using this approach since moment objects
       // store a bunch of extra properties that make assert.deepEqual unusable)
       _.each(getInstallmentDeadlineDates(installments), (installment, i) => {
-        assert.isTrue(installment.isSame(moments[i]));
-      });
-    });
-  });
-});
+        assert.isTrue(installment.isSame(moments[i]))
+      })
+    })
+  })
+})

@@ -1,27 +1,27 @@
 // Define globals we would usually get from Django
 const _createSettings = () => ({
   user: {
-    full_name: 'Jane Doe',
-    username: 'janedoe'
-  },
-});
+    full_name: "Jane Doe",
+    username:  "janedoe"
+  }
+})
 
-global.SETTINGS = _createSettings();
+global.SETTINGS = _createSettings()
 
 // polyfill for Object.entries
-import entries from 'object.entries';
+import entries from "object.entries"
 if (!Object.entries) {
-  entries.shim();
+  entries.shim()
 }
 
-require('jsdom-global')();
-
-afterEach(() => { // eslint-disable-line mocha/no-top-level-hooks
-  document.body.innerHTML = '';
-  global.SETTINGS = _createSettings();
-});
+// eslint-disable-next-line mocha/no-top-level-hooks
+afterEach(() => {
+  document.body.innerHTML = ""
+  global.SETTINGS = _createSettings()
+  window.location = "http://fake/"
+})
 
 // enable chai-as-promised
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
+import chai from "chai"
+import chaiAsPromised from "chai-as-promised"
+chai.use(chaiAsPromised)

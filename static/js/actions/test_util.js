@@ -1,18 +1,24 @@
 // @flow
-import { assert } from 'chai';
+import { assert } from "chai"
 
 const payloads = [
   null,
-  'foo',
+  "foo",
   12,
-  ['a', 'b', 'c'],
-  { foo: 'bar', baz: [1,2,3] }
-];
+  ["a", "b", "c"],
+  { foo: "bar", baz: [1, 2, 3] }
+]
 
-type ActionHelperManifest = [Function, string];
-export const assertCreatedActionHelper = ([actionHelper, actionType]: ActionHelperManifest) => {
-  assert.deepEqual(actionHelper(), {type: actionType});
+type ActionHelperManifest = [Function, string]
+export const assertCreatedActionHelper = ([
+  actionHelper,
+  actionType
+]: ActionHelperManifest) => {
+  assert.deepEqual(actionHelper(), { type: actionType })
   payloads.forEach(payload => {
-    assert.deepEqual(actionHelper(payload), { type: actionType, payload: payload});
-  });
-};
+    assert.deepEqual(actionHelper(payload), {
+      type:    actionType,
+      payload: payload
+    })
+  })
+}

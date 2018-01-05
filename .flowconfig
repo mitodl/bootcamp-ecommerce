@@ -1,13 +1,14 @@
 [ignore]
 .*/node_modules/fbjs/.*
 .*.git/.*
+.*/staticfiles/.*
+.*/static/bundles/.*
 
 [include]
 ./static/js
 
 [libs]
 ./static/js/flow/declarations.js
-node_modules/iflow-lodash/index.js.flow
 ./flow-typed/npm/
 
 [options]

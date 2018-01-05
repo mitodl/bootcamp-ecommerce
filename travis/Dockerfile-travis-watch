@@ -1,21 +1,15 @@
-FROM mitodl/bootcamp_watch_travis_next
+FROM mitodl/bootcamp_watch_travis_4db5a4
 
 WORKDIR /src
 
-COPY package.json /src
-
-COPY yarn.lock /src
-
-ADD ./webpack_if_prod.sh /src
-
-USER mitodl
-
-RUN yarn install --frozen-lockfile
-
-COPY . /src
+COPY package.json yarn.lock webpack_if_prod.sh /src/
 
 USER root
 
-RUN chown -R mitodl:mitodl /src
+COPY . /src
 
-USER mitodl
+RUN chown -R node:node /src
+
+USER node
+
+RUN yarn install --frozen-lockfile --ignore-engines

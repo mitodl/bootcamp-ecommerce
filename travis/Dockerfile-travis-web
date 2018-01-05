@@ -1,4 +1,4 @@
-FROM mitodl/bootcamp_web_travis_next
+FROM mitodl/bootcamp_web_travis_4db5a4
 
 WORKDIR /tmp
 
