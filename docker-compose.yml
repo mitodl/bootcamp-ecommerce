@@ -70,7 +70,7 @@ services:
     env_file: .env
 
   celery:
-    image: open_discussions_python
+    image: bootcamp_python
     extends:
       service: python
     command: >
