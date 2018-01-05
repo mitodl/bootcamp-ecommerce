@@ -269,7 +269,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
-    'COERCE_DECIMAL_TO_STRING': False
+    'COERCE_DECIMAL_TO_STRING': False,
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 # Request files from the webpack dev server
