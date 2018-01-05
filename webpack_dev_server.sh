@@ -5,7 +5,7 @@ set -ef -o pipefail
 source ./scripts/envs.sh
 
 WEBPACK_HOST='0.0.0.0'
-WEBPACK_PORT='8078'
+WEBPACK_PORT='8098'
 
 # The webpack server should only be run in one of two cases:
 #    1) We are running Linux and inside the Docker container
