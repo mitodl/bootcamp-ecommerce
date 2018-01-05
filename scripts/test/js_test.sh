@@ -7,6 +7,9 @@ then
 elif [[ ! -z "$CODECOV" ]]
 then
     export CMD="node ./node_modules/nyc/bin/nyc.js --reporter=lcovonly -R spec mocha"
+elif [[ ! -z "$WATCH" ]]
+then
+    export CMD="node ./node_modules/mocha/bin/_mocha --watch"
 else
     export CMD="node ./node_modules/mocha/bin/_mocha"
 fi
@@ -48,13 +51,14 @@ fi
 if [[ $(
     cat "$TMP_FILE" |
     grep -v 'ignored, nothing could be mapped' |
-    grep -v 'You are manually calling a React.PropTypes validation function' |
-    grep -v 'React.__spread is deprecated' |
+    grep -v "This browser doesn't support the \`onScroll\` event" |
     wc -l |
     awk '{print $1}'
     ) -ne 0 ]]  # is file empty?
 then
-    echo "Error output found, see test output logs to see which test they came from."
+    echo "Error output found:"
+    cat "$TMP_FILE"
+    echo "End of output"
     rm -f "$TMP_FILE"
     exit 1
 fi
