@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+Version 0.7.0
+-------------
+
+- Fix port reference (#180)
+- Use docker overrides for travis and local configuration differences (#174)
+- Set default test client format (#175)
+- JS upgrades (#173)
+- Don&#39;t post payment until order is saved
+- Update python to 3.6 (#172)
+
 Version 0.6.1
 -------------
 
