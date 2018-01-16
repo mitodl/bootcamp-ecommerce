@@ -47,6 +47,24 @@ def test_webhook_fail_auth(client, settings, token_missing, mocker):  # pylint: 
     assert WebhookRequest.objects.count() == 0
 
 
+@pytest.mark.parametrize("accept", ["text/plain", "application/json", "video/mp4", "foo", "", None])
+def test_webhook_with_accept_header(client, settings, mocker, accept):  # pylint: disable=unused-argument
+    """
+    Return a valid response no matter what the 'Accept' header is.
+    """
+    mocker.patch('fluidreview.api.FluidReviewAPI')
+    settings.FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = 'xyz'
+    headers = {
+        'HTTP_AUTHORIZATION': 'Basic xyz'
+    }
+    if accept is not None:
+        headers['HTTP_ACCEPT'] = accept
+    url = reverse('fluidreview-webhook')
+    resp = client.post(url, data='body', content_type='text/plain', **headers)
+    assert resp.status_code == status.HTTP_200_OK
+    assert WebhookRequest.objects.count() == 1
+
+
 @pytest.mark.parametrize(["email", "fluid_id", "should_update"], [
     ['new@mit.edx', 95195890, True],
     ['old@mit.edx', 95195891, True],
