@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import status
 
+from fluidreview.api import FluidReviewException
 from fluidreview.models import WebhookRequest
 from klasses.factories import KlassFactory
 from profiles.factories import ProfileFactory
@@ -42,8 +43,9 @@ def test_webhook_fail_auth(client, settings, token_missing, mocker):  # pylint: 
         headers['HTTP_AUTHORIZATION'] = 'Basic abc'
 
     url = reverse('fluidreview-webhook')
-    resp = client.post(url, data='body', content_type='text/plain', **headers)
-    assert resp.status_code == status.HTTP_403_FORBIDDEN
+    with pytest.raises(FluidReviewException) as exc:
+        client.post(url, data='body', content_type='text/plain', **headers)
+    assert 'You do not have permission' in str(exc.value)
     assert WebhookRequest.objects.count() == 0
 
 
