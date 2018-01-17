@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.8.0
+-------------
+
+- Raise exception if anything goes wrong with posting Webhook requests
+- Ignore &#34;Accept&#34; header on requests to WebhookView
+
 Version 0.7.0
 -------------
 
