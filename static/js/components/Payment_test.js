@@ -271,6 +271,13 @@ describe("Payment", () => {
         const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
         assert.notInclude(deadlineMsgHtml, "A deposit of ")
       })
+
+      it("should not show an installment deadline message if there are no installments", () => {
+        fakeKlass.installments = []
+        const wrapper = renderPayment({ selectedKlass: fakeKlass })
+        const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).text()
+        assert.equal(deadlineMsgHtml, "")
+      })
     })
   })
 })
