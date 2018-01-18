@@ -51,10 +51,10 @@ export default class Payment extends React.Component<*, void> {
 
     const installments = selectedKlass.installments
     let installmentDeadlineText = ""
-    const deadlineDates = getInstallmentDeadlineDates(installments)
-    const finalInstallmentDeadline = formatReadableDate(R.last(deadlineDates))
 
-    if (installments.length > 1) {
+    if (installments.length > 0) {
+      const deadlineDates = getInstallmentDeadlineDates(installments)
+      const finalInstallmentDeadline = formatReadableDate(R.last(deadlineDates))
       const nextInstallmentIndex = R.findIndex(R.lt(now), deadlineDates),
         lastInstallmentIndex = installments.length - 1
       if (nextInstallmentIndex !== lastInstallmentIndex) {
@@ -70,12 +70,10 @@ export default class Payment extends React.Component<*, void> {
       if (this.hasMissedPreviousInstallment(nextInstallmentIndex)) {
         installmentDeadlineText = `You missed the previous payment deadline. ${installmentDeadlineText}`
       }
+      installmentDeadlineText += ` Full payment must be complete by ${finalInstallmentDeadline}.`
     }
 
-    return (
-      `${installmentDeadlineText} ` +
-      `Full payment must be complete by ${finalInstallmentDeadline}.`
-    )
+    return installmentDeadlineText
   }
 
   renderKlassDropdown = () => {
