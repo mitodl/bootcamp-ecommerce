@@ -128,6 +128,10 @@
       "description": "Bootcamp support email",
       "required": true
     },
+    "FACEBOOK_PIXEL_ID": {
+      "description": "Facebook pixel ID",
+      "required": true
+    },
     "NEW_RELIC_APP_NAME": {
       "default": "Bootcamp e-commerce",
       "description": "Application identifier in New Relic."

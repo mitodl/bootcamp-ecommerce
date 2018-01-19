@@ -20,7 +20,8 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
         "environment": settings.ENVIRONMENT,
         "sentry_dsn": sentry.get_public_dsn(),
         "public_path": public_path(request),
-        "user": serialize_maybe_user(request.user)
+        "user": serialize_maybe_user(request.user),
+        "facebook_pixel_id": settings.FACEBOOK_PIXEL_ID
     }
 
 

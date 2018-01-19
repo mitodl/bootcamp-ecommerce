@@ -3,7 +3,8 @@ declare var SETTINGS: {
   user: {
     full_name: string,
     username: string
-  }
+  },
+  facebook_pixel_id: string
 };
 
 // mocha

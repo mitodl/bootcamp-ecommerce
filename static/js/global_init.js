@@ -3,7 +3,8 @@ const _createSettings = () => ({
   user: {
     full_name: "Jane Doe",
     username:  "janedoe"
-  }
+  },
+  facebook_pixel_id: ""
 })
 
 global.SETTINGS = _createSettings()
