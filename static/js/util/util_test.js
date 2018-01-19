@@ -8,6 +8,7 @@ import {
   isNilOrBlank,
   formatDollarAmount,
   getKlassWithFulfilledOrder,
+  getPaymentWithFulfilledOrder,
   getInstallmentDeadlineDates
 } from "./util"
 
@@ -57,9 +58,15 @@ describe("util", () => {
   })
 
   describe("getKlassWithFulfilledOrder", () => {
+    let klasses, klass
+
+    beforeEach(() => {
+      klasses = generateFakeKlasses(1, { hasPayment: true })
+      klass = klasses[0]
+    })
+
     it("gets a fulfilled order from the payments in the klasses", () => {
-      const klasses = generateFakeKlasses(1, { hasPayment: true })
-      const klass = klasses[0]
+      klass.payments[0].order.status = "fulfilled"
       assert.deepEqual(
         getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
         klass
@@ -67,16 +74,53 @@ describe("util", () => {
     })
 
     it("returns undefined if the order doesn't exist", () => {
-      const klasses = generateFakeKlasses(1)
-      assert.deepEqual(getKlassWithFulfilledOrder(klasses, 3), undefined)
+      klass.payments[0].order.status = "fulfilled"
+      assert.deepEqual(getKlassWithFulfilledOrder(klasses, 9999), undefined)
     })
 
     it("returns undefined if the order is not fulfilled", () => {
-      const klasses = generateFakeKlasses(1, { hasPayment: true })
-      const klass = klasses[0]
       klass.payments[0].order.status = "created"
       assert.deepEqual(
         getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
+        undefined
+      )
+    })
+  })
+
+  describe("getPaymentWithFulfilledOrder", () => {
+    let klass, payment
+
+    beforeEach(() => {
+      klass = generateFakeKlasses(1, { hasPayment: true })[0]
+      payment = klass.payments[0]
+    })
+
+    it("gets the payment for a fulfilled order", () => {
+      klass.payments[0].order.status = "fulfilled"
+      assert.deepEqual(
+        getPaymentWithFulfilledOrder(
+          klass.payments,
+          klass.payments[0].order.id
+        ),
+        payment
+      )
+    })
+
+    it("returns undefined if the order is not fulfilled", () => {
+      klass.payments[0].order.status = "created"
+      assert.deepEqual(
+        getPaymentWithFulfilledOrder(
+          klass.payments,
+          klass.payments[0].order.id
+        ),
+        undefined
+      )
+    })
+
+    it("returns undefined if there are no payments", () => {
+      klass.payments = []
+      assert.deepEqual(
+        getPaymentWithFulfilledOrder(klass.payments, 1),
         undefined
       )
     })
