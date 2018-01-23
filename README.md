@@ -73,9 +73,6 @@ a template to create your ``.env`` file. For Bootcamp to work, it needs 6 values
 
     The URL of your bootcamp instance on Docker (``http://<BOOTCAMP_DOCKER_MACHINE_IP>:8099``)
 
-- ``FACEBOOK_PIXEL_ID`` - Enter the devops Facebook account's pixel id.  If not available,
-    log into Facebook and create your own at https://www.facebook.com/events_manager/pixel/
-
 
 #### 4) Build and start the containers
 

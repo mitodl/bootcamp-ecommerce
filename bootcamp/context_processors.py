@@ -15,5 +15,6 @@ def api_keys(request):
         "APIKEYS": {
             "GOOGLE_ANALYTICS": settings.GA_TRACKING_ID,
             "SMARTLOOK": settings.SL_TRACKING_ID,
+            "GOOGLE_TAG_MANAGER": settings.GTM_TRACKING_ID
         }
     }

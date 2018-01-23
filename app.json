@@ -128,9 +128,13 @@
       "description": "Bootcamp support email",
       "required": true
     },
-    "FACEBOOK_PIXEL_ID": {
-      "description": "Facebook pixel ID",
-      "required": true
+    "GA_TRACKING_ID": {
+      "description": "Google Analytics tracking ID",
+      "required": false
+    },
+    "GTM_TRACKING_ID": {
+      "description": "Google Tag Manager tracking ID",
+      "required": false
     },
     "NEW_RELIC_APP_NAME": {
       "default": "Bootcamp e-commerce",

@@ -5030,10 +5030,6 @@ react-dom@^15.5.0-rc.2:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-facebook-pixel@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/react-facebook-pixel/-/react-facebook-pixel-0.1.0.tgz#8170b9bf3b1290b8a14f9ed594f25b1eb888b516"
-
 react-ga@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.4.0.tgz#44928b4a3427edb62e5987fc1ee983dbb7dee825"

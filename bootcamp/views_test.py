@@ -21,7 +21,7 @@ class TestViews(TestCase):
         super().setUpTestData()
         cls.user = ProfileFactory.create().user
 
-    @override_settings(USE_WEBPACK_DEV_SERVER=False, FACEBOOK_PIXEL_ID='11111111')
+    @override_settings(USE_WEBPACK_DEV_SERVER=False)
     def test_index_anonymous(self):
         """Verify the index view is as expected when user is anonymous"""
         host = FuzzyText().fuzz()
@@ -51,8 +51,7 @@ class TestViews(TestCase):
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',
-            'user': None,
-            'facebook_pixel_id': '11111111'
+            'user': None
         }
 
     def test_index_logged_in(self):
@@ -76,7 +75,7 @@ class TestViews(TestCase):
         """
         assert self.client.get(reverse('pay')).status_code == HTTP_302_FOUND
 
-    @override_settings(USE_WEBPACK_DEV_SERVER=False, FACEBOOK_PIXEL_ID='11111111')
+    @override_settings(USE_WEBPACK_DEV_SERVER=False)
     def test_pay(self):
         """
         Test that logged in users can see the payment page
@@ -109,6 +108,5 @@ class TestViews(TestCase):
             'user': {
                 'full_name': self.user.profile.name,
                 'username': None
-            },
-            'facebook_pixel_id': '11111111'
+            }
         }
