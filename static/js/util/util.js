@@ -62,16 +62,6 @@ export const getKlassWithFulfilledOrder = (
     klassData
   )
 
-export const getPaymentWithFulfilledOrder = (
-  paymentData: ?Array<Object>,
-  orderId: number
-) =>
-  R.find(
-    payment =>
-      payment.order.status === ORDER_FULFILLED && payment.order.id === orderId,
-    paymentData
-  )
-
 export const getInstallmentDeadlineDates = R.map(
   R.compose(moment, R.prop("deadline"))
 )

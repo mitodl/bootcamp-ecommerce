@@ -7,7 +7,6 @@ import _ from "lodash"
 import R from "ramda"
 import URI from "urijs"
 import moment from "moment"
-import ReactPixel from "react-facebook-pixel"
 
 import {
   clearUI,
@@ -19,11 +18,7 @@ import {
 } from "../actions"
 import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
 import { actions } from "../rest"
-import {
-  createForm,
-  getKlassWithFulfilledOrder,
-  getPaymentWithFulfilledOrder
-} from "../util/util"
+import { createForm, getKlassWithFulfilledOrder } from "../util/util"
 import Payment from "../components/Payment"
 import PaymentHistory from "../components/PaymentHistory"
 import Toast from "../components/Toast"
@@ -46,8 +41,6 @@ class PaymentPage extends React.Component<*, void> {
   }
 
   componentDidMount() {
-    ReactPixel.init(SETTINGS.facebook_pixel_id)
-    ReactPixel.pageView()
     this.fetchAPIdata()
     this.handleOrderStatus()
   }
@@ -118,7 +111,7 @@ class PaymentPage extends React.Component<*, void> {
       const orderId = parseInt(query.order)
       const klass = getKlassWithFulfilledOrder(klasses.data, orderId)
       if (klass) {
-        this.handleOrderSuccess(klass, orderId)
+        this.handleOrderSuccess()
       } else {
         this.handleOrderPending()
       }
@@ -127,7 +120,7 @@ class PaymentPage extends React.Component<*, void> {
     }
   }
 
-  handleOrderSuccess = (klass, orderId): void => {
+  handleOrderSuccess = (): void => {
     const { dispatch, ui: { toastMessage } } = this.props
     if (toastMessage === null) {
       dispatch(
@@ -136,8 +129,6 @@ class PaymentPage extends React.Component<*, void> {
           icon:  TOAST_SUCCESS
         })
       )
-      const payment = getPaymentWithFulfilledOrder(klass.payments, orderId)
-      ReactPixel.track("Purchase", { value: payment.price, currency: "USD" })
     }
     window.history.pushState({}, null, new URI().query({}).toString())
   }

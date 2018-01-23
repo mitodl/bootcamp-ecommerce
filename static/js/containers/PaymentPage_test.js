@@ -6,7 +6,6 @@ import { Provider } from "react-redux"
 import { assert } from "chai"
 import sinon from "sinon"
 import moment from "moment"
-import ReactPixel from "react-facebook-pixel"
 
 import * as api from "../lib/api"
 import {
@@ -33,13 +32,7 @@ describe("PaymentPage", () => {
   const paymentInputSelector = 'input[id="payment-amount"]',
     paymentBtnSelector = "button.large-cta"
 
-  let store,
-    listenForActions,
-    sandbox,
-    fetchStub,
-    klassesUrl,
-    klassesStub,
-    fbPixelStub // eslint-disable-line no-unused-vars
+  let store, listenForActions, sandbox, fetchStub, klassesUrl, klassesStub
 
   beforeEach(() => {
     SETTINGS.user = {
@@ -50,7 +43,6 @@ describe("PaymentPage", () => {
     store = configureTestStore(rootReducer)
     listenForActions = store.createListenForActions()
     sandbox = sinon.sandbox.create()
-    fbPixelStub = sandbox.stub(ReactPixel)
     fetchStub = sandbox.stub(api, "fetchJSONWithCSRF")
     klassesUrl = `/api/v0/klasses/${SETTINGS.user.username}/`
   })
@@ -84,18 +76,6 @@ describe("PaymentPage", () => {
       return Promise.resolve(wrapper)
     })
   }
-
-  it("Initiates facebook pixel and registers a pageview", () => {
-    const fakeKlasses = generateFakeKlasses(3)
-    klassesStub = fetchStub
-      .withArgs(klassesUrl)
-      .returns(Promise.resolve(fakeKlasses))
-
-    return renderFullPaymentPage().then(() => {
-      assert.equal(fbPixelStub.init.callCount, 1)
-      assert.equal(fbPixelStub.pageView.callCount, 1)
-    })
-  })
 
   it("does not have a selected klass by default", () => {
     const fakeKlasses = generateFakeKlasses(3)
@@ -259,18 +239,13 @@ describe("PaymentPage", () => {
       })
     })
 
-    it("shows the order status toast, tracks purchase on Facebook when query param is set for a success", () => {
+    it("shows the order status toast when query param is set for a success", () => {
       window.location = `/pay?status=receipt&order=${orderId}`
       return renderFullPaymentPage({ extraActions: TOAST_ACTIONS }).then(() => {
         assert.deepEqual(store.getState().ui.toastMessage, {
           title: "Payment Complete!",
           icon:  TOAST_SUCCESS
         })
-        assert.equal(fbPixelStub.track.callCount, 1)
-        assert.deepEqual(fbPixelStub.track.args[0], [
-          "Purchase",
-          { value: klass.payments[0].price, currency: "USD" }
-        ])
       })
     })
 
@@ -283,11 +258,10 @@ describe("PaymentPage", () => {
         window.location = `/pay?status=receipt&order=${orderId}`
         return renderFullPaymentPage().then(() => {
           assert.deepEqual(store.getState().ui.toastMessage, customMessage)
-          assert.equal(fbPixelStub.track.callCount, 0)
         })
       })
 
-      it("doesn't have a toast message loop or track Facebook purchase on failure", () => {
+      it("doesn't have a toast message loop on failure", () => {
         const customMessage = {
           message: "Custom toast message was not replaced"
         }
@@ -295,7 +269,6 @@ describe("PaymentPage", () => {
         window.location = "/dashboard?status=cancel"
         return renderFullPaymentPage().then(() => {
           assert.deepEqual(store.getState().ui.toastMessage, customMessage)
-          assert.equal(fbPixelStub.track.callCount, 0)
         })
       })
     })
