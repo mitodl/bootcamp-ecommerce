@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.9.1
+-------------
+
+- Remove facebook pixel code, add google tag manager code
+- Handle missing installments on payment page
+
 Version 0.8.1
 -------------
 
