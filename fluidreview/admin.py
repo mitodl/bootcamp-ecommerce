@@ -9,6 +9,9 @@ class WebhookRequestAdmin(admin.ModelAdmin):
     """Admin for WebhookRequest"""
     model = WebhookRequest
     readonly_fields = get_field_names(WebhookRequest)
+    ordering = ('-created_on',)
+    list_filter = ('award_id', 'status')
+    search_fields = ('user_email', 'user_id', 'submission_id')
 
     def has_add_permission(self, request):
         return False
