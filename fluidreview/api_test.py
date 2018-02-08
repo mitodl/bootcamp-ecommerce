@@ -200,11 +200,18 @@ def test_process_user_both_exist_with_fluid_id(mocker):
     mock_save_profile.assert_not_called()
 
 
-def test_parse_success(mocker):
+@pytest.mark.parametrize('award_id', [81265, None])
+@pytest.mark.parametrize(['amount_to_pay', 'award_cost', 'user_price'], [
+    ['', '1000.10', '1000.10'],
+    ['25.99', '', '25.99'],
+    ['', '', None],
+    ['0', '400', '0'],
+    ['10', '400', '10']
+])
+def test_parse_success(mocker, amount_to_pay, award_cost, user_price, award_id):
     """Test that a webhookrequest body is successfully parsed into individual fields"""
     klass = KlassFactory.create(klass_key=81265)
     user_id = 94379385
-    user_price = '543.99'
     mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().get.return_value.json.return_value = {
         'id': 94379385,
@@ -214,11 +221,11 @@ def test_parse_success(mocker):
     data = {
         'date_of_birth': '',
         'user_email': 'veteran-grants-9463shC',
-        'amount_to_pay': user_price,
+        'amount_to_pay': amount_to_pay,
         'user_id': user_id,
         'submission_id': 4533767,
-        'award_id': 81265,
-        'award_cost': '1000',
+        'award_id': award_id,
+        'award_cost': award_cost,
         'award_name': 'TEST CAMP'
     }
     body = json.dumps(data)
@@ -226,21 +233,13 @@ def test_parse_success(mocker):
     parse_webhook(hook)
     for attr in ('user_email', 'user_id', 'submission_id', 'award_id', 'award_name'):
         assert getattr(hook, attr) == data[attr]
-    assert hook.amount_to_pay == Decimal(data['amount_to_pay'])
-    assert hook.award_cost == Decimal(data['award_cost'])
+    assert hook.amount_to_pay == (Decimal(data['amount_to_pay']) if amount_to_pay != '' else None)
+    assert hook.award_cost == (Decimal(data['award_cost']) if award_cost != '' else None)
     assert hook.status == WebhookParseStatus.SUCCEEDED
-    assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == Decimal(user_price)
-    data['amount_to_pay'] = ''
-    body = json.dumps(data)
-    hook = WebhookRequest(body=body)
-    parse_webhook(hook)
-    assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == klass.price
-    data['amount_to_pay'] = '100'
-    data['award_id'] = None
-    body = json.dumps(data)
-    hook = WebhookRequest(body=body)
-    parse_webhook(hook)
-    assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == klass.price
+    if award_id is not None and user_price is not None:
+        assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == Decimal(user_price)
+    else:
+        assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == klass.price
 
 
 @pytest.mark.parametrize('body', [

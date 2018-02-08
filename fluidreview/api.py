@@ -234,11 +234,12 @@ def parse_webhook_user(webhook):
     else:
         user = profile.user
     if webhook.award_id is not None:
+        personal_price = webhook.award_cost if webhook.amount_to_pay is None else webhook.amount_to_pay
         klass = Klass.objects.get(klass_key=webhook.award_id)
-        if webhook.amount_to_pay is not None:
+        if personal_price is not None:
             user.klass_prices.update_or_create(
                 klass=klass,
-                defaults={'price': webhook.amount_to_pay}
+                defaults={'price': personal_price}
             )
         else:
             user.klass_prices.filter(klass=klass).delete()
