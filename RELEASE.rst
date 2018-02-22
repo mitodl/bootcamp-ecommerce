@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.10.0
+--------------
+
+- Use award_cost as personal price if amount_to_pay is blank
+
 Version 0.9.1
 -------------
 
