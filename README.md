@@ -100,3 +100,40 @@ a template to create your ``.env`` file. For Bootcamp to work, it needs 6 values
 #### 8) Go to the home page of your bootcamp site and login via EdX
   - Log in as staff@example.com (password: edx).
   - You should see a message that you owe the amount of money equal to the installment you created in step 6.
+
+
+## Integration with FluidReview
+
+#### 1) Set FluidReview environment variables
+Values for the first four can be found at `<FLUIDREVIEW_BASE_URL>/admin/developer/` on the FluidReview site.
+  - `FLUIDREVIEW_CLIENT_ID`
+  - `FLUIDREVIEW_CLIENT_SECRET`
+  - `FLUIDREVIEW_ACCESS_TOKEN`
+  - `FLUIDREVIEW_REFRESH_TOKEN`
+  - `FLUIDREVIEW_BASE_URL` (the FluidReview site URL)
+  - `FLUIDREVIEW_WEBHOOK_AUTH_TOKEN` (a manually assigned value that is difficult to guess)
+  
+#### 2) Create a trigger in FluidReview
+  - Go to `<FLUIDREVIEW_BASE_URL>/admin/triggers/`
+  - Click `New Trigger`
+  - Activation: set to `Submissions: A submission has been promoted to a new stage`
+  - Conditions: set to `Submission is in stage`, `is exactly`, `Accepted Applications`
+  - Add action `Advanced Webhook`
+    - URL: `<FLUIDREVIEW_BASE_URL>/api/v0/fluidreview_webhook/`
+    - Method: `POST`
+    - Auth Token: `<FLUIDREVIEW_WEBHOOK_AUTH_TOKEN>`
+    - Request content: 
+        ```
+        {
+          "date_of_birth": "{{ submission.var__155310__BzgWgZZxIk }}",
+          "user_email": "{{ submission.email }}",
+          "amount_to_pay": "{{ submission.field__27006 }}",
+          "user_id": {{ submission.user.id }},
+          "submission_id": {{ submission.id }},
+          "award_id": {{ award.id }},
+          "award_cost": "{{ award.field__27157 }}",
+          "award_name": "{{ award.name }}"
+        }
+        ```
+  - Priority: 1
+  - Status: Active
