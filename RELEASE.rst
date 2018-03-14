@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.11.0
+--------------
+
+- Sort webhook requests by date
+- Instructions on FluidReview webhook/trigger setup in README
+
 Version 0.10.0
 --------------
 
