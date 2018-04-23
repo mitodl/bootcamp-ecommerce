@@ -80,18 +80,6 @@ def create_unfulfilled_order(user, klass_key, payment_amount):
     if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
 
-    already_paid = get_total_paid(user, klass_key)
-    if payment_amount + already_paid > klass.price:
-        raise ValidationError(
-            "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
-            " greater than total price of ${klass_price}".format(
-                payment_amount=payment_amount,
-                klass=klass.title,
-                already_paid=already_paid,
-                klass_price=klass.price,
-            )
-        )
-
     order = Order.objects.create(
         status=Order.CREATED,
         total_price_paid=payment_amount,

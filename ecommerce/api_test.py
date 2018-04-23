@@ -33,7 +33,6 @@ from ecommerce.exceptions import (
     EcommerceException,
     ParseException,
 )
-from ecommerce.factories import LineFactory
 from ecommerce.models import (
     Order,
     OrderAudit,
@@ -80,33 +79,6 @@ class PurchasableTests(TestCase):
         super().setUpTestData()
 
         cls.klass, cls.user = create_purchasable_klass()
-
-    def test_too_much(self):
-        """
-        An order cannot exceed the total amount for the klass
-        """
-        LineFactory.create(
-            order__status=Order.FULFILLED,
-            order__user=self.user,
-            klass_key=self.klass.klass_key,
-            order__total_price_paid=self.klass.price - 10
-        )
-
-        with self.assertRaises(ValidationError) as ex:
-            # payment is $15 here but there is only $10 left to pay
-            payment_amount = 15
-            create_test_order(self.user, self.klass.klass_key, payment_amount)
-
-        message = (
-            "Payment of ${payment_amount} plus already paid ${already_paid} for {klass} would be"
-            " greater than total price of ${klass_price}".format(
-                payment_amount=payment_amount,
-                already_paid=self.klass.price - 10,
-                klass=self.klass.title,
-                klass_price=self.klass.price,
-            )
-        )
-        assert ex.exception.args[0] == message
 
     @ddt.data(0, -1.23)
     def test_less_or_equal_to_zero(self, payment_amount):

@@ -46,6 +46,7 @@ coverage.xml
 .hypothesis/
 coverage/
 .nyc_output/
+.pytest_cache/
 
 # Translations
 *.mo
