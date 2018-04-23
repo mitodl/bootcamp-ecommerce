@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.12.0
+--------------
+
+- Completely disabled overpayment error
+
 Version 0.11.0
 --------------
 
