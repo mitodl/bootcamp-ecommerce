@@ -70,7 +70,7 @@ class OrderFulfillmentView(APIView):
     authentication_classes = ()
     permission_classes = (IsSignedByCyberSource, )
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
         """
         Confirmation from CyberSource which fulfills an existing Order.
         """
