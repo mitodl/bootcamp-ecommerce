@@ -3,6 +3,7 @@
   <head>
     {% spaceless %}
     {% load static %}
+    {% load hijack_tags %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load raven %}
@@ -24,6 +25,7 @@
     {% endspaceless %}
   </head>
   <body>
+    {% hijack_notification %}
     {% include "gtm_body.html" %}
     {% block content %}
     {% endblock %}

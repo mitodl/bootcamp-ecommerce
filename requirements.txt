@@ -11,6 +11,9 @@ contextlib2==0.5.5        # via raven
 decorator==4.0.11         # via ipython, traitlets
 defusedxml==0.5.0         # via python3-openid, social-auth-core
 dj-database-url==0.3.0
+django-compat==1.0.15
+django-hijack==2.1.7
+django-hijack-admin==2.1.7
 dj-static==0.0.6
 django-redis==4.7.0
 django-server-status==0.3.2

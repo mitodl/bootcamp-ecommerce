@@ -110,6 +110,11 @@ INSTALLED_APPS = (
     'server_status',
     'social_django',
 
+    # Hijack
+    'hijack',
+    'compat',
+    'hijack_admin',
+
     # other third party APPS
     'raven.contrib.django.raven_compat',
 
@@ -214,6 +219,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bootcamp.wsgi.application'
 
+# Hijack
+HIJACK_ALLOW_GET_REQUESTS = True
+HIJACK_LOGOUT_REDIRECT_URL = '/admin/auth/user'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
