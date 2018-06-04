@@ -3,6 +3,7 @@
   <head>
     {% spaceless %}
     {% load static %}
+    {% load hijack_tags %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load raven %}
@@ -10,6 +11,7 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" type="text/css" href="{% url 'background-images-css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
     <script type="text/javascript">
     var SETTINGS = {{ js_settings_json|safe }};
     </script>
@@ -24,6 +26,7 @@
     {% endspaceless %}
   </head>
   <body>
+    {% hijack_notification %}
     {% include "gtm_body.html" %}
     {% block content %}
     {% endblock %}

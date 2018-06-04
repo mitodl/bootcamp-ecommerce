@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^terms_and_conditions/$', TemplateView.as_view(template_name='bootcamp/tac.html'), name='bootcamp-tac'),
     url(r'^status/', include('server_status.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^hijack/', include('hijack.urls', namespace='hijack')),
     url('', include('ecommerce.urls')),
     url('', include('fluidreview.urls')),
     url('', include('social_django.urls', namespace='social')),
