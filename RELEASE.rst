@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.13.0
+--------------
+
+- Added django-hijack for user masquerading (#213)
+
 Version 0.12.0
 --------------
 
