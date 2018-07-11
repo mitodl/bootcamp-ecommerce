@@ -31,9 +31,6 @@ def update_profile_from_edx(backend, user, response, is_new, *args, **kwargs):  
     if backend.name != EdxOrgOAuth2.name:
         return
 
-    if not is_new:
-        return
-
     access_token = response.get('access_token')
     if not access_token:
         # this should never happen for the edx oauth provider, but just in case...
@@ -47,6 +44,13 @@ def update_profile_from_edx(backend, user, response, is_new, *args, **kwargs):  
             "Authorization": "Bearer {}".format(access_token),
         }
     )
+
+    # update email anyway.
+    update_email(user_profile_edx, user)
+    if not is_new:
+        return
+
+    # for new users
     profile, _ = Profile.objects.get_or_create(user=user)
     name = user_profile_edx.get('name', '')
     profile.name = name
@@ -72,3 +76,14 @@ def set_last_update(details, *args, **kwargs):  # pylint: disable=unused-argumen
     """
     details['updated_at'] = datetime.now(tz=pytz.UTC).timestamp()
     return details
+
+
+def update_email(user_profile_edx, user):
+    """
+    updates email address of user
+    Args:
+        user_profile_edx (dict): user details from edX
+        user (User): user object
+    """
+    user.email = user_profile_edx.get('email')
+    user.save()
