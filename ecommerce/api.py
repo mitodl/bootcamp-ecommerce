@@ -155,9 +155,10 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'item_0_unit_price': str(order.total_price_paid),
         'line_item_count': 1,
         'override_custom_cancel_page': "{base}?status=cancel".format(base=redirect_url),
-        'override_custom_receipt_page': "{base}?status=receipt&order={order}".format(
+        'override_custom_receipt_page': "{base}?status=receipt&order={order}&award={award}".format(
             base=redirect_url,
             order=order.id,
+            award=klass.id
         ),
         'reference_number': make_reference_id(order),
         'profile_id': settings.CYBERSOURCE_PROFILE_ID,
