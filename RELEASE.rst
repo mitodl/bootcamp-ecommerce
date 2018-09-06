@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.14.0
+--------------
+
+- Remove IS_OSX from env.sh (#218)
+- Synchronized email address with email address from edX (#216)
+
 Version 0.13.0
 --------------
 
