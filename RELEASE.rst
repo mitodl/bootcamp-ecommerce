@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.15.0
+--------------
+
+- Pin docker images (#220)
+
 Version 0.14.0 (Released September 06, 2018)
 --------------
 
