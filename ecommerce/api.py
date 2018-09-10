@@ -158,7 +158,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'override_custom_receipt_page': "{base}?status=receipt&order={order}&award={award}".format(
             base=redirect_url,
             order=order.id,
-            award=klass.id
+            award=klass_key
         ),
         'reference_number': make_reference_id(order),
         'profile_id': settings.CYBERSOURCE_PROFILE_ID,
