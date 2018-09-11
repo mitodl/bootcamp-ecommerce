@@ -257,7 +257,9 @@ class CybersourceTests(TestCase):
             'line_item_count': 1,
             'locale': 'en-us',
             'override_custom_cancel_page': 'dashboard_url?status=cancel',
-            'override_custom_receipt_page': 'dashboard_url?status=receipt&order={}'.format(order.id),
+            'override_custom_receipt_page': 'dashboard_url?status=receipt&order={}&award={}'.format(
+                order.id, klass.klass_key
+            ),
             'reference_number': make_reference_id(order),
             'profile_id': CYBERSOURCE_PROFILE_ID,
             'signed_date_time': now.strftime(ISO_8601_FORMAT),
