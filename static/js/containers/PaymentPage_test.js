@@ -14,11 +14,16 @@ import {
   setInitialTime,
   setToastMessage,
   SET_TIMEOUT_ACTIVE,
-  SET_TOAST_MESSAGE
+  SET_TOAST_MESSAGE,
+  SHOW_DIALOG,
+  SET_PAYMENT_AMOUNT,
+  showDialog,
+  hideDialog
 } from "../actions"
 import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
 import rootReducer from "../reducers"
 import PaymentPage from "./PaymentPage"
+import { PAYMENT_CONFIRMATION_DIALOG } from "../components/Payment"
 import * as util from "../util/util"
 import { generateFakeKlasses } from "../factories"
 import { makeRequestActionType, makeReceiveSuccessActionType } from "../rest"
@@ -153,6 +158,25 @@ describe("PaymentPage", () => {
         .withArgs(klassesUrl)
         .returns(Promise.resolve(generateFakeKlasses(1)))
       store.dispatch(setSelectedKlassKey(1))
+    })
+
+    it("when user overpay", () => {
+      return renderFullPaymentPage().then(wrapper => {
+        return listenForActions([SET_PAYMENT_AMOUNT, SHOW_DIALOG], () => {
+          store.dispatch(setPaymentAmount("2000"))
+          store.dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG))
+        }).then(() => {
+          assert.equal(
+            wrapper.find(".mdc-dialog__header__title").text(),
+            "Confirm Payment"
+          )
+          assert.equal(
+            wrapper.find(".overpay-confirm").text(),
+            "Are you sure you want to pay $2,000?"
+          )
+          store.dispatch(hideDialog(PAYMENT_CONFIRMATION_DIALOG))
+        })
+      })
     })
 
     it("sets a price", () => {

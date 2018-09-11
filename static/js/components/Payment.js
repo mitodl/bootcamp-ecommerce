@@ -1,9 +1,12 @@
 // @flow
 /* global SETTINGS: false */
 import React from "react"
+import { Dialog } from "@mitodl/mdl-react-components"
 import R from "ramda"
 import _ from "lodash"
+import type { Dispatch } from "redux"
 
+import { showDialog, hideDialog } from "../actions/index"
 import {
   isNilOrBlank,
   formatDollarAmount,
@@ -14,8 +17,12 @@ import type { UIState } from "../reducers"
 import type { RestState } from "../rest"
 import type { InputEvent } from "../flow/events"
 
+export const PAYMENT_CONFIRMATION_DIALOG = "paymentConfirmationDialog"
+const isVisible = R.propOr(false, PAYMENT_CONFIRMATION_DIALOG)
+
 export default class Payment extends React.Component<*, void> {
   props: {
+    dispatch: Dispatch,
     ui: UIState,
     payment: RestState,
     payableKlassesData: Array<Object>,
@@ -113,13 +120,28 @@ export default class Payment extends React.Component<*, void> {
     )
   }
 
-  renderSelectedKlass = () => {
+  confirmPayment = () => {
     const {
       ui: { paymentAmount },
+      selectedKlass,
+      sendPayment,
+      dispatch
+    } = this.props
+    const actualPrice = selectedKlass.price
+
+    paymentAmount > actualPrice
+      ? dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG))
+      : sendPayment()
+  }
+
+  renderSelectedKlass = () => {
+    const {
+      ui: { paymentAmount, dialogVisibility },
       payment: { processing },
       selectedKlass,
       setPaymentAmount,
-      sendPayment
+      sendPayment,
+      dispatch
     } = this.props
 
     const totalPaid = selectedKlass.total_paid || 0
@@ -142,7 +164,7 @@ export default class Payment extends React.Component<*, void> {
           />
           <button
             className="btn large-cta"
-            onClick={sendPayment}
+            onClick={this.confirmPayment}
             disabled={processing}
           >
             Pay Now
@@ -159,6 +181,19 @@ export default class Payment extends React.Component<*, void> {
             </a>
           </p>
         </div>
+        <Dialog
+          title="Confirm Payment"
+          onCancel={() => dispatch(hideDialog(PAYMENT_CONFIRMATION_DIALOG))}
+          onAccept={sendPayment}
+          submitText="Continue"
+          open={isVisible(dialogVisibility)}
+          hideDialog={() => dispatch(hideDialog(PAYMENT_CONFIRMATION_DIALOG))}
+        >
+          <p className="overpay-confirm">
+            Are you sure you want to pay{" "}
+            {formatDollarAmount(parseFloat(paymentAmount))}?
+          </p>
+        </Dialog>
       </div>
     )
   }

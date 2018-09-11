@@ -8,7 +8,9 @@ import {
   setPaymentAmount,
   setInitialTime,
   setTimeoutActive,
-  setToastMessage
+  setToastMessage,
+  showDialog,
+  hideDialog
 } from "../actions"
 import rootReducer from "../reducers"
 import { createAssertReducerResultState } from "../util/test_utils"
@@ -58,6 +60,16 @@ describe("reducers", () => {
 
     it("should set the toast message", () => {
       assertReducerResultState(setToastMessage, ui => ui.toastMessage, null)
+    })
+
+    it("should set the dialog state", () => {
+      store.dispatch(showDialog("dialog"))
+      assert.equal(store.getState().ui.dialogVisibility["dialog"], true)
+    })
+
+    it("should unset the dialog state", () => {
+      store.dispatch(hideDialog("dialog"))
+      assert.equal(store.getState().ui.dialogVisibility["dialog"], false)
     })
   })
 })

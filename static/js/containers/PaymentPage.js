@@ -223,7 +223,8 @@ class PaymentPage extends React.Component<*, void> {
       payment,
       klasses,
       payableKlassesData,
-      selectedKlass
+      selectedKlass,
+      dispatch
     } = this.props
 
     let renderedPayment = null,
@@ -240,6 +241,7 @@ class PaymentPage extends React.Component<*, void> {
           sendPayment={this.sendPayment}
           setPaymentAmount={this.setPaymentAmount}
           setSelectedKlassKey={this.setSelectedKlassKey}
+          dispatch={dispatch}
         />
       )
 
