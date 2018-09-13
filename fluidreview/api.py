@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
-from klasses.models import Klass
+from klasses.models import Klass, Bootcamp
 from ecommerce.models import Line, Order
 from profiles.models import Profile
 from fluidreview.serializers import UserSerializer
@@ -235,14 +235,19 @@ def parse_webhook_user(webhook):
         user = profile.user
     if webhook.award_id is not None:
         personal_price = webhook.award_cost if webhook.amount_to_pay is None else webhook.amount_to_pay
-        klass = Klass.objects.get(klass_key=webhook.award_id)
-        if personal_price is not None:
-            user.klass_prices.update_or_create(
-                klass=klass,
-                defaults={'price': personal_price}
-            )
+        klass = Klass.objects.filter(klass_key=webhook.award_id).first()
+        if klass:
+            if personal_price is not None:
+                user.klass_prices.update_or_create(
+                    klass=klass,
+                    defaults={'price': personal_price}
+                )
+            else:
+                user.klass_prices.filter(klass=klass).delete()
         else:
-            user.klass_prices.filter(klass=klass).delete()
+            klass_info = FluidReviewAPI().get('/awards/{}'.format(webhook.award_id)).json()
+            bootcamp = Bootcamp.objects.create(title=klass_info['name'])
+            Klass.objects.create(bootcamp=bootcamp, title=klass_info['description'], klass_key=klass_info['id'])
 
 
 def list_users():

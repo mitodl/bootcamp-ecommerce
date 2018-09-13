@@ -19,7 +19,7 @@ from fluidreview.api import FluidReviewAPI, BASE_API_URL, process_user, parse_we
 from fluidreview.models import OAuthToken, WebhookRequest
 from fluidreview.utils import utc_now
 from klasses.factories import KlassFactory, InstallmentFactory
-from klasses.models import Bootcamp
+from klasses.models import Bootcamp, Klass
 from profiles.factories import UserFactory, ProfileFactory
 from profiles.models import Profile
 
@@ -198,6 +198,37 @@ def test_process_user_both_exist_with_fluid_id(mocker):
     process_user(fluid_user)
     mock_create_user.assert_not_called()
     mock_save_profile.assert_not_called()
+
+
+def test_parse_webhook_user(mocker):
+    """Test creation of new Bootcamp if no matching award_id"""
+    user_id = 94379385
+    award_id = 78456
+    award_name = "Best monkey prize"
+    ProfileFactory(fluidreview_id=user_id)
+    mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
+    mock_api().get.return_value.json.return_value = {
+        'id': award_id,
+        "name": award_name,
+        "tag_line": "The very best!",
+        "description": "",
+    }
+    data = {
+        'date_of_birth': '',
+        'user_email': 'veteran-grants-9463shC',
+        'amount_to_pay': '20',
+        'user_id': user_id,
+        'submission_id': 4533767,
+        'award_id': award_id,
+        'award_cost': '400',
+        'award_name': 'TEST CAMP'
+    }
+    body = json.dumps(data)
+    hook = WebhookRequest(body=body)
+    parse_webhook(hook)
+
+    assert Klass.objects.filter(klass_key=award_id).exists()
+    assert Bootcamp.objects.filter(title=award_name).exists()
 
 
 @pytest.mark.parametrize('award_id', [81265, None])
