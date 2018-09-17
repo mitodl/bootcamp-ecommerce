@@ -14,6 +14,7 @@ from requests_oauthlib import OAuth2Session
 
 from klasses.models import Klass, Bootcamp
 from ecommerce.models import Line, Order
+from mail.api import MailgunClient
 from profiles.models import Profile
 from fluidreview.serializers import UserSerializer
 from fluidreview.constants import WebhookParseStatus
@@ -236,18 +237,38 @@ def parse_webhook_user(webhook):
     if webhook.award_id is not None:
         personal_price = webhook.award_cost if webhook.amount_to_pay is None else webhook.amount_to_pay
         klass = Klass.objects.filter(klass_key=webhook.award_id).first()
-        if klass:
-            if personal_price is not None:
-                user.klass_prices.update_or_create(
-                    klass=klass,
-                    defaults={'price': personal_price}
+        if not klass:
+            if not personal_price:
+                raise FluidReviewException(
+                    "Webhook has no personal price and klass_key %s does not exist",
+                    webhook.award_id
                 )
-            else:
-                user.klass_prices.filter(klass=klass).delete()
-        else:
             klass_info = FluidReviewAPI().get('/awards/{}'.format(webhook.award_id)).json()
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
-            Klass.objects.create(bootcamp=bootcamp, title=klass_info['description'], klass_key=klass_info['id'])
+            klass = Klass.objects.create(bootcamp=bootcamp, title=klass_info['description'], klass_key=klass_info['id'])
+            try:
+                MailgunClient().send_individual_email(
+                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
+                        klass_key=klass_info['id']
+                    ),
+                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
+                        klass_key=klass_info['id']
+                    ),
+                    settings.EMAIL_SUPPORT
+                )
+            except:  # pylint: disable=bare-except
+                log.exception(
+                    "Error occurred when sending the email to notify "
+                    "about new Klass and Bootcamp, award_id=$s",
+                    klass_info['id'],
+                )
+        if personal_price is not None:
+            user.klass_prices.update_or_create(
+                klass=klass,
+                defaults={'price': personal_price}
+            )
+        else:
+            user.klass_prices.filter(klass=klass).delete()
 
 
 def list_users():

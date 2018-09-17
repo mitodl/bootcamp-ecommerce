@@ -5,6 +5,7 @@ import datetime
 import json
 from decimal import Decimal
 
+from unittest.mock import patch
 import pytest
 from django.contrib.auth.models import User
 from django.test import override_settings
@@ -19,7 +20,7 @@ from fluidreview.api import FluidReviewAPI, BASE_API_URL, process_user, parse_we
 from fluidreview.models import OAuthToken, WebhookRequest
 from fluidreview.utils import utc_now
 from klasses.factories import KlassFactory, InstallmentFactory
-from klasses.models import Bootcamp, Klass
+from klasses.models import Bootcamp, Klass, PersonalPrice
 from profiles.factories import UserFactory, ProfileFactory
 from profiles.models import Profile
 
@@ -200,7 +201,12 @@ def test_process_user_both_exist_with_fluid_id(mocker):
     mock_save_profile.assert_not_called()
 
 
-def test_parse_webhook_user(mocker):
+@pytest.mark.parametrize(['amount_to_pay', 'award_cost', 'sends_email'], [
+    ['', '1000.10', False],
+    ['25.99', '', False],
+    ['', '', True]
+])
+def test_parse_webhook_user(mocker, amount_to_pay, award_cost, sends_email):
     """Test creation of new Bootcamp if no matching award_id"""
     user_id = 94379385
     award_id = 78456
@@ -209,26 +215,43 @@ def test_parse_webhook_user(mocker):
     mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().get.return_value.json.return_value = {
         'id': award_id,
-        "name": award_name,
-        "tag_line": "The very best!",
-        "description": "",
+        'name': award_name,
+        'tag_line': 'The very best!',
+        'description': '',
+        'amount_to_pay': '450',
     }
     data = {
         'date_of_birth': '',
         'user_email': 'veteran-grants-9463shC',
-        'amount_to_pay': '20',
+        'amount_to_pay': amount_to_pay,
         'user_id': user_id,
         'submission_id': 4533767,
         'award_id': award_id,
-        'award_cost': '400',
+        'award_cost': award_cost,
         'award_name': 'TEST CAMP'
     }
     body = json.dumps(data)
     hook = WebhookRequest(body=body)
-    parse_webhook(hook)
 
-    assert Klass.objects.filter(klass_key=award_id).exists()
-    assert Bootcamp.objects.filter(title=award_name).exists()
+    with patch(
+        'fluidreview.api.MailgunClient.send_individual_email',
+    ) as send_email:
+        if sends_email:
+            assert send_email.call_count == 0
+        else:
+            parse_webhook(hook)
+            assert Klass.objects.filter(klass_key=award_id).exists()
+            assert Bootcamp.objects.filter(title=award_name).exists()
+            assert PersonalPrice.objects.filter(
+                klass__klass_key=award_id,
+                user__profile__fluidreview_id=user_id
+            ).exists()
+            assert send_email.call_count == 1
+            assert send_email.call_args[0] == (
+                "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
+                "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
+                'support@example.com',
+            )
 
 
 @pytest.mark.parametrize('award_id', [81265, None])
