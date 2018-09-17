@@ -245,7 +245,10 @@ def parse_webhook_user(webhook):
                 )
             klass_info = FluidReviewAPI().get('/awards/{}'.format(webhook.award_id)).json()
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
-            klass = Klass.objects.create(bootcamp=bootcamp, title=klass_info['description'], klass_key=klass_info['id'])
+            klass = Klass.objects.create(
+                bootcamp=bootcamp,
+                title=klass_info['description'],
+                klass_key=klass_info['id'])
             try:
                 MailgunClient().send_individual_email(
                     "Klass and Bootcamp created, for klass_key {klass_key}".format(
@@ -259,8 +262,8 @@ def parse_webhook_user(webhook):
             except:  # pylint: disable=bare-except
                 log.exception(
                     "Error occurred when sending the email to notify "
-                    "about new Klass and Bootcamp, award_id=$s",
-                    klass_info['id'],
+                    "about Klass and Bootcamp creation for klass key %s",
+                    klass_info['id']
                 )
         if personal_price is not None:
             user.klass_prices.update_or_create(
