@@ -202,9 +202,9 @@ def test_process_user_both_exist_with_fluid_id(mocker):
 
 
 @pytest.mark.parametrize(['amount_to_pay', 'award_cost', 'sends_email'], [
-    ['', '1000.10', False],
-    ['25.99', '', False],
-    ['', '', True]
+    ['', '1000.10', True],
+    ['25.99', '', True],
+    ['', '', False]
 ])
 def test_parse_webhook_user(mocker, amount_to_pay, award_cost, sends_email):
     """Test creation of new Bootcamp if no matching award_id"""
@@ -212,6 +212,7 @@ def test_parse_webhook_user(mocker, amount_to_pay, award_cost, sends_email):
     award_id = 78456
     award_name = "Best monkey prize"
     ProfileFactory(fluidreview_id=user_id)
+    send_email = mocker.patch('fluidreview.api.MailgunClient.send_individual_email')
     mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().get.return_value.json.return_value = {
         'id': award_id,
@@ -233,25 +234,24 @@ def test_parse_webhook_user(mocker, amount_to_pay, award_cost, sends_email):
     body = json.dumps(data)
     hook = WebhookRequest(body=body)
 
-    with patch(
-        'fluidreview.api.MailgunClient.send_individual_email',
-    ) as send_email:
-        if sends_email:
-            assert send_email.call_count == 0
-        else:
-            parse_webhook(hook)
-            assert Klass.objects.filter(klass_key=award_id).exists()
-            assert Bootcamp.objects.filter(title=award_name).exists()
-            assert PersonalPrice.objects.filter(
-                klass__klass_key=award_id,
-                user__profile__fluidreview_id=user_id
-            ).exists()
-            assert send_email.call_count == 1
-            assert send_email.call_args[0] == (
-                "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
-                "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
-                'support@example.com',
-            )
+    parse_webhook(hook)
+    if sends_email:
+        assert hook.status == WebhookParseStatus.SUCCEEDED
+        assert Klass.objects.filter(klass_key=award_id).exists()
+        assert Bootcamp.objects.filter(title=award_name).exists()
+        assert PersonalPrice.objects.filter(
+            klass__klass_key=award_id,
+            user__profile__fluidreview_id=user_id
+        ).exists()
+        assert send_email.call_count == 1
+        assert send_email.call_args[0] == (
+            "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
+            "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
+            'support@example.com',
+        )
+    else:
+        assert hook.status == WebhookParseStatus.FAILED
+        assert send_email.call_count == 0
 
 
 @pytest.mark.parametrize('award_id', [81265, None])
