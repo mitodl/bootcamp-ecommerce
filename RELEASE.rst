@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.16.0
+--------------
+
+- Create Bootcamp when award_id has no corresponding klass_key (#225)
+- Added conformation dialog for over pay (#224)
+- Add award id as parameter to success url (#221)
+
 Version 0.15.0 (Released September 11, 2018)
 --------------
 
