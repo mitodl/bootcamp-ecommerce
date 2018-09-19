@@ -7,6 +7,8 @@
     "url": "https://github.com/mitodl/bootcamp-ecommerce.git"
   },
   "dependencies": {
+    "@material/dialog": "0.27.0",
+    "@mitodl/mdl-react-components": "0.0.3",
     "autoprefixer": "^7.2.4",
     "babel-core": "^6.26.0",
     "babel-eslint": "8.1.2",
