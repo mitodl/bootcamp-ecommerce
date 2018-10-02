@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.16.0
+Version 0.16.0 (Released October 02, 2018)
 --------------
 
 - Create Bootcamp when award_id has no corresponding klass_key (#225)
