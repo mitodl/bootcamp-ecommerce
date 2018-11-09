@@ -5,6 +5,8 @@ import pytz
 from django.contrib.auth.models import User
 from django.db import models
 
+from klasses.constants import ApplicationSource
+
 
 class Bootcamp(models.Model):
     """
@@ -23,9 +25,18 @@ class Klass(models.Model):
     """
     bootcamp = models.ForeignKey(Bootcamp)
     title = models.TextField(blank=True)
-    klass_key = models.IntegerField(unique=True)
+    source = models.CharField(
+        null=False,
+        choices=[(status, status) for status in ApplicationSource.SOURCE_CHOICES],
+        default=ApplicationSource.FLUIDREVIEW,
+        max_length=10,
+    )
+    klass_key = models.IntegerField()
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
+
+    class Meta:
+        unique_together = ('klass_key', 'source')
 
     @property
     def price(self):
