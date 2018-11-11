@@ -10,7 +10,7 @@ django-redis==4.7.0
 django-server-status==0.3.2
 django-webpack-loader==0.4.1
 djangorestframework==3.5.2
-edx-api-client==0.3.0
+edx-api-client==0.6.1
 factory_boy
 faker
 html5lib==0.999999999
@@ -21,7 +21,7 @@ python-dateutil
 pytz
 raven
 redis==2.10.5
-requests
+requests>=2.20
 social-auth-app-django==1.1.0
 static3==0.5.1
 uwsgi
