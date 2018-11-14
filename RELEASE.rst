@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.17.0
+--------------
+
+- update requirements (#237)
+
 Version 0.16.0 (Released October 02, 2018)
 --------------
 
