@@ -12,7 +12,7 @@ class Profile(Model):
     user = OneToOneField(settings.AUTH_USER_MODEL)
     name = TextField(blank=True)
     fluidreview_id = IntegerField(null=True, blank=True)
-    smaplly_id = IntegerField(null=True, blank=True)
+    smapply_id = IntegerField(null=True, blank=True)
 
     def __str__(self):
         return "Profile for user {}".format(self.user)

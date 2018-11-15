@@ -2,8 +2,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from smapply.api import parse_webhook
 from fluidreview.constants import WebhookParseStatus
+from smapply.api import parse_webhook
 from smapply.models import WebhookRequestSMA
 
 

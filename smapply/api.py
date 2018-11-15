@@ -17,8 +17,8 @@ from ecommerce.models import Line, Order
 from profiles.models import Profile
 from fluidreview.serializers import UserSerializer
 from fluidreview.constants import WebhookParseStatus
-from smapply.models import OAuthTokenSMA, WebhookRequestSMA
 from fluidreview.utils import utc_now
+from smapply.models import OAuthTokenSMA, WebhookRequestSMA
 
 log = logging.getLogger(__name__)
 
@@ -176,8 +176,8 @@ def process_user(sma_user):
         defaults={'email': sma_user['email'], 'username': sma_user['email']}
     )
     profile, _ = Profile.objects.get_or_create(user=user)
-    if not profile.smaplly_id:
-        profile.smaplly_id = sma_user['id']
+    if not profile.smapply_id:
+        profile.smapply_id = sma_user['id']
         profile.name = sma_user['full_name']
         profile.save()
     return user
@@ -193,7 +193,7 @@ def parse_webhook(webhook):
     """
     try:  # pylint:disable=too-many-nested-blocks
         body_json = json.loads(smart_text(webhook.body))
-        field_mapping = {'id': 'submittion_id', 'award': 'award_id', 'user_id': 'user_id'}
+        field_mapping = {'id': 'submission_id', 'award': 'award_id', 'user_id': 'user_id'}
         required_fields = field_mapping.keys()
         if not set(required_fields).issubset(body_json.keys()):
             raise SMApplyException("Missing required field(s)")
