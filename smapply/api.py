@@ -255,39 +255,7 @@ def list_users():
     while url:
         response = smapi.get(url).json()
         users = response['results']
-        for fluid_user in users:
-            yield fluid_user
+        for sma_user in users:
+            yield sma_user
         next_page = urlparse(response['next']).query
         url = 'users?{}'.format(next_page) if next_page else None
-
-
-def post_payment(order):
-    """
-    Update amount paid by a user for a class when an order is fulfilled.
-
-    Args:
-        order(Order): the Order object to send payment info about to SMApply
-
-    """
-    if order.status != Order.FULFILLED:
-        return
-    klass = order.get_klass()
-    user = order.user
-    if not klass or klass.bootcamp.legacy:
-        return
-    total_paid = Line.total_paid_for_klass(order.user, klass.klass_key).get('total') or Decimal('0.00')
-    payment_metadata = {
-        'value': '{:0.2f}'.format(total_paid)
-    }
-    webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smaplly_id, award_id=klass.klass_key).last()
-    if webhook.submission_id is None:
-        raise SMApplyException("Webhook has no submission id for order %s", order.id)
-    try:
-        SMApplyAPI().put(
-            'submissions/{}/metadata/{}/'.format(webhook.submission_id, settings.FLUIDREVIEW_AMOUNTPAID_ID),
-            data=payment_metadata
-        )
-    except Exception as exc:
-        raise FluidReviewException(
-            "Error updating amount paid by user %s to class %s", user.email, klass.klass_key
-        ) from exc
