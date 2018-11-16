@@ -290,6 +290,7 @@ def list_users():
         next_page = urlparse(response['next']).query
         url = 'users?{}'.format(next_page) if next_page else None
 
+
 def post_payment(order):
     """
     Update amount paid by a user for a class when an order is fulfilled.
