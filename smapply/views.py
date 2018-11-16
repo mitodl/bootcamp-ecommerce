@@ -10,7 +10,7 @@ from smapply.models import WebhookRequestSMA
 
 class WebhookView(APIView):
     """
-    Handle webhooks coming from FluidReview
+    Handle webhooks coming from SMApply
     """
     permission_classes = (WebhookPermission,)
     authentication_classes = ()

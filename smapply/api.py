@@ -245,6 +245,7 @@ def parse_webhook_user(webhook):
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
             klass = Klass.objects.create(
                 bootcamp=bootcamp,
+                source=ApplicationSource.SMAPPLY,
                 title=klass_info['description'],
                 klass_key=klass_info['id'])
             try:
@@ -309,7 +310,7 @@ def post_payment(order):
     payment_metadata = {
         'value': '{:0.2f}'.format(total_paid)
     }
-    webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.fluidreview_id, award_id=klass.klass_key).last()
+    webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smapply_id, award_id=klass.klass_key).last()
     if webhook.submission_id is None:
         raise SMApplyException("Webhook has no submission id for order %s", order.id)
     try:

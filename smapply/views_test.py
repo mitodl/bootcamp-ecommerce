@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework import status
 
+from klasses.constants import ApplicationSource
 from smapply.api import SMApplyException
 from smapply.models import WebhookRequestSMA
 from klasses.factories import KlassFactory
@@ -18,7 +19,7 @@ pytestmark = pytest.mark.django_db
 @pytest.mark.parametrize("data", ['', "some data", '{"json": "body"}'])
 def test_webhook(data, client, settings, mocker):  # pylint: disable=unused-argument
     """
-    The fluidreview webhook should store its data in the WebhookRequest model, no matter what the data is
+    The smapply webhook should store its data in the WebhookRequestSMA model, no matter what the data is
     """
     mocker.patch('smapply.api.SMApplyAPI')
     token = 'zxvbnm'
@@ -97,7 +98,7 @@ def test_webhook_parse_success(email, smapply_id, should_update, settings, clien
         user__email=existing_user,
         smapply_id=None if should_update else smapply_id
     )
-    KlassFactory.create(klass_key=81265)
+    KlassFactory.create(klass_key=81265, source=ApplicationSource.SMAPPLY)
     data = {
         'user_id': smapply_id,
         'id': 4533768,

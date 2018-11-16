@@ -27,7 +27,7 @@ class Klass(models.Model):
     title = models.TextField(blank=True)
     source = models.CharField(
         null=False,
-        choices=[(status, status) for status in ApplicationSource.SOURCE_CHOICES],
+        choices=[(source, source) for source in ApplicationSource.SOURCE_CHOICES],
         default=ApplicationSource.FLUIDREVIEW,
         max_length=10,
     )
