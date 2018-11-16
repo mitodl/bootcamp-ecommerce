@@ -12,8 +12,10 @@ from django.contrib.auth.models import User
 from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
-from klasses.models import Klass
+from klasses.constants import ApplicationSource
+from klasses.models import Klass, Bootcamp
 from ecommerce.models import Line, Order
+from mail.api import MailgunClient
 from profiles.models import Profile
 from fluidreview.serializers import UserSerializer
 from fluidreview.constants import WebhookParseStatus
@@ -229,9 +231,37 @@ def parse_webhook_user(webhook):
     else:
         user = profile.user
     if webhook.award_id is not None:
-        award_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
-        personal_price = award_info.value
-        klass = Klass.objects.get(klass_key=webhook.award_id)
+        klass_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
+        personal_price = klass_info.value
+
+        klass = Klass.objects.filter(klass_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
+        if not klass:
+            if not personal_price:
+                raise SMApplyException(
+                    "Klass has no price and klass_key %s does not exist",
+                    webhook.award_id
+                )
+            bootcamp = Bootcamp.objects.create(title=klass_info['name'])
+            klass = Klass.objects.create(
+                bootcamp=bootcamp,
+                title=klass_info['description'],
+                klass_key=klass_info['id'])
+            try:
+                MailgunClient().send_individual_email(
+                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
+                        klass_key=klass_info['id']
+                    ),
+                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
+                        klass_key=klass_info['id']
+                    ),
+                    settings.EMAIL_SUPPORT
+                )
+            except:  # pylint: disable=bare-except
+                log.exception(
+                    "Error occurred when sending the email to notify "
+                    "about Klass and Bootcamp creation for klass key %s",
+                    klass_info['id']
+                )
         if personal_price is not None:
             user.klass_prices.update_or_create(
                 klass=klass,
