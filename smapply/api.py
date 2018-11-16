@@ -201,9 +201,7 @@ def parse_webhook(webhook):
             if att in body_json:
                 if att in required_fields:
                     if body_json[att]:
-                        setattr(webhook, att, int(body_json[att]))
-                else:
-                    setattr(webhook, att, body_json[att])
+                        setattr(webhook, field_mapping[att], int(body_json[att]))
         parse_webhook_user(webhook)
         webhook.status = WebhookParseStatus.SUCCEEDED
     except:  # pylint: disable=bare-except
@@ -223,7 +221,7 @@ def parse_webhook_user(webhook):
         raise SMApplyException('user_id is required in WebhookRequestSMA')
     profile = Profile.objects.filter(smapply_id=webhook.user_id).first()
     if not profile:
-        # Get user info from FluidReview API (ensures that user id is real).
+        # Get user info from SMApply API (ensures that user id is real).
         user_info = SMApplyAPI().get('/users/{}'.format(webhook.user_id)).json()
         serializer = UserSerializer(data=user_info)
         serializer.is_valid(raise_exception=True)
@@ -231,7 +229,8 @@ def parse_webhook_user(webhook):
     else:
         user = profile.user
     if webhook.award_id is not None:
-        personal_price = webhook.award_cost if webhook.amount_to_pay is None else webhook.amount_to_pay
+        award_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
+        personal_price = award_info.value
         klass = Klass.objects.get(klass_key=webhook.award_id)
         if personal_price is not None:
             user.klass_prices.update_or_create(
