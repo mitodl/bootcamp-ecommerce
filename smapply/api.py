@@ -233,7 +233,7 @@ def parse_webhook_user(webhook):
         user = profile.user
     if webhook.award_id is not None:
         klass_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
-        personal_price = klass_info.value
+        personal_price = klass_info['price']
 
         klass = Klass.objects.filter(klass_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
         if not klass:
