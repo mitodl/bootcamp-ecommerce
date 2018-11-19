@@ -7,9 +7,9 @@ from django.core.urlresolvers import reverse
 from rest_framework import status
 
 from klasses.constants import ApplicationSource
+from klasses.factories import KlassFactory
 from smapply.api import SMApplyException
 from smapply.models import WebhookRequestSMA
-from klasses.factories import KlassFactory
 from profiles.factories import ProfileFactory
 from profiles.models import Profile
 
