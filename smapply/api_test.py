@@ -174,11 +174,12 @@ def test_process_new_profile():
     assert Profile.objects.filter(smapply_id=sma_user['id']).count() == 1
 
 
-def test_process_both_exist_no_fluid_id(mocker):
-    """Test that no changes are made to an existing user but existing profile is saved with fluid id"""
+def test_process_both_exist_no_smapply_id(mocker):
+    """Test that no changes are made to an existing user but existing profile is saved with smapply id"""
     ProfileFactory(
         user=UserFactory(email=sma_user['email'].upper(), username=sma_user['email']),
-        smapply_id=None
+        smapply_id=None,
+        fluidreview_id=78690,
     )
     mock_create_user = mocker.patch('smapply.api.User.objects.create')
     process_user(sma_user)
@@ -186,7 +187,7 @@ def test_process_both_exist_no_fluid_id(mocker):
     assert Profile.objects.filter(smapply_id=sma_user['id']).count() == 1
 
 
-def test_process_user_both_exist_with_fluid_id(mocker):
+def test_process_user_both_exist_with_smapply_id(mocker):
     """Test that no changes are made to an existing user and profile with smapply id"""
     ProfileFactory(
         user=UserFactory(email=sma_user['email'].upper(), username=sma_user['email']),
@@ -250,19 +251,20 @@ def test_parse_webhook_user(mocker, price, sends_email):
 @pytest.mark.parametrize('body', [
     '',
     'hello world',
-    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": 1, "award_cost": "BADVALUE", "submission_id": 1}',
-    '{"user_email": "foo@bar.com", "user_id": "", "award_id": 1, "award_cost": "100", "submission_id": 1}',
-    '{"user_email": "foo@bar.com", "user_id": null, "award_id": 1, "award_cost": "100", "submission_id": 1}',
-    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": "a", "award_cost": "", "submission_id": 1}',
-    '{"user_email": "foo@bar.com", "user_id": 94379385, "award_id": 1, "award_cost": 1, "submission_id": 1}',
+    '{"user_id": "", "award": 1, "id": 1}',
+    '{"user_id": null, "award": 1, "id": 1}',
+    '{"user_id": 94379385, "award": "a", "id": 1}',
 ])
 def test_parse_failure(mocker, body):
     """Test that a webhookrequest's status is set to FAILED if it cannot be parsed"""
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
+    ProfileFactory(smapply_id=94379385)
     mock_api().get.return_value.json.return_value = {
-        'id': 94379385,
-        'full_name': 'Veteran Grants 9463shC',
-        'email': 'veteran-grants-9463shC'
+        'id': 1,
+        'name': 'Award name',
+        'tag_line': 'The very best!',
+        'description': 'Description',
+        'price': 50.9,
     }
     request = WebhookRequestSMA(body=body)
     parse_webhook(request)
