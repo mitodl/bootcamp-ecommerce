@@ -2,7 +2,7 @@
 Factories for backend models
 """
 from factory.django import DjangoModelFactory
-from factory.fuzzy import FuzzyText, FuzzyInteger, FuzzyDecimal
+from factory.fuzzy import FuzzyText, FuzzyInteger
 
 from smapply import models
 
