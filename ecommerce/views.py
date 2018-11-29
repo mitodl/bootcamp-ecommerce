@@ -27,7 +27,9 @@ from ecommerce.models import (
 )
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
-from fluidreview.api import post_payment
+from fluidreview.api import post_payment as post_payment_fluid
+from smapply.api import post_payment as post_payment_sma
+from klasses.constants import ApplicationSource
 from mail.api import MailgunClient
 
 
@@ -118,7 +120,10 @@ class OrderFulfillmentView(APIView):
 
         order.save_and_log(acting_user=None)
         try:
-            post_payment(order)
+            if order.get_klass().source == ApplicationSource.FLUIDREVIEW:
+                post_payment_fluid(order)
+            else:
+                post_payment_sma(order)
         except:  # pylint: disable=bare-except
             log.exception('Error occurred posting payment to FluidReview for order %s', order)
 
