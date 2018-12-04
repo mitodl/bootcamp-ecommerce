@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.18.0
+--------------
+
+- Turn off codecov status updates
+- Added SMApply (#236)
+
 Version 0.17.0 (Released November 15, 2018)
 --------------
 
