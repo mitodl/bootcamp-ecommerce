@@ -232,8 +232,17 @@ def parse_webhook_user(webhook):
     else:
         user = profile.user
     if webhook.award_id is not None:
-        klass_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
-        personal_price = klass_info['price']
+        application_meta = SMApplyAPI().get('/submissions/{}/metadata/{}/'.format(
+            webhook.submission_id,
+            settings.SMAPPLY_AMOUNT_TO_PAY_ID
+        )).json()
+        personal_price = application_meta['value']
+        if not personal_price:
+            award_meta = SMApplyAPI().get('/awards/{}/metadata/{}/'.format(
+                webhook.award_id,
+                settings.SMAPPLY_AWARD_COST_ID
+            )).json()
+            personal_price = award_meta['value']
 
         klass = Klass.objects.filter(klass_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
         if not klass:
@@ -242,6 +251,7 @@ def parse_webhook_user(webhook):
                     "Klass has no price and klass_key %s does not exist",
                     webhook.award_id
                 )
+            klass_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
             klass = Klass.objects.create(
                 bootcamp=bootcamp,
