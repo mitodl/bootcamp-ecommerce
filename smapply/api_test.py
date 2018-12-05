@@ -213,6 +213,7 @@ def test_parse_webhook_user(mocker, price, sends_email):
     send_email = mocker.patch('smapply.api.MailgunClient.send_individual_email')
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
     mock_api().get.return_value.json.return_value = {
+        'name': award_name,
         'value': price,
     }
     data = {
