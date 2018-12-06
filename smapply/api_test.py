@@ -215,9 +215,8 @@ def test_parse_webhook_user(mocker, price, sends_email):
     mock_api().get.return_value.json.return_value = {
         'id': award_id,
         'name': award_name,
-        'tag_line': 'The very best!',
         'description': 'Description',
-        'price': price,
+        'value': price,
     }
     data = {
         'user_id': user_id,
