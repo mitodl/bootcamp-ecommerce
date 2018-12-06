@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.18.0
+--------------
+
+- Add Amount to Pay and Award Cost custom fields (#242)
+- Turn off codecov status updates
+- Added SMApply (#236)
+
 Version 0.17.0 (Released November 15, 2018)
 --------------
 
