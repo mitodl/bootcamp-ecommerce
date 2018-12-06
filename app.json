@@ -192,6 +192,42 @@
     "FLUIDREVIEW_AMOUNTPAID_ID": {
       "description": "The FluidReview metadata id for Amount Paid",
       "required": true
+    },
+    "SMAPPLY_CLIENT_ID": {
+      "description": "Client ID for SMApply API",
+      "required": true
+    },
+    "SMAPPLY_CLIENT_SECRET": {
+      "description": "Client secret for SMApply API",
+      "required": true
+    },
+    "SMAPPLY_ACCESS_TOKEN": {
+      "description": "Access token for SMApply API",
+      "required": true
+    },
+    "SMAPPLY_REFRESH_TOKEN": {
+      "description": "Refresh token for SMApply API",
+      "required": true
+    },
+    "SMAPPLY_BASE_URL": {
+      "description": "Base URL for SMApply API",
+      "required": true
+    },
+    "SMAPPLY_WEBHOOK_AUTH_TOKEN": {
+      "description": "Authentication token for SMApply webhooks",
+      "required": true
+    },
+    "SMAPPLY_AMOUNTPAID_ID": {
+      "description": "The SMApply metadata id for Amount Paid",
+      "required": true
+    },
+    "SMAPPLY_AMOUNT_TO_PAY_ID": {
+      "description": "The SMApply metadata id for Amount To Pay",
+      "required": true
+    },
+    "SMAPPLY_AWARD_COST_ID": {
+      "description": "The SMApply metadata id for Award Cost",
+      "required": true
     }
   },
   "keywords": [
