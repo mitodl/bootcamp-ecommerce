@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.18.0
+Version 0.18.0 (Released December 07, 2018)
 --------------
 
 - Check SMA webhooks for awards (#245)
