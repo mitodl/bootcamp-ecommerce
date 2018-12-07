@@ -10,6 +10,7 @@ from rest_framework import status
 
 from fluidreview.constants import WebhookParseStatus
 from fluidreview.models import WebhookRequest
+from smapply.models import WebhookRequestSMA
 
 log = logging.getLogger(__name__)
 
@@ -96,6 +97,24 @@ def fetch_fluidreview_klass_keys(fluid_user_id):
     )
 
 
+def fetch_smapply_klass_keys(sma_user_id):
+    """
+    Collect all the unique award ids (== klass ids) from WebhookRequestSMA by user email
+
+    Args:
+        sma_user_id(int): SMApply id for a user
+
+    Returns:
+        list: SMApply award_ids for a user
+    """
+    return list(
+        WebhookRequestSMA.objects.filter(
+            user_id=sma_user_id,
+            status=WebhookParseStatus.SUCCEEDED
+        ).distinct('award_id').values_list('award_id', flat=True)
+    )
+
+
 def get_legacy_payable_klass_ids(admissions):
     """
     Returns a list of the payable klass ids.
@@ -125,7 +144,8 @@ class BootcampAdmissionClient:
         """
         legacy_admissions = fetch_legacy_admissions(user.email)
         self._klass_keys = get_legacy_payable_klass_ids(legacy_admissions) + \
-            fetch_fluidreview_klass_keys(user.profile.fluidreview_id)
+            fetch_fluidreview_klass_keys(user.profile.fluidreview_id) + \
+            fetch_smapply_klass_keys(user.profile.smapply_id)
 
     @property
     def payable_klasses_keys(self):
