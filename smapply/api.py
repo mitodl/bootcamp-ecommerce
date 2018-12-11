@@ -268,7 +268,8 @@ def parse_webhook_user(webhook):
                         name=klass_info['name'],
                         base_url=settings.BOOTCAMP_ECOMMERCE_BASE_URL
                     ),
-                    settings.EMAIL_SUPPORT
+                    settings.EMAIL_SUPPORT,
+                    sender_address=settings.MAILGUN_FROM_EMAIL
                 )
             except:  # pylint: disable=bare-except
                 log.exception(
