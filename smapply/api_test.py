@@ -7,6 +7,7 @@ import json
 import pytest
 from django.contrib.auth.models import User
 from django.test import override_settings
+from django.conf import settings
 from requests import HTTPError
 
 from ecommerce.factories import OrderFactory, LineFactory
@@ -238,8 +239,12 @@ def test_parse_webhook_user(mocker, price, sends_email):
         ).exists()
         assert send_email.call_count == 1
         assert send_email.call_args[0] == (
-            "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
-            "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
+            "Klass and Bootcamp {award_name} was created".format(award_name=award_name),
+            "Klass and Bootcamp {award_name} was created, for klass_key {klass_key} at {url}".format(
+                award_name=award_name,
+                klass_key=award_id,
+                url=settings.BOOTCAMP_ECOMMERCE_BASE_URL
+            ),
             'support@example.com',
         )
     else:

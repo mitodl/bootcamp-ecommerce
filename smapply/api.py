@@ -260,13 +260,16 @@ def parse_webhook_user(webhook):
                 klass_key=klass_info['id'])
             try:
                 MailgunClient().send_individual_email(
-                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
-                        klass_key=klass_info['id']
+                    "Klass and Bootcamp {name} was created".format(
+                        name=klass_info['name'],
                     ),
-                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
-                        klass_key=klass_info['id']
+                    "Klass and Bootcamp {name} was created, for klass_key {klass_key} at {base_url}".format(
+                        klass_key=klass_info['id'],
+                        name=klass_info['name'],
+                        base_url=settings.BOOTCAMP_ECOMMERCE_BASE_URL
                     ),
-                    settings.EMAIL_SUPPORT
+                    settings.EMAIL_SUPPORT,
+                    sender_address=settings.MAILGUN_FROM_EMAIL
                 )
             except:  # pylint: disable=bare-except
                 log.exception(
