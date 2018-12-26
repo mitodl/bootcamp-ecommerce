@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.18.1
+Version 0.18.1 (Released December 26, 2018)
 --------------
 
 - Add name and url to email (#243)
