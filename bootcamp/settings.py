@@ -376,7 +376,7 @@ LOGGING = {
         'django': {
             'propagate': True,
             'level': DJANGO_LOG_LEVEL,
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'sentry'],
         },
         'django.request': {
             'handlers': ['mail_admins'],
@@ -386,17 +386,20 @@ LOGGING = {
         'urllib3': {
             'level': 'INFO',
         },
+        'elasticsearch': {
+            'level': ES_LOG_LEVEL,
+        },
         'raven': {
             'level': SENTRY_LOG_LEVEL,
             'handlers': []
         },
         'nplusone': {
             'handlers': ['console'],
-            'level': 'ERROR',
+            'level': 'ERROR'
         },
     },
     'root': {
-        'handlers': ['console', 'syslog'],
+        'handlers': ['console', 'syslog', 'sentry'],
         'level': LOG_LEVEL,
     },
 }
