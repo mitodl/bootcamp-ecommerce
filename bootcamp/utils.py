@@ -3,6 +3,7 @@ General bootcamp utility functions
 """
 import json
 import logging
+import re
 from itertools import islice
 
 from django.conf import settings
@@ -76,3 +77,9 @@ def chunks(iterable, chunk_size=20):
     while len(chunk) > 0:
         yield chunk
         chunk = list(islice(iterable, chunk_size))
+
+
+def remove_html_tags(text):
+    """Remove html tags from a string"""
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)

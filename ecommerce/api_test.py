@@ -190,6 +190,7 @@ CYBERSOURCE_SECURITY_KEY = 'security'
 CYBERSOURCE_REFERENCE_PREFIX = 'prefix'
 
 
+@ddt.ddt
 @override_settings(
     CYBERSOURCE_ACCESS_KEY=CYBERSOURCE_ACCESS_KEY,
     CYBERSOURCE_PROFILE_ID=CYBERSOURCE_PROFILE_ID,
@@ -277,6 +278,34 @@ class CybersourceTests(TestCase):
             'merchant_defined_data8': '{}'.format(order.user.email),
         }
         now_mock.assert_called_with(tz=pytz.UTC)
+
+    @ddt.data("", "<h1></h1>")
+    def test_with_empty_or_html_klass_title(self, invalid_title):
+        """ Verify that Validation error raises if title of klass has only HTML or empty."""
+
+        klass, user = create_purchasable_klass()
+        klass.title = invalid_title
+        klass.save()
+        order = create_test_order(user, klass.klass_key, '123.45')
+        with self.assertRaises(ValidationError) as ex:
+            generate_cybersource_sa_payload(order, 'dashboard_url')
+
+        assert ex.exception.args[0] == 'Klass {klass_key} title is either empty or contains only HTML.'.format(
+            klass_key=klass.klass_key)
+
+    @ddt.data("", "<h1></h1>")
+    def test_with_empty_or_html_bootcamp_title(self, invalid_title):
+        """ Verify that Validation error raises if title of bootcamp has only HTML or empty."""
+
+        klass, user = create_purchasable_klass()
+        klass.bootcamp.title = invalid_title
+        klass.bootcamp.save()
+        order = create_test_order(user, klass.klass_key, '123.45')
+        with self.assertRaises(ValidationError) as ex:
+            generate_cybersource_sa_payload(order, 'dashboard_url')
+
+        assert ex.exception.args[0] == 'Bootcamp {bootcamp_id} title is either empty or contains only HTML.'.format(
+            bootcamp_id=klass.bootcamp.id)
 
 
 @ddt.ddt

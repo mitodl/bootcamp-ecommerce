@@ -16,6 +16,7 @@ import pytz
 from rest_framework.exceptions import ValidationError
 
 from backends.utils import get_social_username
+from bootcamp.utils import remove_html_tags
 from ecommerce.exceptions import (
     EcommerceException,
     ParseException,
@@ -141,6 +142,18 @@ def generate_cybersource_sa_payload(order, redirect_url):
     # length of 255. At the moment none of these fields should go over that, due to database
     # constraints or other reasons
 
+    klass_title = remove_html_tags(klass.title)
+    if not klass_title:
+        raise ValidationError(
+            'Klass {klass_key} title is either empty or contains only HTML.'.format(klass_key=klass_key)
+        )
+
+    bootcamp_title = remove_html_tags(klass.bootcamp.title)
+    if not bootcamp_title:
+        raise ValidationError(
+            'Bootcamp {bootcamp_id} title is either empty or contains only HTML.'.format(bootcamp_id=klass.bootcamp.id)
+        )
+
     payload = {
         'access_key': settings.CYBERSOURCE_ACCESS_KEY,
         'amount': str(order.total_price_paid),
@@ -148,7 +161,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'currency': 'USD',
         'locale': 'en-us',
         'item_0_code': 'klass',
-        'item_0_name': '{}'.format(klass.title),
+        'item_0_name': '{}'.format(klass_title),
         'item_0_quantity': 1,
         'item_0_sku': '{}'.format(klass_key),
         'item_0_tax_amount': '0',
@@ -167,9 +180,9 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'transaction_uuid': uuid.uuid4().hex,
         'unsigned_field_names': '',
         'merchant_defined_data1': 'bootcamp',
-        'merchant_defined_data2': '{}'.format(klass.bootcamp.title),
+        'merchant_defined_data2': '{}'.format(bootcamp_title),
         'merchant_defined_data3': 'klass',
-        'merchant_defined_data4': '{}'.format(klass.title),
+        'merchant_defined_data4': '{}'.format(klass_title),
         'merchant_defined_data5': '{}'.format(klass_key),
         'merchant_defined_data6': 'learner',
         'merchant_defined_data7': '{}'.format(order.user.profile.name),
