@@ -212,7 +212,7 @@ def parse_webhook(webhook):
         webhook.status = WebhookParseStatus.SUCCEEDED
     except:  # pylint: disable=bare-except
         webhook.status = WebhookParseStatus.FAILED
-        log.exception('Webhook %s body is not valid JSON or has invalid/missing values.', webhook.id)
+        log.exception('Webhook %s is missing values for award_cost and/or amount_to_pay', webhook.id)
     finally:
         webhook.save()
 
