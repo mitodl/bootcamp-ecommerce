@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.19.0
+--------------
+
+- update message
+- raise exception to sentry
+
 Version 0.18.1 (Released December 26, 2018)
 --------------
 
