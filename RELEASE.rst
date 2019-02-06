@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.20.0
+--------------
+
+- add validation for klass and bootcamp title
+
 Version 0.19.0 (Released January 28, 2019)
 --------------
 
