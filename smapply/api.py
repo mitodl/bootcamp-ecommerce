@@ -256,7 +256,7 @@ def parse_webhook_user(webhook):
             klass = Klass.objects.create(
                 bootcamp=bootcamp,
                 source=ApplicationSource.SMAPPLY,
-                title=klass_info['description'],
+                title=klass_info['name'],
                 klass_key=klass_info['id'])
             try:
                 MailgunClient().send_individual_email(
