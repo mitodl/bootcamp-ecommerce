@@ -231,7 +231,7 @@ def test_parse_webhook_user(mocker, price, sends_email):
     parse_webhook(hook)
     if sends_email:
         assert hook.status == WebhookParseStatus.SUCCEEDED
-        assert Klass.objects.filter(klass_key=award_id).exists()
+        assert Klass.objects.filter(title=award_name).exists()
         assert Bootcamp.objects.filter(title=award_name).exists()
         assert PersonalPrice.objects.filter(
             klass__klass_key=award_id,
