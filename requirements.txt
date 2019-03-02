@@ -20,7 +20,7 @@ django-hijack==2.1.7
 django-redis==4.7.0
 django-server-status==0.3.2
 django-webpack-loader==0.4.1
-django==2.1.5
+django==1.10.8
 djangorestframework==3.5.2
 edx-api-client==0.6.1
 elasticsearch==5.4.0      # via django-server-status
