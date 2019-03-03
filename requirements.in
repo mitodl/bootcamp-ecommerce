@@ -1,5 +1,4 @@
 Django==1.10.8
-PyYAML==3.13
 celery==4.0.2
 dj-database-url==0.3.0
 django-compat==1.0.15
