@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.21.0
+Version 0.21.0 (Released March 12, 2019)
 --------------
 
 - Change expected HTTP_AUTHORIZATION for smapply from OAuth to Basic (#262)
