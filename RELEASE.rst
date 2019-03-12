@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.21.0
+--------------
+
+- Change expected HTTP_AUTHORIZATION for smapply from OAuth to Basic (#262)
+- Revert "update django-server-status, django, urllib3; remove pyyaml (#258)" (#260)
+- update django-server-status, django, urllib3; remove pyyaml (#258)
+- create klass title with award name instead of description
+
 Version 0.20.0 (Released February 07, 2019)
 --------------
 
