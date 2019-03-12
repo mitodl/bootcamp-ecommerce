@@ -25,7 +25,7 @@ def test_webhook(data, client, settings, mocker):  # pylint: disable=unused-argu
     token = 'zxvbnm'
     settings.SMAPPLY_WEBHOOK_AUTH_TOKEN = token
     url = reverse('smapply-webhook')
-    resp = client.post(url, data=data, HTTP_AUTHORIZATION='OAuth {}'.format(token), content_type='text/plain')
+    resp = client.post(url, data=data, HTTP_AUTHORIZATION='Basic {}'.format(token), content_type='text/plain')
     assert resp.status_code == status.HTTP_200_OK
     assert WebhookRequestSMA.objects.count() == 1
     assert WebhookRequestSMA.objects.first().body == data
@@ -40,7 +40,7 @@ def test_webhook_fail_auth(client, settings, token_missing, mocker):  # pylint: 
     headers = {}
     settings.SMAPPLY_WEBHOOK_AUTH_TOKEN = 'xyz'
     if not token_missing:
-        headers['HTTP_AUTHORIZATION'] = 'OAuth abc'
+        headers['HTTP_AUTHORIZATION'] = 'Basic abc'
 
     url = reverse('smapply-webhook')
     with pytest.raises(SMApplyException) as exc:
@@ -57,7 +57,7 @@ def test_webhook_with_accept_header(client, settings, mocker, accept):  # pylint
     mocker.patch('smapply.api.SMApplyAPI')
     settings.SMAPPLY_WEBHOOK_AUTH_TOKEN = 'xyz'
     headers = {
-        'HTTP_AUTHORIZATION': 'OAuth xyz'
+        'HTTP_AUTHORIZATION': 'Basic xyz'
     }
     if accept is not None:
         headers['HTTP_ACCEPT'] = accept
@@ -109,7 +109,7 @@ def test_webhook_parse_success(email, smapply_id, should_update, settings, clien
     token = 'zxvbnm'
     settings.SMAPPLY_WEBHOOK_AUTH_TOKEN = token
     url = reverse('smapply-webhook')
-    resp = client.post(url, data=body, HTTP_AUTHORIZATION='OAuth {}'.format(token), content_type='text/plain')
+    resp = client.post(url, data=body, HTTP_AUTHORIZATION='Basic {}'.format(token), content_type='text/plain')
     assert resp.status_code == status.HTTP_200_OK
 
     webhook = WebhookRequestSMA.objects.filter(body=body).first()
