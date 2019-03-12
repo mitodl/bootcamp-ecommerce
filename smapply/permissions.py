@@ -17,5 +17,5 @@ class WebhookPermission(BasePermission):
             token = request.META['HTTP_AUTHORIZATION']
         except KeyError:
             return False
-        expected = 'OAuth {}'.format(settings.SMAPPLY_WEBHOOK_AUTH_TOKEN)
+        expected = 'Basic {}'.format(settings.SMAPPLY_WEBHOOK_AUTH_TOKEN)
         return constant_time_compare(token, expected)
