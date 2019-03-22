@@ -277,7 +277,7 @@ def parse_webhook_user(webhook):
                     "about Klass and Bootcamp creation for klass key %s",
                     klass_info['id']
                 )
-        if personal_price is not None:
+        if personal_price:
             user.klass_prices.update_or_create(
                 klass=klass,
                 defaults={'price': personal_price}
