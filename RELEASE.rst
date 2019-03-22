@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.22.0
+--------------
+
+- treat  as None for personal price
+
 Version 0.21.0 (Released March 12, 2019)
 --------------
 
