@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.25.0
+Version 0.25.0 (Released May 24, 2019)
 --------------
 
 - Update procfile
