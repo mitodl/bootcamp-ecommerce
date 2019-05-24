@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.25.0
+--------------
+
+- Update procfile
+
 Version 0.24.0 (Released May 13, 2019)
 --------------
 
