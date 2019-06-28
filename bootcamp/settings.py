@@ -10,14 +10,19 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 
 """
-import ast
 import logging
 import os
 import platform
 from urllib.parse import urljoin
 
 import dj_database_url
-import yaml
+
+from bootcamp.envs import (
+    get_any,
+    get_bool,
+    get_int,
+    get_string,
+)
 
 
 VERSION = "0.25.0"
@@ -30,55 +35,23 @@ CONFIG_PATHS = [
 ]
 
 
-def load_fallback():
-    """Load optional yaml config"""
-    fallback_config = {}
-    config_file_path = None
-    for config_path in CONFIG_PATHS:
-        if os.path.isfile(config_path):
-            config_file_path = config_path
-            break
-    if config_file_path is not None:
-        with open(config_file_path) as config_file:
-            fallback_config = yaml.safe_load(config_file)
-    return fallback_config
-
-FALLBACK_CONFIG = load_fallback()
-
-
-def get_var(name, default):
-    """Return the settings in a precedence way with default"""
-    try:
-        value = os.environ.get(name, FALLBACK_CONFIG.get(name, default))
-        return ast.literal_eval(value)
-    except (SyntaxError, ValueError):
-        return value
-
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_var(
+SECRET_KEY = get_string(
     'SECRET_KEY',
     '36boam8miiz0c22il@3&gputb=wrqr2plah=0#0a_bknw9(2^r'
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_var('DEBUG', False)
+DEBUG = get_bool('DEBUG', False)
 
-if DEBUG:
-    # Disabling the protection added in 1.10.3 against a DNS rebinding vulnerability:
-    # https://docs.djangoproject.com/en/1.10/releases/1.10.3/#dns-rebinding-vulnerability-when-debug-true
-    # Because we never debug against production data, we are not vulnerable
-    # to this problem.
-    ALLOWED_HOSTS = ['*']
-else:
-    ALLOWED_HOSTS = get_var('ALLOWED_HOSTS', [])
+ALLOWED_HOSTS = ['*']
 
-SECURE_SSL_REDIRECT = get_var('BOOTCAMP_SECURE_SSL_REDIRECT', True)
+SECURE_SSL_REDIRECT = get_bool('BOOTCAMP_SECURE_SSL_REDIRECT', True)
 
 
 WEBPACK_LOADER = {
@@ -129,12 +102,12 @@ INSTALLED_APPS = (
     'profiles',
 )
 
-DISABLE_WEBPACK_LOADER_STATS = get_var("DISABLE_WEBPACK_LOADER_STATS", False)
+DISABLE_WEBPACK_LOADER_STATS = get_bool("DISABLE_WEBPACK_LOADER_STATS", False)
 if not DISABLE_WEBPACK_LOADER_STATS:
     INSTALLED_APPS += ('webpack_loader',)
 
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -152,7 +125,7 @@ if DEBUG:
     INSTALLED_APPS += (
         'nplusone.ext.django',
     )
-    MIDDLEWARE_CLASSES += (
+    MIDDLEWARE += (
         'nplusone.ext.django.NPlusOneMiddleware',
     )
 
@@ -165,11 +138,11 @@ AUTHENTICATION_BACKENDS = (
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # the full URL of the current application is mandatory
-BOOTCAMP_ECOMMERCE_BASE_URL = get_var('BOOTCAMP_ECOMMERCE_BASE_URL', None)
+BOOTCAMP_ECOMMERCE_BASE_URL = get_string('BOOTCAMP_ECOMMERCE_BASE_URL', None)
 
-EDXORG_BASE_URL = get_var('EDXORG_BASE_URL', 'https://courses.edx.org/')
-SOCIAL_AUTH_EDXORG_KEY = get_var('EDXORG_CLIENT_ID', '')
-SOCIAL_AUTH_EDXORG_SECRET = get_var('EDXORG_CLIENT_SECRET', '')
+EDXORG_BASE_URL = get_string('EDXORG_BASE_URL', 'https://courses.edx.org/')
+SOCIAL_AUTH_EDXORG_KEY = get_string('EDXORG_CLIENT_ID', '')
+SOCIAL_AUTH_EDXORG_SECRET = get_string('EDXORG_CLIENT_SECRET', '')
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -230,14 +203,11 @@ HIJACK_LOGOUT_REDIRECT_URL = '/admin/auth/user'
 # For URL structure:
 # https://github.com/kennethreitz/dj-database-url
 DEFAULT_DATABASE_CONFIG = dj_database_url.parse(
-    get_var(
-        'DATABASE_URL',
-        'sqlite:///{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
-    )
+    get_string('DATABASE_URL', "sqlite:///{0}".format(os.path.join(BASE_DIR, "db.sqlite3")))
 )
-DEFAULT_DATABASE_CONFIG['CONN_MAX_AGE'] = int(get_var('BOOTCAMP_DB_CONN_MAX_AGE', 0))
+DEFAULT_DATABASE_CONFIG['CONN_MAX_AGE'] = get_int('BOOTCAMP_DB_CONN_MAX_AGE', 0)
 
-if get_var('BOOTCAMP_DB_DISABLE_SSL', False):
+if get_bool('BOOTCAMP_DB_DISABLE_SSL', False):
     DEFAULT_DATABASE_CONFIG['OPTIONS'] = {}
 else:
     DEFAULT_DATABASE_CONFIG['OPTIONS'] = {'sslmode': 'require'}
@@ -265,7 +235,7 @@ USE_TZ = True
 
 # Serve static files with dj-static
 STATIC_URL = '/static/'
-CLOUDFRONT_DIST = get_var('CLOUDFRONT_DIST', None)
+CLOUDFRONT_DIST = get_string('CLOUDFRONT_DIST', None)
 if CLOUDFRONT_DIST:
     STATIC_URL = urljoin('https://{dist}.cloudfront.net'.format(dist=CLOUDFRONT_DIST), STATIC_URL)
 
@@ -283,46 +253,46 @@ REST_FRAMEWORK = {
 }
 
 # Request files from the webpack dev server
-USE_WEBPACK_DEV_SERVER = get_var('BOOTCAMP_USE_WEBPACK_DEV_SERVER', False)
-WEBPACK_DEV_SERVER_HOST = get_var('WEBPACK_DEV_SERVER_HOST', '')
-WEBPACK_DEV_SERVER_PORT = get_var('WEBPACK_DEV_SERVER_PORT', '8098')
+USE_WEBPACK_DEV_SERVER = get_bool('BOOTCAMP_USE_WEBPACK_DEV_SERVER', False)
+WEBPACK_DEV_SERVER_HOST = get_string('WEBPACK_DEV_SERVER_HOST', '')
+WEBPACK_DEV_SERVER_PORT = get_int('WEBPACK_DEV_SERVER_PORT', '8098')
 
 # Important to define this so DEBUG works properly
-INTERNAL_IPS = (get_var('HOST_IP', '127.0.0.1'), )
+INTERNAL_IPS = (get_string('HOST_IP', '127.0.0.1'), )
 
 # Configure e-mail settings
-EMAIL_BACKEND = get_var('BOOTCAMP_EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = get_var('BOOTCAMP_EMAIL_HOST', 'localhost')
-EMAIL_PORT = get_var('BOOTCAMP_EMAIL_PORT', 25)
-EMAIL_HOST_USER = get_var('BOOTCAMP_EMAIL_USER', '')
-EMAIL_HOST_PASSWORD = get_var('BOOTCAMP_EMAIL_PASSWORD', '')
-EMAIL_USE_TLS = get_var('BOOTCAMP_EMAIL_TLS', False)
-EMAIL_SUPPORT = get_var('BOOTCAMP_SUPPORT_EMAIL', 'support@example.com')
-DEFAULT_FROM_EMAIL = get_var('BOOTCAMP_FROM_EMAIL', 'webmaster@localhost')
-ECOMMERCE_EMAIL = get_var('BOOTCAMP_ECOMMERCE_EMAIL', 'support@example.com')
-MAILGUN_URL = get_var('MAILGUN_URL', 'https://api.mailgun.net/v3/micromasters.odl.mit.edu')
-MAILGUN_KEY = get_var('MAILGUN_KEY', None)
-MAILGUN_BATCH_CHUNK_SIZE = get_var('MAILGUN_BATCH_CHUNK_SIZE', 1000)
-MAILGUN_RECIPIENT_OVERRIDE = get_var('MAILGUN_RECIPIENT_OVERRIDE', None)
-MAILGUN_FROM_EMAIL = get_var('MAILGUN_FROM_EMAIL', 'no-reply@bootcamp.mit.edu')
-MAILGUN_BCC_TO_EMAIL = get_var('MAILGUN_BCC_TO_EMAIL', 'no-reply@bootcamp.mit.edu')
+EMAIL_BACKEND = get_string('BOOTCAMP_EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = get_string('BOOTCAMP_EMAIL_HOST', 'localhost')
+EMAIL_PORT = get_int('BOOTCAMP_EMAIL_PORT', 25)
+EMAIL_HOST_USER = get_string('BOOTCAMP_EMAIL_USER', '')
+EMAIL_HOST_PASSWORD = get_string('BOOTCAMP_EMAIL_PASSWORD', '')
+EMAIL_USE_TLS = get_bool('BOOTCAMP_EMAIL_TLS', False)
+EMAIL_SUPPORT = get_string('BOOTCAMP_SUPPORT_EMAIL', 'support@example.com')
+DEFAULT_FROM_EMAIL = get_string('BOOTCAMP_FROM_EMAIL', 'webmaster@localhost')
+ECOMMERCE_EMAIL = get_string('BOOTCAMP_ECOMMERCE_EMAIL', 'support@example.com')
+MAILGUN_URL = get_string('MAILGUN_URL', 'https://api.mailgun.net/v3/micromasters.odl.mit.edu')
+MAILGUN_KEY = get_string('MAILGUN_KEY', None)
+MAILGUN_BATCH_CHUNK_SIZE = get_int('MAILGUN_BATCH_CHUNK_SIZE', 1000)
+MAILGUN_RECIPIENT_OVERRIDE = get_string('MAILGUN_RECIPIENT_OVERRIDE', None)
+MAILGUN_FROM_EMAIL = get_string('MAILGUN_FROM_EMAIL', 'no-reply@bootcamp.mit.edu')
+MAILGUN_BCC_TO_EMAIL = get_string('MAILGUN_BCC_TO_EMAIL', 'no-reply@bootcamp.mit.edu')
 
 # e-mail configurable admins
-ADMIN_EMAIL = get_var('BOOTCAMP_ADMIN_EMAIL', '')
+ADMIN_EMAIL = get_string('BOOTCAMP_ADMIN_EMAIL', '')
 if ADMIN_EMAIL != '':
     ADMINS = (('Admins', ADMIN_EMAIL),)
 else:
     ADMINS = ()
 
 # Logging configuration
-LOG_LEVEL = get_var('BOOTCAMP_LOG_LEVEL', 'INFO')
-DJANGO_LOG_LEVEL = get_var('DJANGO_LOG_LEVEL', 'INFO')
-SENTRY_LOG_LEVEL = get_var('SENTRY_LOG_LEVEL', 'ERROR')
-ES_LOG_LEVEL = get_var('ES_LOG_LEVEL', 'INFO')
+LOG_LEVEL = get_string('BOOTCAMP_LOG_LEVEL', 'INFO')
+DJANGO_LOG_LEVEL = get_string('DJANGO_LOG_LEVEL', 'INFO')
+SENTRY_LOG_LEVEL = get_string('SENTRY_LOG_LEVEL', 'ERROR')
+ES_LOG_LEVEL = get_string('ES_LOG_LEVEL', 'INFO')
 
 # For logging to a remote syslog host
-LOG_HOST = get_var('BOOTCAMP_LOG_HOST', 'localhost')
-LOG_HOST_PORT = get_var('BOOTCAMP_LOG_HOST_PORT', 514)
+LOG_HOST = get_string('BOOTCAMP_LOG_HOST', 'localhost')
+LOG_HOST_PORT = get_int('BOOTCAMP_LOG_HOST_PORT', 514)
 
 HOSTNAME = platform.node().split('.')[0]
 
@@ -405,40 +375,33 @@ LOGGING = {
 }
 
 # Sentry
-ENVIRONMENT = get_var('BOOTCAMP_ENVIRONMENT', 'dev')
+ENVIRONMENT = get_string('BOOTCAMP_ENVIRONMENT', 'dev')
 SENTRY_CLIENT = 'raven.contrib.django.raven_compat.DjangoClient'
 RAVEN_CONFIG = {
-    'dsn': get_var('SENTRY_DSN', ''),
+    'dsn': get_string('SENTRY_DSN', ''),
     'environment': ENVIRONMENT,
     'release': VERSION
 }
 
-# to run the app locally on mac you need to bypass syslog
-if get_var('BOOTCAMP_BYPASS_SYSLOG', False):
-    LOGGING['handlers'].pop('syslog')
-    LOGGING['loggers']['root']['handlers'] = ['console']
-    LOGGING['loggers']['ui']['handlers'] = ['console']
-    LOGGING['loggers']['django']['handlers'] = ['console']
-
 # server-status
-STATUS_TOKEN = get_var("STATUS_TOKEN", "")
+STATUS_TOKEN = get_string("STATUS_TOKEN", "")
 HEALTH_CHECK = ['CELERY', 'REDIS', 'POSTGRES', 'ELASTIC_SEARCH']
 
-ADWORDS_CONVERSION_ID = get_var("ADWORDS_CONVERSION_ID", "")
-GA_TRACKING_ID = get_var("GA_TRACKING_ID", "")
-GTM_TRACKING_ID = get_var("GTM_TRACKING_ID", "")
-GOOGLE_API_KEY = get_var("GOOGLE_API_KEY", "")
-SL_TRACKING_ID = get_var("SL_TRACKING_ID", "")
-REACT_GA_DEBUG = get_var("REACT_GA_DEBUG", False)
+ADWORDS_CONVERSION_ID = get_string("ADWORDS_CONVERSION_ID", "")
+GA_TRACKING_ID = get_string("GA_TRACKING_ID", "")
+GTM_TRACKING_ID = get_string("GTM_TRACKING_ID", "")
+GOOGLE_API_KEY = get_string("GOOGLE_API_KEY", "")
+SL_TRACKING_ID = get_string("SL_TRACKING_ID", "")
+REACT_GA_DEBUG = get_bool("REACT_GA_DEBUG", False)
 
 # Celery
-CELERY_BROKER_URL = get_var(
-    "CELERY_BROKER_URL", get_var("REDISCLOUD_URL", None)) or get_var("BROKER_URL", get_var("REDISCLOUD_URL", None))
-CELERY_TASK_ALWAYS_EAGER = get_var("CELERY_TASK_ALWAYS_EAGER", False) or get_var("CELERY_ALWAYS_EAGER", False)
-CELERY_TASK_EAGER_PROPAGATES = get_var(
-    "CELERY_TASK_EAGER_PROPAGATES", True) or get_var("CELERY_EAGER_PROPAGATES_EXCEPTIONS", True)
-CELERY_RESULT_BACKEND = get_var(
-    "CELERY_RESULT_BACKEND", get_var("REDISCLOUD_URL", None)
+CELERY_BROKER_URL = get_string(
+    "CELERY_BROKER_URL", get_string("REDISCLOUD_URL", None))
+CELERY_TASK_ALWAYS_EAGER = get_bool("CELERY_TASK_ALWAYS_EAGER", False)
+CELERY_TASK_EAGER_PROPAGATES = get_bool(
+    "CELERY_TASK_EAGER_PROPAGATES", True)
+CELERY_RESULT_BACKEND = get_string(
+    "CELERY_RESULT_BACKEND", get_string("REDISCLOUD_URL", None)
 )
 CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULE = {}
@@ -464,62 +427,62 @@ CACHES = {
 
 
 # Cybersource
-CYBERSOURCE_ACCESS_KEY = get_var("CYBERSOURCE_ACCESS_KEY", None)
-CYBERSOURCE_SECURITY_KEY = get_var("CYBERSOURCE_SECURITY_KEY", None)
-CYBERSOURCE_TRANSACTION_KEY = get_var("CYBERSOURCE_TRANSACTION_KEY", None)
-CYBERSOURCE_SECURE_ACCEPTANCE_URL = get_var("CYBERSOURCE_SECURE_ACCEPTANCE_URL", None)
-CYBERSOURCE_PROFILE_ID = get_var("CYBERSOURCE_PROFILE_ID", None)
-CYBERSOURCE_REFERENCE_PREFIX = get_var("CYBERSOURCE_REFERENCE_PREFIX", None)
+CYBERSOURCE_ACCESS_KEY = get_string("CYBERSOURCE_ACCESS_KEY", None)
+CYBERSOURCE_SECURITY_KEY = get_string("CYBERSOURCE_SECURITY_KEY", None)
+CYBERSOURCE_TRANSACTION_KEY = get_string("CYBERSOURCE_TRANSACTION_KEY", None)
+CYBERSOURCE_SECURE_ACCEPTANCE_URL = get_string("CYBERSOURCE_SECURE_ACCEPTANCE_URL", None)
+CYBERSOURCE_PROFILE_ID = get_string("CYBERSOURCE_PROFILE_ID", None)
+CYBERSOURCE_REFERENCE_PREFIX = get_string("CYBERSOURCE_REFERENCE_PREFIX", None)
 
 
 # FluidReview
-FLUIDREVIEW_ACCESS_TOKEN = get_var("FLUIDREVIEW_ACCESS_TOKEN", None)
-FLUIDREVIEW_REFRESH_TOKEN = get_var("FLUIDREVIEW_REFRESH_TOKEN", None)
-FLUIDREVIEW_CLIENT_ID = get_var("FLUIDREVIEW_CLIENT_ID", None)
-FLUIDREVIEW_CLIENT_SECRET = get_var("FLUIDREVIEW_CLIENT_SECRET", None)
-FLUIDREVIEW_BASE_URL = get_var("FLUIDREVIEW_BASE_URL", None)
-FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = get_var("FLUIDREVIEW_WEBHOOK_AUTH_TOKEN", None)
-FLUIDREVIEW_AMOUNTPAID_ID = get_var("FLUIDREVIEW_AMOUNTPAID_ID", None)
+FLUIDREVIEW_ACCESS_TOKEN = get_string("FLUIDREVIEW_ACCESS_TOKEN", None)
+FLUIDREVIEW_REFRESH_TOKEN = get_string("FLUIDREVIEW_REFRESH_TOKEN", None)
+FLUIDREVIEW_CLIENT_ID = get_string("FLUIDREVIEW_CLIENT_ID", None)
+FLUIDREVIEW_CLIENT_SECRET = get_string("FLUIDREVIEW_CLIENT_SECRET", None)
+FLUIDREVIEW_BASE_URL = get_string("FLUIDREVIEW_BASE_URL", None)
+FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = get_string("FLUIDREVIEW_WEBHOOK_AUTH_TOKEN", None)
+FLUIDREVIEW_AMOUNTPAID_ID = get_string("FLUIDREVIEW_AMOUNTPAID_ID", None)
 
 
 # SMApply
-SMAPPLY_ACCESS_TOKEN = get_var("SMAPPLY_ACCESS_TOKEN", None)
-SMAPPLY_REFRESH_TOKEN = get_var("SMAPPLY_REFRESH_TOKEN", None)
-SMAPPLY_CLIENT_ID = get_var("SMAPPLY_CLIENT_ID", None)
-SMAPPLY_CLIENT_SECRET = get_var("SMAPPLY_CLIENT_SECRET", None)
-SMAPPLY_BASE_URL = get_var("SMAPPLY_BASE_URL", None)
-SMAPPLY_WEBHOOK_AUTH_TOKEN = get_var("SMAPPLY_WEBHOOK_AUTH_TOKEN", None)
-SMAPPLY_AMOUNTPAID_ID = get_var("SMAPPLY_AMOUNTPAID_ID", None)
-SMAPPLY_AMOUNT_TO_PAY_ID = get_var("SMAPPLY_AMOUNT_TO_PAY_ID", None)
-SMAPPLY_AWARD_COST_ID = get_var("SMAPPLY_AWARD_COST_ID", None)
+SMAPPLY_ACCESS_TOKEN = get_string("SMAPPLY_ACCESS_TOKEN", None)
+SMAPPLY_REFRESH_TOKEN = get_string("SMAPPLY_REFRESH_TOKEN", None)
+SMAPPLY_CLIENT_ID = get_string("SMAPPLY_CLIENT_ID", None)
+SMAPPLY_CLIENT_SECRET = get_string("SMAPPLY_CLIENT_SECRET", None)
+SMAPPLY_BASE_URL = get_string("SMAPPLY_BASE_URL", None)
+SMAPPLY_WEBHOOK_AUTH_TOKEN = get_string("SMAPPLY_WEBHOOK_AUTH_TOKEN", None)
+SMAPPLY_AMOUNTPAID_ID = get_string("SMAPPLY_AMOUNTPAID_ID", None)
+SMAPPLY_AMOUNT_TO_PAY_ID = get_string("SMAPPLY_AMOUNT_TO_PAY_ID", None)
+SMAPPLY_AWARD_COST_ID = get_string("SMAPPLY_AWARD_COST_ID", None)
 
 # BOOTCAMP ADMISSION
-BOOTCAMP_ADMISSION_BASE_URL = get_var("BOOTCAMP_ADMISSION_BASE_URL", "http://bootcamp-admission.example.com")
-BOOTCAMP_ADMISSION_KEY = get_var("BOOTCAMP_ADMISSION_KEY", "")
+BOOTCAMP_ADMISSION_BASE_URL = get_string("BOOTCAMP_ADMISSION_BASE_URL", "http://bootcamp-admission.example.com")
+BOOTCAMP_ADMISSION_KEY = get_string("BOOTCAMP_ADMISSION_KEY", "")
 
 
 # features flags
 def get_all_config_keys():
     """Returns all the configuration keys from both environment and configuration files"""
-    return list(set(os.environ.keys()).union(set(FALLBACK_CONFIG.keys())))
+    return list(os.environ.keys())
 
-BOOTCAMP_FEATURES_PREFIX = get_var('BOOTCAMP_FEATURES_PREFIX', 'FEATURE_')
+BOOTCAMP_FEATURES_PREFIX = get_string('BOOTCAMP_FEATURES_PREFIX', 'FEATURE_')
 FEATURES = {
-    key[len(BOOTCAMP_FEATURES_PREFIX):]: get_var(key, None) for key
+    key[len(BOOTCAMP_FEATURES_PREFIX):]: get_any(key, None) for key
     in get_all_config_keys() if key.startswith(BOOTCAMP_FEATURES_PREFIX)
 }
 
-MIDDLEWARE_FEATURE_FLAG_COOKIE_NAME = get_var('MIDDLEWARE_FEATURE_FLAG_COOKIE_NAME', 'MM_FEATURE_FLAGS')
-MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS = get_var('MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS', 60 * 60)
+MIDDLEWARE_FEATURE_FLAG_COOKIE_NAME = get_string('MIDDLEWARE_FEATURE_FLAG_COOKIE_NAME', 'MM_FEATURE_FLAGS')
+MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS = get_int('MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS', 60 * 60)
 
 
 # django debug toolbar only in debug mode
 if DEBUG:
     INSTALLED_APPS += ('debug_toolbar', )
     # it needs to be enabled before other middlewares
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ) + MIDDLEWARE_CLASSES
+    ) + MIDDLEWARE
 
 MANDATORY_SETTINGS = [
     'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN',

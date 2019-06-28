@@ -248,8 +248,7 @@ def parse_webhook_user(webhook):
         if not klass:
             if not personal_price:
                 raise SMApplyException(
-                    "Klass has no price and klass_key %s does not exist",
-                    webhook.award_id
+                    f"Klass has no price and klass_key {webhook.award_id} does not exist"
                 )
             klass_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
@@ -325,7 +324,7 @@ def post_payment(order):
     }
     webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smapply_id, award_id=klass.klass_key).last()
     if webhook.submission_id is None:
-        raise SMApplyException("Webhook has no submission id for order %s", order.id)
+        raise SMApplyException(f"Webhook has no submission id for order {order.id}")
     try:
         SMApplyAPI().put(
             'submissions/{}/metadata/{}/'.format(webhook.submission_id, settings.SMAPPLY_AMOUNTPAID_ID),
@@ -333,5 +332,5 @@ def post_payment(order):
         )
     except Exception as exc:
         raise SMApplyException(
-            "Error updating amount paid by user %s to class %s", user.email, klass.klass_key
+            f"Error updating amount paid by user {user.email} to class {klass.klass_key}"
         ) from exc
