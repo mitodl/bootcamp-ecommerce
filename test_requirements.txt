@@ -2,7 +2,7 @@ astroid==1.5.3 # fix https://github.com/PyCQA/pylint/issues/1609
 bpython
 codecov
 ddt
-django-debug-toolbar
+django-debug-toolbar==1.11
 ipdb
 nplusone
 pdbpp
