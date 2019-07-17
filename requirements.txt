@@ -15,7 +15,6 @@ defusedxml==0.5.0         # via python3-openid, social-auth-core
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-compat==1.0.15
-django-debug-toolbar==1.11
 django-hijack-admin==2.1.7
 django-hijack==2.1.7
 django-redis==4.7.0
@@ -54,7 +53,6 @@ simplegeneric==0.8.1      # via ipython
 six==1.11.0               # via django-compat, django-server-status, edx-api-client, faker, html5lib, prompt-toolkit, python-dateutil, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==1.1.0
 social-auth-core==1.4.0   # via social-auth-app-django
-sqlparse==0.3.0           # via django-debug-toolbar
 static3==0.5.1
 traitlets==4.3.2          # via ipython
 urllib3==1.24.2
