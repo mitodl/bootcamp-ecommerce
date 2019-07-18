@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.26.0
+--------------
+
+- update backend packages (#280)
+
 Version 0.25.0 (Released May 24, 2019)
 --------------
 
