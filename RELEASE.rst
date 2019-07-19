@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.26.0
+Version 0.26.0 (Released July 19, 2019)
 --------------
 
 - update backend packages (#280)
