@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.27.0
+--------------
+
+- update frontend dependencies (#279)
+
 Version 0.26.0 (Released July 19, 2019)
 --------------
 
