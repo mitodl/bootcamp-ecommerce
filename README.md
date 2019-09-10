@@ -119,7 +119,7 @@ Values for the first four can be found at `<FLUIDREVIEW_BASE_URL>/admin/develope
   - Activation: set to `Submissions: A submission has been promoted to a new stage`
   - Conditions: set to `Submission is in stage`, `is exactly`, `Accepted Applications`
   - Add action `Advanced Webhook`
-    - URL: `<FLUIDREVIEW_BASE_URL>/api/v0/fluidreview_webhook/`
+    - URL: `<BOOTCAMP_BASE_URL>/api/v0/fluidreview_webhook/`
     - Method: `POST`
     - Auth Token: `<FLUIDREVIEW_WEBHOOK_AUTH_TOKEN>`
     - Request content: 
@@ -137,3 +137,46 @@ Values for the first four can be found at `<FLUIDREVIEW_BASE_URL>/admin/develope
         ```
   - Priority: 1
   - Status: Active
+  
+## Integration with SMApply
+
+#### 1) Set SMApply environment variables
+  - `SMAPPLY_CLIENT_ID`
+  - `SMAPPLY_CLIENT_SECRET`
+  - `SMAPPLY_ACCESS_TOKEN`
+  - `SMAPPLY_REFRESH_TOKEN`
+  - `SMAPPLY_BASE_URL` (the SMApply site URL)
+  - `SMAPPLY_WEBHOOK_AUTH_TOKEN` (a manually assigned value that is difficult to guess)
+  - `SMAPPLY_AMOUNTPAID_ID` (SMapply id for 'Amount Paid' custom field)
+  - `SMAPPLY_AMOUNT_TO_PAY_ID` (SMapply id for 'Amount To Pay' custom field)
+  - `SMAPPLY_AWARD_COST_ID` (SMapply id for 'Award Cost' custom field)
+
+Values for the first four can be found at `<SMAPPLY_BASE_URL>/admin/settings/integrations/api/` on the SMApply site.
+Custom fields can be found at `<SMAPPLY_BASE_URL>/admin/settings/metadata/`
+  
+  
+#### 2) Create a trigger in SMApply
+  - Go to `<SMAPPLY_BASE_URL>/admin/awards/<bootcamp_id>/automations/`
+  - Create or edit an automation
+  - Fill out the "When to Apply" and/or "Conditions" sections as needed
+  - Fill out "Do the following actions":
+    - Choose 'Integrations -> Fire webhook' from the dropdown
+    - URL: `<BOOTCAMP_BASE_URL>/api/v0/smapply_webhook/`
+    - Method: `POST`
+    - Auth Token: `<SMAPPLY_WEBHOOK_AUTH_TOKEN>`
+    - Sample request content sent by the webhook will be something like: 
+        ```
+        {
+          "status": 1,
+          "user_id": 99119890,
+          "title": "0000000007",
+          "award": 88562,
+          "additional_content": "",
+          "reference_id": "0000000007",
+          "date_created": "Nov 8 2018 06:25 PM",
+          "last_edited": "Nov 8 2018 06:28 PM",
+          "id": 6903908,
+          "round": 88368,
+          "user": "Student Name"
+        }
+        ```
