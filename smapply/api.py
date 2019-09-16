@@ -25,7 +25,7 @@ from smapply.models import OAuthTokenSMA, WebhookRequestSMA
 
 log = logging.getLogger(__name__)
 
-BASE_API_URL = urljoin(settings.SMAPPLY_BASE_URL, '/api/v2/')
+BASE_API_URL = urljoin(settings.SMAPPLY_BASE_URL, '/api/')
 
 
 class SMApplyException(Exception):
@@ -141,6 +141,18 @@ class SMApplyAPI:
         """
         return self.request('put', url_suffix, **kwargs)
 
+    def patch(self, url_suffix, **kwargs):
+        """
+        Make a PATCH request to the API
+
+        Args:
+            url_suffix(str): The URL fragment to be appended to the base API URL
+
+        Returns:
+            requests.Response: The API response
+        """
+        return self.request('patch', url_suffix, **kwargs)
+
     def request(self, method, url_suffix, **kwargs):
         """
         Make a request to the API using the designated method (GET, POST, PUT)
@@ -232,17 +244,15 @@ def parse_webhook_user(webhook):
     else:
         user = profile.user
     if webhook.award_id is not None:
-        application_meta = SMApplyAPI().get('/submissions/{}/metadata/{}/'.format(
-            webhook.submission_id,
-            settings.SMAPPLY_AMOUNT_TO_PAY_ID
+        application_meta = SMApplyAPI().get('/applications/{}/'.format(
+            webhook.submission_id
         )).json()
-        personal_price = application_meta['value']
+        personal_price = get_custom_field(application_meta['custom_fields'], settings.SMAPPLY_AMOUNT_TO_PAY_ID)
         if not personal_price:
-            award_meta = SMApplyAPI().get('/awards/{}/metadata/{}/'.format(
-                webhook.award_id,
-                settings.SMAPPLY_AWARD_COST_ID
+            award_meta = SMApplyAPI().get('/programs/{}/'.format(
+                webhook.award_id
             )).json()
-            personal_price = award_meta['value']
+            personal_price = get_custom_field(award_meta, settings.SMAPPLY_AWARD_COST_ID)
 
         klass = Klass.objects.filter(klass_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
         if not klass:
@@ -251,7 +261,7 @@ def parse_webhook_user(webhook):
                     "Klass has no price and klass_key %s does not exist",
                     webhook.award_id
                 )
-            klass_info = SMApplyAPI().get('/awards/{}'.format(webhook.award_id)).json()
+            klass_info = SMApplyAPI().get('/programs/{}'.format(webhook.award_id)).json()
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
             klass = Klass.objects.create(
                 bootcamp=bootcamp,
@@ -321,17 +331,28 @@ def post_payment(order):
         return
     total_paid = Line.total_paid_for_klass(order.user, klass.klass_key).get('total') or Decimal('0.00')
     payment_metadata = {
-        'value': '{:0.2f}'.format(total_paid)
+        'custom_fields': {
+            'id': settings.SMAPPLY_AMOUNTPAID_ID,
+            'value': '{:0.2f}'.format(total_paid)
+        }
     }
     webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smapply_id, award_id=klass.klass_key).last()
     if webhook.submission_id is None:
         raise SMApplyException("Webhook has no submission id for order %s", order.id)
     try:
-        SMApplyAPI().put(
-            'submissions/{}/metadata/{}/'.format(webhook.submission_id, settings.SMAPPLY_AMOUNTPAID_ID),
+        SMApplyAPI().patch(
+            'applications/{}/'.format(webhook.submission_id),
             data=payment_metadata
         )
     except Exception as exc:
         raise SMApplyException(
             "Error updating amount paid by user %s to class %s", user.email, klass.klass_key
         ) from exc
+
+
+def get_custom_field(custom_fields, field_id):
+    """
+    Get the value of a custom field by id
+    """
+    return [custom_field for custom_field in custom_fields
+     if custom_field['id'] == field_id][0]['value']
