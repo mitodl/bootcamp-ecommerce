@@ -16,7 +16,6 @@ import yaml
 
 from bootcamp.settings import load_fallback, get_var
 
-
 REQUIRED = {
     'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN': 'asdfasdf',
 }

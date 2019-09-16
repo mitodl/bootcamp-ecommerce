@@ -19,10 +19,10 @@ newrelic
 psycopg2==2.7.3.2
 python-dateutil
 pytz
-raven
+raven==6.9.0
 redis==2.10.5
 requests>=2.20
-social-auth-app-django==1.1.0
+social-auth-app-django==2.1.0
 static3==0.5.1
 urllib3>=1.24.2
 uwsgi

@@ -200,6 +200,7 @@ class CybersourceTests(TestCase):
     """
     Tests for generate_cybersource_sa_payload and generate_cybersource_sa_signature
     """
+
     def test_valid_signature(self):
         """
         Signature is made up of a ordered key value list signed using HMAC 256 with a security key
