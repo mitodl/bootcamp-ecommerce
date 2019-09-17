@@ -329,9 +329,9 @@ def test_post_payment(mocker, is_legacy, is_fulfilled, test_payment_data, settin
     Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=is_legacy)
     post_payment(order)
     expected_data = {'custom_fields': [{
-            'id': settings.SMAPPLY_AMOUNTPAID_ID,
-            'value': '11.38'
-        }]
+        'id': settings.SMAPPLY_AMOUNTPAID_ID,
+        'value': '11.38'
+    }]
     }
     assert mock_api().patch.call_count == (0 if is_legacy or not is_fulfilled else 1)
     if is_fulfilled and not is_legacy:
