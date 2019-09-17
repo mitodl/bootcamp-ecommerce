@@ -340,6 +340,7 @@ def post_payment(order):
     if webhook.submission_id is None:
         raise SMApplyException("Webhook has no submission id for order %s", order.id)
     try:
+        print('here')
         SMApplyAPI().patch(
             'applications/{}/'.format(webhook.submission_id),
             data=payment_metadata

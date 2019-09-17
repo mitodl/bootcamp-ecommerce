@@ -217,7 +217,10 @@ def test_parse_webhook_user(mocker, price, sends_email):
         'id': award_id,
         'name': award_name,
         'description': 'Description',
-        'value': price,
+        'custom_fields': [{
+            'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
+            'value': price
+        }]
     }
     data = {
         'user_id': user_id,
@@ -319,29 +322,33 @@ def test_post_payment(mocker, is_legacy, is_fulfilled, test_payment_data, settin
     """Test that posting a payment is called for non-legacy klasses, with correct data"""
     settings.SMAPPLY_AMOUNTPAID_ID = 100
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
-    mock_api().put.return_value.status_code = 200
+    mock_api().patch.return_value.status_code = 200
     klass, order, hook = test_payment_data
     if not is_fulfilled:
         order.status = Order.FAILED
     Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=is_legacy)
     post_payment(order)
-    expected_data = {'value': '11.38'}
-    assert mock_api().put.call_count == (0 if is_legacy or not is_fulfilled else 1)
+    expected_data = {'custom_fields': [{
+            'id': settings.SMAPPLY_AMOUNTPAID_ID,
+            'value': '11.38'
+        }]
+    }
+    assert mock_api().patch.call_count == (0 if is_legacy or not is_fulfilled else 1)
     if is_fulfilled and not is_legacy:
-        mock_api().put.assert_called_with(
-            'submissions/{}/metadata/100/'.format(hook.submission_id), data=expected_data
+        mock_api().patch.assert_called_with(
+            'applications/{}/'.format(hook.submission_id), data=expected_data
         )
 
 
 def test_post_payment_bad_response(mocker, test_payment_data):
     """Test that bad responses from SMApply raise expected exceptions"""
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
-    mock_api().put.side_effect = HTTPError
+    mock_api().patch.side_effect = HTTPError
     klass, order, _ = test_payment_data
     Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
     with pytest.raises(SMApplyException) as exc:
         post_payment(order)
-    assert 'Error updating amount paid by user' in str(exc)
+    assert 'Error updating amount paid by user' in str(exc.value)
 
 
 def test_post_payment_bad_webhook(mocker, test_payment_data):
@@ -353,4 +360,4 @@ def test_post_payment_bad_webhook(mocker, test_payment_data):
     Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
     with pytest.raises(SMApplyException) as exc:
         post_payment(order)
-    assert 'Webhook has no submission id for order' in str(exc)
+    assert 'Webhook has no submission id for order' in str(exc.value)
