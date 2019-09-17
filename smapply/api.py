@@ -181,7 +181,7 @@ def process_user(sma_user):
     Create/update User and Profile model objects based on SMApply user info
 
     Args:
-        sma_user (ReturnDict): Data from a fluidreview.serializers.UserSerializer object
+        sma_user (ReturnDict): Data from a smapply.serializers.UserSerializer object
 
     Returns:
         User: user modified or created by the function

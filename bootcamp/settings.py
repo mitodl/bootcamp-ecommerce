@@ -441,7 +441,15 @@ CELERY_RESULT_BACKEND = get_var(
     "CELERY_RESULT_BACKEND", get_var("REDISCLOUD_URL", None)
 )
 CELERY_TIMEZONE = 'UTC'
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+    "sync-new-users-from-smapply": {
+        "task": "smapply.tasks.sync_all_users",
+        "schedule": int(get_var(
+            "SMAPPLY_USER_SYNC_FREQUENCY",
+            900,
+        )),
+    },
+}
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
