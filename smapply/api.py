@@ -331,10 +331,10 @@ def post_payment(order):
         return
     total_paid = Line.total_paid_for_klass(order.user, klass.klass_key).get('total') or Decimal('0.00')
     payment_metadata = {
-        'custom_fields': {
+        'custom_fields': [{
             'id': settings.SMAPPLY_AMOUNTPAID_ID,
             'value': '{:0.2f}'.format(total_paid)
-        }
+        }]
     }
     webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smapply_id, award_id=klass.klass_key).last()
     if webhook.submission_id is None:
@@ -355,4 +355,4 @@ def get_custom_field(custom_fields, field_id):
     Get the value of a custom field by id
     """
     return [custom_field for custom_field in custom_fields
-     if custom_field['id'] == field_id][0]['value']
+            if custom_field['id'] == field_id][0]['value']
