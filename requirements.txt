@@ -9,7 +9,6 @@ billiard==3.5.0.2         # via celery
 celery==4.0.2
 certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
-contextlib2==0.5.5        # via raven
 decorator==4.0.11         # via ipython, traitlets
 defusedxml==0.5.0         # via python3-openid, social-auth-core
 dj-database-url==0.3.0
@@ -45,13 +44,13 @@ python-dateutil==2.5.3
 python3-openid==3.1.0     # via social-auth-core
 pytz==2017.2
 pyyaml==5.1
-raven==6.1.0
+raven==6.9.0
 redis==2.10.5
 requests-oauthlib==0.8.0  # via social-auth-core
 requests==2.20.1
 simplegeneric==0.8.1      # via ipython
 six==1.11.0               # via django-compat, django-server-status, edx-api-client, faker, html5lib, prompt-toolkit, python-dateutil, social-auth-app-django, social-auth-core, traitlets
-social-auth-app-django==1.1.0
+social-auth-app-django==2.1.0
 social-auth-core==1.4.0   # via social-auth-app-django
 static3==0.5.1
 traitlets==4.3.2          # via ipython
@@ -62,4 +61,4 @@ wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.0.1        # via html5lib, ipython
+# setuptools==41.2.0        # via html5lib, ipython

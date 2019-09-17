@@ -134,7 +134,7 @@ if not DISABLE_WEBPACK_LOADER_STATS:
     INSTALLED_APPS += ('webpack_loader',)
 
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -152,7 +152,7 @@ if DEBUG:
     INSTALLED_APPS += (
         'nplusone.ext.django',
     )
-    MIDDLEWARE_CLASSES += (
+    MIDDLEWARE += (
         'nplusone.ext.django.NPlusOneMiddleware',
     )
 
@@ -517,9 +517,9 @@ MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS = get_var('MIDDLEWARE_FEATURE_FLA
 if DEBUG:
     INSTALLED_APPS += ('debug_toolbar', )
     # it needs to be enabled before other middlewares
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ) + MIDDLEWARE_CLASSES
+    ) + MIDDLEWARE
 
 MANDATORY_SETTINGS = [
     'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN',
