@@ -30,7 +30,6 @@ from fluidreview.constants import WebhookParseStatus
 from fluidreview.factories import WebhookRequestFactory
 from profiles.factories import UserFactory
 
-
 CYBERSOURCE_SECURITY_KEY = '🔑'
 CYBERSOURCE_SECURE_ACCEPTANCE_URL = 'http://fake'
 CYBERSOURCE_REFERENCE_PREFIX = 'fake'
@@ -106,6 +105,7 @@ class OrderFulfillmentViewTests(TestCase):
     """
     Tests for order fulfillment
     """
+
     @ddt.data(None, FluidReviewException)
     def test_order_fulfilled(self, side_effect):
         """

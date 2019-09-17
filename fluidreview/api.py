@@ -240,7 +240,7 @@ def parse_webhook_user(webhook):
         if not klass:
             if not personal_price:
                 raise FluidReviewException(
-                    "Webhook has no personal price and klass_key %s does not exist",
+                    "Webhook has no personal price and klass_key %s does not exist" %
                     webhook.award_id
                 )
             klass_info = FluidReviewAPI().get('/awards/{}'.format(webhook.award_id)).json()
@@ -313,7 +313,7 @@ def post_payment(order):
     }
     webhook = WebhookRequest.objects.filter(user_id=user.profile.fluidreview_id, award_id=klass.klass_key).last()
     if webhook.submission_id is None:
-        raise FluidReviewException("Webhook has no submission id for order %s", order.id)
+        raise FluidReviewException("Webhook has no submission id for order %s" % order.id)
     try:
         FluidReviewAPI().put(
             'submissions/{}/metadata/{}/'.format(webhook.submission_id, settings.FLUIDREVIEW_AMOUNTPAID_ID),
@@ -321,5 +321,5 @@ def post_payment(order):
         )
     except Exception as exc:
         raise FluidReviewException(
-            "Error updating amount paid by user %s to class %s", user.email, klass.klass_key
+            "Error updating amount paid by user %s to class %s" % (user.email, klass.klass_key)
         ) from exc

@@ -16,6 +16,7 @@ class TestViews(TestCase):
     """
     Test that the views work as expected.
     """
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -65,7 +66,7 @@ class TestViews(TestCase):
         and that the GET parameters are kept
         """
         self.client.force_login(self.user)
-        resp = self.client.post(reverse('bootcamp-index')+'?foo=bar')
+        resp = self.client.post(reverse('bootcamp-index') + '?foo=bar')
         assert resp.status_code == HTTP_302_FOUND
         assert resp.url == reverse('pay') + '?foo=bar'
 

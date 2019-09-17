@@ -29,13 +29,13 @@ def index(request):
     """
     Index page
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         to_url = reverse('pay')
         if request.GET:
             to_url = "{}?{}".format(to_url, request.GET.urlencode())
         return redirect(to=to_url)
 
-    authenticated = not request.user.is_anonymous()
+    authenticated = not request.user.is_anonymous
     return render(request, "bootcamp/index.html", context={
         "js_settings_json": json.dumps(_serialize_js_settings(request)),
         "authenticated": authenticated,
@@ -66,7 +66,7 @@ def standard_error_page(request, status_code, template_filename):
     """
     Returns an error page with a given template filename and provides necessary context variables
     """
-    authenticated = not request.user.is_anonymous()
+    authenticated = not request.user.is_anonymous
     response = render(
         request,
         template_filename,
