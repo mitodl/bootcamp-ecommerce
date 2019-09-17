@@ -1,4 +1,4 @@
-astroid==1.5.3 # fix https://github.com/PyCQA/pylint/issues/1609
+astroid==2.0.4
 bpython==0.16
 codecov==2.0.11
 ddt==1.1.1
@@ -8,14 +8,14 @@ nplusone==0.9.0
 pdbpp==0.9.2
 pip-tools==1.11.0
 pylint==1.7.1
-pylint-django==0.7.2
-pytest==3.3.1
+pylint-django==2.0.2
+pytest==4.3.0
 pytest-cov==2.5.1
-pytest-django==3.1.2
+pytest-django==3.4.8
 pytest-pep8==1.0.6
-pytest-mock==1.6.3
+pytest-mock==1.10.1
 pytest-pylint==0.6.0
 semantic-version==2.6.0
 selenium==3.8.0
 testfixtures==5.3.1
-tox==2.9.1
+tox==3.14.0
