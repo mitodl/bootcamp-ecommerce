@@ -252,7 +252,7 @@ def parse_webhook_user(webhook):
             award_meta = SMApplyAPI().get('/programs/{}/'.format(
                 webhook.award_id
             )).json()
-            personal_price = get_custom_field(award_meta, settings.SMAPPLY_AWARD_COST_ID)
+            personal_price = get_custom_field(award_meta['custom_fields'], settings.SMAPPLY_AWARD_COST_ID)
 
         klass = Klass.objects.filter(klass_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
         if not klass:
