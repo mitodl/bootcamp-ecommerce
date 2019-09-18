@@ -9,7 +9,7 @@ class UserSerializer(serializers.Serializer):
     # FluidReview allows invalid email addresses, so use CharField instead of EmailField
     email = serializers.CharField()
     first_name = serializers.CharField(allow_blank=True, required=False)
-    full_name = serializers.CharField(allow_blank=True)
+    full_name = serializers.CharField(allow_blank=True, required=False)
     groups = serializers.ListField(child=serializers.IntegerField(), required=False)
     id = serializers.IntegerField()
     language = serializers.CharField(required=False)
