@@ -342,7 +342,7 @@ def post_payment(order):
     try:
         SMApplyAPI().patch(
             'applications/{}/'.format(webhook.submission_id),
-            data=payment_metadata
+            data=json.dumps(payment_metadata)
         )
     except Exception as exc:
         raise SMApplyException(
