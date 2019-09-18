@@ -116,5 +116,5 @@ def test_webhook_parse_success(email, smapply_id, should_update, settings, clien
     assert webhook.user_id == data['user_id']
 
     req_profile = Profile.objects.get(smapply_id=data['user_id'])
-    assert should_update is (req_profile.name == user_data['full_name'])
+    assert should_update is (req_profile.name == '{} {}'.format(user_data['first_name'], user_data['last_name']))
     assert req_profile.user == User.objects.get(email=email)
