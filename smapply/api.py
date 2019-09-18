@@ -193,7 +193,7 @@ def process_user(sma_user):
     profile, _ = Profile.objects.get_or_create(user=user)
     if not profile.smapply_id:
         profile.smapply_id = sma_user['id']
-        profile.name = sma_user['full_name']
+        profile.name = '{} {}'.format(sma_user['first_name'], sma_user['last_name'])
         profile.save()
     return user
 
