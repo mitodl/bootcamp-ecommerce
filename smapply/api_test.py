@@ -30,7 +30,8 @@ pytestmark = pytest.mark.django_db
 sma_user = {
     'id': 21231,
     'email': 'sma_user@sma.xyz',
-    'full_name': 'Fluid User'
+    'first_name': 'Fluid',
+    'last_name': 'User'
 }
 
 
@@ -161,7 +162,7 @@ def test_process_new_user():
     process_user(sma_user)
     assert User.objects.filter(email=sma_user['email']).count() == 1
     new_profile = Profile.objects.get(smapply_id=sma_user["id"])
-    assert new_profile.name == sma_user['full_name']
+    assert new_profile.name == '{} {}'.format(sma_user['first_name'], sma_user['last_name'])
     assert new_profile.user.email == sma_user['email']
 
 
