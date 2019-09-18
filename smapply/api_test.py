@@ -337,7 +337,7 @@ def test_post_payment(mocker, is_legacy, is_fulfilled, test_payment_data, settin
     assert mock_api().patch.call_count == (0 if is_legacy or not is_fulfilled else 1)
     if is_fulfilled and not is_legacy:
         mock_api().patch.assert_called_with(
-            'applications/{}/'.format(hook.submission_id), data=expected_data
+            'applications/{}/'.format(hook.submission_id), data=json.dumps(expected_data)
         )
 
 
