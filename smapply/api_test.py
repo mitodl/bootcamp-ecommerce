@@ -218,6 +218,7 @@ def test_parse_webhook_user(mocker, price, sends_email):
         'id': award_id,
         'name': award_name,
         'description': 'Description',
+        'current_stage': {'id': 1234, 'title': 'Admitted'},
         'custom_fields': [{
             'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
             'value': price
@@ -239,7 +240,8 @@ def test_parse_webhook_user(mocker, price, sends_email):
         assert Bootcamp.objects.filter(title=award_name).exists()
         assert PersonalPrice.objects.filter(
             klass__klass_key=award_id,
-            user__profile__smapply_id=user_id
+            user__profile__smapply_id=user_id,
+            application_stage='Admitted'
         ).exists()
         assert send_email.call_count == 1
         assert send_email.call_args[0] == (
