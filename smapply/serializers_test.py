@@ -6,7 +6,6 @@ def test_user_serializer():
     """Tests for the smapply user serializer"""
     user_data = {
         'id': 12345678,
-        'full_name': 'first_name last_name',
         'first_name': 'first_name',
         'last_name': 'last_name',
         'email': 'test1@test.co'

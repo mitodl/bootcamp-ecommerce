@@ -5,5 +5,6 @@ from rest_framework import serializers
 class UserSerializer(serializers.Serializer):
     """Serializer for SMApply user data"""
     email = serializers.CharField()
-    full_name = serializers.CharField(allow_blank=True)
+    first_name = serializers.CharField(allow_blank=True)
+    last_name = serializers.CharField(allow_blank=True)
     id = serializers.IntegerField()
