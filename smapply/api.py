@@ -248,6 +248,7 @@ def parse_webhook_user(webhook):
             webhook.submission_id
         )).json()
         personal_price = get_custom_field(application_meta['custom_fields'], settings.SMAPPLY_AMOUNT_TO_PAY_ID)
+        application_stage = application_meta['current_stage']
         if not personal_price:
             award_meta = SMApplyAPI().get('/programs/{}/'.format(
                 webhook.award_id
@@ -290,7 +291,7 @@ def parse_webhook_user(webhook):
         if personal_price:
             user.klass_prices.update_or_create(
                 klass=klass,
-                defaults={'price': personal_price}
+                defaults={'price': personal_price, 'application_stage': application_stage['title']}
             )
         else:
             user.klass_prices.filter(klass=klass).delete()
