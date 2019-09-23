@@ -27,10 +27,18 @@ log = logging.getLogger(__name__)
 
 BASE_API_URL = urljoin(settings.SMAPPLY_BASE_URL, '/api/')
 
+DEMOGRAPHICS_TASK_NAME = 'Part 1: Complete Your Application Form'
+
 
 class SMApplyException(Exception):
     """
     Custom exception for SMApply
+    """
+
+
+class MissingTaskNameException(Exception):
+    """
+    Custom exception for syncing demographics information
     """
 
 
@@ -206,17 +214,15 @@ def parse_webhook(webhook):
         webhook (WebhookRequestSMA): WebhookRequestSMA instance
 
     """
-    try:  # pylint:disable=too-many-nested-blocks
+    try:
         body_json = json.loads(smart_text(webhook.body))
         field_mapping = {'id': 'submission_id', 'award': 'award_id', 'user_id': 'user_id'}
-        required_fields = field_mapping.keys()
+        required_fields = ['id', 'user_id']
         if not set(required_fields).issubset(body_json.keys()):
             raise SMApplyException("Missing required field(s)")
-        for att in required_fields:
-            if att in body_json:
-                if att in required_fields:
-                    if body_json[att]:
-                        setattr(webhook, field_mapping[att], int(body_json[att]))
+        for att in field_mapping:
+            if att in body_json and body_json[att]:
+                setattr(webhook, field_mapping[att], int(body_json[att]))
         parse_webhook_user(webhook)
         webhook.status = WebhookParseStatus.SUCCEEDED
     except:  # pylint: disable=bare-except
@@ -243,6 +249,14 @@ def parse_webhook_user(webhook):
         user = process_user(serializer.data)
     else:
         user = profile.user
+
+    # Sync user demographics data
+    try:
+        store_demographics_data(user.profile, webhook.submission_id)
+    except MissingTaskNameException:
+        # Log error instead of stopping execution with an exception
+        log.exception('Demographics form name was not found within application tasks')
+
     if webhook.award_id is not None:
         application_meta = SMApplyAPI().get('/applications/{}/'.format(
             webhook.submission_id
@@ -295,6 +309,43 @@ def parse_webhook_user(webhook):
             )
         else:
             user.klass_prices.filter(klass=klass).delete()
+
+
+def get_tasks(application_id):
+    """
+    Generator for tasks on a specific application in SMApply
+
+    Yields:
+        dict: SMApply task responses as dict
+    """
+    smapi = SMApplyAPI()
+    url = f'applications/{application_id}/tasks'
+    while url:
+        response = smapi.get(url).json()
+        tasks = response['results']
+        for task in tasks:
+            yield task
+        url = response['next']
+
+
+def store_demographics_data(profile, application_id):
+    """
+    Stores demographics data for a user in their profile.
+    Iterates over all of an application's tasks to find the demographics task and stores the json data in a Profile.
+
+    Args:
+        profile(Profile): a profile object to store application data
+        application_id(int): the id of the application to retrieve
+    """
+    for task in get_tasks(application_id):
+        if task['name'] == DEMOGRAPHICS_TASK_NAME:
+            profile.smapply_demographic_data = task
+            profile.save()
+            break
+    else:
+        raise MissingTaskNameException(
+            f'Demographics task name was not found within application tasks for application {application_id}'
+        )
 
 
 def list_users():
