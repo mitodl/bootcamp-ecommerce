@@ -16,6 +16,7 @@ class Profile(Model):
     smapply_id = IntegerField(null=True, blank=True)
 
     smapply_user_data = JSONField(blank=True, null=True)
+    smapply_demographic_data = JSONField(blank=True, null=True)
 
     def __str__(self):
         return "Profile for user {}".format(self.user)
