@@ -217,7 +217,7 @@ def parse_webhook(webhook):
     try:
         body_json = json.loads(smart_text(webhook.body))
         field_mapping = {'id': 'submission_id', 'award': 'award_id', 'user_id': 'user_id'}
-        required_fields = ['id', 'user_id']
+        required_fields = field_mapping.keys()
         if not set(required_fields).issubset(body_json.keys()):
             raise SMApplyException("Missing required field(s)")
         for att in field_mapping:

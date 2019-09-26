@@ -320,11 +320,12 @@ def test_sync_demographics(mocker):
     """Test that a profile's demographics is set when on webhook receive"""
     user_id = 94379385
     submission_id = 4533767
+    award_id = 12345
     profile = ProfileFactory(smapply_id=user_id)
-
     data = {
         'user_id': user_id,
         'id': submission_id,
+        'award': award_id,
     }
     body = json.dumps(data)
     hook = WebhookRequestSMA(body=body)
@@ -337,22 +338,38 @@ def test_sync_demographics(mocker):
             'results': [not_demographics_task, demographics_task],
             'next': None,
         },
+        f'/programs/{award_id}': {
+            'id': award_id,
+            'name': 'fake award',
+        },
+        f'/applications/{submission_id}/': {
+            'id': submission_id,
+            'current_stage': {'id': 1234, 'title': 'Admitted'},
+            'custom_fields': [{
+                'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
+                'value': '12.34'
+            }]
+        },
     })
     mocker.patch('smapply.api.SMApplyAPI.get', side_effect=mock_get.mocked_api_get)
+    logger = mocker.patch('logging.Logger.exception')
     parse_webhook(hook)
     profile.refresh_from_db()
     assert profile.smapply_demographic_data == demographics_task
+    logger.assert_called_once()  # Once from mailgun but never from the rest of the code
 
 
 def test_sync_demographics_error(mocker):
     """Test that an error is logged when an application is missing the demographics task"""
     user_id = 94379385
     submission_id = 4533767
+    award_id = 12345
     profile = ProfileFactory(smapply_id=user_id)
 
     data = {
         'user_id': user_id,
         'id': submission_id,
+        'award': award_id,
     }
     body = json.dumps(data)
     hook = WebhookRequestSMA(body=body)
@@ -364,13 +381,25 @@ def test_sync_demographics_error(mocker):
             'results': [not_demographics_task, not_demographics_task],
             'next': None,
         },
+        f'/programs/{award_id}': {
+            'id': award_id,
+            'name': 'fake award',
+        },
+        f'/applications/{submission_id}/': {
+            'id': submission_id,
+            'current_stage': {'id': 1234, 'title': 'Admitted'},
+            'custom_fields': [{
+                'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
+                'value': '12.34'
+            }]
+        },
     })
     mocker.patch('smapply.api.SMApplyAPI.get', side_effect=mock_get.mocked_api_get)
     logger = mocker.patch('logging.Logger.exception')
     parse_webhook(hook)
     profile.refresh_from_db()
     assert profile.smapply_demographic_data is None
-    logger.assert_called_once()
+    assert logger.call_count == 2  # Once for mailgun error, once for missing demographics data
 
 
 def test_list_users(mocker):
