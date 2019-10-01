@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+Version 0.28.0
+--------------
+
+- Sync user demographics when app receives webhooks (#300)
+- Add apllication_stage field to PersonalPrice (#299)
+- Sync new SMApply users with local User and Profile models (#296)
+- Update API requests to use newest API Apply Connect (#293)
+- Peg test dependency versions (#295)
+- README section for SMApply (#288)
+
 Version 0.27.0 (Released July 25, 2019)
 --------------
 
