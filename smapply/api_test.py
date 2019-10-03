@@ -35,6 +35,12 @@ sma_user = {
 }
 
 
+@pytest.fixture()
+def mock_user_sync(mocker):
+    """ Yield a mock hubspot update task for contacts """
+    yield mocker.patch("hubspot.tasks.sync_contact_with_hubspot.delay")
+
+
 class MockGet:
     """
     Helper class to mock multiple SMApply api get requests.
@@ -232,7 +238,7 @@ def test_process_user_both_exist_with_smapply_id(mocker):
     ['25.99', True],
     ['', False]
 ])
-def test_parse_webhook_user(mocker, price, sends_email):
+def test_parse_webhook_user(mocker, price, sends_email, mock_user_sync):
     """Test creation of new Bootcamp if no matching award_id"""
     user_id = 94379385
     award_id = 78456
@@ -288,9 +294,11 @@ def test_parse_webhook_user(mocker, price, sends_email):
             ),
             'support@example.com',
         )
+        mock_user_sync.assert_called_once()
     else:
         assert hook.status == WebhookParseStatus.FAILED
         assert send_email.call_count == 0
+        mock_user_sync.assert_called_once()
 
 
 @pytest.mark.parametrize('body', [
@@ -300,7 +308,7 @@ def test_parse_webhook_user(mocker, price, sends_email):
     '{"user_id": null, "award": 1, "id": 1}',
     '{"user_id": 94379385, "award": "a", "id": 1}',
 ])
-def test_parse_failure(mocker, body):
+def test_parse_failure(mocker, body, mock_user_sync):
     """Test that a webhookrequest's status is set to FAILED if it cannot be parsed"""
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
     ProfileFactory(smapply_id=94379385)
@@ -314,9 +322,10 @@ def test_parse_failure(mocker, body):
     request = WebhookRequestSMA(body=body)
     parse_webhook(request)
     assert request.status == WebhookParseStatus.FAILED
+    mock_user_sync.assert_not_called()
 
 
-def test_sync_demographics(mocker):
+def test_sync_demographics(mocker, mock_user_sync):
     """Test that a profile's demographics is set when on webhook receive"""
     user_id = 94379385
     submission_id = 4533767
@@ -357,9 +366,10 @@ def test_sync_demographics(mocker):
     profile.refresh_from_db()
     assert profile.smapply_demographic_data == demographics_task
     logger.assert_called_once()  # Once from mailgun but never from the rest of the code
+    mock_user_sync.assert_called_once()
 
 
-def test_sync_demographics_error(mocker):
+def test_sync_demographics_error(mocker, mock_user_sync):
     """Test that an error is logged when an application is missing the demographics task"""
     user_id = 94379385
     submission_id = 4533767
@@ -400,6 +410,7 @@ def test_sync_demographics_error(mocker):
     profile.refresh_from_db()
     assert profile.smapply_demographic_data is None
     assert logger.call_count == 2  # Once for mailgun error, once for missing demographics data
+    mock_user_sync.assert_called_once()
 
 
 def test_list_users(mocker):

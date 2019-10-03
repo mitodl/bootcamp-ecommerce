@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'mail',
     'klasses',
     'profiles',
+    'hubspot',
 )
 
 DISABLE_WEBPACK_LOADER_STATS = get_var("DISABLE_WEBPACK_LOADER_STATS", False)
@@ -538,3 +539,6 @@ MANDATORY_SETTINGS = [
     'FLUIDREVIEW_ACCESS_TOKEN',
     'FLUIDREVIEW_REFRESH_TOKEN'
 ]
+
+HUBSPOT_API_KEY = get_var('HUBSPOT_API_KEY', '')
+HUBSPOT_ID_PREFIX = get_var('HUBSPOT_ID_PREFIX', 'bootcamp')
