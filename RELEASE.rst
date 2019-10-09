@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.28.0
+Version 0.28.0 (Released October 09, 2019)
 --------------
 
 - Sync user demographics when app receives webhooks (#300)
