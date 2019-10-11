@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.29.0
+--------------
+
+- Hubspot contact sync (#303)
+
 Version 0.28.0 (Released October 09, 2019)
 --------------
 
