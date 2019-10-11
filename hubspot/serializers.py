@@ -108,3 +108,9 @@ class HubspotProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['smapply_id']
+
+class HubspotBootcampSerializer(serializers.ModelSerializer):
+    pass
+
+class HubspotKlassSerializer(serializers.ModelSerializer):
+    pass

@@ -15,7 +15,7 @@ from hubspot.api import (
     get_sync_errors,
     hubspot_timestamp,
     parse_hubspot_id,
-)
+    make_product_sync_message, make_deal_sync_message)
 from hubspot.models import HubspotErrorCheck
 
 
@@ -30,6 +30,20 @@ def sync_contact_with_hubspot(profile_id):
     """Send a sync-message to sync a user with a hubspot contact"""
     body = make_contact_sync_message(profile_id)
     response = send_hubspot_request("CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body)
+    response.raise_for_status()
+
+@app.task
+def sync_product_with_hubspot(bootcamp_id):
+    """Send a sync-message to sync a user with a hubspot product"""
+    body = make_product_sync_message(bootcamp_id)
+    response = send_hubspot_request("PRODUCT", HUBSPOT_SYNC_URL, "PUT", body=body)
+    response.raise_for_status()
+
+@app.task
+def sync_deal_with_hubspot(klass_id):
+    """Send a sync-message to sync a user with a hubspot deal"""
+    body = make_deal_sync_message(klass_id)
+    response = send_hubspot_request("DEAL", HUBSPOT_SYNC_URL, "PUT", body=body)
     response.raise_for_status()
 
 
