@@ -38,7 +38,7 @@ sma_user = {
 @pytest.fixture()
 def mock_user_sync(mocker):
     """ Yield a mock hubspot update task for contacts """
-    yield mocker.patch("hubspot.tasks.sync_contact_with_hubspot.delay")
+    yield mocker.patch("hubspot.task_helpers.sync_hubspot_user")
 
 
 class MockGet:
