@@ -1,6 +1,7 @@
 """
 SMApply API backend
 """
+import copy
 import json
 import logging
 
@@ -184,6 +185,43 @@ class SMApplyAPI:
         return response
 
 
+class SMApplyTaskCache:
+    """
+    Object to cache task data for bulk contact sync.
+    """
+    def __init__(self):
+        self.smapi = SMApplyAPI()
+        self.task_cache = {}
+
+    def get_task(self, task_id):
+        """
+        Takes a task_id and gets the task data from the test_cache if it exists,
+        otherwise it pulls the task data smapply and formats it for easier use.
+
+        Args:
+            task_id(int): The smapply id of the task to look up
+        """
+        if task_id in self.task_cache:
+            # If the task has already been pulled
+            return self.task_cache[task_id]
+        else:
+            task = self.smapi.get(f'tasks/{task_id}').json()
+            task_data = task['fields']
+            for data in task_data.values():
+                # Modify format of choices for easier lookup
+                if 'choices' in data:
+                    choices = data.pop('choices')
+                    data['choices'] = {
+                        c['index']: c['label'] for c in choices
+                    }
+            task_data = {
+                data['name']: {**data, 'key': key} for key, data in task_data.items()
+            }
+
+            self.task_cache[task_id] = task_data
+            return copy.deepcopy(task_data)
+
+
 def process_user(sma_user):
     """
     Create/update User and Profile model objects based on SMApply user info
@@ -256,6 +294,9 @@ def parse_webhook_user(webhook):
     except MissingTaskNameException:
         # Log error instead of stopping execution with an exception
         log.exception('Demographics form name was not found within application tasks')
+
+    from hubspot.task_helpers import sync_hubspot_user
+    sync_hubspot_user(user.profile)
 
     if webhook.award_id is not None:
         application_meta = SMApplyAPI().get('/applications/{}/'.format(
