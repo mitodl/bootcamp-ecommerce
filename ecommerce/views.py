@@ -28,6 +28,7 @@ from ecommerce.models import (
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
 from fluidreview.api import post_payment as post_payment_fluid
+from hubspot.task_helpers import sync_hubspot_deal_from_order
 from smapply.api import post_payment as post_payment_sma
 from klasses.constants import ApplicationSource
 from mail.api import MailgunClient
@@ -54,6 +55,10 @@ class PaymentView(CreateAPIView):
         klass_key = serializer.data['klass_key']
 
         order = create_unfulfilled_order(self.request.user, klass_key, payment_amount)
+
+        # Sync order data with hubspot
+        sync_hubspot_deal_from_order(order)
+
         redirect_url = self.request.build_absolute_uri(reverse('bootcamp-index'))
 
         return Response({
@@ -126,6 +131,9 @@ class OrderFulfillmentView(APIView):
                 post_payment_sma(order)
         except:  # pylint: disable=bare-except
             log.exception('Error occurred posting payment to FluidReview for order %s', order)
+
+        # Sync order data with hubspot
+        sync_hubspot_deal_from_order(order)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)

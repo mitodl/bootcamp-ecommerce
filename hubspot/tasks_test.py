@@ -10,7 +10,7 @@ from faker import Faker
 
 from hubspot.api import (
     make_contact_sync_message,
-)
+    make_product_sync_message, make_deal_sync_message, make_line_sync_message)
 from hubspot.conftest import TIMESTAMPS
 from hubspot.factories import HubspotErrorCheckFactory
 from hubspot.models import HubspotErrorCheck
@@ -18,7 +18,8 @@ from hubspot.tasks import (
     sync_contact_with_hubspot,
     HUBSPOT_SYNC_URL,
     check_hubspot_api_errors,
-)
+    sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot)
+from klasses.factories import BootcampFactory, PersonalPriceFactory
 from profiles.factories import ProfileFactory
 
 pytestmark = [pytest.mark.django_db]
@@ -42,6 +43,47 @@ def test_sync_contact_with_hubspot(mock_hubspot_request):
     body[0]["changeOccurredTimestamp"] = ANY
     mock_hubspot_request.assert_called_once_with(
         "CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body
+    )
+
+
+def test_sync_product_with_hubspot(mock_hubspot_request):
+    """Test that send_hubspot_request is called properly for a PRODUCT sync"""
+    bootcamp = BootcampFactory.create()
+    sync_product_with_hubspot(bootcamp.id)
+    body = make_product_sync_message(bootcamp.id)
+    body[0]["changeOccurredTimestamp"] = ANY
+    mock_hubspot_request.assert_called_once_with(
+        "PRODUCT", HUBSPOT_SYNC_URL, "PUT", body=body
+    )
+
+
+def test_sync_deal_with_hubspot(mock_hubspot_request):
+    """Test that send_hubspot_request is called properly for a DEAL sync"""
+    profile = ProfileFactory.create(smapply_id=102132)
+    personal_price = PersonalPriceFactory.create()
+    profile.user = personal_price.user
+    profile.save()
+
+    sync_deal_with_hubspot(personal_price.id)
+    body = make_deal_sync_message(personal_price.id)
+    body[0]["changeOccurredTimestamp"] = ANY
+    mock_hubspot_request.assert_called_once_with(
+        "DEAL", HUBSPOT_SYNC_URL, "PUT", body=body
+    )
+
+
+def test_sync_line_with_hubspot(mock_hubspot_request):
+    """Test that send_hubspot_request is called properly for a LINE sync"""
+    profile = ProfileFactory.create(smapply_id=102132)
+    personal_price = PersonalPriceFactory.create()
+    profile.user = personal_price.user
+    profile.save()
+
+    sync_line_with_hubspot(personal_price.id)
+    body = make_line_sync_message(personal_price.id)
+    body[0]["changeOccurredTimestamp"] = ANY
+    mock_hubspot_request.assert_called_once_with(
+        "LINE_ITEM", HUBSPOT_SYNC_URL, "PUT", body=body
     )
 
 

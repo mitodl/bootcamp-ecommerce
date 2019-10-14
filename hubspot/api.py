@@ -11,9 +11,9 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 
-from hubspot.serializers import HubspotProfileSerializer, HubspotBootcampSerializer, \
-    HubspotKlassSerializer
-from klasses.models import Klass, Bootcamp
+from hubspot.serializers import HubspotProfileSerializer, HubspotProductSerializer, \
+    HubspotDealSerializer, HubspotLineSerializer
+from klasses.models import Bootcamp, PersonalPrice
 from profiles.models import Profile
 
 
@@ -230,16 +230,51 @@ def make_contact_sync_message(profile_id, task_cache=None):
     properties = HubspotProfileSerializer(instance=profile, task_cache=task_cache).data
     return [make_sync_message(profile.id, properties)]
 
-def make_product_sync_message(bootcamp_id, task_cache=None):
+
+def make_product_sync_message(bootcamp_id):
+    """
+    Create the body of a sync message for a product.
+
+    Args:
+        bootcamp_id (int): Bootcamp id
+
+    Returns:
+        list: dict containing serializable sync-message data
+    """
     bootcamp = Bootcamp.objects.get(id=bootcamp_id)
-    properties = HubspotBootcampSerializer(instance=bootcamp, task_cache=task_cache).data
+    properties = HubspotProductSerializer(instance=bootcamp).data
     return [make_sync_message(bootcamp.id, properties)]
 
 
-def make_deal_sync_message(klass_id, task_cache=None):
-    klass = Klass.objects.get(id=klass_id)
-    properties = HubspotKlassSerializer(instance=klass, task_cache=task_cache).data
-    return [make_sync_message(klass.id, properties)]
+def make_deal_sync_message(personal_price_id):
+    """
+    Create the body of a sync message for a deal.
+
+    Args:
+        personal_price_id (int): Personal Price id
+
+    Returns:
+        list: dict containing serializable sync-message data
+    """
+    personal_price = PersonalPrice.objects.get(id=personal_price_id)
+    properties = HubspotDealSerializer(instance=personal_price).data
+    return [make_sync_message(personal_price.id, properties)]
+
+
+def make_line_sync_message(personal_price_id):
+    """
+    Create the body of a sync message for a Line Item.
+
+    Args:
+        personal_price_id (int): Personal Price id
+
+    Returns:
+        list: dict containing serializable sync-message data
+    """
+    personal_price = PersonalPrice.objects.get(id=personal_price_id)
+    properties = HubspotLineSerializer(instance=personal_price).data
+    properties['quantity'] = 1
+    return [make_sync_message(personal_price.id, properties)]
 
 
 def sync_object_property(object_type, property_dict):

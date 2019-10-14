@@ -11,21 +11,21 @@ from hubspot.api import (
     send_hubspot_request,
     make_product_sync_message,
     make_deal_sync_message,
-)
+    make_line_sync_message)
 from hubspot.tasks import HUBSPOT_SYNC_URL
 from klasses.constants import ApplicationSource
-from klasses.models import PersonalPrice, Bootcamp, Klass
+from klasses.models import PersonalPrice, Bootcamp
 from profiles.models import Profile
 from smapply.api import SMApplyTaskCache
 
 
 class Command(BaseCommand):
     """
-    Command to sync all Users, Orders, Products, and Lines with Hubspot
+    Command to sync Contact, Product, and Deal information with Hubspot
     """
 
     help = (
-        "Sync all Users, Orders, Products, and Lines with Hubspot. Hubspot API key must be set and Hubspot settings"
+        "Sync all Contacts, Deals, and Products with Hubspot. Hubspot API key must be set and Hubspot settings"
         "must be configured with configure_hubspot_settings"
     )
 
@@ -75,30 +75,24 @@ class Command(BaseCommand):
 
     def sync_products(self):
         """
-        Sync all products with products in hubspot
+        Sync all Bootcamps with products in hubspot
         """
         print("  Syncing products with hubspot products...")
-        task_cache = SMApplyTaskCache()
         self.bulk_sync_model(
             Bootcamp.objects.filter(klasses__source=ApplicationSource.SMAPPLY),
             make_product_sync_message,
             "PRODUCT",
-            task_cache=task_cache,
         )
         print("  Finished")
 
     def sync_deals(self):
         """
-        Sync all orders with deals in hubspot
+        Sync all deals with deals in hubspot. Hubspot deal information is stored in both PersonalPrice
+        and the ecommerce Order
         """
         print("  Syncing orders with hubspot deals...")
-        task_cache = SMApplyTaskCache()
-        self.bulk_sync_model(
-            Klass.objects.filter(source=ApplicationSource.SMAPPLY),
-            make_deal_sync_message,
-            "DEAL",
-            task_cache=task_cache,
-        )
+        self.bulk_sync_model(PersonalPrice.objects.all(), make_deal_sync_message, "DEAL")
+        self.bulk_sync_model(PersonalPrice.objects.all(), make_line_sync_message, "LINE_ITEM")
         print("  Finished")
 
     def sync_all(self):
@@ -120,15 +114,36 @@ class Command(BaseCommand):
             action="store_true",
             help="Sync all users",
         )
+        parser.add_argument(
+            "--products",
+            dest="sync_products",
+            action="store_true",
+            help="Sync all products",
+        )
+        parser.add_argument(
+            "--deals",
+            "--orders",
+            dest="sync_deals",
+            action="store_true",
+            help="Sync all orders",
+        )
 
     def handle(self, *args, **options):
         print("Syncing with hubspot...")
-        if not (options["sync_contacts"]):
+        if not (
+            options["sync_contacts"] or
+            options["sync_products"] or
+            options["sync_deals"]
+        ):
             # If no flags are set, sync everything
             self.sync_all()
         else:
             # If some flags are set, sync the specified models
             if options["sync_contacts"]:
                 self.sync_contacts()
+            if options["sync_products"]:
+                self.sync_products()
+            if options["sync_deals"]:
+                self.sync_deals()
 
         print("Hubspot sync complete")

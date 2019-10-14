@@ -2,6 +2,7 @@
 from django.conf import settings
 
 from hubspot import tasks
+from klasses.models import PersonalPrice
 
 
 def sync_hubspot_user(profile):
@@ -15,23 +16,41 @@ def sync_hubspot_user(profile):
         tasks.sync_contact_with_hubspot.delay(profile.id)
 
 
-def sync_hubspot_deal(klass):
+def sync_hubspot_deal(personal_price):
     """
-    Trigger celery task to sync an order to Hubspot if it has lines
+    Trigger celery task to sync a deal to Hubspot
+
+    Args:
+        personal_price (PersonalPrice): The PersonalPrice to sync
+    """
+    if settings.HUBSPOT_API_KEY:
+        tasks.sync_deal_with_hubspot.delay(personal_price.id)
+        tasks.sync_line_with_hubspot.delay(personal_price.id)
+
+
+def sync_hubspot_deal_from_order(order):
+    """
+    Trigger celery task to sync a deal from an order to Hubspot
 
     Args:
         order (Order): The order to sync
     """
-    if settings.HUBSPOT_API_KEY:
-        tasks.sync_deal_with_hubspot.delay(klass.id)
+    try:
+        personal_price = PersonalPrice.objects.get(
+            user=order.user,
+            klass=order.get_klass()  # Under tha assumption that its one klass per order
+        )
+        sync_hubspot_deal(personal_price)
+    except PersonalPrice.DoesNotExist:
+        pass  # TODO: What happens here
 
 
 def sync_hubspot_product(bootcamp):
     """
-    Trigger celery task to sync a Line to Hubspot
+    Trigger celery task to sync a Bootcamp to Hubspot
 
     Args:
-        line (Line): The line to sync
+        bootcamp (Bootcamp): The Bootcamp to sync
     """
     if settings.HUBSPOT_API_KEY:
-        tasks.sync_bootcamp_with_hubspot.delay(bootcamp.id)
+        tasks.sync_product_with_hubspot.delay(bootcamp.id)

@@ -158,12 +158,60 @@ CUSTOM_ECOMMERCE_PROPERTIES = {
 
 HUBSPOT_ECOMMERCE_SETTINGS = {
     "enabled": True,
+    "productSyncSettings": {
+        "properties": [
+            {
+                "propertyName": "title",
+                "targetHubspotProperty": "name",
+                "dataType": "STRING",
+            },
+        ]
+    },
     "dealSyncSettings": {
         "properties": [
+            {
+                "propertyName": "name",
+                "targetHubspotProperty": "dealname",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "price",
+                "targetHubspotProperty": "amount",
+                "dataType": "NUMBER",
+            },
+            {
+                "propertyName": "close_date",
+                "targetHubspotProperty": "closedate",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "purchaser",
+                "targetHubspotProperty": "hs_assoc__contact_ids",
+                "dataType": "STRING",
+            },
             {
                 "propertyName": "status",
                 "targetHubspotProperty": "dealstage",
                 "dataType": "STRING",
+            },
+        ]
+    },
+    "lineItemSyncSettings": {
+        "properties": [
+            {
+                "propertyName": "order",
+                "targetHubspotProperty": "hs_assoc__deal_id",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "product",
+                "targetHubspotProperty": "hs_assoc__product_id",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "quantity",
+                "targetHubspotProperty": "quantity",
+                "dataType": "NUMBER",
             },
         ]
     },

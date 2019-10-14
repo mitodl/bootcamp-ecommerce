@@ -319,6 +319,11 @@ def parse_webhook_user(webhook):
                 )
             klass_info = SMApplyAPI().get('/programs/{}'.format(webhook.award_id)).json()
             bootcamp = Bootcamp.objects.create(title=klass_info['name'])
+
+            # Sync the newly created bootcamp
+            from hubspot.task_helpers import sync_hubspot_product
+            sync_hubspot_product(bootcamp)
+
             klass = Klass.objects.create(
                 bootcamp=bootcamp,
                 source=ApplicationSource.SMAPPLY,
@@ -344,10 +349,13 @@ def parse_webhook_user(webhook):
                     klass_info['id']
                 )
         if personal_price:
-            user.klass_prices.update_or_create(
+            personal_price = user.klass_prices.update_or_create(
                 klass=klass,
                 defaults={'price': personal_price, 'application_stage': application_stage['title']}
-            )
+            )[0]
+            # Sync the personal price
+            from hubspot.task_helpers import sync_hubspot_deal
+            sync_hubspot_deal(personal_price)
         else:
             user.klass_prices.filter(klass=klass).delete()
 
