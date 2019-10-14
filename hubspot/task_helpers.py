@@ -1,6 +1,7 @@
 """ Task helper functions for ecommerce """
 from django.conf import settings
 
+from ecommerce.models import Order
 from hubspot import tasks
 from klasses.models import PersonalPrice
 
@@ -35,6 +36,11 @@ def sync_hubspot_deal_from_order(order):
     Args:
         order (Order): The order to sync
     """
+
+    if not isinstance(order, Order):
+        # Some tests cause order to be a string.
+        return
+
     try:
         personal_price = PersonalPrice.objects.get(
             user=order.user,
@@ -42,7 +48,7 @@ def sync_hubspot_deal_from_order(order):
         )
         sync_hubspot_deal(personal_price)
     except PersonalPrice.DoesNotExist:
-        pass  # TODO: What happens here
+        pass
 
 
 def sync_hubspot_product(bootcamp):
