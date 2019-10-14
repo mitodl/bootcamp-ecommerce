@@ -45,15 +45,6 @@ demo_sync_fields = {
 }
 
 
-# This was taken from xpro
-ORDER_STATUS_MAPPING = {
-    Order.FULFILLED: "processed",
-    Order.FAILED: "checkout_completed",
-    Order.CREATED: "checkout_completed",
-    Order.REFUNDED: "processed",
-}
-
-
 class HubspotContactSerializer(serializers.ModelSerializer):
     """
     Serializer for outputting Profile objects in a suitable form for hubspot sync
@@ -154,14 +145,23 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Populate order data
         data = super().to_representation(instance)
-        try:
-            order = Order.objects.get(user=instance.user, line__klass_key=instance.klass.klass_key)
-            # If order exists, use the xpro status mapping
-            data['status'] = ORDER_STATUS_MAPPING[order.status]
-            data['total_price_paid'] = order.total_price_paid
-        except Order.DoesNotExist:
-            # Otherwise set to checkout_pending
+
+        orders = Order.objects.filter(user=instance.user, line__klass_key=instance.klass.klass_key)
+        if orders.exists():
+            amount_paid = 0.0
+            for order in orders:
+                amount_paid += order.total_price_paid
+
+            data['total_price_paid'] = amount_paid
+            if amount_paid >= instance.price:
+                data['status'] = 'shipped'
+            elif amount_paid > 0:
+                data['status'] = 'processed'
+            else:
+                data['status'] = 'checkout_completed'
+        else:
             data['status'] = 'checkout_pending'
+
         return data
 
     class Meta:
