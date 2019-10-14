@@ -79,7 +79,7 @@ class Command(BaseCommand):
         """
         print("  Syncing products with hubspot products...")
         self.bulk_sync_model(
-            Bootcamp.objects.filter(klasses__source=ApplicationSource.SMAPPLY),
+            Bootcamp.objects.filter(klass__source=ApplicationSource.SMAPPLY),
             make_product_sync_message,
             "PRODUCT",
         )
