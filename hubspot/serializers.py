@@ -2,6 +2,7 @@
 Serializers for hubspot
 """
 import logging
+from decimal import Decimal
 
 from rest_framework import serializers
 
@@ -42,15 +43,6 @@ demo_sync_fields = {
     'Highest Level of Education': 'highest_education',
     'Linkedin profile URL': 'linkedin_profile',
     'Liability Release & Waiver': 'liability_release',
-}
-
-
-# This was taken from xpro
-ORDER_STATUS_MAPPING = {
-    Order.FULFILLED: "processed",
-    Order.FAILED: "checkout_completed",
-    Order.CREATED: "checkout_completed",
-    Order.REFUNDED: "processed",
 }
 
 
@@ -154,14 +146,24 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Populate order data
         data = super().to_representation(instance)
-        try:
-            order = Order.objects.get(user=instance.user, line__klass_key=instance.klass.klass_key)
-            # If order exists, use the xpro status mapping
-            data['status'] = ORDER_STATUS_MAPPING[order.status]
-            data['total_price_paid'] = order.total_price_paid
-        except Order.DoesNotExist:
-            # Otherwise set to checkout_pending
+
+        orders = Order.objects.filter(user=instance.user, line__klass_key=instance.klass.klass_key)
+        if orders.exists():
+            amount_paid = Decimal(0)
+            for order in orders:
+                if order.status == Order.FULFILLED:
+                    amount_paid += order.total_price_paid
+
+            data['total_price_paid'] = amount_paid.to_eng_string()
+            if amount_paid >= instance.price:
+                data['status'] = 'shipped'
+            elif amount_paid > 0:
+                data['status'] = 'processed'
+            else:
+                data['status'] = 'checkout_completed'
+        else:
             data['status'] = 'checkout_pending'
+
         return data
 
     class Meta:
