@@ -54,7 +54,7 @@ ORDER_STATUS_MAPPING = {
 }
 
 
-class HubspotProfileSerializer(serializers.ModelSerializer):
+class HubspotContactSerializer(serializers.ModelSerializer):
     """
     Serializer for outputting Profile objects in a suitable form for hubspot sync
     """

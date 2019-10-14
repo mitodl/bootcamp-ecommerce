@@ -13,7 +13,7 @@ from requests import HTTPError
 
 from hubspot import api
 
-from hubspot.serializers import HubspotProfileSerializer
+from hubspot.serializers import HubspotContactSerializer
 from profiles.factories import ProfileFactory
 
 fake = Faker()
@@ -129,7 +129,7 @@ def test_make_contact_sync_message():
     """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
     profile = ProfileFactory.create(smapply_id=123456)
     contact_sync_message = api.make_contact_sync_message(profile.id)
-    serialized_profile = HubspotProfileSerializer(instance=profile).data
+    serialized_profile = HubspotContactSerializer(instance=profile).data
     assert contact_sync_message == [
         {
             "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.id),

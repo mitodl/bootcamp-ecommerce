@@ -11,7 +11,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 
-from hubspot.serializers import HubspotProfileSerializer, HubspotProductSerializer, \
+from hubspot.serializers import HubspotContactSerializer, HubspotProductSerializer, \
     HubspotDealSerializer, HubspotLineSerializer
 from klasses.models import Bootcamp, PersonalPrice
 from profiles.models import Profile
@@ -227,7 +227,7 @@ def make_contact_sync_message(profile_id, task_cache=None):
     """
 
     profile = Profile.objects.get(id=profile_id)
-    properties = HubspotProfileSerializer(instance=profile, task_cache=task_cache).data
+    properties = HubspotContactSerializer(instance=profile, task_cache=task_cache).data
     return [make_sync_message(profile.id, properties)]
 
 
