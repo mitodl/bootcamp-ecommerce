@@ -31,6 +31,14 @@ CUSTOM_ECOMMERCE_PROPERTIES = {
                 'name': 'total_price_paid',
                 'type': 'number'
             },
+            {
+                'description': 'The current stage of the application',
+                'fieldType': 'text',
+                'groupName': 'dealinformation',
+                'label': 'Application Stage',
+                'name': 'application_stage',
+                'type': 'string'
+            },
         ]
     },
     "contacts": {
@@ -210,6 +218,11 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
             {
                 "propertyName": "status",
                 "targetHubspotProperty": "dealstage",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "application_stage",
+                "targetHubspotProperty": "application_stage",
                 "dataType": "STRING",
             },
         ]
