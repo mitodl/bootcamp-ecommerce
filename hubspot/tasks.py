@@ -115,5 +115,5 @@ def retry_invalid_line_associations():
             hubspot_line_resync.delete()
             continue
 
-        if exists_in_hubspot("DEAL", hubspot_line_resync.line.order_id):
+        if exists_in_hubspot("DEAL", hubspot_line_resync.personal_price.order_id):
             sync_line_with_hubspot(hubspot_line_resync.personal_price.id)
