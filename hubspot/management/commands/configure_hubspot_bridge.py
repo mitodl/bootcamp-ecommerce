@@ -20,6 +20,19 @@ from hubspot.api import (
 # See https://developers.hubspot.com/docs/methods/ecomm-bridge/ecomm-bridge-overview for more details
 
 CUSTOM_ECOMMERCE_PROPERTIES = {
+    "deals": {
+        "groups": [],
+        "properties": [
+            {
+                'description': 'Total price paid for the order.',
+                'fieldType': 'text',
+                'groupName': 'dealinformation',
+                'label': 'Total price paid',
+                'name': 'total_price_paid',
+                'type': 'number'
+            },
+        ]
+    },
     "contacts": {
         "groups": [],
         "properties": [
@@ -177,6 +190,11 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
             {
                 "propertyName": "price",
                 "targetHubspotProperty": "amount",
+                "dataType": "NUMBER",
+            },
+            {
+                "propertyName": "total_price_paid",
+                "targetHubspotProperty": "total_price_paid",
                 "dataType": "NUMBER",
             },
             {

@@ -158,6 +158,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
             order = Order.objects.get(user=instance.user, line__klass_key=instance.klass.klass_key)
             # If order exists, use the xpro status mapping
             data['status'] = ORDER_STATUS_MAPPING[order.status]
+            data['total_price_paid'] = order.total_price_paid
         except Order.DoesNotExist:
             # Otherwise set to checkout_pending
             data['status'] = 'checkout_pending'
