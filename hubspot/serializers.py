@@ -151,7 +151,8 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         if orders.exists():
             amount_paid = 0.0
             for order in orders:
-                amount_paid += order.total_price_paid
+                if order.status == Order.FULFILLED:
+                    amount_paid += order.total_price_paid
 
             data['total_price_paid'] = Decimal(amount_paid).to_eng_string()
             if amount_paid >= instance.price:
