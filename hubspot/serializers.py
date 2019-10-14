@@ -149,12 +149,12 @@ class HubspotDealSerializer(serializers.ModelSerializer):
 
         orders = Order.objects.filter(user=instance.user, line__klass_key=instance.klass.klass_key)
         if orders.exists():
-            amount_paid = 0.0
+            amount_paid = Decimal(0)
             for order in orders:
                 if order.status == Order.FULFILLED:
                     amount_paid += order.total_price_paid
 
-            data['total_price_paid'] = Decimal(amount_paid).to_eng_string()
+            data['total_price_paid'] = amount_paid.to_eng_string()
             if amount_paid >= instance.price:
                 data['status'] = 'shipped'
             elif amount_paid > 0:
