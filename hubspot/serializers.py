@@ -45,6 +45,7 @@ demo_sync_fields = {
 }
 
 
+# This was taken from xpro
 ORDER_STATUS_MAPPING = {
     Order.FULFILLED: "processed",
     Order.FAILED: "checkout_completed",
@@ -155,8 +156,10 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         try:
             order = Order.objects.get(user=instance.user, line__klass_key=instance.klass.klass_key)
+            # If order exists, use the xpro status mapping
             data['status'] = ORDER_STATUS_MAPPING[order.status]
         except Order.DoesNotExist:
+            # Otherwise set to checkout_pending
             data['status'] = 'checkout_pending'
         return data
 
