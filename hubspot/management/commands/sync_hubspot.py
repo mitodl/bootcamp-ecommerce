@@ -13,7 +13,6 @@ from hubspot.api import (
     make_deal_sync_message,
     make_line_sync_message)
 from hubspot.tasks import HUBSPOT_SYNC_URL
-from klasses.constants import ApplicationSource
 from klasses.models import PersonalPrice, Bootcamp
 from profiles.models import Profile
 from smapply.api import SMApplyTaskCache
