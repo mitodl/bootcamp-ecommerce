@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.30.0
+--------------
+
+- Sync hubspot products, deals, and lines
+
 Version 0.29.0 (Released October 14, 2019)
 --------------
 
