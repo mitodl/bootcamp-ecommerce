@@ -2,6 +2,7 @@
 Serializers for hubspot
 """
 import logging
+from decimal import Decimal
 
 from rest_framework import serializers
 
@@ -152,7 +153,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
             for order in orders:
                 amount_paid += order.total_price_paid
 
-            data['total_price_paid'] = amount_paid
+            data['total_price_paid'] = Decimal(amount_paid).to_eng_string()
             if amount_paid >= instance.price:
                 data['status'] = 'shipped'
             elif amount_paid > 0:
