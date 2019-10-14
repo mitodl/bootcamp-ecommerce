@@ -5,6 +5,8 @@ import logging
 
 from rest_framework import serializers
 
+from ecommerce.models import Order
+from klasses.models import Bootcamp, PersonalPrice
 from profiles.models import Profile
 from smapply.api import SMApplyTaskCache
 
@@ -43,7 +45,16 @@ demo_sync_fields = {
 }
 
 
-class HubspotProfileSerializer(serializers.ModelSerializer):
+# This was taken from xpro
+ORDER_STATUS_MAPPING = {
+    Order.FULFILLED: "processed",
+    Order.FAILED: "checkout_completed",
+    Order.CREATED: "checkout_completed",
+    Order.REFUNDED: "processed",
+}
+
+
+class HubspotContactSerializer(serializers.ModelSerializer):
     """
     Serializer for outputting Profile objects in a suitable form for hubspot sync
     """
@@ -108,3 +119,73 @@ class HubspotProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['smapply_id']
+
+
+class HubspotProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for turning a Bootcamp into a hubspot Product
+    """
+    class Meta:
+        model = Bootcamp
+        fields = ['title']
+
+
+class HubspotDealSerializer(serializers.ModelSerializer):
+    """
+    Serializer for turning a PersonalPrice into a hubspot deal
+    """
+    name = serializers.SerializerMethodField()
+    purchaser = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+
+    def get_name(self, instance):
+        """Get a formatted name for the deal"""
+        return f"Bootcamp-application-{instance.id}"
+
+    def get_purchaser(self, instance):
+        """Get the id of the associated user"""
+        from hubspot.api import format_hubspot_id
+        return format_hubspot_id(instance.user.profile.id)
+
+    def get_price(self, instance):
+        """Get a string of the price"""
+        return instance.price.to_eng_string()
+
+    def to_representation(self, instance):
+        # Populate order data
+        data = super().to_representation(instance)
+        try:
+            order = Order.objects.get(user=instance.user, line__klass_key=instance.klass.klass_key)
+            # If order exists, use the xpro status mapping
+            data['status'] = ORDER_STATUS_MAPPING[order.status]
+            data['total_price_paid'] = order.total_price_paid
+        except Order.DoesNotExist:
+            # Otherwise set to checkout_pending
+            data['status'] = 'checkout_pending'
+        return data
+
+    class Meta:
+        model = PersonalPrice
+        fields = ['name', 'application_stage', 'price', 'purchaser']
+
+
+class HubspotLineSerializer(serializers.ModelSerializer):
+    """
+    Serializer for turning a PersonalPrice into a hubspot line item
+    """
+    order = serializers.SerializerMethodField()
+    product = serializers.SerializerMethodField()
+
+    def get_order(self, instance):
+        """Get the id of the associated deal"""
+        from hubspot.api import format_hubspot_id
+        return format_hubspot_id(instance.id)
+
+    def get_product(self, instance):
+        """Get the id of the associated Bootcamp"""
+        from hubspot.api import format_hubspot_id
+        return format_hubspot_id(instance.klass.bootcamp.id)
+
+    class Meta:
+        model = PersonalPrice
+        fields = ['order', 'product']
