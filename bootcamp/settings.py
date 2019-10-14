@@ -450,6 +450,13 @@ CELERY_BEAT_SCHEDULE = {
             900,
         )),
     },
+    "check-for-hubspot-sync-errors": {
+        "task": "hubspot.tasks.check_hubspot_api_errors",
+        "schedule": int(get_var(
+            "HUBSPOT_LINE_RESYNC_FREQUENCY",
+            900,
+        )),
+    },
 }
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
