@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.30.1
+Version 0.30.1 (Released October 15, 2019)
 --------------
 
 - Skip contact sync if message does not include email. Sync contact during smapply sync task (#314)
