@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.30.0
+--------------
+
+- Fix attribute error (#312)
+- Fix management command and handles multiple orders (#311)
+- Add application stage field to hubspot deal (#310)
+- Sync hubspot products, deals, and lines
+
 Version 0.29.0 (Released October 14, 2019)
 --------------
 
