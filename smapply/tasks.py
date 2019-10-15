@@ -1,5 +1,6 @@
 """Tasks for smapply"""
 from bootcamp.celery import app
+from hubspot.task_helpers import sync_hubspot_user
 from smapply.serializers import UserSerializer
 from smapply.api import list_users, process_user
 from profiles.models import Profile
@@ -18,3 +19,5 @@ def sync_all_users():
                 user = process_user(serializer.data)
                 user.profile.smapply_user_data = sma_user
                 user.profile.save()
+
+                sync_hubspot_user(user.profile)

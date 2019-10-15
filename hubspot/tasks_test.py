@@ -33,10 +33,11 @@ def mock_hubspot_request(mocker):
     yield mocker.patch("hubspot.tasks.send_hubspot_request", autospec=True)
 
 
-def test_sync_contact_with_hubspot(mock_hubspot_request):
+def test_sync_contact_with_hubspot(mock_hubspot_request, user_data):
     """Test that send_hubspot_request is called properly for a CONTACT sync"""
     profile = ProfileFactory.create()
     profile.smapply_id = 102132
+    profile.smapply_user_data = user_data
     profile.save()
     sync_contact_with_hubspot(profile.id)
     body = make_contact_sync_message(profile.id)
