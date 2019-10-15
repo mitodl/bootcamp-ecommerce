@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.30.0
+Version 0.30.0 (Released October 15, 2019)
 --------------
 
 - Fix attribute error (#312)
