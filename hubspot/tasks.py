@@ -30,6 +30,9 @@ ASSOCIATED_DEAL_RE = re.compile(fr"\[hs_assoc__deal_id: (.+)\]")
 def sync_contact_with_hubspot(profile_id):
     """Send a sync-message to sync a user with a hubspot contact"""
     body = make_contact_sync_message(profile_id)
+    if not body[0].get('propertyNameToValues', {}).get('email'):
+        return  # Skip if message is missing required field
+
     response = send_hubspot_request("CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body)
     response.raise_for_status()
 

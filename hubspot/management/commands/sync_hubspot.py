@@ -41,6 +41,13 @@ class Command(BaseCommand):
         sync_messages = [
             make_object_sync_message(obj.id, **kwargs)[0] for obj in objects
         ]
+
+        if object_type == "CONTACT":
+            # Skip sync if message is missing required field
+            sync_messages = [
+                message for message in sync_messages if message.get('propertyNameToValues', {}).get('email')
+            ]
+
         while len(sync_messages) > 0:
             staged_messages = sync_messages[0:200]
             sync_messages = sync_messages[200:]
