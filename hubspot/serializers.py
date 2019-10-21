@@ -76,7 +76,7 @@ class HubspotContactSerializer(serializers.ModelSerializer):
                 if 'choices' in task_definition[field_name]:
                     # Lookup the response choice in the task definition dict of choices
                     response_id = responses[field_key]['response']
-                    if response_id:
+                    if response_id is not None:
                         if isinstance(response_id, list):
                             # Some responses are lists but only allow a single answer.
                             # I think this has to do with the questions using checkboxes, not radio buttons.
