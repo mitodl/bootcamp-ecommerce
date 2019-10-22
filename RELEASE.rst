@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.31.0
+--------------
+
+- Fix hubspot sync issues, update tests (#320)
+
 Version 0.30.1 (Released October 15, 2019)
 --------------
 
