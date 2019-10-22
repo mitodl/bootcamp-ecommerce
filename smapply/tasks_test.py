@@ -56,23 +56,6 @@ def test_sync_all_users_bad_data(mocker):
     assert Profile.objects.count() == 1
 
 
-def test_sync_existing_user_lacking_data(mocker):
-    """
-    Test that an already existing profile without smapply_user_data has that data populated during sync_all_users.
-    """
-    profile = ProfileFactory.create(smapply_id=12345678)
-
-    mocker.patch(
-        'smapply.tasks.list_users',
-        return_value=test_user_data,
-    )
-    sync_all_users()
-    assert Profile.objects.count() == 2
-
-    profile.refresh_from_db()
-    assert profile.smapply_user_data
-
-
 @pytest.mark.parametrize("sma_data", [None, {"foo": "bar"}])
 def test_sync_existing_user_data(mocker, sma_data):
     """
