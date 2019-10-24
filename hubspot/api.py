@@ -11,6 +11,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 
+from hubspot.decorators import try_again
 from hubspot.serializers import HubspotContactSerializer, HubspotProductSerializer, \
     HubspotDealSerializer, HubspotLineSerializer
 from klasses.models import Bootcamp, PersonalPrice
@@ -60,6 +61,7 @@ def parse_hubspot_id(hubspot_id):
     return int(match.group(1)) if match else None
 
 
+@try_again
 def send_hubspot_request(
     endpoint, api_url, method, body=None, query_params=None, **kwargs
 ):

@@ -7,6 +7,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from requests import HTTPError
 
 from bootcamp.celery import app
 
@@ -120,3 +121,45 @@ def retry_invalid_line_associations():
 
         if exists_in_hubspot("DEAL", hubspot_line_resync.personal_price.id):
             sync_line_with_hubspot(hubspot_line_resync.personal_price.id)
+
+
+def sync_bulk_with_hubspot(objects, make_object_sync_message, object_type, print_to_console=False, **kwargs):
+    """
+    Sync all database objects of a certain type with hubspot
+    Args:
+        objects (iterable) objects to sync
+        make_object_sync_message (function) function that takes an objectID and
+            returns a sync message for that model
+        object_type (str) one of "CONTACT", "DEAL", "PRODUCT", "LINE_ITEM"
+        print_to_console (bool) whether to print status messages to console
+    """
+    sync_messages = [
+        make_object_sync_message(obj.id, **kwargs)[0] for obj in objects
+    ]
+
+    if object_type == "CONTACT":
+        # Skip sync if message is missing required field
+        sync_messages = [
+            message for message in sync_messages if message.get('propertyNameToValues', {}).get('email')
+        ]
+
+    while len(sync_messages) > 0:
+        staged_messages = sync_messages[0:200]
+        sync_messages = sync_messages[200:]
+
+        if print_to_console:
+            print("    Sending sync message...")
+        response = send_hubspot_request(
+            object_type, HUBSPOT_SYNC_URL, "PUT", body=staged_messages
+        )
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            if print_to_console:
+                print(
+                    "    Sync message failed with status {} and message {}".format(
+                        response.status_code, response.json().get("message")
+                    )
+                )
+            else:
+                log.exception('Bulk sync failed for %s', object_type)

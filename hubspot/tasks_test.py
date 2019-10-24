@@ -2,11 +2,12 @@
 Tests for hubspot tasks
 """
 # pylint: disable=redefined-outer-name
-from unittest.mock import ANY
+from unittest.mock import ANY, Mock
 
 import pytest
 
 from faker import Faker
+from requests import HTTPError
 
 from hubspot.api import (
     make_contact_sync_message,
@@ -18,9 +19,10 @@ from hubspot.tasks import (
     sync_contact_with_hubspot,
     HUBSPOT_SYNC_URL,
     check_hubspot_api_errors,
-    sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot)
+    sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot, sync_bulk_with_hubspot)
 from klasses.factories import BootcampFactory, PersonalPriceFactory
 from profiles.factories import ProfileFactory
+from smapply.api import SMApplyTaskCache
 
 pytestmark = [pytest.mark.django_db]
 
@@ -124,3 +126,34 @@ def test_skip_error_checks(settings, mock_hubspot_errors):
     settings.HUBSPOT_API_KEY = None
     check_hubspot_api_errors()
     assert mock_hubspot_errors.call_count == 0
+
+
+def test_sync_bulk(mocker):
+    """Test the hubspot bulk sync function"""
+    mock_request = mocker.patch('hubspot.tasks.send_hubspot_request')
+    profile = ProfileFactory(smapply_user_data={'first_name': 'test', 'last_name': 'test', 'email': 'email'})
+    task_cache = SMApplyTaskCache()
+    sync_bulk_with_hubspot([profile], make_contact_sync_message, "CONTACT", task_cache=task_cache)
+    mock_request.assert_called_once()
+
+
+def test_sync_bulk_no_profiles(mocker):
+    """Test the hubspot bulk sync function when no contacts have data to sync"""
+    mock_request = mocker.patch('hubspot.tasks.send_hubspot_request')
+    profile = ProfileFactory()
+    task_cache = SMApplyTaskCache()
+    sync_bulk_with_hubspot([profile], make_contact_sync_message, "CONTACT", task_cache=task_cache)
+    mock_request.assert_not_called()
+
+
+def test_sync_bulk_logs_errors(mocker):
+    """Test that hubspot bulk sync correctly logs errors"""
+    mock_request = mocker.patch(f"hubspot.api.requests.put", return_value=Mock(
+        raise_for_status=Mock(side_effect=HTTPError())))
+    mock_log = mocker.patch('hubspot.api.log.exception')
+
+    profile = ProfileFactory(smapply_user_data={'first_name': 'test', 'last_name': 'test', 'email': 'email'})
+    task_cache = SMApplyTaskCache()
+    sync_bulk_with_hubspot([profile], make_contact_sync_message, "CONTACT", task_cache=task_cache)
+    assert mock_request.call_count == 3
+    mock_log.assert_called_once()
