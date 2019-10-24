@@ -4,15 +4,13 @@ and Line Items
 """
 
 from django.core.management import BaseCommand
-from requests import HTTPError
 
 from hubspot.api import (
     make_contact_sync_message,
-    send_hubspot_request,
     make_product_sync_message,
     make_deal_sync_message,
     make_line_sync_message)
-from hubspot.tasks import HUBSPOT_SYNC_URL
+from hubspot.tasks import sync_bulk_with_hubspot
 from klasses.models import PersonalPrice, Bootcamp
 from profiles.models import Profile
 from smapply.api import SMApplyTaskCache
@@ -38,32 +36,7 @@ class Command(BaseCommand):
                 returns a sync message for that model
             object_type (str) one of "CONTACT", "DEAL", "PRODUCT", "LINE_ITEM"
         """
-        sync_messages = [
-            make_object_sync_message(obj.id, **kwargs)[0] for obj in objects
-        ]
-
-        if object_type == "CONTACT":
-            # Skip sync if message is missing required field
-            sync_messages = [
-                message for message in sync_messages if message.get('propertyNameToValues', {}).get('email')
-            ]
-
-        while len(sync_messages) > 0:
-            staged_messages = sync_messages[0:200]
-            sync_messages = sync_messages[200:]
-
-            print("    Sending sync message...")
-            response = send_hubspot_request(
-                object_type, HUBSPOT_SYNC_URL, "PUT", body=staged_messages
-            )
-            try:
-                response.raise_for_status()
-            except HTTPError:
-                print(
-                    "    Sync message failed with status {} and message {}".format(
-                        response.status_code, response.json().get("message")
-                    )
-                )
+        sync_bulk_with_hubspot(objects, make_object_sync_message, object_type, print_to_console=True, **kwargs)
 
     def sync_contacts(self):
         """

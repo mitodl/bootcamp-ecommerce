@@ -2,7 +2,6 @@
 
 import pytest
 
-from profiles.factories import ProfileFactory
 from profiles.models import Profile
 from smapply.tasks import sync_all_users
 
@@ -36,11 +35,16 @@ def test_sync_all_users(mocker):
         'smapply.tasks.list_users',
         return_value=test_user_data,
     )
-    sync_all_users()
-    assert Profile.objects.count() == 2
+
+    mock_sync = mocker.patch('smapply.tasks.sync_bulk_with_hubspot')
 
     sync_all_users()
     assert Profile.objects.count() == 2
+    mock_sync.assert_called_once()
+
+    sync_all_users()
+    assert Profile.objects.count() == 2
+    mock_sync.assert_called_once()
 
 
 def test_sync_all_users_bad_data(mocker):
@@ -52,22 +56,6 @@ def test_sync_all_users_bad_data(mocker):
         'smapply.tasks.list_users',
         return_value=test_user_data,
     )
+    mocker.patch('smapply.tasks.sync_bulk_with_hubspot')
     sync_all_users()
     assert Profile.objects.count() == 1
-
-
-@pytest.mark.parametrize("sma_data", [None, {"foo": "bar"}])
-def test_sync_existing_user_data(mocker, sma_data):
-    """
-    Test that an existing profile with and without smapply_user_data has data populated during sync_all_users.
-    """
-    profile = ProfileFactory.create(smapply_id=12345678, smapply_user_data=sma_data)
-
-    mocker.patch(
-        'smapply.tasks.list_users',
-        return_value=test_user_data,
-    )
-    sync_all_users()
-
-    profile.refresh_from_db()
-    assert profile.smapply_user_data == test_user_data[0]

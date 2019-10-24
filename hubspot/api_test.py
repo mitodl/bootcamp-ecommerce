@@ -3,6 +3,7 @@ Hubspot API tests
 """
 # pylint: disable=redefined-outer-name
 import abc
+from unittest.mock import Mock
 from urllib.parse import urlencode
 
 import pytest
@@ -92,6 +93,17 @@ def test_send_hubspot_request(mocker, request_method, endpoint, api_url, expecte
             endpoint, api_url, request_method, query_params=query_params, body=body
         )
         mock_request.assert_called_once_with(url=url, json=body)
+
+
+def test_send_hubspot_request_try_again(mocker):
+    """Test the try again decorator"""
+    mock_request = mocker.patch(f"hubspot.api.requests.get", return_value=Mock(
+        raise_for_status=Mock(side_effect=HTTPError())))
+
+    api.send_hubspot_request(
+        "sync-errors", "/extensions/ecomm/v1", "GET"
+    )
+    assert mock_request.call_count == 3
 
 
 @pytest.mark.parametrize(
