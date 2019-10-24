@@ -255,12 +255,12 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
             },
             {
                 "propertyName": "first_name",
-                "targetHubspotProperty": "firstname",
+                "targetHubspotProperty": "first_name",
                 "dataType": "STRING",
             },
             {
                 "propertyName": "last_name",
-                "targetHubspotProperty": "lastname",
+                "targetHubspotProperty": "last_name",
                 "dataType": "STRING",
             },
             {

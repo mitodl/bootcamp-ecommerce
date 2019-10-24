@@ -230,7 +230,7 @@ smapply_serialized_data = {
     'phone': '1234567890', 'jobtitle': 'Fake Job', 'participant_license_release': 'I Agree',
     'mit_honor_code': 'I Agree', 'occupation': 'Retired', 'confidentiality': 'I Agree',
     'referral_information': 'some kind of response', 'hear_about_bootcamp': 'MIT or Bootcamp alumni',
-    'country': 'United States', 'gender': 'Male', 'company': 'Fake Name',
+    'country': 'United States', 'gender': '', 'company': 'Fake Name',
     'highest_education': "Other advanced degree beyond a Master's degree",
     'linkedin_profile': 'https://www.linkedin.com', 'liability_release': 'I Agree'}
 

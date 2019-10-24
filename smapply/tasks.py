@@ -21,7 +21,3 @@ def sync_all_users():
                 user.profile.save()
 
                 sync_hubspot_user(user.profile)
-        else:
-            profile.smapply_user_data = sma_user
-            profile.save()
-            sync_hubspot_user(profile)
