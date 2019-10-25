@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.31.1
+Version 0.31.1 (Released October 25, 2019)
 --------------
 
 - Sync contacts in bulk and add a retry to handle too many requests errors (#323)
