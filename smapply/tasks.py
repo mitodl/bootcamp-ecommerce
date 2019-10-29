@@ -14,6 +14,10 @@ def sync_all_users():
     """
     profiles_to_sync = []
     for sma_user in list_users():
+        # Only create Profile and User data for SMApply accounts with verified email addresses
+        if not sma_user.get('email_verified'):
+            continue
+
         profile = Profile.objects.filter(smapply_id=sma_user['id']).first()
         if not profile:
             serializer = UserSerializer(data=sma_user)
