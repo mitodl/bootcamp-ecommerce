@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.32.0
+--------------
+
+- Only create profiles from userdata containing verified email addresses. (#326)
+
 Version 0.31.1 (Released October 25, 2019)
 --------------
 
