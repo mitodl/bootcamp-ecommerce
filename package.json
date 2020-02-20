@@ -57,7 +57,7 @@
     "nyc": "^15.0.0",
     "object.entries": "^1.0.4",
     "postcss-loader": "^2.0.9",
-    "prettier-eslint": "^9.0.0",
+    "prettier-eslint": "^9.0.1",
     "prettier-eslint-cli": "^4.7.0",
     "ramda": "^0.24.0",
     "raven-js": "^3.21.0",
