@@ -87,12 +87,6 @@ class HubspotContactSerializer(serializers.ModelSerializer):
                 else:
                     response = responses[field_key]['response']
                 demographics_data[mapping] = response
-
-        # If any fields aren't present then the associated program has a typo, or is otherwise missing data
-        missing_fields = set(demo_sync_fields.values()) - set(demographics_data.keys())
-        if missing_fields:
-            log.error("Missing fields while syncing data for Profile with SMApply Id %s. Fields: %s",
-                      instance.smapply_id, missing_fields)
         return demographics_data
 
     def to_representation(self, instance):
