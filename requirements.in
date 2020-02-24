@@ -1,4 +1,4 @@
-Django==1.11.20
+Django==1.11.28
 PyYAML==5.1
 celery==4.0.2
 dj-database-url==0.3.0

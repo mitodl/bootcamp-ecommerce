@@ -19,7 +19,7 @@ django-hijack==2.1.7
 django-redis==4.7.0
 django-server-status==0.3.2
 django-webpack-loader==0.4.1
-django==1.11.20
+django==1.11.28
 djangorestframework==3.9.1
 edx-api-client==0.6.1
 elasticsearch==5.4.0      # via django-server-status
@@ -61,4 +61,4 @@ wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.2.0        # via html5lib, ipython
+# setuptools
