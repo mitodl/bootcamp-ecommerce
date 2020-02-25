@@ -63,7 +63,11 @@ class PaymentPage extends React.Component<*, void> {
   }
 
   sendPayment = () => {
-    const { dispatch, ui: { paymentAmount }, selectedKlass } = this.props
+    const {
+      dispatch,
+      ui: { paymentAmount },
+      selectedKlass
+    } = this.props
     if (selectedKlass && paymentAmount) {
       dispatch(
         actions.payment({
@@ -121,7 +125,10 @@ class PaymentPage extends React.Component<*, void> {
   }
 
   handleOrderSuccess = (): void => {
-    const { dispatch, ui: { toastMessage } } = this.props
+    const {
+      dispatch,
+      ui: { toastMessage }
+    } = this.props
     if (toastMessage === null) {
       dispatch(
         setToastMessage({
@@ -157,7 +164,10 @@ class PaymentPage extends React.Component<*, void> {
   }
 
   handleOrderCancellation = (): void => {
-    const { dispatch, ui: { toastMessage } } = this.props
+    const {
+      dispatch,
+      ui: { toastMessage }
+    } = this.props
 
     if (toastMessage === null) {
       dispatch(
@@ -176,7 +186,9 @@ class PaymentPage extends React.Component<*, void> {
   }
 
   renderToast() {
-    const { ui: { toastMessage } } = this.props
+    const {
+      ui: { toastMessage }
+    } = this.props
     if (!toastMessage) {
       return null
     }
@@ -227,8 +239,8 @@ class PaymentPage extends React.Component<*, void> {
       dispatch
     } = this.props
 
-    let renderedPayment = null,
-      renderedPaymentHistory = null
+    let renderedPayment = null
+    let renderedPaymentHistory = null
 
     if (klasses.fetchStatus === FETCH_SUCCESS) {
       renderedPayment = (
@@ -278,7 +290,10 @@ const withPayableKlasses = state => {
 }
 
 const withDerivedSelectedKlass = state => {
-  const { payableKlassesData, ui: { selectedKlassKey } } = state
+  const {
+    payableKlassesData,
+    ui: { selectedKlassKey }
+  } = state
 
   let selectedKlass
   if (_.isNumber(selectedKlassKey)) {

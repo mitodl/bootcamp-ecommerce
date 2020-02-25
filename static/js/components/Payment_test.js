@@ -14,11 +14,11 @@ import {
 } from "../util/util"
 
 describe("Payment", () => {
-  const paymentSectionSelector = ".payment-section",
-    deadlineMsgSelector = ".deadline-message",
-    klassDropdownSelector = "select.klass-select",
-    welcomeMsgSelector = "h1.greeting",
-    klassTitleSelector = ".klass-display-section .desc"
+  const paymentSectionSelector = ".payment-section"
+  const deadlineMsgSelector = ".deadline-message"
+  const klassDropdownSelector = "select.klass-select"
+  const welcomeMsgSelector = "h1.greeting"
+  const klassTitleSelector = ".klass-display-section .desc"
 
   const defaultProps = {
     ui:                  {},
@@ -98,7 +98,10 @@ describe("Payment", () => {
   })
 
   describe("klass dropdown", () => {
-    [[1, false], [2, true]].forEach(([numKlasses, shouldShowDropdown]) => {
+    [
+      [1, false],
+      [2, true]
+    ].forEach(([numKlasses, shouldShowDropdown]) => {
       it(`should${
         shouldShowDropdown ? "" : " not"
       } be shown when ${numKlasses} klasses available`, () => {
@@ -114,23 +117,25 @@ describe("Payment", () => {
 
   describe('"No payments required" message', () => {
     const noPaymentMsg = "No payment is required at this time"
-    ;[[0, true], [1, false], [2, false]].forEach(
-      ([numKlasses, shouldShowMessage]) => {
-        it(`should${
-          shouldShowMessage ? "" : " not"
-        } be shown when ${numKlasses} klasses available`, () => {
-          const fakeKlasses = generateFakeKlasses(numKlasses)
-          const wrapper = renderPayment({ payableKlassesData: fakeKlasses })
-          assert.equal(
-            wrapper
-              .find(paymentSectionSelector)
-              .html()
-              .indexOf(noPaymentMsg) >= 0,
-            shouldShowMessage
-          )
-        })
-      }
-    )
+    ;[
+      [0, true],
+      [1, false],
+      [2, false]
+    ].forEach(([numKlasses, shouldShowMessage]) => {
+      it(`should${
+        shouldShowMessage ? "" : " not"
+      } be shown when ${numKlasses} klasses available`, () => {
+        const fakeKlasses = generateFakeKlasses(numKlasses)
+        const wrapper = renderPayment({ payableKlassesData: fakeKlasses })
+        assert.equal(
+          wrapper
+            .find(paymentSectionSelector)
+            .html()
+            .indexOf(noPaymentMsg) >= 0,
+          shouldShowMessage
+        )
+      })
+    })
   })
 
   describe("deadline message", () => {
@@ -197,8 +202,8 @@ describe("Payment", () => {
     })
 
     describe("with multiple past installments", () => {
-      const nextInstallmentDate = moment().add(2, "days"),
-        amt = 100
+      const nextInstallmentDate = moment().add(2, "days")
+      const amt = 100
       let fakeKlass
 
       beforeEach(() => {

@@ -34,7 +34,9 @@ export default class Payment extends React.Component<*, void> {
   }
 
   getTotalOwedUpToInstallment = (nextInstallmentIndex: number): number => {
-    const { selectedKlass: { installments } } = this.props
+    const {
+      selectedKlass: { installments }
+    } = this.props
 
     return R.compose(
       R.sum,
@@ -62,8 +64,8 @@ export default class Payment extends React.Component<*, void> {
     if (installments.length > 0) {
       const deadlineDates = getInstallmentDeadlineDates(installments)
       const finalInstallmentDeadline = formatReadableDate(R.last(deadlineDates))
-      const nextInstallmentIndex = R.findIndex(R.lt(now), deadlineDates),
-        lastInstallmentIndex = installments.length - 1
+      const nextInstallmentIndex = R.findIndex(R.lt(now), deadlineDates)
+      const lastInstallmentIndex = installments.length - 1
       if (nextInstallmentIndex !== lastInstallmentIndex) {
         const totalOwedForInstallment = this.getTotalOwedUpToInstallment(
           nextInstallmentIndex
