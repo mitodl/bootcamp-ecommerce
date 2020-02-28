@@ -221,8 +221,7 @@ class SMApplyTaskCache:
             self.task_cache[task_id] = task_data
             return copy.deepcopy(task_data)
 
-
-def process_user(sma_user):
+def process_user(sma_user, require_validation=True):
     """
     Create/update User and Profile model objects based on SMApply user info
 
@@ -232,8 +231,9 @@ def process_user(sma_user):
     Returns:
         User: user modified or created by the function
     """
-    serializer = UserSerializer(data=sma_user)
-    serializer.is_valid(raise_exception=True)
+    if require_validation:
+        serializer = UserSerializer(data=sma_user)
+        serializer.is_valid(raise_exception=True)
 
     user, _ = User.objects.get_or_create(
         email__iexact=sma_user['email'],

@@ -1,12 +1,11 @@
 """Tasks for smapply"""
-import logging
 from bootcamp.celery import app
 from hubspot.api import make_contact_sync_message
 from hubspot.tasks import sync_bulk_with_hubspot
+from smapply.serializers import UserSerializer
 from smapply.api import list_users, process_user, SMApplyTaskCache
 from profiles.models import Profile
 
-log = logging.getLogger(__name__)
 
 
 @app.task
@@ -22,11 +21,10 @@ def sync_all_users():
 
         profile = Profile.objects.filter(smapply_id=sma_user['id']).first()
         if not profile:
-            try:
-                user = process_user(sma_user)
+            serializer = UserSerializer(data=sma_user)
+            if serializer.is_valid():
+                user = process_user(sma_user, require_validation=False)
                 profiles_to_sync.append(user.profile)
-            except:  # pylint: disable=bare-except
-                log.exception('Syncing profile for SMA user %s failed', sma_user['id'])
 
     if profiles_to_sync:
         task_cache = SMApplyTaskCache()
