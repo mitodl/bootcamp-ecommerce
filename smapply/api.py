@@ -232,7 +232,6 @@ def process_user(sma_user):
     Returns:
         User: user modified or created by the function
     """
-
     serializer = UserSerializer(data=sma_user)
     serializer.is_valid(raise_exception=True)
 
