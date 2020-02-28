@@ -232,6 +232,10 @@ def process_user(sma_user):
     Returns:
         User: user modified or created by the function
     """
+
+    serializer = UserSerializer(data=sma_user)
+    serializer.is_valid(raise_exception=True)
+
     user, _ = User.objects.get_or_create(
         email__iexact=sma_user['email'],
         defaults={'email': sma_user['email'], 'username': sma_user['email']}
@@ -239,6 +243,7 @@ def process_user(sma_user):
     profile, _ = Profile.objects.get_or_create(user=user)
     if not profile.smapply_id:
         profile.smapply_id = sma_user['id']
+        profile.smapply_user_data = sma_user
         profile.name = '{} {}'.format(sma_user['first_name'], sma_user['last_name'])
         profile.save()
     return user
@@ -282,9 +287,8 @@ def parse_webhook_user(webhook):
     if not profile:
         # Get user info from SMApply API (ensures that user id is real).
         user_info = SMApplyAPI().get('/users/{}'.format(webhook.user_id)).json()
-        serializer = UserSerializer(data=user_info)
-        serializer.is_valid(raise_exception=True)
-        user = process_user(serializer.data)
+
+        user = process_user(user_info)
     else:
         user = profile.user
 
