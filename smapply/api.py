@@ -221,12 +221,14 @@ class SMApplyTaskCache:
             self.task_cache[task_id] = task_data
             return copy.deepcopy(task_data)
 
+
 def process_user(sma_user, require_validation=True):
     """
     Create/update User and Profile model objects based on SMApply user info
 
     Args:
         sma_user (ReturnDict): Data from a smapply.serializers.UserSerializer object
+        require_validation (bool): if the user data should be validated or not
 
     Returns:
         User: user modified or created by the function

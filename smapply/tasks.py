@@ -7,7 +7,6 @@ from smapply.api import list_users, process_user, SMApplyTaskCache
 from profiles.models import Profile
 
 
-
 @app.task
 def sync_all_users():
     """
