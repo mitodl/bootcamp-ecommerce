@@ -39,7 +39,7 @@ def test_profile_serializer_no_task(mocker, user_data):
 
 
 def test_profile_serializer_missing_task_responses(mocker, demographics_data, task_data, serialized_data):
-    """Test that HubspotProfileSerializer properly logs an error when demographics data is missing"""
+    """Test that HubspotProfileSerializer does not log error when demographics data is missing"""
     logger = mocker.patch('logging.Logger.error')
     profile = ProfileFactory.create(smapply_id=123456)
     demographics_data['data'].pop('8JgmHI7gTA')
@@ -49,13 +49,13 @@ def test_profile_serializer_missing_task_responses(mocker, demographics_data, ta
     mock_api().get.return_value.json.return_value = task_data
 
     data = HubspotContactSerializer(instance=profile).data
-    logger.assert_called_once()
+    logger.assert_not_called()
     serialized_data.pop('industry')
     assert data == serialized_data
 
 
 def test_profile_serializer_missing_task_fields(mocker, demographics_data, task_data, serialized_data):
-    """Test that HubspotProfileSerializer properly logs an error when demographics data is missing"""
+    """Test that HubspotProfileSerializer does not log error when demographics data is missing"""
     logger = mocker.patch('logging.Logger.error')
     profile = ProfileFactory.create(smapply_id=123456)
     demographics_data['data'].pop('8JgmHI7gTA')
@@ -66,7 +66,7 @@ def test_profile_serializer_missing_task_fields(mocker, demographics_data, task_
     mock_api().get.return_value.json.return_value = task_data
 
     data = HubspotContactSerializer(instance=profile).data
-    logger.assert_called_once()
+    logger.assert_not_called()
     serialized_data.pop('industry')
     assert data == serialized_data
 

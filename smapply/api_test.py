@@ -218,6 +218,7 @@ def test_process_new_profile():
     process_user(sma_user)
     assert User.objects.filter(email=sma_user['email']).count() == 1
     assert Profile.objects.filter(smapply_id=sma_user['id']).count() == 1
+    assert Profile.objects.get(smapply_id=sma_user['id']).smapply_user_data == sma_user
 
 
 def test_process_both_exist_no_smapply_id(mocker):

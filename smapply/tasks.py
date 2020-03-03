@@ -22,10 +22,7 @@ def sync_all_users():
         if not profile:
             serializer = UserSerializer(data=sma_user)
             if serializer.is_valid():
-                user = process_user(serializer.data)
-                user.profile.smapply_user_data = sma_user
-                user.profile.save()
-
+                user = process_user(sma_user, require_validation=False)
                 profiles_to_sync.append(user.profile)
 
     if profiles_to_sync:
