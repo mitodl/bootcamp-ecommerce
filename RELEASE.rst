@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.33.0
+--------------
+
+- Hubspot contact serializer allow missing fields (#339)
+- Update prettier-eslint to fix a security alert (#338)
+- Update nyc for a security alert (#336)
+- Pin potsgres version 9.6 -> 9.6.16
+
 Version 0.32.0 (Released October 31, 2019)
 --------------
 
