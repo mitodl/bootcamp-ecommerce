@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.33.0
+Version 0.33.0 (Released March 04, 2020)
 --------------
 
 - Hubspot contact serializer allow missing fields (#339)
