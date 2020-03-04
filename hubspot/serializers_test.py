@@ -86,6 +86,7 @@ def test_deal_serializer():
     personal_price.user.profile = profile
 
     serialized_data = {'application_stage': '',
+                       'bootcamp_name': personal_price.klass.bootcamp.title,
                        'price': personal_price.price.to_eng_string(),
                        'purchaser': format_hubspot_id(personal_price.user.profile.id),
                        'name': f'Bootcamp-application-{personal_price.id}',
