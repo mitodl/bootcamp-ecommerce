@@ -39,6 +39,14 @@ CUSTOM_ECOMMERCE_PROPERTIES = {
                 'name': 'application_stage',
                 'type': 'string'
             },
+            {
+                'description': 'The associated bootcamp name',
+                'fieldType': 'text',
+                'groupName': 'dealinformation',
+                'label': 'Bootcamp Name',
+                'name': 'bootcamp_name',
+                'type': 'string'
+            },
         ]
     },
     "contacts": {
@@ -223,6 +231,11 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
             {
                 "propertyName": "application_stage",
                 "targetHubspotProperty": "application_stage",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "bootcamp_name",
+                "targetHubspotProperty": "bootcamp_name",
                 "dataType": "STRING",
             },
         ]
