@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.33.1
+--------------
+
+- Add bootcamp name to deal (#350)
+
 Version 0.33.0 (Released March 04, 2020)
 --------------
 
