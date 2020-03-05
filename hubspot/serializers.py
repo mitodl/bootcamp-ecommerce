@@ -139,7 +139,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         return instance.price.to_eng_string()
 
     def get_bootcamp_name(self, instance):
-        """Get a string of the price"""
+        """Get the name of the bootcamp"""
         return instance.klass.bootcamp.title
 
     def to_representation(self, instance):
