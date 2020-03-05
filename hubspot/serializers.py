@@ -123,6 +123,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     purchaser = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
+    bootcamp_name = serializers.SerializerMethodField()
 
     def get_name(self, instance):
         """Get a formatted name for the deal"""
@@ -136,6 +137,10 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def get_price(self, instance):
         """Get a string of the price"""
         return instance.price.to_eng_string()
+
+    def get_bootcamp_name(self, instance):
+        """Get the name of the bootcamp"""
+        return instance.klass.bootcamp.title
 
     def to_representation(self, instance):
         # Populate order data
@@ -162,7 +167,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PersonalPrice
-        fields = ['name', 'application_stage', 'price', 'purchaser']
+        fields = ['name', 'application_stage', 'price', 'purchaser', 'bootcamp_name']
 
 
 class HubspotLineSerializer(serializers.ModelSerializer):
