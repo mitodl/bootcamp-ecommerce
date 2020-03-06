@@ -33,7 +33,7 @@
     "decimal.js-light": "^2.3.1",
     "detect-browser": "^2.0.0",
     "enzyme": "2",
-    "eslint": "^6.8.0",
+    "eslint": "6.6.0",
     "eslint-config-google": "^0.9.1",
     "eslint-config-mitodl": "^0.0.7",
     "eslint-plugin-babel": "^4.1.2",
@@ -89,7 +89,7 @@
     "webpack-hot-middleware": "^2.21.0"
   },
   "engines": {
-    "node": "10.15.3",
+    "node": "10.15.1",
     "yarn": "1.13.0"
   },
   "scripts": {
