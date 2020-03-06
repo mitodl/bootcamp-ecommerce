@@ -34,8 +34,8 @@ const REQUEST_KLASSES = makeRequestActionType("klasses")
 const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType("klasses")
 
 describe("PaymentPage", () => {
-  const paymentInputSelector = 'input[id="payment-amount"]',
-    paymentBtnSelector = "button.large-cta"
+  const paymentInputSelector = 'input[id="payment-amount"]'
+  const paymentBtnSelector = "button.large-cta"
 
   let store, listenForActions, sandbox, fetchStub, klassesUrl, klassesStub
 

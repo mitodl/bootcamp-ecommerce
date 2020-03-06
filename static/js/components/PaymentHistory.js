@@ -27,7 +27,7 @@ export default class PaymentHistory extends React.Component<*, void> {
           <a
             href={`/statement/${klass.klass_key}`}
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             className="statement-link"
           >
             View Statement
@@ -44,7 +44,8 @@ export default class PaymentHistory extends React.Component<*, void> {
       <div className="payment-history-section">
         <div className="payment-history-block">
           <h3 className="section-header">
-            Payment History<hr />
+            Payment History
+            <hr />
           </h3>
           <table>
             <thead>
