@@ -199,7 +199,7 @@ class PaymentPage extends React.Component<*, void> {
       message: messageText
     } = toastMessage
 
-    let icon
+    let icon, title, message
     if (iconName) {
       icon = (
         <i className="material-icons" key="icon">
@@ -208,7 +208,6 @@ class PaymentPage extends React.Component<*, void> {
       )
     }
 
-    let title, message
     if (titleText) {
       title = <h1>{titleText}</h1>
     }

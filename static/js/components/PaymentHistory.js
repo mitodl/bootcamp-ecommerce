@@ -27,7 +27,7 @@ export default class PaymentHistory extends React.Component<*, void> {
           <a
             href={`/statement/${klass.klass_key}`}
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             className="statement-link"
           >
             View Statement
