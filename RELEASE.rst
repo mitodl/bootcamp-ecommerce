@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.34.0
+--------------
+
+- Update prettier-eslint-cli and prettier-eslint (#348)
+
 Version 0.33.1 (Released March 06, 2020)
 --------------
 
