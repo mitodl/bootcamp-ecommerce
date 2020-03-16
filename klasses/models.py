@@ -23,7 +23,7 @@ class Klass(models.Model):
     """
     A class within a bootcamp
     """
-    bootcamp = models.ForeignKey(Bootcamp)
+    bootcamp = models.ForeignKey(Bootcamp, on_delete=models.CASCADE)
     title = models.TextField(blank=True)
     source = models.CharField(
         null=False,
