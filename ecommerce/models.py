@@ -107,7 +107,7 @@ class Line(TimestampedModel):
     """
     Represents a line item in the order
     """
-    order = ForeignKey(Order)
+    order = ForeignKey(Order, on_delete=CASCADE)
     klass_key = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
