@@ -3,7 +3,7 @@ from decimal import Decimal
 import logging
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework import status as statuses
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView

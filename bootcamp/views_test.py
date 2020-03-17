@@ -5,7 +5,7 @@ import json
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from factory.fuzzy import FuzzyText
 from rest_framework.status import HTTP_302_FOUND
 

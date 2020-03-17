@@ -147,7 +147,7 @@ class Receipt(TimestampedModel):
     """
     The contents of the message from CyberSource about an Order fulfillment or cancellation
     """
-    order = ForeignKey(Order, null=True)
+    order = ForeignKey(Order, null=True, on_delete=CASCADE)
     data = JSONField()
 
     def __str__(self):
