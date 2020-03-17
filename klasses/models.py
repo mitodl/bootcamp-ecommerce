@@ -148,7 +148,7 @@ class Installment(models.Model):
     """
     A payment installment
     """
-    klass = models.ForeignKey(Klass)
+    klass = models.ForeignKey(Klass, on_delete=models.CASCADE)
     deadline = models.DateTimeField(null=False)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
 
