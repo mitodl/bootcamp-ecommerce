@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db.models import (
     CharField,
+    CASCADE,
     DecimalField,
     ForeignKey,
     IntegerField,
@@ -32,7 +33,7 @@ class Order(AuditableModel, TimestampedModel):
 
     STATUSES = [CREATED, FULFILLED, FAILED, REFUNDED]
 
-    user = ForeignKey(settings.AUTH_USER_MODEL)
+    user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
     status = CharField(
         choices=[(status, status) for status in STATUSES],
         default=CREATED,
