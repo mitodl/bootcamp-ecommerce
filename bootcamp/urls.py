@@ -26,7 +26,7 @@ urlpatterns = [
     url('', include('smapply.urls')),
     url('', include('social_django.urls', namespace='social')),
     url('', include('klasses.urls')),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/'}),
+    url(r'^logout/$', auth_views.LogoutView, {'next_page': '/'}),
     url(r'^background-images\.css$', BackgroundImagesCSSView.as_view(), name='background-images-css'),
 ]
 
