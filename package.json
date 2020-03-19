@@ -72,7 +72,7 @@
     "react-test-renderer": "^15.5.0-rc.2",
     "redux": "^4.0.4",
     "redux-actions": "^2.6.5",
-    "redux-asserts": "^0.0.10",
+    "redux-asserts": "^0.0.12",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "sass-lint": "^1.12.1",
