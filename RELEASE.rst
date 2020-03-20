@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.35.0
+--------------
+
+- Upgrade redux-asserts for security alert for lodash-es (#355)
+
 Version 0.34.0 (Released March 10, 2020)
 --------------
 
