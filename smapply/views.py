@@ -24,5 +24,5 @@ class WebhookView(APIView):
 
     def post(self, request):
         """Store webhook request for later processing"""
-        WebhookRequestSMA.objects.create(body=request.body)
+        WebhookRequestSMA.objects.create(body=request.body.decode())
         return Response()
