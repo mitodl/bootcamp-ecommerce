@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.36.0
+Version 0.36.0 (Released March 31, 2020)
 --------------
 
 - Upgrade django to 2.2.9 (#356)
