@@ -15,7 +15,7 @@ dj-database-url==0.3.0    # via -r requirements.in
 dj-static==0.0.6          # via -r requirements.in
 django-compat==1.0.15     # via -r requirements.in, django-hijack, django-hijack-admin
 django-hijack-admin==2.1.7  # via -r requirements.in
-django-hijack==2.1.7      # via -r requirements.in, django-hijack-admin
+django-hijack==2.1.10     # via -r requirements.in, django-hijack-admin
 django-redis==4.7.0       # via -r requirements.in
 django-server-status==0.3.2  # via -r requirements.in
 django-webpack-loader==0.5.0  # via -r requirements.in

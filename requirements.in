@@ -3,7 +3,7 @@ PyYAML==5.1
 celery==4.0.2
 dj-database-url==0.3.0
 django-compat==1.0.15
-django-hijack==2.1.7
+django-hijack==2.1.10
 django-hijack-admin==2.1.7
 dj-static==0.0.6
 django-redis==4.7.0
