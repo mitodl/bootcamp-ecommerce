@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db.models import (
     CharField,
+    CASCADE,
     DecimalField,
     ForeignKey,
     IntegerField,
@@ -32,7 +33,7 @@ class Order(AuditableModel, TimestampedModel):
 
     STATUSES = [CREATED, FULFILLED, FAILED, REFUNDED]
 
-    user = ForeignKey(settings.AUTH_USER_MODEL)
+    user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
     status = CharField(
         choices=[(status, status) for status in STATUSES],
         default=CREATED,
@@ -106,7 +107,7 @@ class Line(TimestampedModel):
     """
     Represents a line item in the order
     """
-    order = ForeignKey(Order)
+    order = ForeignKey(Order, on_delete=CASCADE)
     klass_key = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
@@ -146,7 +147,7 @@ class Receipt(TimestampedModel):
     """
     The contents of the message from CyberSource about an Order fulfillment or cancellation
     """
-    order = ForeignKey(Order, null=True)
+    order = ForeignKey(Order, null=True, on_delete=CASCADE)
     data = JSONField()
 
     def __str__(self):

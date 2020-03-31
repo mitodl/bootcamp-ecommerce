@@ -2,7 +2,7 @@
 from unittest.mock import patch
 
 import ddt
-from django.core.urlresolvers import (
+from django.urls import (
     resolve,
     reverse,
 )
