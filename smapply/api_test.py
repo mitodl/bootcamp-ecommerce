@@ -272,7 +272,7 @@ def test_parse_webhook_user(mocker, price, sends_email, mock_user_sync, mock_dea
     mock_get = MockGet({
         f'/applications/{submission_id}/': {
             'id': submission_id,
-            'current_stage': {'id': 1234, 'title': 'Admitted'},
+            'current_stage': {'id': 1234, 'title': 'Admitted' * 40},
             'custom_fields': [{
                 'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
                 'value': price
