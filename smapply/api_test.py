@@ -296,7 +296,7 @@ def test_parse_webhook_user(mocker, price, sends_email, mock_user_sync, mock_dea
         assert PersonalPrice.objects.filter(
             klass__klass_key=award_id,
             user__profile__smapply_id=user_id,
-            application_stage='Admitted'
+            application_stage='Admitted' * 40
         ).exists()
         assert send_email.call_count == 1
         assert send_email.call_args[0] == (
