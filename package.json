@@ -50,7 +50,7 @@
     "jsdom-global": "^3.0.2",
     "keycode": "^2.1.9",
     "lodash": "^4.17.14",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.5",
     "mocha": "^4.0.1",
     "moment": "^2.20.1",
     "node-sass": "^4.12.0",
