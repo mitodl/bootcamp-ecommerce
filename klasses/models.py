@@ -178,7 +178,7 @@ class PersonalPrice(models.Model):
         related_name='klass_prices'
     )
     price = models.DecimalField(max_digits=20, decimal_places=2)
-    application_stage = models.CharField(max_length=40, blank=True)
+    application_stage = models.TextField(blank=True)
 
     class Meta:
         unique_together = ('klass', 'user')
