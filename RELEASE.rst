@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.37.0
+Version 0.37.0 (Released April 09, 2020)
 --------------
 
 - Upgrade css-loader for security alert for js-yaml (#372)
