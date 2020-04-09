@@ -1,6 +1,25 @@
 Release Notes
 =============
 
+Version 0.37.0 (Released April 09, 2020)
+--------------
+
+- Upgrade css-loader for security alert for js-yaml (#372)
+- Fix logout error 500 (#367)
+- Bump merge from 1.2.0 to 1.2.1 (#370)
+- Change application_stage from CharField to TextField to remove max_length (#365)
+- Bump fstream from 1.0.11 to 1.0.12 (#369)
+- Bump sshpk from 1.13.1 to 1.16.1 (#368)
+- Bump is-my-json-valid from 2.17.1 to 2.20.0 (#344)
+- Bump macaddress from 0.2.8 to 0.2.9 (#343)
+- Bump nwmatcher from 1.4.3 to 1.4.4 (#342)
+- Bump stringstream from 0.0.5 to 0.0.6 (#340)
+- Bump django from 2.2.9 to 2.2.10 (#360)
+- Bump codecov from 2.3.1 to 3.6.5 (#335)
+- Add back SecurityMiddleware (#366)
+- Upgrade minimist (#359)
+- Add uWSGI settings (#358)
+
 Version 0.36.0 (Released March 31, 2020)
 --------------
 

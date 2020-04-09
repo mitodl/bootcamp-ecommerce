@@ -20,7 +20,7 @@ import dj_database_url
 import yaml
 
 
-VERSION = "0.36.0"
+VERSION = "0.37.0"
 
 CONFIG_PATHS = [
     os.environ.get('BOOTCAMP_CONFIG', ''),
