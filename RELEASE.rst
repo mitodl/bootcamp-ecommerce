@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.37.1
+--------------
+
+- Remove py-call-osafterfork setting from uwsgi.ini (#375)
+- Upgrade node-sass for tar security alert (#376)
+- Upgrade mocha (#373)
+
 Version 0.37.0 (Released April 09, 2020)
 --------------
 
