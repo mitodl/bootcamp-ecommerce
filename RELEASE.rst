@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.37.1
+Version 0.37.1 (Released April 13, 2020)
 --------------
 
 - Remove py-call-osafterfork setting from uwsgi.ini (#375)
