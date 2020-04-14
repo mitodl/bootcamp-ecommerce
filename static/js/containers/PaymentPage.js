@@ -4,7 +4,7 @@ import React from "react"
 import { connect } from "react-redux"
 import type { Dispatch } from "redux"
 import _ from "lodash"
-import R from "ramda"
+import * as R from "ramda"
 import URI from "urijs"
 import moment from "moment"
 
@@ -28,7 +28,7 @@ import type { InputEvent } from "../flow/events"
 
 class PaymentPage extends React.Component<*, void> {
   props: {
-    dispatch: Dispatch,
+    dispatch: Dispatch<*>,
     ui: UIState,
     payment: RestState,
     klasses: RestState,

@@ -5,7 +5,7 @@ var devMiddleware = require('webpack-dev-middleware');
 var hotMiddleware = require('webpack-hot-middleware');
 var minimist = require('minimist');
 
-var makeDevConfig = require('./webpack.config.dev');
+var { makeDevConfig } = require('./webpack.config.dev');
 
 const { host, port } = minimist(process.argv.slice(2));
 
@@ -14,6 +14,11 @@ const config = makeDevConfig(host, port);
 const app = express();
 
 const compiler = webpack(config);
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 app.use(devMiddleware(compiler, {
   publicPath: "/"

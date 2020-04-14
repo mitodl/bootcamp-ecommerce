@@ -16,7 +16,6 @@
     var SETTINGS = {{ js_settings_json|safe }};
     </script>
     {% load render_bundle %}
-    {% render_bundle 'common' %}
     {% render_bundle 'sentry_client' %}
     {% render_bundle 'style' %}
     {% include "analytics.html" %}

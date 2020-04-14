@@ -1,6 +1,5 @@
 sudo: false
-# Set Ruby as the language so it doesn't download the pip things. Instead, let docker do that.
-language: ruby
+language: minimal
 
 matrix:
   include:
@@ -14,11 +13,10 @@ matrix:
       env:
         name: Python
     - install:
-      - env | grep TRAVIS > .env
-      - env | grep CI >> .env
-      - docker build -t travis-watch -f ./travis/Dockerfile-travis-watch .
+        - yarn install --frozen-lockfile
       script: bash ./travis/js_tests.sh
-      services:
-        - docker
+      language: node_js
+      node_js:
+        - 13.13
       env:
         name: JavaScript

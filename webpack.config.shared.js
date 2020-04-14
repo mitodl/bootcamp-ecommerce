@@ -1,72 +1,46 @@
-const path = require("path");
-const webpack = require("webpack");
+const path = require("path")
+const webpack = require("webpack")
 
 module.exports = {
   config: {
     entry: {
-      'payment': ['babel-polyfill', './static/js/entry/payment'],
-      'sentry_client': './static/js/entry/sentry_client.js',
-      'style': './static/js/entry/style',
+      payment:  ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/payment"],
+      sentry_client: './static/js/entry/sentry_client.js',
+      style: "./static/js/entry/style"
     },
     module: {
       rules: [
         {
           test: /\.(svg|ttf|woff|woff2|eot|gif)$/,
-          use: 'url-loader'
-        },
-        {
-          test: /\.scss$/,
-          exclude: /node_modules/,
-          use: [
-            { loader: 'style-loader' },
-            { loader: 'css-loader' },
-            { loader: 'postcss-loader' },
-            { loader: 'sass-loader' },
-          ]
-        },
-        {
-          test: /\.css$/,
-          exclude: /node_modules/,
-          use: [
-            { loader: 'style-loader' },
-            { loader: 'css-loader' }
-          ]
-        },
+          use:  "url-loader"
+        }
       ]
     },
     resolve: {
-      modules: [
-        path.join(__dirname, "static/js"),
-        "node_modules"
-      ],
-      extensions: ['.js', '.jsx'],
-      alias: {
-        react: path.resolve('./node_modules/react')
-      }
+      modules:    [path.join(__dirname, "static/js"), "node_modules"],
+      extensions: [".js", ".jsx"]
     },
     performance: {
       hints: false
     }
   },
   babelSharedLoader: {
-    test: /\.jsx?$/,
+    test:    /\.jsx?$/,
     exclude: /node_modules/,
-    loader: 'babel-loader',
-    query: {
-      "presets": [
-        ["env", { "modules": false }],
-        "react",
+    loader:  "babel-loader",
+    query:   {
+      presets: [
+        ["@babel/preset-env", { modules: false }],
+        "@babel/preset-react",
+        "@babel/preset-flow"
       ],
-      "ignore": [
-        "node_modules/**"
-      ],
-      "plugins": [
-        "transform-flow-strip-types",
+      ignore:  ["node_modules/**"],
+      plugins: [
         "react-hot-loader/babel",
-        "transform-object-rest-spread",
-        "transform-class-properties",
-        "syntax-dynamic-import",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-syntax-dynamic-import"
       ]
     }
-  },
-};
+  }
+}

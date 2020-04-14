@@ -37,7 +37,7 @@ describe("PaymentPage", () => {
   const paymentInputSelector = 'input[id="payment-amount"]'
   const paymentBtnSelector = "button.large-cta"
 
-  let store, listenForActions, sandbox, fetchStub, klassesUrl, klassesStub
+  let store, listenForActions, fetchStub, klassesUrl, klassesStub
 
   beforeEach(() => {
     SETTINGS.user = {
@@ -47,13 +47,12 @@ describe("PaymentPage", () => {
 
     store = configureTestStore(rootReducer)
     listenForActions = store.createListenForActions()
-    sandbox = sinon.sandbox.create()
-    fetchStub = sandbox.stub(api, "fetchJSONWithCSRF")
+    fetchStub = sinon.stub(api, "fetchJSONWithCSRF")
     klassesUrl = `/api/v0/klasses/${SETTINGS.user.username}/`
   })
 
   afterEach(() => {
-    sandbox.restore()
+    sinon.restore()
   })
 
   const renderPaymentComponent = (props = {}) =>
@@ -78,6 +77,7 @@ describe("PaymentPage", () => {
     return listenForActions(actions, () => {
       wrapper = renderPaymentComponent(props)
     }).then(() => {
+      wrapper.update()
       return Promise.resolve(wrapper)
     })
   }
@@ -167,7 +167,7 @@ describe("PaymentPage", () => {
           store.dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG))
         }).then(() => {
           assert.equal(
-            wrapper.find(".mdc-dialog__header__title").text(),
+            wrapper.find("DialogTitle span").text(),
             "Confirm Payment"
           )
           assert.equal(
@@ -181,6 +181,7 @@ describe("PaymentPage", () => {
 
     it("sets a price", () => {
       return renderFullPaymentPage().then(wrapper => {
+        wrapper.update()
         wrapper
           .find(paymentInputSelector)
           .props()
@@ -206,16 +207,17 @@ describe("PaymentPage", () => {
       )
       store.dispatch(setPaymentAmount("123"))
 
-      const submitStub = sandbox.stub()
+      const submitStub = sinon.stub()
       const fakeForm = document.createElement("form")
       fakeForm.setAttribute("class", "fake-form")
       fakeForm.submit = submitStub
-      const createFormStub = sandbox.stub(util, "createForm").returns(fakeForm)
+      const createFormStub = sinon.stub(util, "createForm").returns(fakeForm)
 
       return renderFullPaymentPage().then(wrapper => {
         return listenForActions(
           [REQUEST_PAYMENT, RECEIVE_PAYMENT_SUCCESS],
           () => {
+            wrapper.update()
             wrapper.find(paymentBtnSelector).simulate("click")
           }
         ).then(() => {
@@ -300,7 +302,7 @@ describe("PaymentPage", () => {
     describe("fake timer tests", function() {
       let clock
       beforeEach(() => {
-        clock = sandbox.useFakeTimers(moment("2016-09-01").valueOf())
+        clock = sinon.useFakeTimers(moment("2016-09-01").valueOf())
       })
 
       it("refetches the klasses after 3 seconds if 30 seconds has not passed", () => {

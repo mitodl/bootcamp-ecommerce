@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Install version of yarn specified in package.json
 
 const fs = require('fs');
@@ -5,10 +6,10 @@ const { spawn } = require('child_process');
 
 const { engines: { yarn: yarnVersion }} = JSON.parse(fs.readFileSync(__dirname + "/../package.json"));
 
-let install = spawn('npm', [
-  'install',
-  '-g',
-  `yarn@${yarnVersion}`
+let install = spawn('yarn', [
+  'policies',
+  'set-version',
+  `${yarnVersion}`
 ]);
 
 install.stdout.on('data', data => console.log(`${data}`));

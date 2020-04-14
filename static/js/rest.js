@@ -1,11 +1,12 @@
 // @flow
 import { createAction } from "redux-actions"
-import type { Dispatch } from "redux"
 import _ from "lodash"
 
-import type { Action, Dispatcher } from "./flow/reduxTypes"
 import { fetchJSONWithCSRF } from "./lib/api"
 import { FETCH_PROCESSING, FETCH_SUCCESS, FETCH_FAILURE } from "./actions"
+
+import type { Dispatch } from "redux"
+import type { Dispatcher, Action } from "./flow/reduxTypes"
 
 export type Endpoint = {
   name: string,
@@ -82,9 +83,9 @@ export function makeFetchFunc(
   endpoint: Endpoint
 ): (params?: Object) => Promise<*> {
   return (params = {}) => {
-    const url = endpoint.urlTemplate
-      ? endpoint.urlTemplate(params)
-      : endpoint.url
+    const url = endpoint.urlTemplate ?
+      endpoint.urlTemplate(params) :
+      endpoint.url
     return fetchJSONWithCSRF(url || "", endpoint.fetchOptions(params))
   }
 }
@@ -103,7 +104,7 @@ export const makeAction = (
   const fetchFunc = makeFetchFunc(endpoint)
 
   return params => {
-    return (dispatch: Dispatch): Promise<*> => {
+    return (dispatch: Dispatch<*>): Promise<*> => {
       dispatch(requestAction())
       return fetchFunc(params)
         .then(data => {

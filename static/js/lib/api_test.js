@@ -1,18 +1,10 @@
 /* global SETTINGS: false */
 import { assert } from "chai"
-import fetchMock from "fetch-mock/src/server"
-import sinon from "sinon"
-
+import fetchMock from "fetch-mock"
 import { getCookie, fetchJSONWithCSRF, csrfSafeMethod } from "./api"
 
 describe("api utility functions", function() {
-  let sandbox
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create()
-  })
   afterEach(function() {
-    sandbox.restore()
-
     for (const cookie of document.cookie.split(";")) {
       const key = cookie.split("=")[0].trim()
       document.cookie = `${key}=`
@@ -74,7 +66,8 @@ describe("api utility functions", function() {
             method: "PATCH"
           })
           return {
-            status: 200
+            status: 200,
+            body:   ""
           }
         })
 
