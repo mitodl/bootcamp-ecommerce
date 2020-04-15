@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.38.0
+--------------
+
+- Update jsdom to fix security alert for cryptiles (#378)
+
 Version 0.37.1 (Released April 13, 2020)
 --------------
 
