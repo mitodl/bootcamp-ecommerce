@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.38.1
+--------------
+
+- Upgraded deps (#382)
+- Rename a couple UWSGI env vars, remove redundant if-env blocks (#387)
+
 Version 0.38.0 (Released April 16, 2020)
 --------------
 
