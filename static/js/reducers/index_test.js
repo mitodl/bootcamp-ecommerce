@@ -1,5 +1,4 @@
 import configureTestStore from "redux-asserts"
-import sinon from "sinon"
 import moment from "moment"
 import { assert } from "chai"
 
@@ -16,18 +15,13 @@ import rootReducer from "../reducers"
 import { createAssertReducerResultState } from "../util/test_utils"
 
 describe("reducers", () => {
-  let sandbox, store, assertReducerResultState
+  let store, assertReducerResultState
   beforeEach(() => {
-    sandbox = sinon.sandbox.create()
     store = configureTestStore(rootReducer)
     assertReducerResultState = createAssertReducerResultState(
       store,
       state => state.ui
     )
-  })
-
-  afterEach(() => {
-    sandbox.restore()
   })
 
   describe("ui", () => {

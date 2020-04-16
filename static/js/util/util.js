@@ -1,5 +1,5 @@
 // @flow
-import R from "ramda"
+import * as R from "ramda"
 import moment from "moment"
 
 import { ORDER_FULFILLED } from "../constants"
@@ -36,9 +36,9 @@ export const formatDollarAmount = (amount: ?number): string => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })
-  return formattedAmount.endsWith(".00")
-    ? formattedAmount.substring(0, formattedAmount.length - 3)
-    : formattedAmount
+  return formattedAmount.endsWith(".00") ?
+    formattedAmount.substring(0, formattedAmount.length - 3) :
+    formattedAmount
 }
 
 export const formatReadableDate = (datetime: moment$Moment): string =>

@@ -1,14 +1,10 @@
-FROM node:10.15.1
+FROM node:13.13.0
 LABEL maintainer "ODL DevOps <mitx-devops@mit.edu>"
 
 RUN apt-get update && apt-get install libelf1
 
 RUN mkdir /src/
 
-COPY package.json /src/
-
-COPY scripts /src/scripts
-
-RUN node /src/scripts/install_yarn.js
+WORKDIR /src/
 
 USER node

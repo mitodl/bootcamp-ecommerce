@@ -1,7 +1,5 @@
 import { assert } from "chai"
-import type { Store } from "redux"
-
-import type { Action } from "../flow/reduxTypes"
+import type { Store, Action } from "redux"
 
 export function createAssertReducerResultState<State>(
   store: Store,

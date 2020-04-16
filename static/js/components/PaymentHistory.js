@@ -1,7 +1,7 @@
 // @flow
 /* global SETTINGS: false */
 import React from "react"
-import R from "ramda"
+import * as R from "ramda"
 
 import { formatDollarAmount } from "../util/util"
 
@@ -12,11 +12,11 @@ export default class PaymentHistory extends React.Component<*, void> {
 
   renderPaymentRow = (klass: Object) => {
     const paymentAmountMsg =
-      klass.total_paid !== klass.price
-        ? `${formatDollarAmount(klass.total_paid)} out of ${formatDollarAmount(
+      klass.total_paid !== klass.price ?
+        `${formatDollarAmount(klass.total_paid)} out of ${formatDollarAmount(
           klass.price
-        )}`
-        : `${formatDollarAmount(klass.total_paid)}`
+        )}` :
+        `${formatDollarAmount(klass.total_paid)}`
 
     return (
       <tr key={klass.klass_key}>

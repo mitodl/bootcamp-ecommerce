@@ -120,14 +120,15 @@
   .klass-display-section {
     .mdc-dialog {
       .mdc-dialog__surface {
-        width: 190px !important;
 
-        .mdc-dialog__header {
+        .mdc-dialog__title {
           color: black;
           border-bottom: 1px solid gray;
         }
 
-        .mdc-dialog__body {
+        .mdc-dialog__content {
+          padding: 30px;
+
           .overpay-confirm {
             font-size: 20px;
             color: black;

@@ -1,14 +1,10 @@
 // @flow
 import type {
-  Dispatch,
+  Dispatch, Action as ReduxAction
 } from 'redux'
 
-export type Dispatcher<T> = (d: Dispatch) => Promise<T>;
+export type Dispatcher<T> = (d: Dispatch<*>) => Promise<T>;
 
-export type ActionType = string;
-
-export type Action = {
-  type: ActionType,
+export type Action = ReduxAction<string> & {
   payload: any,
-  meta: null,
 };

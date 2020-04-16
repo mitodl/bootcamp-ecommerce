@@ -28,14 +28,13 @@ describe("rest", () => {
     })
   }
 
-  let sandbox, store
+  let store
   beforeEach(() => {
-    sandbox = sinon.sandbox.create()
     store = configureTestStore(makeReducer(fakeEndpoint))
   })
 
   afterEach(() => {
-    sandbox.restore()
+    sinon.restore()
   })
 
   describe("makeReducer", () => {
@@ -103,7 +102,7 @@ describe("rest", () => {
 
     beforeEach(() => {
       dispatchThen = store.createDispatchThen()
-      fetchMock = sandbox.stub(api, "fetchJSONWithCSRF")
+      fetchMock = sinon.stub(api, "fetchJSONWithCSRF")
     })
 
     it("dispatches a success action if the API returned successfully", () => {

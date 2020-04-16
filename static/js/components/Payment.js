@@ -1,11 +1,11 @@
 // @flow
 /* global SETTINGS: false */
 import React from "react"
-import { Dialog } from "@mitodl/mdl-react-components"
-import R from "ramda"
+import * as R from "ramda"
 import _ from "lodash"
 import type { Dispatch } from "redux"
 
+import Dialog from "./Dialog"
 import { showDialog, hideDialog } from "../actions/index"
 import {
   isNilOrBlank,
@@ -22,7 +22,7 @@ const isVisible = R.propOr(false, PAYMENT_CONFIRMATION_DIALOG)
 
 export default class Payment extends React.Component<*, void> {
   props: {
-    dispatch: Dispatch,
+    dispatch: Dispatch<*>,
     ui: UIState,
     payment: RestState,
     payableKlassesData: Array<Object>,
@@ -102,9 +102,9 @@ export default class Payment extends React.Component<*, void> {
         Select...
       </option>
     )
-    const valueProp = selectedKlassKey
-      ? { value: selectedKlassKey }
-      : { defaultValue: "" }
+    const valueProp = selectedKlassKey ?
+      { value: selectedKlassKey } :
+      { defaultValue: "" }
 
     return (
       <div className="klass-select-section">
@@ -131,9 +131,9 @@ export default class Payment extends React.Component<*, void> {
     } = this.props
     const actualPrice = selectedKlass.price
 
-    paymentAmount > actualPrice
-      ? dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG))
-      : sendPayment()
+    paymentAmount > actualPrice ?
+      dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG)) :
+      sendPayment()
   }
 
   renderSelectedKlass = () => {
@@ -214,9 +214,9 @@ export default class Payment extends React.Component<*, void> {
         <p className="desc">No payment is required at this time.</p>
       )
     }
-    const renderedSelectedKlass = selectedKlass
-      ? this.renderSelectedKlass()
-      : null
+    const renderedSelectedKlass = selectedKlass ?
+      this.renderSelectedKlass() :
+      null
 
     return (
       <div className="payment-section">

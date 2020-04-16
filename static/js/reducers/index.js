@@ -12,8 +12,9 @@ import {
   SHOW_DIALOG,
   HIDE_DIALOG
 } from "../actions"
-import type { Action } from "../flow/reduxTypes"
 import { reducers as restReducers } from "../rest"
+
+import type { Action } from "../flow/reduxTypes"
 
 export type ToastMessage = {
   message: string,
@@ -72,7 +73,7 @@ export const ui = (state: UIState = INITIAL_UI_STATE, action: Action) => {
   }
 }
 
-export default combineReducers({
+export default combineReducers<*, *>({
   ui,
   ...restReducers
 })
