@@ -11,7 +11,6 @@ from fluidreview.constants import WebhookParseStatus
 from fluidreview.factories import WebhookRequestFactory
 from klasses.bootcamp_admissions_client import (
     BootcampAdmissionClient,
-    fetch_legacy_admissions,
 )
 from profiles.factories import ProfileFactory
 
@@ -116,7 +115,6 @@ def test_happy_path(test_data, mocked_get_200):
     user, url, _, _, _ = test_data
     boot_client = BootcampAdmissionClient(user)
     mocked_get_200.request.assert_called_once_with(url)
-    assert fetch_legacy_admissions(user) == JSON_RESP_OBJ
     assert boot_client.payable_klasses_keys == [
         JSON_RESP_OBJ['bootcamps'][1]['klasses'][0]['klass_id'],
         JSON_RESP_OBJ['bootcamps'][2]['klasses'][0]['klass_id']

@@ -14,7 +14,6 @@ from klasses.api import (
     serialize_user_klasses,
 )
 from klasses.bootcamp_admissions_client import BootcampAdmissionClient
-from klasses.conftest import patch_get_admissions
 from klasses.factories import KlassFactory, InstallmentFactory
 from klasses.serializers import InstallmentSerializer
 from profiles.factories import ProfileFactory
@@ -38,8 +37,6 @@ def test_data(mocker):
 
     order = OrderFactory.create(user=profile.user, status=Order.FULFILLED)
     LineFactory.create(order=order, klass_key=klass_paid.klass_key, price=627.34)
-
-    patch_get_admissions(mocker, profile.user)
 
     return profile.user, klass_paid, klass_not_paid
 
