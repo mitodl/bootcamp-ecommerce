@@ -9,6 +9,8 @@ import pytest
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order, Line
 from ecommerce.serializers import LineSerializer
+from fluidreview.constants import WebhookParseStatus
+from fluidreview.factories import WebhookRequestFactory
 from klasses.api import (
     serialize_user_klass,
     serialize_user_klasses,
@@ -31,6 +33,16 @@ def test_data(mocker):
     profile = ProfileFactory.create()
     klass_paid = KlassFactory.create()
     klass_not_paid = KlassFactory.create()
+    WebhookRequestFactory(
+        award_id=klass_paid.klass_key,
+        user_email=profile.user.email,
+        user_id=profile.fluidreview_id,
+        status=WebhookParseStatus.SUCCEEDED)
+    WebhookRequestFactory(
+        award_id=klass_not_paid.klass_key,
+        user_email=profile.user.email,
+        user_id=profile.fluidreview_id,
+        status=WebhookParseStatus.SUCCEEDED)
 
     InstallmentFactory.create(klass=klass_paid)
     InstallmentFactory.create(klass=klass_not_paid)
