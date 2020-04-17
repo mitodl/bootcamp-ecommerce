@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.38.1
+Version 0.38.1 (Released April 17, 2020)
 --------------
 
 - Upgraded deps (#382)
