@@ -4,7 +4,7 @@ Tests for the bootcamp_admission_client module
 import pytest
 
 from fluidreview.constants import WebhookParseStatus
-from fluidreview.factories import WebhookRequestFactory
+from smapply.factories import WebhookRequestSMAFactory
 from klasses.bootcamp_admissions_client import (
     BootcampAdmissionClient,
 )
@@ -22,10 +22,9 @@ def test_can_pay_klass():
     profile = ProfileFactory.create(user__email="foo@example.com", fluidreview_id=9999, smapply_id=8888)
     user = profile.user
     smapply_klass = 19
-    WebhookRequestFactory(
+    WebhookRequestSMAFactory(
         award_id=smapply_klass,
-        user_email=user.email,
-        user_id=user.profile.fluidreview_id,
+        user_id=user.profile.smapply_id,
         status=WebhookParseStatus.SUCCEEDED)
 
     boot_client = BootcampAdmissionClient(user)

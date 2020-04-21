@@ -48,7 +48,7 @@ def fetch_smapply_klass_keys(sma_user_id):
 
 class BootcampAdmissionClient:
     """
-    Client for the retriving information about user admissions to klasses
+    Client for the retrieving information about user admissions to klasses
     """
 
     def __init__(self, user):
