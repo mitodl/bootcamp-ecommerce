@@ -3,14 +3,16 @@ Page models for the CMS
 """
 from django.db import models
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.models import Image
 from wagtail.core import blocks
 from wagtail.core.models import Page
 
 
 class BootcampPage(Page):
-
+    """
+    CMS page representing a Bootcamp
+    """
     description = RichTextField(
         blank=True, help_text="The description shown on the product page"
     )

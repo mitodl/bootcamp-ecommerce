@@ -1,5 +1,4 @@
 """Functions reading and parsing environment variables"""
-from ast import literal_eval
 import os
 
 from django.core.exceptions import ImproperlyConfigured
