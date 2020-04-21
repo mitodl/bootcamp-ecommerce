@@ -16,8 +16,13 @@ import os
 import platform
 from urllib.parse import urljoin
 
+from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
 import yaml
+from bootcamp.envs import (
+    get_string,
+    get_bool,
+)
 
 
 VERSION = "0.38.1"
@@ -118,9 +123,25 @@ INSTALLED_APPS = (
     # other third party APPS
     'raven.contrib.django.raven_compat',
 
+    # wagtail
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+
+    'modelcluster',
+    'taggit',
     # Our INSTALLED_APPS
     'backends',
     'bootcamp',
+    'cms',
     'ecommerce',
     'fluidreview',
     'smapply',
@@ -145,6 +166,8 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 )
 
 # enable the nplusone profiler only in debug mode
@@ -430,6 +453,36 @@ GTM_TRACKING_ID = get_var("GTM_TRACKING_ID", "")
 GOOGLE_API_KEY = get_var("GOOGLE_API_KEY", "")
 SL_TRACKING_ID = get_var("SL_TRACKING_ID", "")
 REACT_GA_DEBUG = get_var("REACT_GA_DEBUG", False)
+
+WAGTAIL_SITE_NAME = "MIT Bootcamp-Ecommerce"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+BOOTCAMP_ECOMMERCE_USE_S3 = get_bool('MICROMASTERS_USE_S3', False)
+AWS_ACCESS_KEY_ID = get_string('AWS_ACCESS_KEY_ID', False)
+AWS_SECRET_ACCESS_KEY = get_string('AWS_SECRET_ACCESS_KEY', False)
+AWS_STORAGE_BUCKET_NAME = get_string('AWS_STORAGE_BUCKET_NAME', False)
+AWS_S3_FILE_OVERWRITE = get_bool('AWS_S3_FILE_OVERWRITE', False)
+AWS_QUERYSTRING_AUTH = get_string('AWS_QUERYSTRING_AUTH', False)
+# Provide nice validation of the configuration
+if (
+        BOOTCAMP_ECOMMERCE_USE_S3 and
+        (not AWS_ACCESS_KEY_ID or
+         not AWS_SECRET_ACCESS_KEY or
+         not AWS_STORAGE_BUCKET_NAME)
+):
+    raise ImproperlyConfigured(
+        'You have enabled S3 support, but are missing one of '
+        'AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or '
+        'AWS_STORAGE_BUCKET_NAME'
+    )
+if BOOTCAMP_ECOMMERCE_USE_S3:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+else:
+    # by default use django.core.files.storage.FileSystemStorage with
+    # overwrite feature
+    DEFAULT_FILE_STORAGE = 'storages.backends.overwrite.OverwriteStorage'
 
 # Celery
 CELERY_BROKER_URL = get_var(
