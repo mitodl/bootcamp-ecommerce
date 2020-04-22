@@ -6,32 +6,17 @@ from unittest.mock import Mock
 
 import pytest
 
-from klasses.models import Bootcamp
+from klasses.models import Klass
 
 
-def patch_get_admissions(mocker, user):
+def patch_get_admissions(mocker):
     """
     Helper function to build admission service responses based on the local database.
     """
     mocker.patch(
-        'klasses.bootcamp_admissions_client.fetch_legacy_admissions',
+        'klasses.bootcamp_admissions_client.fetch_smapply_klass_keys',
         autospec=True,
-        return_value={
-            "user": user.email,
-            "bootcamps": [
-                {
-                    "bootcamp_id": None,  # NOTE:this is the ID on the remote web service (we do not need it)
-                    "bootcamp_title": bootcamp.title,
-                    "klasses": [
-                        {
-                            "klass_id": klass.klass_key,  # NOTE: this is the ID on the remote web service
-                            "klass_name": klass.title,
-                            "is_user_eligible_to_pay": True
-                        } for klass in bootcamp.klass_set.order_by('id')
-                    ]
-                } for bootcamp in Bootcamp.objects.all().order_by('id')
-            ]
-        }
+        return_value=list(Klass.objects.all().values_list('klass_key', flat=True))
     )
 
 

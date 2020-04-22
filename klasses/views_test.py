@@ -51,7 +51,7 @@ def test_data(mocker):
     for _ in range(3):
         klass = KlassFactory.create()
 
-    patch_get_admissions(mocker, user)
+    patch_get_admissions(mocker)
     # just need one klass, so returning the last created
     return user, other_user, klass
 
