@@ -43,13 +43,13 @@ def index(request):
 
 
 @login_required
-def pay(request):
+def react(request):
     """
-    View for the payment page
+    View for pages served by react
     """
-    return render(request, "bootcamp/pay.html", context={
+    return render(request, "bootcamp/react.html", context={
         "js_settings_json": json.dumps(_serialize_js_settings(request)),
-        "authenticated": True,
+        "authenticated": not request.user.is_anonymous,
     })
 
 

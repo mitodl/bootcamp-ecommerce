@@ -1,20 +1,29 @@
 // @flow
+import {createBrowserHistory} from "history"
 import React from "react"
 import ReactDOM from "react-dom"
-import { Provider } from "react-redux"
+import { AppContainer } from "react-hot-loader"
 
 import configureStore from "../store/configureStore"
-import PaymentPage from "../containers/PaymentPage"
+import Router, { routes } from "../Router"
 
 const store = configureStore()
 
-const rootEl = document.getElementById("pay")
+const rootEl = document.getElementById("container")
 if (!rootEl) {
-  throw new Error("Unable to find 'pay' element")
+  throw new Error("Unable to find 'container' element")
 }
-ReactDOM.render(
-  <Provider store={store}>
-    <PaymentPage />
-  </Provider>,
-  rootEl
-)
+
+const renderApp = Component => {
+  const history = createBrowserHistory()
+  ReactDOM.render(
+    <AppContainer>
+      <Component history={history} store={store}>
+        {routes}
+      </Component>
+    </AppContainer>,
+    rootEl
+  )
+}
+
+renderApp(Router)
