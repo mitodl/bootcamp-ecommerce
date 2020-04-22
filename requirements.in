@@ -1,6 +1,7 @@
 Django==2.2.10
 PyYAML==5.1
 celery==4.0.2
+boto3==1.12.42
 dj-database-url==0.3.0
 django-compat==1.0.15
 django-hijack==2.1.10
@@ -14,6 +15,7 @@ edx-api-client==0.6.1
 factory_boy
 faker
 html5lib==0.999999999
+django-storages==1.9.1
 ipython
 newrelic
 psycopg2==2.7.3.2
@@ -26,3 +28,4 @@ social-auth-app-django==2.1.0
 static3==0.5.1
 urllib3>=1.24.2
 uwsgi
+wagtail==2.8.1
