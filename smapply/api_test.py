@@ -7,7 +7,6 @@ import json
 import pytest
 from django.contrib.auth.models import User
 from django.test import override_settings
-from django.conf import settings
 from requests import HTTPError
 
 from ecommerce.factories import OrderFactory, LineFactory
@@ -223,8 +222,9 @@ def test_process_new_profile():
 
 def test_process_both_exist_no_smapply_id(mocker):
     """Test that no changes are made to an existing user but existing profile is saved with smapply id"""
-    ProfileFactory(
-        user=UserFactory(email=sma_user['email'].upper(), username=sma_user['email']),
+    ProfileFactory.create(
+        user__email=sma_user['email'].upper(),
+        user__username=sma_user['email'],
         smapply_id=None,
         fluidreview_id=78690,
     )
@@ -236,8 +236,9 @@ def test_process_both_exist_no_smapply_id(mocker):
 
 def test_process_user_both_exist_with_smapply_id(mocker):
     """Test that no changes are made to an existing user and profile with smapply id"""
-    ProfileFactory(
-        user=UserFactory(email=sma_user['email'].upper(), username=sma_user['email']),
+    ProfileFactory.create(
+        user__email=sma_user['email'].upper(),
+        user__username=sma_user['email'],
         smapply_id=1
     )
     mock_create_user = mocker.patch('smapply.api.User.objects.create')
@@ -251,13 +252,14 @@ def test_process_user_both_exist_with_smapply_id(mocker):
     ['25.99', True],
     ['', False]
 ])
-# pylint: disable=too-many-arguments
-def test_parse_webhook_user(mocker, price, sends_email, mock_user_sync, mock_deal_sync, mock_product_sync):
+# pylint: disable=too-many-arguments,too-many-locals
+def test_parse_webhook_user(settings, mocker, price, sends_email, mock_user_sync, mock_deal_sync, mock_product_sync):
     """Test creation of new Bootcamp if no matching award_id"""
     user_id = 94379385
     award_id = 78456
     submission_id = 4533767
     award_name = "Best monkey prize"
+    amount_to_pay_id = 789
     ProfileFactory(smapply_id=user_id)
     send_email = mocker.patch('smapply.api.MailgunClient.send_individual_email')
     data = {
@@ -269,12 +271,14 @@ def test_parse_webhook_user(mocker, price, sends_email, mock_user_sync, mock_dea
     body = json.dumps(data)
     hook = WebhookRequestSMA(body=body)
 
+    settings.SMAPPLY_AMOUNT_TO_PAY_ID = amount_to_pay_id
+
     mock_get = MockGet({
         f'/applications/{submission_id}/': {
             'id': submission_id,
             'current_stage': {'id': 1234, 'title': 'Admitted' * 40},
             'custom_fields': [{
-                'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
+                'id': amount_to_pay_id,
                 'value': price
             }]
         },
@@ -345,11 +349,14 @@ def test_parse_failure(mocker, body, mock_user_sync, mock_deal_sync, mock_produc
     mock_product_sync.assert_not_called()
 
 
-def test_sync_demographics(mocker, mock_user_sync, mock_deal_sync, mock_product_sync):
+def test_sync_demographics(
+    settings, mocker, mock_user_sync, mock_deal_sync, mock_product_sync
+):  # pylint: disable=too-many-locals
     """Test that a profile's demographics is set when on webhook receive"""
     user_id = 94379385
     submission_id = 4533767
     award_id = 12345
+    amount_to_pay_id = 789
     profile = ProfileFactory(smapply_id=user_id)
     data = {
         'user_id': user_id,
@@ -358,6 +365,8 @@ def test_sync_demographics(mocker, mock_user_sync, mock_deal_sync, mock_product_
     }
     body = json.dumps(data)
     hook = WebhookRequestSMA(body=body)
+
+    settings.SMAPPLY_AMOUNT_TO_PAY_ID = amount_to_pay_id
 
     not_demographics_task = {'name': 'abcdefg', 'data': {'bad': 'data'}}
     demographics_task = {'name': DEMOGRAPHICS_TASK_NAME, 'data': {'test': 'test'}}
@@ -375,7 +384,7 @@ def test_sync_demographics(mocker, mock_user_sync, mock_deal_sync, mock_product_
             'id': submission_id,
             'current_stage': {'id': 1234, 'title': 'Admitted'},
             'custom_fields': [{
-                'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
+                'id': amount_to_pay_id,
                 'value': '12.34'
             }]
         },
@@ -391,11 +400,14 @@ def test_sync_demographics(mocker, mock_user_sync, mock_deal_sync, mock_product_
     mock_product_sync.assert_called_once()
 
 
-def test_sync_demographics_error(mocker, mock_user_sync, mock_deal_sync, mock_product_sync):
+def test_sync_demographics_error(
+        settings, mocker, mock_user_sync, mock_deal_sync, mock_product_sync
+):  # pylint: disable=too-many-locals
     """Test that an error is logged when an application is missing the demographics task"""
     user_id = 94379385
     submission_id = 4533767
     award_id = 12345
+    amount_to_pay_id = 789
     profile = ProfileFactory(smapply_id=user_id)
 
     data = {
@@ -405,6 +417,8 @@ def test_sync_demographics_error(mocker, mock_user_sync, mock_deal_sync, mock_pr
     }
     body = json.dumps(data)
     hook = WebhookRequestSMA(body=body)
+
+    settings.SMAPPLY_AMOUNT_TO_PAY_ID = amount_to_pay_id
 
     not_demographics_task = {'name': 'abcdefg', 'data': {'bad': 'data'}}
 
@@ -421,7 +435,7 @@ def test_sync_demographics_error(mocker, mock_user_sync, mock_deal_sync, mock_pr
             'id': submission_id,
             'current_stage': {'id': 1234, 'title': 'Admitted'},
             'custom_fields': [{
-                'id': settings.SMAPPLY_AMOUNT_TO_PAY_ID,
+                'id': amount_to_pay_id,
                 'value': '12.34'
             }]
         },

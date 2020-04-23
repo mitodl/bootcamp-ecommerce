@@ -22,7 +22,7 @@ class SerializeMaybeUserTests(TestCase):
 
     def test_serialize_maybe_user_without_profile(self):
         """Test that a user without a profile is correctly serialized"""
-        user_without_profile = UserFactory.create()
+        user_without_profile = UserFactory.create(profile=None)
         with patch('main.serializers.get_social_username', return_value='abc'):
             assert serialize_maybe_user(user_without_profile) == {
                 'full_name': None,

@@ -1,0 +1,37 @@
+{
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    "newrelic:wayne",
+    "rediscloud:30"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-python"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-pgbouncer"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nginx"
+    }
+  ],
+  "description": "MIT Bootcamp e-commerce",
+  "env": {
+    "NEW_RELIC_APP_NAME": {
+      "default": "Bootcamp e-commerce",
+      "description": "Application identifier in New Relic."
+    },
+    "PGBOUNCER_DEFAULT_POOL_SIZE": {
+      "value": "50"
+    },
+    "PGBOUNCER_MIN_POOL_SIZE": {
+      "value": "5"
+    },
+    "SECRET_KEY": {
+      "generator": "secret"
+    }
+  }
+}

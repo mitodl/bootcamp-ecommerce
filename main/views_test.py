@@ -28,6 +28,7 @@ class TestViews(TestCase):
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
         version = '0.0.1'
+        recaptcha_key = "abc"
         with self.settings(
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
@@ -35,7 +36,8 @@ class TestViews(TestCase):
             ZENDESK_CONFIG={
                 "HELP_WIDGET_ENABLED": False,
                 "HELP_WIDGET_KEY": "fake_key",
-            }
+            },
+            RECAPTCHA_SITE_KEY=recaptcha_key
         ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get('/')
         self.assertContains(
@@ -58,6 +60,7 @@ class TestViews(TestCase):
             'user': None,
             'zendesk_config': {"help_widget_enabled": False, "help_widget_key": "fake_key"},
 
+            "recaptchaKey": recaptcha_key,
         }
 
     def test_index_logged_in(self):
@@ -90,6 +93,7 @@ class TestViews(TestCase):
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
         version = '0.0.1'
+        recaptcha_key = "abc"
         with self.settings(
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
@@ -97,7 +101,8 @@ class TestViews(TestCase):
             ZENDESK_CONFIG={
                 "HELP_WIDGET_ENABLED": False,
                 "HELP_WIDGET_KEY": "fake_key",
-            }
+            },
+            RECAPTCHA_SITE_KEY=recaptcha_key
         ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get(reverse('pay'))
 
@@ -119,5 +124,5 @@ class TestViews(TestCase):
                 'username': None
             },
             "zendesk_config": {"help_widget_enabled": False, "help_widget_key": "fake_key"},
-
+            "recaptchaKey": recaptcha_key,
         }

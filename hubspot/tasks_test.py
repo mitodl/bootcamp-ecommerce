@@ -62,10 +62,7 @@ def test_sync_product_with_hubspot(mock_hubspot_request):
 
 def test_sync_deal_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a DEAL sync"""
-    profile = ProfileFactory.create(smapply_id=102132)
-    personal_price = PersonalPriceFactory.create()
-    profile.user = personal_price.user
-    profile.save()
+    personal_price = PersonalPriceFactory.create(user__profile__smapply_id=102132)
 
     sync_deal_with_hubspot(personal_price.id)
     body = make_deal_sync_message(personal_price.id)
@@ -77,10 +74,7 @@ def test_sync_deal_with_hubspot(mock_hubspot_request):
 
 def test_sync_line_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a LINE sync"""
-    profile = ProfileFactory.create(smapply_id=102132)
-    personal_price = PersonalPriceFactory.create()
-    profile.user = personal_price.user
-    profile.save()
+    personal_price = PersonalPriceFactory.create(user__profile__smapply_id=102132)
 
     sync_line_with_hubspot(personal_price.id)
     body = make_line_sync_message(personal_price.id)
