@@ -27,6 +27,7 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
             ),
             "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
         },
+        "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
     }
 
 

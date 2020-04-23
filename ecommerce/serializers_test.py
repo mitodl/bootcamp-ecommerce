@@ -8,7 +8,7 @@ from ddt import (
 )
 from django.test import TestCase as DjangoTestCase
 
-from main.utils_test import format_as_iso8601
+from main.test_utils import format_as_iso8601
 from ecommerce.factories import LineFactory
 from ecommerce.serializers import (
     PaymentSerializer,

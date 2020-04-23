@@ -1,9 +1,13 @@
 astroid==2.0.4
+black==18.9b0
 bpython
 codecov
 ddt
 django-debug-toolbar==1.11
+hypothesis==4.23.4
 ipdb
+factory_boy==2.12.0
+faker
 nplusone
 pdbpp
 pip-tools
@@ -12,9 +16,10 @@ pylint-django==2.0.2
 pytest==4.3.0
 pytest-cov>=2.6.1
 pytest-django==3.4.8
-pytest-pep8==1.0.6
 pytest-mock==1.10.1
 pytest-pylint==0.12.3
+pytest-lazy-fixture==0.5.1
+responses
 semantic-version
 selenium
 testfixtures

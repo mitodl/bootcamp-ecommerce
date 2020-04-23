@@ -1,28 +1,39 @@
 """
-Validate that our settings functions work, and we can create yaml files
+Validate that our settings functions work
 """
 
 import importlib
-import os
+import json
 import sys
-import tempfile
 from unittest import mock
 
 from django.conf import settings
 from django.core import mail
 from django.test import TestCase
 import semantic_version
-import yaml
 
-from main.settings import load_fallback, get_var
+from main import envs
 
 REQUIRED = {
     'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN': 'asdfasdf',
 }
 
 
+def cleanup_settings():
+    """Cleanup settings after a test"""
+    envs.env.reload()
+    importlib.reload(sys.modules["main.settings"])
+
+
 class TestSettings(TestCase):
     """Validate that settings work as expected."""
+
+    def patch_settings(self, values):
+        """Patch the cached settings loaded by EnvParser"""
+        with mock.patch.dict("os.environ", values, clear=True):
+            envs.env.reload()
+            settings_dict = self.reload_settings()
+        return settings_dict
 
     def reload_settings(self):
         """
@@ -33,80 +44,29 @@ class TestSettings(TestCase):
         """
         importlib.reload(sys.modules['main.settings'])
         # Restore settings to original settings after test
-        self.addCleanup(importlib.reload, sys.modules['main.settings'])
+        self.addCleanup(cleanup_settings)
         return vars(sys.modules['main.settings'])
-
-    def test_load_fallback(self):
-        """Verify our YAML load works as expected."""
-        config_settings = {'TEST_KEY': 'yessir'}
-        _, temp_config_path = tempfile.mkstemp()
-        self.addCleanup(os.remove, temp_config_path)
-        with open(temp_config_path, 'w') as temp_config:
-            temp_config.write(yaml.dump(config_settings))
-
-        with mock.patch('main.settings.CONFIG_PATHS') as config_paths:
-            config_paths.__iter__.return_value = [temp_config_path]
-            fallback_config = load_fallback()
-            self.assertDictEqual(fallback_config, config_settings)
-
-    def test_get_var(self):
-        """Verify that get_var does the right thing with precedence"""
-        with mock.patch.dict(
-            'main.settings.FALLBACK_CONFIG',
-            {'FOO': 'bar'}
-        ):
-            # Verify fallback
-            self.assertEqual(get_var('FOO', 'notbar'), 'bar')
-
-        # Verify default value
-        self.assertEqual(get_var('NOTATHING', 'foobar'), 'foobar')
-
-        # Verify environment variable wins:
-        with mock.patch.dict(
-            'os.environ', {'FOO': 'notbar'}, clear=True
-        ):
-            self.assertEqual(get_var('FOO', 'lemon'), 'notbar')
-
-        # Verify that types work:
-        with mock.patch.dict(
-            'os.environ',
-            {
-                'FOO': 'False',
-                'BAR': '[1,2,3]',
-            },
-            clear=True
-        ):
-            self.assertFalse(get_var('FOO', True))
-            self.assertEqual(get_var('BAR', []), [1, 2, 3])
-        # Make sure real types still work too (i.e. from yaml load)
-        with mock.patch.dict(
-            'main.settings.FALLBACK_CONFIG',
-            {'BLAH': True}
-        ):
-            self.assertEqual(get_var('BLAH', False), True)
 
     def test_admin_settings(self):
         """Verify that we configure email with environment variable"""
 
-        with mock.patch.dict('os.environ', {
+        settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': '',
             **REQUIRED,
-        }, clear=True):
-            settings_vars = self.reload_settings()
-            self.assertFalse(settings_vars.get('ADMINS', False))
+        })
+        self.assertFalse(settings_vars.get('ADMINS', False))
 
         test_admin_email = 'cuddle_bunnies@example.com'
-        with mock.patch.dict('os.environ', {
+        settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': test_admin_email,
             **REQUIRED,
-        }, clear=True):
-            settings_vars = self.reload_settings()
-            self.assertEqual(
-                (('Admins', test_admin_email),),
-                settings_vars['ADMINS']
-            )
+        })
+        self.assertEqual(
+            (('Admins', test_admin_email),),
+            settings_vars['ADMINS']
+        )
         # Manually set ADMIN to our test setting and verify e-mail
         # goes where we expect
         settings.ADMINS = (('Admins', test_admin_email),)
@@ -117,40 +77,36 @@ class TestSettings(TestCase):
         """Verify that we can enable/disable database SSL with a var"""
 
         # Check default state is SSL on
-        with mock.patch.dict('os.environ', {
+        settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_DB_DISABLE_SSL': '',
             **REQUIRED,
-        }, clear=True):
-            settings_vars = self.reload_settings()
-            self.assertEqual(
-                settings_vars['DATABASES']['default']['OPTIONS'],
-                {'sslmode': 'require'}
-            )
+        })
+        self.assertEqual(
+            settings_vars['DATABASES']['default']['OPTIONS'],
+            {'sslmode': 'require'}
+        )
 
         # Check enabling the setting explicitly
-        with mock.patch.dict('os.environ', {
+        settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': 'True',
             **REQUIRED,
-        }, clear=True):
-            settings_vars = self.reload_settings()
-            self.assertEqual(
-                settings_vars['DATABASES']['default']['OPTIONS'],
-                {}
-            )
+        })
+        self.assertEqual(
+            settings_vars['DATABASES']['default']['OPTIONS'],
+            {}
+        )
 
         # Disable it
-        with mock.patch.dict('os.environ', {
+        settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': 'False',
             **REQUIRED,
-        }, clear=True):
-            settings_vars = self.reload_settings()
-            self.assertEqual(
-                settings_vars['DATABASES']['default']['OPTIONS'],
-                {'sslmode': 'require'}
-            )
+        })
+        self.assertEqual(
+            settings_vars['DATABASES']['default']['OPTIONS'],
+            {'sslmode': 'require'}
+        )
 
     @staticmethod
     def test_semantic_version():
@@ -158,3 +114,20 @@ class TestSettings(TestCase):
         Verify that we have a semantic compatible version.
         """
         semantic_version.Version(settings.VERSION)
+
+    @staticmethod
+    def test_app_json_modified():
+        """
+        generate_app_json should return a dictionary of JSON config for app.json
+        """
+        from main.envs import generate_app_json
+
+        with open("app.json") as app_json_file:
+            app_json = json.load(app_json_file)
+
+        generated_app_json = generate_app_json()
+
+        # pytest will print the difference
+        assert json.dumps(app_json, sort_keys=True, indent=2) == json.dumps(
+            generated_app_json, sort_keys=True, indent=2
+        ), "Generated app.json does not match the app.json file. Please use the 'generate_app_json' management command to update app.json"

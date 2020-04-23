@@ -1,14 +1,6 @@
 version: '3.6'
 services:
-  web:
-    build:
-      context: .
-      dockerfile: ./travis/Dockerfile-travis-web
-
   celery:
-    build:
-      context: .
-      dockerfile: ./travis/Dockerfile-travis-web
     environment:
       # for celery, to avoid ImproperlyConfigured
       MAILGUN_URL: 'http://fake.example.com'

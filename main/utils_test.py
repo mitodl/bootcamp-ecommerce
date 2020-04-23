@@ -1,13 +1,17 @@
 """
 Tests for the utils module
 """
+import datetime
 import unittest
+import operator as op
 from math import ceil
 
 from django.test import (
     override_settings,
     TestCase,
 )
+import pytest
+import pytz
 
 from ecommerce.factories import (
     Order,
@@ -17,18 +21,174 @@ from main.utils import (
     get_field_names,
     serialize_model_object,
     chunks,
+    now_in_utc,
+    first_or_none,
+    is_near_now,
+    get_error_response_summary,
+    unique,
+    unique_ignore_case,
+    max_or_none,
+    item_at_index_or_none,
+    all_unique,
+    all_equal,
+    has_all_keys,
+    group_into_dict
 )
+from main.test_utils import MockResponse, format_as_iso8601
 
 
-def format_as_iso8601(time, remove_microseconds=True):
-    """Helper function to format datetime with the Z at the end"""
-    # Can't use datetime.isoformat() because format is slightly different from this
-    iso_format = '%Y-%m-%dT%H:%M:%S.%f'
-    # chop off microseconds to make milliseconds
-    str_time = time.strftime(iso_format)
-    if remove_microseconds:
-        str_time = str_time[:-3]
-    return str_time + "Z"
+def test_now_in_utc():
+    """now_in_utc() should return the current time set to the UTC time zone"""
+    now = now_in_utc()
+    assert is_near_now(now)
+    assert now.tzinfo == pytz.UTC
+
+
+def test_is_near_now():
+    """
+    Test is_near_now for now
+    """
+    now = datetime.datetime.now(tz=pytz.UTC)
+    assert is_near_now(now) is True
+    later = now + datetime.timedelta(0, 6)
+    assert is_near_now(later) is False
+    earlier = now - datetime.timedelta(0, 6)
+    assert is_near_now(earlier) is False
+
+
+def test_first_or_none():
+    """
+    Assert that first_or_none returns the first item in an iterable or None
+    """
+    assert first_or_none([]) is None
+    assert first_or_none(set()) is None
+    assert first_or_none([1, 2, 3]) == 1
+    assert first_or_none(range(1, 5)) == 1
+
+
+def test_max_or_none():
+    """
+    Assert that max_or_none returns the max of some iterable, or None if the iterable has no items
+    """
+    assert max_or_none(i for i in [5, 4, 3, 2, 1]) == 5
+    assert max_or_none([1, 3, 5, 4, 2]) == 5
+    assert max_or_none([]) is None
+
+
+def test_unique():
+    """
+    Assert that unique() returns a generator of unique elements from a provided iterable
+    """
+    assert list(unique([1, 2, 2, 3, 3, 0, 3])) == [1, 2, 3, 0]
+    assert list(unique(("a", "b", "a", "c", "C", None))) == ["a", "b", "c", "C", None]
+
+
+def test_unique_ignore_case():
+    """
+    Assert that unique_ignore_case() returns a generator of unique lowercase strings from a
+    provided iterable
+    """
+    assert list(unique_ignore_case(["ABC", "def", "AbC", "DEf"])) == ["abc", "def"]
+
+
+def test_item_at_index_or_none():
+    """
+    Assert that item_at_index_or_none returns an item at a given index, or None if that index
+    doesn't exist
+    """
+    arr = [1, 2, 3]
+    assert item_at_index_or_none(arr, 1) == 2
+    assert item_at_index_or_none(arr, 10) is None
+
+
+def test_all_equal():
+    """
+    Assert that all_equal returns True if all of the provided args are equal to each other
+    """
+    assert all_equal(1, 1, 1) is True
+    assert all_equal(1, 2, 1) is False
+    assert all_equal() is True
+
+
+def test_all_unique():
+    """
+    Assert that all_unique returns True if all of the items in the iterable argument are unique
+    """
+    assert all_unique([1, 2, 3, 4]) is True
+    assert all_unique((1, 2, 3, 4)) is True
+    assert all_unique([1, 2, 3, 1]) is False
+
+
+def test_has_all_keys():
+    """
+    Assert that has_all_keys returns True if the given dict has all of the specified keys
+    """
+    d = {"a": 1, "b": 2, "c": 3}
+    assert has_all_keys(d, ["a", "c"]) is True
+    assert has_all_keys(d, ["a", "z"]) is False
+
+
+def test_group_into_dict():
+    """
+    Assert that group_into_dict takes an iterable of items and returns a dictionary of those items
+    grouped by generated keys
+    """
+
+    class Car:  # pylint: disable=missing-docstring
+        def __init__(self, make, model):
+            self.make = make
+            self.model = model
+
+    cars = [
+        Car(make="Honda", model="Civic"),
+        Car(make="Honda", model="Accord"),
+        Car(make="Ford", model="F150"),
+        Car(make="Ford", model="Focus"),
+        Car(make="Jeep", model="Wrangler"),
+    ]
+    grouped_cars = group_into_dict(cars, key_fn=op.attrgetter("make"))
+    assert set(grouped_cars.keys()) == {"Honda", "Ford", "Jeep"}
+    assert set(grouped_cars["Honda"]) == set(cars[0:2])
+    assert set(grouped_cars["Ford"]) == set(cars[2:4])
+    assert grouped_cars["Jeep"] == [cars[4]]
+
+    nums = [1, 2, 3, 4, 5, 6]
+    grouped_nums = group_into_dict(nums, key_fn=lambda num: (num % 2 == 0))
+    assert grouped_nums.keys() == {True, False}
+    assert set(grouped_nums[True]) == {2, 4, 6}
+    assert set(grouped_nums[False]) == {1, 3, 5}
+
+
+
+@pytest.mark.parametrize(
+    "content,content_type,exp_summary_content,exp_url_in_summary",
+    [
+        ['{"bad": "response"}', "application/json", '{"bad": "response"}', False],
+        ["plain text", "text/plain", "plain text", False],
+        [
+            "<div>HTML content</div>",
+            "text/html; charset=utf-8",
+            "(HTML body ignored)",
+            True,
+        ],
+    ],
+)
+def test_get_error_response_summary(
+    content, content_type, exp_summary_content, exp_url_in_summary
+):
+    """
+    get_error_response_summary should provide a summary of an error HTTP response object with the correct bits of
+    information depending on the type of content.
+    """
+    status_code = 400
+    url = "http://example.com"
+    mock_response = MockResponse(
+        status_code=status_code, content=content, content_type=content_type, url=url
+    )
+    summary = get_error_response_summary(mock_response)
+    assert f"Response - code: {status_code}" in summary
+    assert f"content: {exp_summary_content}" in summary
+    assert (f"url: {url}" in summary) is exp_url_in_summary
 
 
 class SerializerTests(TestCase):
