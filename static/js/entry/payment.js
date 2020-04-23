@@ -1,5 +1,5 @@
 // @flow
-import {createBrowserHistory} from "history"
+import { createBrowserHistory } from "history"
 import React from "react"
 import ReactDOM from "react-dom"
 import { AppContainer } from "react-hot-loader"

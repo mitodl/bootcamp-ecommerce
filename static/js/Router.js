@@ -18,11 +18,11 @@ export default class Router extends React.Component<Props> {
   render() {
     const { children, history, store } = this.props
 
-    return <Provider store={store}>
-      <ReactRouter history={history}>
-        {children}
-      </ReactRouter>
-    </Provider>
+    return (
+      <Provider store={store}>
+        <ReactRouter history={history}>{children}</ReactRouter>
+      </Provider>
+    )
   }
 }
 
