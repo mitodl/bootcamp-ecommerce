@@ -4,7 +4,7 @@ const webpack = require("webpack")
 module.exports = {
   config: {
     entry: {
-      payment:  ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/payment"],
+      root:  ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/root"],
       sentry_client: './static/js/entry/sentry_client.js',
       style: "./static/js/entry/style"
     },
