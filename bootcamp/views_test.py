@@ -93,7 +93,7 @@ class TestViews(TestCase):
 
         bundles = [bundle[0][1] for bundle in get_bundle.call_args_list]
         assert set(bundles) == {
-            'payment',
+            'root',
             'sentry_client',
             'style',
         }
