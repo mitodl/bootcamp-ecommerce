@@ -15,14 +15,16 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from bootcamp.views import (
     index,
-    pay,
+    react,
     BackgroundImagesCSSView
 )
 
 
 urlpatterns = [
     url(r'^$', index, name='bootcamp-index'),
-    url(r'^pay/$', pay, name='pay'),
+
+    url(r'^pay/$', react, name='pay'),
+
     url(r'^terms_of_service/$', TemplateView.as_view(template_name='bootcamp/tos.html'), name='bootcamp-tos'),
     url(r'^terms_and_conditions/$', TemplateView.as_view(template_name='bootcamp/tac.html'), name='bootcamp-tac'),
     url(r'^status/', include('server_status.urls')),

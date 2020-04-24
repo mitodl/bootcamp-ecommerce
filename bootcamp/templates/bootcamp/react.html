@@ -6,10 +6,10 @@
 {% block content %}
 {% include "navbar.html" %}
 <div class="body-rows standard-layout">
-  <div id="pay">
+  <div id="container">
   </div>
 </div>
 {% include "footer.html" %}
 {% load render_bundle %}
-{% render_bundle "payment" %}
+{% render_bundle "root" %}
 {% endblock %}
