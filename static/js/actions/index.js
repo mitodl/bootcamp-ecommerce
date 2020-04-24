@@ -19,10 +19,6 @@ export const setTimeoutActive = createAction(SET_TIMEOUT_ACTIVE)
 export const SET_TOAST_MESSAGE = "SET_TOAST_MESSAGE"
 export const setToastMessage = createAction(SET_TOAST_MESSAGE)
 
-export const FETCH_PROCESSING = "FETCH_PROCESSING"
-export const FETCH_SUCCESS = "FETCH_SUCCESS"
-export const FETCH_FAILURE = "FETCH_FAILURE"
-
 export const SHOW_DIALOG = "SHOW_DIALOG"
 export const showDialog = createAction(SHOW_DIALOG)
 

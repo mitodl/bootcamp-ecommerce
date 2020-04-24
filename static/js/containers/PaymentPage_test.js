@@ -1,336 +1,308 @@
 /* global SETTINGS: false */
-import React from "react"
-import configureTestStore from "redux-asserts"
-import { mount } from "enzyme"
-import { Provider } from "react-redux"
 import { assert } from "chai"
-import sinon from "sinon"
 import moment from "moment"
+import wait from "waait"
 
-import * as api from "../lib/api"
-import {
-  setPaymentAmount,
-  setSelectedKlassKey,
-  setInitialTime,
-  setToastMessage,
-  SET_TIMEOUT_ACTIVE,
-  SET_TOAST_MESSAGE,
-  SHOW_DIALOG,
-  SET_PAYMENT_AMOUNT,
-  showDialog,
-  hideDialog
-} from "../actions"
 import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
-import rootReducer from "../reducers"
-import PaymentPage from "./PaymentPage"
+import PaymentPage, { PaymentPage as InnerPaymentPage } from "./PaymentPage"
 import { PAYMENT_CONFIRMATION_DIALOG } from "../components/Payment"
 import * as util from "../util/util"
 import { generateFakeKlasses } from "../factories"
-import { makeRequestActionType, makeReceiveSuccessActionType } from "../rest"
-
-const REQUEST_PAYMENT = makeRequestActionType("payment")
-const RECEIVE_PAYMENT_SUCCESS = makeReceiveSuccessActionType("payment")
-const REQUEST_KLASSES = makeRequestActionType("klasses")
-const RECEIVE_KLASSES_SUCCESS = makeReceiveSuccessActionType("klasses")
+import IntegrationTestHelper from "../util/integration_test_helper"
 
 describe("PaymentPage", () => {
   const paymentInputSelector = 'input[id="payment-amount"]'
   const paymentBtnSelector = "button.large-cta"
 
-  let store, listenForActions, fetchStub, klassesUrl, klassesStub
+  let helper, klassesUrl, fakeKlasses, renderPage
 
   beforeEach(() => {
+    helper = new IntegrationTestHelper()
+
     SETTINGS.user = {
       full_name: "john doe",
       username:  "johndoe"
     }
-
-    store = configureTestStore(rootReducer)
-    listenForActions = store.createListenForActions()
-    fetchStub = sinon.stub(api, "fetchJSONWithCSRF")
     klassesUrl = `/api/v0/klasses/${SETTINGS.user.username}/`
+    fakeKlasses = generateFakeKlasses(3, {
+      hasInstallment: true,
+      hasPayment:     true
+    })
+
+    renderPage = helper.configureHOCRenderer(
+      PaymentPage,
+      InnerPaymentPage,
+      {
+        entities: {
+          klasses: fakeKlasses,
+          payment: null
+        },
+        queries: {
+          klasses: {
+            isPending:  false,
+            isFinished: true
+          },
+          payment: {
+            isPending:  false,
+            isFinished: true
+          }
+        }
+      },
+      {}
+    )
   })
 
   afterEach(() => {
-    sinon.restore()
+    helper.cleanup()
   })
 
-  const renderPaymentComponent = (props = {}) =>
-    mount(
-      <Provider store={store}>
-        <PaymentPage {...props} />
-      </Provider>
-    )
-
-  const renderFullPaymentPage = ({
-    props = {},
-    extraActions = [],
-    expectKlassSuccess = true
-  } = {}) => {
-    let wrapper
-    let actions = [REQUEST_KLASSES]
-    if (expectKlassSuccess) {
-      actions.push(RECEIVE_KLASSES_SUCCESS)
-    }
-    actions = actions.concat(extraActions)
-
-    return listenForActions(actions, () => {
-      wrapper = renderPaymentComponent(props)
-    }).then(() => {
-      wrapper.update()
-      return Promise.resolve(wrapper)
-    })
-  }
-
-  it("does not have a selected klass by default", () => {
-    const fakeKlasses = generateFakeKlasses(3)
-    klassesStub = fetchStub
-      .withArgs(klassesUrl)
-      .returns(Promise.resolve(fakeKlasses))
-
-    return renderFullPaymentPage().then(wrapper => {
-      assert.isUndefined(wrapper.find("PaymentPage").prop("selectedKlass"))
-    })
+  it("does not have a selected klass by default", async () => {
+    const { wrapper } = await renderPage()
+    assert.isUndefined(wrapper.find("PaymentPage").prop("selectedKlass"))
   })
 
-  it("sets a selected klass", () => {
-    const fakeKlasses = generateFakeKlasses(3)
-    klassesStub = fetchStub
-      .withArgs(klassesUrl)
-      .returns(Promise.resolve(fakeKlasses))
-    store.dispatch(setSelectedKlassKey(3))
-
-    return renderFullPaymentPage().then(wrapper => {
-      assert.deepEqual(
-        wrapper.find("Payment").prop("selectedKlass"),
-        fakeKlasses[2]
-      )
-    })
-  })
-
-  it("only passes payable klasses to the Payment component", () => {
-    const fakeKlasses = generateFakeKlasses(3)
-    fakeKlasses[1].is_user_eligible_to_pay = false
-    klassesStub = fetchStub
-      .withArgs(klassesUrl)
-      .returns(Promise.resolve(fakeKlasses))
-
-    return renderFullPaymentPage().then(wrapper => {
-      assert.lengthOf(wrapper.find("Payment").prop("payableKlassesData"), 2)
-    })
-  })
-
-  it("does not show the payment & payment history sections while API results are still pending", () => {
-    klassesStub = fetchStub.withArgs(klassesUrl).returns(new Promise(() => {}))
-
-    return renderFullPaymentPage({ expectKlassSuccess: false }).then(
-      wrapper => {
-        assert.isFalse(wrapper.find("Payment").exists())
-        assert.isFalse(wrapper.find("PaymentHistory").exists())
+  it("sets a selected klass", async () => {
+    const { inner } = await renderPage({
+      ui: {
+        selectedKlassKey: 3
       }
+    })
+
+    assert.deepEqual(
+      inner.find("Payment").prop("selectedKlass"),
+      fakeKlasses[2]
     )
   })
+
+  it("only passes payable fakeKlasses to the Payment component", async () => {
+    fakeKlasses[1].is_user_eligible_to_pay = false
+
+    const { inner } = await renderPage()
+    assert.lengthOf(inner.find("Payment").prop("payableKlassesData"), 2)
+  })
+
+  it("does not show the payment & payment history sections while API results are still pending", async () => {
+    const { wrapper } = await renderPage({
+      queries: {
+        payment: {
+          isPending:  true,
+          isFinished: false
+        }
+      }
+    })
+
+    assert.isFalse(wrapper.find("Payment").exists())
+    assert.isFalse(wrapper.find("PaymentHistory").exists())
+  })
+
+  //
   ;[
     [100, true, "past payments should"],
     [0, false, "no past payments should not"]
-  ].forEach(([totalPaid, shouldShowPayHistory, testDesciption]) => {
-    it(`for user with ${testDesciption} include payment history component`, () => {
-      const fakeKlasses = generateFakeKlasses(2)
+  ].forEach(([totalPaid, shouldShowPayHistory, testDescription]) => {
+    it(`for user with ${testDescription} include payment history component`, async () => {
       for (const klass of fakeKlasses) {
         klass.total_paid = totalPaid
       }
-      klassesStub = fetchStub
-        .withArgs(klassesUrl)
-        .returns(Promise.resolve(fakeKlasses))
 
-      return renderFullPaymentPage().then(wrapper => {
-        assert.equal(
-          wrapper.find("PaymentHistory").exists(),
-          shouldShowPayHistory
-        )
-      })
+      const { inner } = await renderPage()
+
+      assert.equal(inner.find("PaymentHistory").exists(), shouldShowPayHistory)
     })
   })
 
   describe("payment functionality", () => {
-    beforeEach(() => {
-      klassesStub = fetchStub
-        .withArgs(klassesUrl)
-        .returns(Promise.resolve(generateFakeKlasses(1)))
-      store.dispatch(setSelectedKlassKey(1))
-    })
-
-    it("when user overpay", () => {
-      return renderFullPaymentPage().then(wrapper => {
-        return listenForActions([SET_PAYMENT_AMOUNT, SHOW_DIALOG], () => {
-          store.dispatch(setPaymentAmount("2000"))
-          store.dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG))
-        }).then(() => {
-          assert.equal(
-            wrapper.find("DialogTitle span").text(),
-            "Confirm Payment"
-          )
-          assert.equal(
-            wrapper.find(".overpay-confirm").text(),
-            "Are you sure you want to pay $2,000?"
-          )
-          store.dispatch(hideDialog(PAYMENT_CONFIRMATION_DIALOG))
-        })
+    it("when user overpay", async () => {
+      const { inner } = await renderPage({
+        ui: {
+          selectedKlassKey: 1,
+          dialogVisibility: {
+            [PAYMENT_CONFIRMATION_DIALOG]: true
+          },
+          paymentAmount: "2000"
+        }
       })
-    })
 
-    it("sets a price", () => {
-      return renderFullPaymentPage().then(wrapper => {
-        wrapper.update()
-        wrapper
-          .find(paymentInputSelector)
-          .props()
-          .onChange({
-            target: {
-              value: "123"
-            }
-          })
-        assert.equal(store.getState().ui.paymentAmount, "123")
-      })
-    })
-
-    it("constructs a form to be sent to Cybersource and submits it", () => {
-      const url = "/x/y/z"
-      const payload = {
-        pay: "load"
-      }
-      fetchStub.withArgs("/api/v0/payment/").returns(
-        Promise.resolve({
-          url:     url,
-          payload: payload
-        })
+      assert.equal(
+        inner
+          .find("Payment")
+          .dive()
+          .find("OurDialog")
+          .prop("title"),
+        "Confirm Payment"
       )
-      store.dispatch(setPaymentAmount("123"))
+      assert.equal(
+        inner
+          .find("Payment")
+          .dive()
+          .find("OurDialog")
+          .find(".overpay-confirm")
+          .text(),
+        "Are you sure you want to pay $2,000?"
+      )
+    })
 
-      const submitStub = sinon.stub()
-      const fakeForm = document.createElement("form")
-      fakeForm.setAttribute("class", "fake-form")
-      fakeForm.submit = submitStub
-      const createFormStub = sinon.stub(util, "createForm").returns(fakeForm)
-
-      return renderFullPaymentPage().then(wrapper => {
-        return listenForActions(
-          [REQUEST_PAYMENT, RECEIVE_PAYMENT_SUCCESS],
-          () => {
-            wrapper.update()
-            wrapper.find(paymentBtnSelector).simulate("click")
-          }
-        ).then(() => {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              assert.equal(createFormStub.callCount, 1)
-              assert.deepEqual(createFormStub.args[0], [url, payload])
-
-              assert(
-                document.body.querySelector(".fake-form"),
-                "fake form not found in body"
-              )
-              assert.equal(submitStub.callCount, 1)
-              assert.deepEqual(submitStub.args[0], [])
-
-              resolve()
-            }, 50)
-          })
-        })
+    it("sets a price", async () => {
+      const { inner, store } = await renderPage({
+        ui: {
+          selectedKlassKey: fakeKlasses[1].klass_key
+        }
       })
+      inner
+        .find("Payment")
+        .dive()
+        .find(paymentInputSelector)
+        .props()
+        .onChange({
+          target: {
+            value: "123"
+          }
+        })
+      assert.equal(store.getState().ui.paymentAmount, "123")
     })
   })
 
-  describe("order receipt and cancellation pages", () => {
-    const TOAST_ACTIONS = [SET_TOAST_MESSAGE]
-    const TIMEOUT_ACTIONS = [SET_TIMEOUT_ACTIVE]
-    let orderId, klass
-
-    beforeEach(() => {
-      const klasses = generateFakeKlasses(1, { hasPayment: true })
-      klass = klasses[0]
-      orderId = klass.payments[0].order.id
-      klassesStub = fetchStub
-        .withArgs(klassesUrl)
-        .returns(Promise.resolve(klasses))
+  it("constructs a form to be sent to Cybersource and submits it", async () => {
+    const url = "/x/y/z"
+    const payload = {
+      pay: "load"
+    }
+    helper.handleRequestStub.withArgs("/api/v0/payment/").returns({
+      status: 200,
+      body:   {
+        url,
+        payload
+      }
     })
 
-    it("shows the order status toast when the query param is set for a cancellation", () => {
+    const submitStub = helper.sandbox.stub()
+    const fakeForm = document.createElement("form")
+    fakeForm.setAttribute("class", "fake-form")
+    fakeForm.submit = submitStub
+    const createFormStub = helper.sandbox
+      .stub(util, "createForm")
+      .returns(fakeForm)
+
+    const { inner } = await renderPage({
+      ui: {
+        paymentAmount:    "123",
+        selectedKlassKey: fakeKlasses[1].klass_key
+      }
+    })
+    inner
+      .find("Payment")
+      .dive()
+      .find(paymentBtnSelector)
+      .prop("onClick")()
+
+    await wait(50)
+    assert.equal(createFormStub.callCount, 1)
+    assert.deepEqual(createFormStub.args[0], [url, payload])
+
+    assert(
+      document.body.querySelector(".fake-form"),
+      "fake form not found in body"
+    )
+    assert.equal(submitStub.callCount, 1)
+    assert.deepEqual(submitStub.args[0], [])
+  })
+
+  describe("order receipt and cancellation pages", () => {
+    let orderId
+
+    beforeEach(() => {
+      orderId = fakeKlasses[0].payments[0].order.id
+    })
+
+    it("shows the order status toast when the query param is set for a cancellation", async () => {
       window.location = "/pay/?status=cancel"
-      return renderFullPaymentPage({ extraActions: TOAST_ACTIONS }).then(() => {
-        assert.deepEqual(store.getState().ui.toastMessage, {
-          message: "Order was cancelled",
-          icon:    TOAST_FAILURE
-        })
+      const { store } = await renderPage()
+      assert.deepEqual(store.getState().ui.toastMessage, {
+        message: "Order was cancelled",
+        icon:    TOAST_FAILURE
       })
     })
 
-    it("shows the order status toast when query param is set for a success", () => {
+    it("shows the order status toast when query param is set for a success", async () => {
       window.location = `/pay?status=receipt&order=${orderId}`
-      return renderFullPaymentPage({ extraActions: TOAST_ACTIONS }).then(() => {
-        assert.deepEqual(store.getState().ui.toastMessage, {
-          title: "Payment Complete!",
-          icon:  TOAST_SUCCESS
-        })
+      const { store } = await renderPage()
+      assert.deepEqual(store.getState().ui.toastMessage, {
+        title: "Payment Complete!",
+        icon:  TOAST_SUCCESS
       })
     })
 
     describe("toast loop", () => {
-      it("doesn't have a toast message loop on success", () => {
+      it("doesn't have a toast message loop on success", async () => {
         const customMessage = {
           message: "Custom toast message was not replaced"
         }
-        store.dispatch(setToastMessage(customMessage))
         window.location = `/pay?status=receipt&order=${orderId}`
-        return renderFullPaymentPage().then(() => {
-          assert.deepEqual(store.getState().ui.toastMessage, customMessage)
+        const { store } = await renderPage({
+          ui: {
+            toastMessage: customMessage
+          }
         })
+        assert.deepEqual(store.getState().ui.toastMessage, customMessage)
       })
 
-      it("doesn't have a toast message loop on failure", () => {
+      it("doesn't have a toast message loop on failure", async () => {
         const customMessage = {
           message: "Custom toast message was not replaced"
         }
-        store.dispatch(setToastMessage(customMessage))
         window.location = "/dashboard?status=cancel"
-        return renderFullPaymentPage().then(() => {
-          assert.deepEqual(store.getState().ui.toastMessage, customMessage)
+        const { store } = await renderPage({
+          ui: {
+            toastMessage: customMessage
+          }
         })
+        assert.deepEqual(store.getState().ui.toastMessage, customMessage)
       })
     })
 
     describe("fake timer tests", function() {
-      let clock
+      let clock, url, payload
       beforeEach(() => {
-        clock = sinon.useFakeTimers(moment("2016-09-01").valueOf())
-      })
+        clock = helper.sandbox.useFakeTimers(moment("2016-09-01").valueOf())
+        url = "/x/y/z"
+        payload = {
+          pay: "load"
+        }
 
-      it("refetches the klasses after 3 seconds if 30 seconds has not passed", () => {
-        window.location = `/pay?status=receipt&order=missing`
-        return renderFullPaymentPage({ extraActions: TIMEOUT_ACTIONS }).then(
-          () => {
-            assert.equal(klassesStub.callCount, 1)
-            clock.tick(3501)
-            assert.equal(klassesStub.callCount, 2)
+        helper.handleRequestStub.withArgs("/api/v0/payment/").returns({
+          status: 200,
+          body:   {
+            url,
+            payload
           }
-        )
+        })
       })
 
-      it("shows an error message if more than 30 seconds have passed", () => {
+      it("refetches the fakeKlasses after 3 seconds if 30 seconds has not passed", async () => {
+        window.location = `/pay?status=receipt&order=missing`
+        await renderPage()
+        assert.equal(helper.handleRequestStub.withArgs(klassesUrl).callCount, 1)
+        clock.tick(3501)
+        assert.equal(helper.handleRequestStub.withArgs(klassesUrl).callCount, 2)
+      })
+
+      it("shows an error message if more than 30 seconds have passed", async () => {
         window.location = "/pay?status=receipt&order=missing"
-        return renderFullPaymentPage({ extraActions: TIMEOUT_ACTIONS }).then(
-          () => {
-            const past = moment()
+        const { store, inner } = await renderPage({
+          ui: { initialTime: moment().toISOString() }
+        })
+        inner.setProps({
+          ui: {
+            initialTime: moment()
               .add(-125, "seconds")
               .toISOString()
-            store.dispatch(setInitialTime(past))
-            clock.tick(3500)
-            assert.deepEqual(store.getState().ui.toastMessage, {
-              message: `Order was not processed`,
-              icon:    TOAST_FAILURE
-            })
           }
-        )
+        })
+        clock.tick(3500)
+        assert.deepEqual(store.getState().ui.toastMessage, {
+          message: `Order was not processed`,
+          icon:    TOAST_FAILURE
+        })
       })
     })
   })

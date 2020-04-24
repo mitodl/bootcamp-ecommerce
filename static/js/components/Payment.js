@@ -3,18 +3,15 @@
 import React from "react"
 import * as R from "ramda"
 import _ from "lodash"
-import type { Dispatch } from "redux"
 
 import Dialog from "./Dialog"
-import { showDialog, hideDialog } from "../actions/index"
 import {
   isNilOrBlank,
   formatDollarAmount,
   formatReadableDate,
   getInstallmentDeadlineDates
 } from "../util/util"
-import type { UIState } from "../reducers"
-import type { RestState } from "../rest"
+import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
 
 export const PAYMENT_CONFIRMATION_DIALOG = "paymentConfirmationDialog"
@@ -22,15 +19,16 @@ const isVisible = R.propOr(false, PAYMENT_CONFIRMATION_DIALOG)
 
 export default class Payment extends React.Component<*, void> {
   props: {
-    dispatch: Dispatch<*>,
+    hideDialog: (dialogKey: string) => void,
     ui: UIState,
-    payment: RestState,
+    paymentProcessing: boolean,
     payableKlassesData: Array<Object>,
     selectedKlass: Object,
     now: moment$Moment,
     sendPayment: () => void,
     setPaymentAmount: (event: InputEvent) => void,
-    setSelectedKlassKey: (event: InputEvent) => void
+    setSelectedKlassKey: (event: InputEvent) => void,
+    showDialog: (dialogKey: string) => void
   }
 
   getTotalOwedUpToInstallment = (nextInstallmentIndex: number): number => {
@@ -127,23 +125,23 @@ export default class Payment extends React.Component<*, void> {
       ui: { paymentAmount },
       selectedKlass,
       sendPayment,
-      dispatch
+      showDialog
     } = this.props
     const actualPrice = selectedKlass.price
 
     paymentAmount > actualPrice ?
-      dispatch(showDialog(PAYMENT_CONFIRMATION_DIALOG)) :
+      showDialog(PAYMENT_CONFIRMATION_DIALOG) :
       sendPayment()
   }
 
   renderSelectedKlass = () => {
     const {
+      hideDialog,
       ui: { paymentAmount, dialogVisibility },
-      payment: { processing },
+      paymentProcessing,
       selectedKlass,
       setPaymentAmount,
-      sendPayment,
-      dispatch
+      sendPayment
     } = this.props
 
     const totalPaid = selectedKlass.total_paid || 0
@@ -167,7 +165,7 @@ export default class Payment extends React.Component<*, void> {
           <button
             className="btn large-cta"
             onClick={this.confirmPayment}
-            disabled={processing}
+            disabled={paymentProcessing}
           >
             Pay Now
           </button>
@@ -185,11 +183,11 @@ export default class Payment extends React.Component<*, void> {
         </div>
         <Dialog
           title="Confirm Payment"
-          onCancel={() => dispatch(hideDialog(PAYMENT_CONFIRMATION_DIALOG))}
+          onCancel={() => hideDialog(PAYMENT_CONFIRMATION_DIALOG)}
           onAccept={sendPayment}
           submitText="Continue"
           open={isVisible(dialogVisibility)}
-          hideDialog={() => dispatch(hideDialog(PAYMENT_CONFIRMATION_DIALOG))}
+          hideDialog={() => hideDialog(PAYMENT_CONFIRMATION_DIALOG)}
         >
           <p className="overpay-confirm">
             Are you sure you want to pay{" "}

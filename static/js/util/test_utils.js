@@ -1,4 +1,5 @@
 import { assert } from "chai"
+
 import type { Store, Action } from "redux"
 
 export function createAssertReducerResultState<State>(

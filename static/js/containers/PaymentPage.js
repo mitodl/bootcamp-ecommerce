@@ -2,40 +2,53 @@
 /* global SETTINGS: false */
 import React from "react"
 import { connect } from "react-redux"
-import type { Dispatch } from "redux"
 import _ from "lodash"
 import * as R from "ramda"
 import URI from "urijs"
 import moment from "moment"
+import { mutateAsync, requestAsync } from "redux-query"
 
 import {
   clearUI,
+  hideDialog,
   setPaymentAmount,
   setSelectedKlassKey,
   setTimeoutActive,
   setToastMessage,
-  FETCH_SUCCESS
+  showDialog
 } from "../actions"
 import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
-import { actions } from "../rest"
+import queries from "../lib/queries"
 import { createForm, getKlassWithFulfilledOrder } from "../util/util"
 import Payment from "../components/Payment"
 import PaymentHistory from "../components/PaymentHistory"
 import Toast from "../components/Toast"
-import type { UIState } from "../reducers"
-import type { RestState } from "../rest"
+
+import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
+import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
+import type { Klass, KlassesResponse } from "../flow/klassTypes"
 
-class PaymentPage extends React.Component<*, void> {
-  props: {
-    dispatch: Dispatch<*>,
-    ui: UIState,
-    payment: RestState,
-    klasses: RestState,
-    payableKlassesData: Array<Object>,
-    selectedKlass: Object
-  }
+type Props = {
+  ui: UIState,
+  clearUI: () => void,
+  fetchKlasses: (klassKey: string) => Promise<{ body: KlassesResponse }>,
+  hideDialog: (dialogKey: string) => void,
+  sendPayment: (payload: PaymentPayload) => Promise<{ body: PaymentResponse }>,
+  klasses: KlassesResponse,
+  klassesFinished: boolean,
+  klassesProcessing: boolean,
+  paymentProcessing: boolean,
+  payableKlassesData: KlassesResponse,
+  selectedKlass: ?Klass,
+  setPaymentAmount: (amount: string) => void,
+  setSelectedKlassKey: (klassKey: number) => void,
+  setTimeoutActive: (active: boolean) => void,
+  setToastMessage: (payload: any) => void,
+  showDialog: (dialogKey: string) => void
+}
 
+export class PaymentPage extends React.Component<Props> {
   fetchAPIdata() {
     this.fetchKlasses()
   }
@@ -45,57 +58,51 @@ class PaymentPage extends React.Component<*, void> {
     this.handleOrderStatus()
   }
 
-  componentDidUpdate() {
-    this.fetchAPIdata()
-    this.handleOrderStatus()
-  }
-
   componentWillUnmount() {
-    const { dispatch } = this.props
-    dispatch(clearUI())
+    const { clearUI } = this.props
+    clearUI()
   }
 
   fetchKlasses() {
-    const { dispatch, klasses } = this.props
-    if (!klasses.fetchStatus) {
-      dispatch(actions.klasses({ username: SETTINGS.user.username }))
+    const { fetchKlasses, klassesProcessing } = this.props
+    if (!klassesProcessing) {
+      fetchKlasses(SETTINGS.user.username)
     }
   }
 
-  sendPayment = () => {
+  sendPayment = async () => {
     const {
-      dispatch,
+      sendPayment,
       ui: { paymentAmount },
       selectedKlass
     } = this.props
     if (selectedKlass && paymentAmount) {
-      dispatch(
-        actions.payment({
-          paymentAmount: paymentAmount,
-          klassKey:      selectedKlass.klass_key
-        })
-      ).then(result => {
-        const { url, payload } = result
-        const form = createForm(url, payload)
-        const body = document.querySelector("body")
-        if (!body) {
-          // for flow
-          throw new Error("No body in document")
-        }
-        body.appendChild(form)
-        form.submit()
+      const result = await sendPayment({
+        payment_amount: paymentAmount,
+        klass_key:      selectedKlass.klass_key
       })
+      const {
+        body: { url, payload }
+      } = result
+      const form = createForm(url, payload)
+      const body = document.querySelector("body")
+      if (!body) {
+        // for flow
+        throw new Error("No body in document")
+      }
+      body.appendChild(form)
+      form.submit()
     }
   }
 
   setPaymentAmount = (event: InputEvent) => {
-    const { dispatch } = this.props
-    dispatch(setPaymentAmount(event.target.value))
+    const { setPaymentAmount } = this.props
+    setPaymentAmount(event.target.value)
   }
 
   setSelectedKlassKey = (event: InputEvent) => {
-    const { dispatch } = this.props
-    dispatch(setSelectedKlassKey(parseInt(event.target.value)))
+    const { setSelectedKlassKey } = this.props
+    setSelectedKlassKey(parseInt(event.target.value))
   }
 
   getKlassDataWithPayments = R.filter(
@@ -103,9 +110,9 @@ class PaymentPage extends React.Component<*, void> {
   )
 
   handleOrderStatus = (): void => {
-    const { klasses } = this.props
+    const { klasses, klassesFinished } = this.props
     const query = new URI().query(true)
-    if (!klasses.loaded) {
+    if (!klassesFinished) {
       // wait until we have access to the klasses
       return
     }
@@ -113,7 +120,7 @@ class PaymentPage extends React.Component<*, void> {
     const status = query.status
     if (status === "receipt") {
       const orderId = parseInt(query.order)
-      const klass = getKlassWithFulfilledOrder(klasses.data, orderId)
+      const klass = getKlassWithFulfilledOrder(klasses, orderId)
       if (klass) {
         this.handleOrderSuccess()
       } else {
@@ -126,63 +133,57 @@ class PaymentPage extends React.Component<*, void> {
 
   handleOrderSuccess = (): void => {
     const {
-      dispatch,
+      setToastMessage,
       ui: { toastMessage }
     } = this.props
     if (toastMessage === null) {
-      dispatch(
-        setToastMessage({
-          title: "Payment Complete!",
-          icon:  TOAST_SUCCESS
-        })
-      )
+      setToastMessage({
+        title: "Payment Complete!",
+        icon:  TOAST_SUCCESS
+      })
     }
     window.history.pushState({}, null, new URI().query({}).toString())
   }
 
   handleOrderPending = (): void => {
-    const { dispatch } = this.props
+    const { fetchKlasses, setTimeoutActive, setToastMessage } = this.props
     if (!this.props.ui.timeoutActive) {
       setTimeout(() => {
         const { ui } = this.props
-        dispatch(setTimeoutActive(false))
+        setTimeoutActive(false)
         const deadline = moment(ui.initialTime).add(2, "minutes")
         const now = moment()
         if (now.isBefore(deadline)) {
-          dispatch(actions.klasses({ username: SETTINGS.user.username }))
+          fetchKlasses(SETTINGS.user.username)
         } else {
-          dispatch(
-            setToastMessage({
-              message: "Order was not processed",
-              icon:    TOAST_FAILURE
-            })
-          )
+          setToastMessage({
+            message: "Order was not processed",
+            icon:    TOAST_FAILURE
+          })
         }
       }, 3000)
-      dispatch(setTimeoutActive(true))
+      setTimeoutActive(true)
     }
   }
 
   handleOrderCancellation = (): void => {
     const {
-      dispatch,
+      setToastMessage,
       ui: { toastMessage }
     } = this.props
 
     if (toastMessage === null) {
-      dispatch(
-        setToastMessage({
-          message: "Order was cancelled",
-          icon:    TOAST_FAILURE
-        })
-      )
+      setToastMessage({
+        message: "Order was cancelled",
+        icon:    TOAST_FAILURE
+      })
     }
     window.history.pushState({}, null, new URI().query({}).toString())
   }
 
   clearMessage = (): void => {
-    const { dispatch } = this.props
-    dispatch(setToastMessage(null))
+    const { setToastMessage } = this.props
+    setToastMessage(null)
   }
 
   renderToast() {
@@ -230,35 +231,36 @@ class PaymentPage extends React.Component<*, void> {
 
   render() {
     const {
+      hideDialog,
       ui,
-      payment,
+      paymentProcessing,
       klasses,
+      klassesFinished,
       payableKlassesData,
       selectedKlass,
-      dispatch
+      showDialog
     } = this.props
 
     let renderedPayment = null
     let renderedPaymentHistory = null
 
-    if (klasses.fetchStatus === FETCH_SUCCESS) {
+    if (klassesFinished) {
       renderedPayment = (
         <Payment
+          hideDialog={hideDialog}
+          showDialog={showDialog}
           ui={ui}
-          payment={payment}
+          paymentProcessing={paymentProcessing}
           payableKlassesData={payableKlassesData}
           selectedKlass={selectedKlass}
           now={moment()}
           sendPayment={this.sendPayment}
           setPaymentAmount={this.setPaymentAmount}
           setSelectedKlassKey={this.setSelectedKlassKey}
-          dispatch={dispatch}
         />
       )
 
-      const klassDataWithPayments = this.getKlassDataWithPayments(
-        klasses.data || []
-      )
+      const klassDataWithPayments = this.getKlassDataWithPayments(klasses || [])
       renderedPaymentHistory =
         klassDataWithPayments.length > 0 ? (
           <div className="body-row">
@@ -283,7 +285,7 @@ const withPayableKlasses = state => {
   return {
     ...state,
     payableKlassesData: R.filter(R.propEq("is_user_eligible_to_pay", true))(
-      state.klasses.data || []
+      state.klasses || []
     )
   }
 }
@@ -310,10 +312,39 @@ const mapStateToProps = R.compose(
   withDerivedSelectedKlass,
   withPayableKlasses,
   state => ({
-    payment: state.payment,
-    klasses: state.klasses,
-    ui:      state.ui
+    paymentProcessing: R.pathOr(
+      false,
+      ["queries", "payment", "isPending"],
+      state
+    ),
+    klasses:           R.pathOr([], ["entities", "klasses"], state),
+    klassesProcessing: R.pathOr(
+      false,
+      ["queries", "klasses", "isPending"],
+      state
+    ),
+    klassesFinished: R.pathOr(
+      false,
+      ["queries", "klasses", "isFinished"],
+      state
+    ),
+    ui: state.ui
   })
 )
 
-export default connect(mapStateToProps)(PaymentPage)
+const mapDispatchToProps = dispatch => ({
+  clearUI:      () => dispatch(clearUI()),
+  fetchKlasses: (username: string) =>
+    dispatch(requestAsync(queries.klasses.klassQuery(username))),
+  hideDialog:  (dialogKey: string) => dispatch(hideDialog(dialogKey)),
+  sendPayment: (payload: PaymentPayload) =>
+    dispatch(mutateAsync(queries.ecommerce.paymentMutation(payload))),
+  setPaymentAmount:    (amount: string) => dispatch(setPaymentAmount(amount)),
+  setSelectedKlassKey: (klassKey: number) =>
+    dispatch(setSelectedKlassKey(klassKey)),
+  setToastMessage:  (payload: any) => dispatch(setToastMessage(payload)),
+  setTimeoutActive: (active: boolean) => dispatch(setTimeoutActive(active)),
+  showDialog:       (dialogKey: string) => dispatch(showDialog(dialogKey))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(PaymentPage)
