@@ -16,7 +16,7 @@ import pytz
 from rest_framework.exceptions import ValidationError
 
 from backends.utils import get_social_username
-from bootcamp.utils import remove_html_tags
+from main.utils import remove_html_tags
 from ecommerce.exceptions import (
     EcommerceException,
     ParseException,

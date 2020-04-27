@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 
 from webpack_loader.utils import get_loader
 
-from bootcamp.utils import webpack_dev_server_url
+from main.utils import webpack_dev_server_url
 
 
 register = template.Library()

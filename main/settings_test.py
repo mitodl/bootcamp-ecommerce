@@ -14,7 +14,7 @@ from django.test import TestCase
 import semantic_version
 import yaml
 
-from bootcamp.settings import load_fallback, get_var
+from main.settings import load_fallback, get_var
 
 REQUIRED = {
     'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN': 'asdfasdf',
@@ -31,10 +31,10 @@ class TestSettings(TestCase):
         Returns:
             dict: dictionary of the newly reloaded settings ``vars``
         """
-        importlib.reload(sys.modules['bootcamp.settings'])
+        importlib.reload(sys.modules['main.settings'])
         # Restore settings to original settings after test
-        self.addCleanup(importlib.reload, sys.modules['bootcamp.settings'])
-        return vars(sys.modules['bootcamp.settings'])
+        self.addCleanup(importlib.reload, sys.modules['main.settings'])
+        return vars(sys.modules['main.settings'])
 
     def test_load_fallback(self):
         """Verify our YAML load works as expected."""
@@ -44,7 +44,7 @@ class TestSettings(TestCase):
         with open(temp_config_path, 'w') as temp_config:
             temp_config.write(yaml.dump(config_settings))
 
-        with mock.patch('bootcamp.settings.CONFIG_PATHS') as config_paths:
+        with mock.patch('main.settings.CONFIG_PATHS') as config_paths:
             config_paths.__iter__.return_value = [temp_config_path]
             fallback_config = load_fallback()
             self.assertDictEqual(fallback_config, config_settings)
@@ -52,7 +52,7 @@ class TestSettings(TestCase):
     def test_get_var(self):
         """Verify that get_var does the right thing with precedence"""
         with mock.patch.dict(
-            'bootcamp.settings.FALLBACK_CONFIG',
+            'main.settings.FALLBACK_CONFIG',
             {'FOO': 'bar'}
         ):
             # Verify fallback
@@ -80,7 +80,7 @@ class TestSettings(TestCase):
             self.assertEqual(get_var('BAR', []), [1, 2, 3])
         # Make sure real types still work too (i.e. from yaml load)
         with mock.patch.dict(
-            'bootcamp.settings.FALLBACK_CONFIG',
+            'main.settings.FALLBACK_CONFIG',
             {'BLAH': True}
         ):
             self.assertEqual(get_var('BLAH', False), True)

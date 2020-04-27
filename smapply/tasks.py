@@ -1,5 +1,5 @@
 """Tasks for smapply"""
-from bootcamp.celery import app
+from main.celery import app
 from hubspot.api import make_contact_sync_message
 from hubspot.tasks import sync_bulk_with_hubspot
 from smapply.serializers import UserSerializer

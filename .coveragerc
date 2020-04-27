@@ -3,7 +3,7 @@ branch = True
 source = .
 data_file=/tmp/coverage
 omit =
-    bootcamp/wsgi.py
+    main/wsgi.py
     manage.py
     ./.tox/*
     */migrations/*

@@ -2,7 +2,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from bootcamp.negotiations import IgnoreClientContentNegotiation
+from main.negotiations import IgnoreClientContentNegotiation
 from smapply.api import SMApplyException
 from smapply.permissions import WebhookPermission
 from smapply.models import WebhookRequestSMA

@@ -13,7 +13,7 @@ from ecommerce.factories import (
     Order,
     ReceiptFactory,
 )
-from bootcamp.utils import (
+from main.utils import (
     get_field_names,
     serialize_model_object,
     chunks,

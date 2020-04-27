@@ -1,7 +1,7 @@
 """Admin interface for fluidreview"""
 from django.contrib import admin
 
-from bootcamp.utils import get_field_names
+from main.utils import get_field_names
 from fluidreview.models import WebhookRequest, OAuthToken
 
 
