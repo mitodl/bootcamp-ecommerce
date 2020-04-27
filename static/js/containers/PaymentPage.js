@@ -58,6 +58,14 @@ export class PaymentPage extends React.Component<Props> {
     this.handleOrderStatus()
   }
 
+  componentDidUpdate(prevProps: Props) {
+    // This is meant to be an identity check, not a deep equality check. This shows whether we received an update
+    // for enrollments based on the forceReload
+    if (prevProps.klasses !== this.props.klasses) {
+      this.handleOrderStatus()
+    }
+  }
+
   componentWillUnmount() {
     const { clearUI } = this.props
     clearUI()
