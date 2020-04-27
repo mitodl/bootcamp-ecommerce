@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.39.0
+--------------
+
+- Add react-router, set up App.js (#412)
+- Remove bootcamp admissions client (#396)
+- Add Wagtail CMS (#407)
+
 Version 0.38.1 (Released April 17, 2020)
 --------------
 
