@@ -91,7 +91,7 @@ class PaymentTests(TestCase):
             'url': CYBERSOURCE_SECURE_ACCEPTANCE_URL,
         }
         assert generate_cybersource_sa_payload_mock.call_count == 1
-        generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/")
+        generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/pay/")
         assert create_unfulfilled_order_mock.call_count == 1
         create_unfulfilled_order_mock.assert_any_call(user, klass.klass_key, klass.price)
 
