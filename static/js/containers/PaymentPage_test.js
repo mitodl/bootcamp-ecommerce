@@ -207,6 +207,17 @@ describe("PaymentPage", () => {
     assert.deepEqual(submitStub.args[0], [])
   })
 
+  it("selects a klass", async () => {
+    const { inner, store } = await renderPage()
+
+    const klassKeyText = "12345"
+
+    inner.find("Payment").prop("setSelectedKlassKey")({
+      target: { value: klassKeyText }
+    })
+    assert.equal(store.getState().ui.selectedKlassKey, 12345)
+  })
+
   describe("order receipt and cancellation pages", () => {
     let orderId
 
