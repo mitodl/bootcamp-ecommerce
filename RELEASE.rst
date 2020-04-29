@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.39.0
+Version 0.39.0 (Released April 29, 2020)
 --------------
 
 - Add react-router, set up App.js (#412)
