@@ -25,7 +25,7 @@ from bootcamp.envs import (
 )
 
 
-VERSION = "0.38.1"
+VERSION = "0.39.0"
 
 CONFIG_PATHS = [
     os.environ.get('BOOTCAMP_CONFIG', ''),
