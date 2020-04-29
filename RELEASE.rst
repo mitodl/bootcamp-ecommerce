@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.39.1
+--------------
+
+- Redirect to pay page after purchase (#426)
+- Renamed 'bootcamp' app to 'main'
+- Add redux-query and update API logic to use it (#417)
+
 Version 0.39.0 (Released April 29, 2020)
 --------------
 
