@@ -10,8 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from raven.contrib.django.raven_compat.models import client as sentry
 
-from bootcamp.templatetags.render_bundle import public_path
-from bootcamp.serializers import serialize_maybe_user
+from main.templatetags.render_bundle import public_path
+from main.serializers import serialize_maybe_user
 
 
 def _serialize_js_settings(request):  # pylint: disable=missing-docstring

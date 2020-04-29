@@ -3,7 +3,7 @@ OAuth token and WebhookRequest for SMApply model
 """
 from django.db import models
 from django.db.models import TextField, CharField, DateTimeField, IntegerField
-from bootcamp.models import TimestampedModel
+from main.models import TimestampedModel
 from fluidreview.constants import WebhookParseStatus
 from fluidreview.utils import utc_now
 

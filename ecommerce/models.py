@@ -13,12 +13,12 @@ from django.db.models import (
 )
 
 
-from bootcamp.models import (
+from main.models import (
     AuditableModel,
     AuditModel,
     TimestampedModel,
 )
-from bootcamp.utils import serialize_model_object
+from main.utils import serialize_model_object
 from klasses.models import Klass
 
 

@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from requests import HTTPError
 
-from bootcamp.celery import app
+from main.celery import app
 
 from hubspot.api import (
     send_hubspot_request,

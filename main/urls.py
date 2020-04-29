@@ -13,7 +13,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from bootcamp.views import (
+from main.views import (
     index,
     react,
     BackgroundImagesCSSView
@@ -46,5 +46,5 @@ urlpatterns = [
     static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 )
 
-handler404 = 'bootcamp.views.page_404'
-handler500 = 'bootcamp.views.page_500'
+handler404 = 'main.views.page_404'
+handler500 = 'main.views.page_500'

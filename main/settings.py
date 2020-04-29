@@ -19,7 +19,7 @@ from urllib.parse import urljoin
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
 import yaml
-from bootcamp.envs import (
+from main.envs import (
     get_string,
     get_bool,
 )
@@ -140,7 +140,7 @@ INSTALLED_APPS = (
     'taggit',
     # Our INSTALLED_APPS
     'backends',
-    'bootcamp',
+    'main',
     'cms',
     'ecommerce',
     'fluidreview',
@@ -218,7 +218,7 @@ LOGIN_REDIRECT_URL = '/pay'
 LOGIN_URL = '/'
 LOGIN_ERROR_URL = '/'
 
-ROOT_URLCONF = 'bootcamp.urls'
+ROOT_URLCONF = 'main.urls'
 
 TEMPLATES = [
     {
@@ -235,13 +235,13 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
-                'bootcamp.context_processors.api_keys',
+                'main.context_processors.api_keys',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'bootcamp.wsgi.application'
+WSGI_APPLICATION = 'main.wsgi.application'
 
 # Hijack
 HIJACK_ALLOW_GET_REQUESTS = True

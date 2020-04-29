@@ -3,8 +3,8 @@ Tests for custom template tags
 """
 from datetime import datetime
 from pytz import utc
-from bootcamp.templatetags.dollar_format import dollar_format
-from bootcamp.templatetags.parse_date import parse_iso_datetime
+from main.templatetags.dollar_format import dollar_format
+from main.templatetags.parse_date import parse_iso_datetime
 
 
 def test_dollar_format():

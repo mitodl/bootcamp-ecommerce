@@ -2,7 +2,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from bootcamp.negotiations import IgnoreClientContentNegotiation
+from main.negotiations import IgnoreClientContentNegotiation
 from fluidreview.api import FluidReviewException
 from fluidreview.permissions import WebhookPermission
 from fluidreview.models import WebhookRequest

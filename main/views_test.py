@@ -32,7 +32,7 @@ class TestViews(TestCase):
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
             ENVIRONMENT=environment,
-        ), patch('bootcamp.templatetags.render_bundle._get_bundle') as get_bundle:
+        ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get('/')
         self.assertContains(
             resp,
@@ -88,7 +88,7 @@ class TestViews(TestCase):
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
             ENVIRONMENT=environment,
-        ), patch('bootcamp.templatetags.render_bundle._get_bundle') as get_bundle:
+        ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get(reverse('pay'))
 
         bundles = [bundle[0][1] for bundle in get_bundle.call_args_list]

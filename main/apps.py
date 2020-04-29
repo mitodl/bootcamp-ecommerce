@@ -5,9 +5,9 @@ from django.apps import AppConfig
 from django.core.exceptions import ImproperlyConfigured
 
 
-class BootcampConfig(AppConfig):
-    """AppConfig for Bootcamp"""
-    name = 'bootcamp'
+class MainAppConfig(AppConfig):
+    """AppConfig for main app"""
+    name = 'main'
 
     def ready(self):
         # check for missing configurations

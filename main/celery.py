@@ -10,7 +10,7 @@ from celery import Celery
 from raven import Client
 from raven.contrib.celery import register_logger_signal, register_signal
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bootcamp.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 
 from django.conf import settings  # noqa pylint: disable=wrong-import-position
 
@@ -25,7 +25,7 @@ register_logger_signal(client, loglevel=settings.SENTRY_LOG_LEVEL)
 # to be ignored
 register_signal(client, ignore_expected=True)
 
-app = Celery('bootcamp')
+app = Celery('main')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.

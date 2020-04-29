@@ -1,7 +1,7 @@
 """Tests for Bootcamp models"""
 from django.test import TestCase
 
-from bootcamp.utils import serialize_model_object
+from main.utils import serialize_model_object
 from ecommerce.factories import (
     LineFactory,
     OrderFactory,

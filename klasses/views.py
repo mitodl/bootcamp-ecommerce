@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 
 from backends.edxorg import EdxOrgOAuth2
-from bootcamp.serializers import serialize_maybe_user
+from main.serializers import serialize_maybe_user
 from klasses.api import serialize_user_klasses, serialize_user_klass
 from klasses.models import Klass
 from klasses.permissions import CanReadIfSelf
