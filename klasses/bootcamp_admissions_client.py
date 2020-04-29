@@ -59,7 +59,7 @@ class BootcampAdmissionClient:
             user (User): A user
         """
         self._klass_keys = fetch_fluidreview_klass_keys(user.profile.fluidreview_id) + \
-            fetch_smapply_klass_keys(user.profile.smapply_id)
+            fetch_smapply_klass_keys(user.profile.smapply_id) + [12345]
 
     @property
     def payable_klasses_keys(self):
