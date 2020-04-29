@@ -1,4 +1,20 @@
-version: '2.1'
+version: '3.6'
+
+x-environment:
+  &py-environment
+  DEBUG: 'False'
+  DEV_ENV: 'True'  # necessary to have nginx connect to web container
+  NODE_ENV: 'production'
+  COVERAGE_DIR: htmlcov
+  DATABASE_URL: postgres://postgres@db:5432/postgres
+  BOOTCAMP_SECURE_SSL_REDIRECT: 'False'
+  BOOTCAMP_DB_DISABLE_SSL: 'True'
+  CELERY_TASK_ALWAYS_EAGER: 'False'
+  CELERY_BROKER_URL: redis://redis:6379/4
+  CELERY_RESULT_BACKEND: redis://redis:6379/4
+  DOCKER_HOST: ${DOCKER_HOST:-missing}
+  WEBPACK_DEV_SERVER_HOST: ${WEBPACK_DEV_SERVER_HOST:-localhost}
+
 services:
   db:
     image: postgres:9.6.16
@@ -17,39 +33,24 @@ services:
     links:
       - web
 
-  python:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    command: /bin/true
-    environment:
-      DEBUG: 'False'
-      DEV_ENV: 'True'  # necessary to have nginx connect to web container
-      NODE_ENV: 'production'
-      PORT: 8097
-      COVERAGE_DIR: htmlcov
-      DATABASE_URL: postgres://postgres@db:5432/postgres
-      BOOTCAMP_SECURE_SSL_REDIRECT: 'False'
-      BOOTCAMP_DB_DISABLE_SSL: 'True'
-      CELERY_TASK_ALWAYS_EAGER: 'False'
-      CELERY_BROKER_URL: redis://redis:6379/4
-      CELERY_RESULT_BACKEND: redis://redis:6379/4
-      DOCKER_HOST: ${DOCKER_HOST:-missing}
-      WEBPACK_DEV_SERVER_HOST: ${WEBPACK_DEV_SERVER_HOST:-localhost}
-    env_file: .env
-
-  web:
-    image: bootcamp_python
-    extends:
-      service: python
     command: >
       /bin/bash -c '
       sleep 3 &&
       python3 manage.py collectstatic --noinput &&
       python3 manage.py migrate --no-input &&
-      uwsgi uwsgi.ini'
+      uwsgi uwsgi.ini --honour-stdin'
+    stdin_open: true
+    tty: true
     ports:
       - "8097:8097"
+    environment:
+      <<: *py-environment
+      PORT: 8097
+    env_file: .env
     links:
       - db
       - redis
@@ -70,9 +71,11 @@ services:
     env_file: .env
 
   celery:
-    image: bootcamp_python
-    extends:
-      service: python
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment: *py-environment
+    env_file: .env
     command: >
       /bin/bash -c '
       sleep 3;

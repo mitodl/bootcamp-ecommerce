@@ -1,14 +1,6 @@
-version: '2.1'
-services:
-  python:
-    volumes:
-      - .:/src
-      - django_media:/var/media
-    environment:
-      DEBUG: 'True'
-      NODE_ENV: 'development'
-      BOOTCAMP_USE_WEBPACK_DEV_SERVER: 'True'
+version: '3.6'
 
+services:
   web:
     volumes:
       - .:/src
