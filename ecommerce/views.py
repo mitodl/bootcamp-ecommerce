@@ -59,7 +59,7 @@ class PaymentView(CreateAPIView):
         # Sync order data with hubspot
         sync_hubspot_deal_from_order(order)
 
-        redirect_url = self.request.build_absolute_uri(reverse('bootcamp-index'))
+        redirect_url = self.request.build_absolute_uri(reverse('pay'))
 
         return Response({
             'payload': generate_cybersource_sa_payload(order, redirect_url),

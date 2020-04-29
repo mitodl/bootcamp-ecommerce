@@ -225,21 +225,36 @@ describe("PaymentPage", () => {
       orderId = fakeKlasses[0].payments[0].order.id
     })
 
-    it("shows the order status toast when the query param is set for a cancellation", async () => {
-      window.location = "/pay/?status=cancel"
-      const { store } = await renderPage()
-      assert.deepEqual(store.getState().ui.toastMessage, {
-        message: "Order was cancelled",
-        icon:    TOAST_FAILURE
-      })
-    })
+    //
+    ;[true, false].forEach(isNext => {
+      describe(`when next ${isNext ? "is" : "is not"} specified`, () => {
+        it("shows the order status toast when the query param is set for a cancellation", async () => {
+          let uri = "/pay/?status=cancel"
+          if (isNext) {
+            uri = `/pay/?next=${encodeURIComponent(uri)}`
+          }
 
-    it("shows the order status toast when query param is set for a success", async () => {
-      window.location = `/pay?status=receipt&order=${orderId}`
-      const { store } = await renderPage()
-      assert.deepEqual(store.getState().ui.toastMessage, {
-        title: "Payment Complete!",
-        icon:  TOAST_SUCCESS
+          window.location = uri
+          const { store } = await renderPage()
+          assert.deepEqual(store.getState().ui.toastMessage, {
+            message: "Order was cancelled",
+            icon:    TOAST_FAILURE
+          })
+        })
+
+        it("shows the order status toast when query param is set for a success", async () => {
+          let uri = `/pay?status=receipt&order=${orderId}`
+          if (isNext) {
+            uri = `/pay/?next=${encodeURIComponent(uri)}`
+          }
+
+          window.location = uri
+          const { store } = await renderPage()
+          assert.deepEqual(store.getState().ui.toastMessage, {
+            title: "Payment Complete!",
+            icon:  TOAST_SUCCESS
+          })
+        })
       })
     })
 

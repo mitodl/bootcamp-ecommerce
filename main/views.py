@@ -43,6 +43,7 @@ def index(request):
 
 
 @login_required
+@csrf_exempt
 def react(request):
     """
     View for pages served by react
