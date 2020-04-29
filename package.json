@@ -93,7 +93,8 @@
     "webpack-bundle-tracker": "0.4.3",
     "webpack-cli": "^3.3.11",
     "webpack-dev-middleware": "^3.7.2",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack-hot-middleware": "^2.25.0",
+    "bootstrap": "^4.4.1"
   },
   "engines": {
     "node": "13.13.0",
