@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.39.1
+Version 0.39.1 (Released April 30, 2020)
 --------------
 
 - Redirect to pay page after purchase (#426)
