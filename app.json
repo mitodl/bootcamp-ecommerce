@@ -371,6 +371,18 @@
       "description": "Base URL for SMApply API",
       "required": true
     },
+    "JOBMA_BASE_URL": {
+      "description": "The base URL for accessing JOBMA",
+      "required": true
+    },
+    "JOBMA_ACCESS_TOKEN": {
+      "description": "The JOBMA access token used to access their REST API",
+      "required": true
+    },
+    "JOBMA_WEBHOOK_ACCESS_TOKEN": {
+      "description": "The JOBMA access token used by us to verify that a postback came from JOBMA",
+      "required": true
+    },
     "SMAPPLY_CLIENT_ID": {
       "description": "Client ID for SMApply API",
       "required": true
