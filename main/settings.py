@@ -25,7 +25,7 @@ from main.envs import (
 )
 
 
-VERSION = "0.39.0"
+VERSION = "0.39.1"
 
 CONFIG_PATHS = [
     os.environ.get('BOOTCAMP_CONFIG', ''),
