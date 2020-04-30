@@ -8,7 +8,8 @@ import {
   isNilOrBlank,
   formatDollarAmount,
   getRunWithFulfilledOrder,
-  getInstallmentDeadlineDates
+  getInstallmentDeadlineDates,
+  toQueryString
 } from "./util"
 
 describe("util", () => {

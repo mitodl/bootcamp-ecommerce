@@ -65,3 +65,11 @@ export const getRunWithFulfilledOrder = (
 export const getInstallmentDeadlineDates = R.map(
   R.compose(moment, R.prop("deadline"))
 )
+
+export function* incrementer(): Generator<number, *, *> {
+  let int = 1
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    yield int++
+  }
+}
