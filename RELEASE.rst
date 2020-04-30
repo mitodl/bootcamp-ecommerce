@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.39.2
+--------------
+
+- Upgraded docker-compose version and addedd Jupyter notebook config
+
 Version 0.39.1 (Released April 30, 2020)
 --------------
 
