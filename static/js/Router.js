@@ -3,7 +3,7 @@ import React from "react"
 import { Provider } from "react-redux"
 import { Route, Router as ReactRouter } from "react-router-dom"
 
-import App from "./containers/App"
+import App from "./pages/App"
 import withTracker from "./util/withTracker"
 
 import type { Store } from "redux"

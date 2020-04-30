@@ -2,7 +2,7 @@
 import React from "react"
 import { Switch, Route } from "react-router-dom"
 
-import { routes } from "../../../lib/urls"
+import { routes } from "../../lib/urls"
 
 import ViewProfilePage from "./ViewProfilePage"
 import EditProfilePage from "./EditProfilePage"

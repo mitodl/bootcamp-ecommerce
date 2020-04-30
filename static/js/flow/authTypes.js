@@ -97,6 +97,11 @@ export type LoggedInUser = {
 
 export type CurrentUser = AnonymousUser | LoggedInUser
 
+export type UserResponse = {
+  status: number,
+  body: Object
+}
+
 export type StateOrTerritory = {
   name: string,
   code: string

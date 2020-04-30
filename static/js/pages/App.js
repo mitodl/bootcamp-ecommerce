@@ -6,23 +6,23 @@ import urljoin from "url-join"
 
 import { routes } from "../lib/urls"
 
-import ProfilePages from "./pages/profile/ProfilePages"
-import PaymentPage from "./pages/PaymentPage"
+import ProfilePages from "./profile/ProfilePages"
+import PaymentPage from "./PaymentPage"
 
-import {compose} from "redux";
+import { compose } from "redux"
 import { connect } from "react-redux"
-import {createStructuredSelector} from "reselect"
-import users, {currentUserSelector} from "../lib/queries/users"
+import { createStructuredSelector } from "reselect"
+import users, { currentUserSelector } from "../lib/queries/users"
 import { connectRequest } from "redux-query-react"
 
 import type { Match } from "react-router"
 import type { Store } from "redux"
-import type {CurrentUser} from "../flow/authTypes";
+import type { CurrentUser } from "../flow/authTypes"
 
 type Props = {
   match: Match,
   currentUser: ?CurrentUser,
-  store: Store<*, *>,
+  store: Store<*, *>
 }
 
 export class App extends React.Component<Props, void> {
@@ -53,8 +53,6 @@ const mapStateToProps = createStructuredSelector({
 const mapPropsToConfig = () => [users.currentUserQuery()]
 
 export default compose(
-  connect(
-    mapStateToProps
-  ),
+  connect(mapStateToProps),
   connectRequest(mapPropsToConfig)
 )(App)

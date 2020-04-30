@@ -58,11 +58,3 @@ export const shouldIf = (tf: boolean) => (tf ? "should" : "should not")
 export const shouldIfGt0 = (num: number) => shouldIf(num > 0)
 
 export const isIf = (tf: boolean) => (tf ? "is" : "is not")
-
-export const queryListResponse = (list: Array<any>) => ({
-  status: 200,
-  body:   {
-    next:    null,
-    results: list
-  }
-})

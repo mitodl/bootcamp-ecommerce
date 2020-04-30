@@ -7,9 +7,8 @@ import {
   makeAnonymousUser,
   makeCountries,
   makeUser
-} from "../../../factories/user"
-import IntegrationTestHelper from "../../../util/integration_test_helper"
-import {queryListResponse} from "../../../lib/test_utils";
+} from "../../factories/user"
+import IntegrationTestHelper from "../../util/integration_test_helper"
 
 describe("EditProfilePage", () => {
   let helper, renderPage
@@ -18,28 +17,16 @@ describe("EditProfilePage", () => {
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
-    helper.handleRequestStub
-      .withArgs("/api/users/me")
-      .returns({
-        status: 200,
-        body: user
-      })
-    helper.handleRequestStub
-      .withArgs("/api/countries/")
-      .returns(queryListResponse(countries))
+    helper.handleRequestStub.withArgs("/api/users/me").returns({
+      status: 200,
+      body:   user
+    })
+    helper.handleRequestStub.withArgs("/api/countries/").returns({
+      status: 200,
+      body:   countries
+    })
 
-    renderPage = helper.configureReduxQueryRenderer(
-      EditProfilePage,
-      {
-          currentUser: user,
-          countries:   countries
-      },{
-        entities: {
-          currentUser: user,
-          countries:   countries
-        }
-      }
-    )
+    renderPage = helper.configureReduxQueryRenderer(EditProfilePage)
   })
 
   afterEach(() => {
@@ -52,10 +39,11 @@ describe("EditProfilePage", () => {
   })
 
   it("renders the page for an anonymous user", async () => {
-    const { wrapper } = await renderPage({
-        currentUser: makeAnonymousUser(),
-        countries:   countries
+    helper.handleRequestStub.withArgs("/api/users/me").returns({
+      status: 200,
+      body:   makeAnonymousUser()
     })
+    const { wrapper } = await renderPage()
     assert.isFalse(wrapper.find("EditProfileForm").exists())
     assert.isTrue(
       wrapper
@@ -91,8 +79,9 @@ describe("EditProfilePage", () => {
         setSubmitting
       }
 
-      helper.handleRequestStub.returns({
-        body: {
+      helper.handleRequestStub.withArgs("/api/users/me", "PATCH").returns({
+        status: 401,
+        body:   {
           errors: hasError ? "some errors" : null
         }
       })

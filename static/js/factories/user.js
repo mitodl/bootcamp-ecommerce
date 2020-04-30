@@ -35,6 +35,7 @@ export const makeUser = (username: ?string): LoggedInUser => ({
   created_on:       casual.moment.format(),
   updated_on:       casual.moment.format(),
   profile:          {
+    name:              casual.full_name,
     gender:            "f",
     birth_year:        1980,
     company:           casual.company_name,

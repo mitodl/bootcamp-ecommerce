@@ -1,23 +1,19 @@
 // @flow
 /* global SETTINGS: false */
 import React from "react"
-import DocumentTitle from "react-document-title"
-import { EDIT_PROFILE_PAGE_TITLE } from "../../../constants"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { connectRequest } from "redux-query-react"
-import { mutateAsync, requestAsync } from "redux-query"
+import { mutateAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
 
-import users, { currentUserSelector } from "../../../lib/queries/users"
-import { routes } from "../../../lib/urls"
-import queries from "../../../lib/queries"
-import EditProfileForm from "../../../components/forms/EditProfileForm"
+import users, { currentUserSelector } from "../../lib/queries/users"
+import { routes } from "../../lib/urls"
+import queries from "../../lib/queries"
+import EditProfileForm from "../../components/forms/EditProfileForm"
 
-import type { Response } from "redux-query"
 import type { RouterHistory } from "react-router"
-import type { Country, CurrentUser, User } from "../../../flow/authTypes"
-
+import type {Country, CurrentUser, User, UserResponse} from "../../flow/authTypes"
 
 type StateProps = {|
   countries: ?Array<Country>,
@@ -25,8 +21,7 @@ type StateProps = {|
 |}
 
 type DispatchProps = {|
-  editProfile: (userProfileData: User) => Promise<Response<User>>,
-  getCurrentUser: () => Promise<Response<User>>
+  editProfile: (userProfileData: User) => Promise<UserResponse>
 |}
 
 type ProfileProps = {|
@@ -82,34 +77,32 @@ export class EditProfilePage extends React.Component<Props> {
   render() {
     const { countries, currentUser } = this.props
     return countries && currentUser ? (
-      <DocumentTitle title={`${EDIT_PROFILE_PAGE_TITLE}`}>
-        <div className="container auth-page registration-page">
-          <div className="auth-header row d-flex  align-items-center justify-content-between flex-nowrap">
-            <div className="col-auto flex-shrink-1">
-              <h1>Edit Profile</h1>
-            </div>
+      <div className="container auth-page registration-page">
+        <div className="auth-header row d-flex  align-items-center justify-content-between flex-nowrap">
+          <div className="col-auto flex-shrink-1">
+            <h1>Edit Profile</h1>
           </div>
-          <div className="auth-card card-shadow row">
-            <div className="container">
-              <div className="row">
-                <div className="col-12 auth-form">
-                  {currentUser.is_authenticated ? (
-                    <EditProfileForm
-                      countries={countries}
-                      user={currentUser}
-                      onSubmit={this.onSubmit.bind(this)}
-                    />
-                  ) : (
-                    <div className="row">
-                      You must be logged in to edit your profile.
-                    </div>
-                  )}
-                </div>
+        </div>
+        <div className="auth-card card-shadow row">
+          <div className="container">
+            <div className="row">
+              <div className="col-12 auth-form">
+                {currentUser.is_authenticated ? (
+                  <EditProfileForm
+                    countries={countries}
+                    user={currentUser}
+                    onSubmit={this.onSubmit.bind(this)}
+                  />
+                ) : (
+                  <div className="row">
+                    You must be logged in to edit your profile.
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-      </DocumentTitle>
+      </div>
     ) : null
   }
 }
@@ -117,23 +110,19 @@ export class EditProfilePage extends React.Component<Props> {
 const editProfile = (userProfileData: User) =>
   mutateAsync(users.editProfileMutation(userProfileData))
 
-const getCurrentUser = () =>
-  requestAsync({
-    ...users.currentUserQuery(),
-    force: true
-  })
-
 const mapStateToProps = createStructuredSelector({
   currentUser: currentUserSelector,
   countries:   queries.users.countriesSelector
 })
 
 const mapDispatchToProps = {
-  editProfile: editProfile,
-  getCurrentUser
+  editProfile: editProfile
 }
 
-const mapPropsToConfigs = () => [queries.users.countriesQuery()]
+const mapPropsToConfigs = () => [
+  queries.users.countriesQuery(),
+  queries.users.currentUserQuery()
+]
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),

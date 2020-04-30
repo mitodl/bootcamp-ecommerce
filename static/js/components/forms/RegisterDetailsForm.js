@@ -16,7 +16,6 @@ type Props = {
 }
 
 const INITIAL_VALUES = {
-  name:          "",
   password:      "",
   legal_address: {
     first_name:         "",
@@ -26,6 +25,9 @@ const INITIAL_VALUES = {
     country:            "",
     state_or_territory: "",
     postal_code:        ""
+  },
+  profile: {
+    name: ""
   }
 }
 

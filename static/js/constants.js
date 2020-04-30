@@ -99,6 +99,3 @@ export const HIGHEST_EDUCATION_CHOICES = [
   "No formal education",
   "Other education"
 ]
-
-export const EDIT_PROFILE_PAGE_TITLE = "Edit Profile"
-export const VIEW_PROFILE_PAGE_TITLE = "View Profile"

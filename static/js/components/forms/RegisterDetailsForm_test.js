@@ -36,7 +36,7 @@ describe("RegisterDetailsForm", () => {
     const wrapper = renderForm()
 
     const form = wrapper.find("Formik")
-    assert.ok(findFormikFieldByName(form, "name").exists())
+    assert.ok(findFormikFieldByName(form, "profile.name").exists())
     assert.ok(findFormikFieldByName(form, "password").exists())
     assert.ok(form.find("button[type='submit']").exists())
   })
@@ -52,9 +52,9 @@ describe("RegisterDetailsForm", () => {
       "password",
       "Password must contain at least one letter and number"
     ],
-    ["name", "", "Full Name is a required field"],
-    ["name", "  ", "Full Name is a required field"],
-    ["name", "Jane", ""],
+    ["profile.name", "", "Full Name must be at least 2 characters"],
+    ["profile.name", "  ", "Full Name must be at least 2 characters"],
+    ["profile.name", "Jane", ""],
     ["legal_address.city", "Cambridge", ""],
     ["legal_address.city", "", "City is a required field"],
     ["legal_address.city", "  ", "City is a required field"]
@@ -184,7 +184,7 @@ describe("RegisterDetailsForm", () => {
 
   //
   ;[
-    ["name", "name"],
+    ["profile.name", "name"],
     ["legal_address.first_name", "given-name"],
     ["legal_address.last_name", "family-name"],
     ["legal_address.street_address[0]", "address-line1"],

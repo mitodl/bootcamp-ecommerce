@@ -27,12 +27,14 @@ const ADDRESS_LINES_MAX = 4
 const seedYear = moment().year()
 
 export const legalAddressValidation = yup.object().shape({
-  name: yup
-    .string()
-    .label("Full Name")
-    .trim()
-    .required()
-    .min(2),
+  profile: yup.object().shape({
+    name: yup
+      .string()
+      .label("Full Name")
+      .trim()
+      .required()
+      .min(2)
+  }),
   legal_address: yup.object().shape({
     first_name: yup
       .string()
@@ -94,6 +96,12 @@ export const passwordValidation = yup.object().shape({
 
 export const profileValidation = yup.object().shape({
   profile: yup.object().shape({
+    name: yup
+      .string()
+      .label("Full Name")
+      .trim()
+      .required()
+      .min(2),
     gender: yup
       .string()
       .label("Gender")
@@ -157,17 +165,17 @@ export const LegalAddressFields = ({
       <ErrorMessage name="legal_address.last_name" component={FormError} />
     </div>
     <div className="form-group">
-      <label htmlFor="name" className="row">
+      <label htmlFor="profile.name" className="row">
         <div className="col-4 font-weight-bold">Full Name*</div>
         <div className="col-8">(As it will appear in your certificate)</div>
       </label>
       <Field
         type="text"
-        name="name"
+        name="profile.name"
         className="form-control"
         autoComplete="name"
       />
-      <ErrorMessage name="name" component={FormError} />
+      <ErrorMessage name="profile.name" component={FormError} />
     </div>
     {includePassword ? (
       <div className="form-group">
@@ -195,21 +203,28 @@ export const LegalAddressFields = ({
         name="legal_address.street_address"
         render={arrayHelpers => (
           <div>
-            {values.legal_address.street_address.map((line, index) => (
-              <div key={index}>
-                <Field
-                  name={`legal_address.street_address[${index}]`}
-                  className={`form-control ${index > 0 ? "row-inner" : ""}`}
-                  autoComplete={`address-line${index + 1}`}
-                />
-                {index === 0 ? (
-                  <ErrorMessage
-                    name="legal_address.street_address"
-                    component={FormError}
+            <div key="0">
+              <Field
+                name={`legal_address.street_address[0]`}
+                className={`form-control`}
+                autoComplete={`address-line1`}
+              />
+              <ErrorMessage
+                name="legal_address.street_address"
+                component={FormError}
+              />
+            </div>
+            {values.legal_address.street_address.map((line, index) =>
+              index > 0 ? (
+                <div key={index}>
+                  <Field
+                    name={`legal_address.street_address[${index}]`}
+                    className={"form-control row-inner"}
+                    autoComplete={`address-line${index + 1}`}
                   />
-                ) : null}
-              </div>
-            ))}
+                </div>
+              ) : null
+            )}
             {values.legal_address.street_address.length < ADDRESS_LINES_MAX ? (
               <button
                 type="button"

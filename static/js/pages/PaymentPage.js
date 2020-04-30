@@ -16,18 +16,18 @@ import {
   setTimeoutActive,
   setToastMessage,
   showDialog
-} from "../../actions"
-import { TOAST_SUCCESS, TOAST_FAILURE } from "../../constants"
-import queries from "../../lib/queries"
-import { createForm, getKlassWithFulfilledOrder } from "../../util/util"
-import Payment from "../../components/Payment"
-import PaymentHistory from "../../components/PaymentHistory"
-import Toast from "../../components/Toast"
+} from "../actions"
+import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
+import queries from "../lib/queries"
+import { createForm, getKlassWithFulfilledOrder } from "../util/util"
+import Payment from "../components/Payment"
+import PaymentHistory from "../components/PaymentHistory"
+import Toast from "../components/Toast"
 
-import type { UIState } from "../../reducers/ui"
-import type { InputEvent } from "../../flow/events"
-import type { PaymentPayload, PaymentResponse } from "../../flow/ecommerceTypes"
-import type { Klass, KlassesResponse } from "../../flow/klassTypes"
+import type { UIState } from "../reducers/ui"
+import type { InputEvent } from "../flow/events"
+import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
+import type { Klass, KlassesResponse } from "../flow/klassTypes"
 
 type Props = {
   ui: UIState,
@@ -119,10 +119,15 @@ export class PaymentPage extends React.Component<Props> {
 
   handleOrderStatus = (): void => {
     const { klasses, klassesFinished } = this.props
-    const query = new URI().query(true)
+    let query = new URI().query(true)
     if (!klassesFinished) {
       // wait until we have access to the klasses
       return
+    }
+
+    // hacky workaround to handle redirect from Cybersource while keeping query parameters
+    if (query.next) {
+      query = new URI(query.next).query(true)
     }
 
     const status = query.status

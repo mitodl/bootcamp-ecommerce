@@ -2,13 +2,13 @@
 import React from "react"
 import { Provider } from "react-redux"
 import { Provider as ReduxQueryProvider } from "redux-query-react"
-import {Router} from "react-router"
+import { Router } from "react-router"
 import R from "ramda"
-import {mount, shallow} from "enzyme"
+import { mount, shallow } from "enzyme"
 import sinon from "sinon"
 import { createMemoryHistory } from "history"
 
-import {getEntities, getQueries} from "../lib/redux_query"
+import { getQueries } from "../lib/redux_query"
 import * as storeLib from "../store/configureStore"
 import * as networkInterfaceFuncs from "../store/network_interface"
 
@@ -65,17 +65,17 @@ export default class IntegrationTestHelper {
     return storeLib.default(initialState)
   }
 
-  configureReduxQueryRenderer(Component, defaultProps = {}, store={}) {
+  configureReduxQueryRenderer(Component, defaultProps = {}) {
     const history = this.browserHistory
     return async (extraProps = { history }, beforeRenderActions = []) => {
-      const store = this.createFullStore(store)
+      const store = this.createFullStore()
       beforeRenderActions.forEach(action => store.dispatch(action))
 
       const wrapper = await mount(
         <Provider store={store}>
-          <ReduxQueryProvider queriesSelector={getQueries} entitiesSelector={getEntities} store={store}>
+          <ReduxQueryProvider queriesSelector={getQueries}>
             <Router store={store} history={this.browserHistory}>
-              <Component {...defaultProps} />
+              <Component {...defaultProps} {...extraProps} />
             </Router>
           </ReduxQueryProvider>
         </Provider>
