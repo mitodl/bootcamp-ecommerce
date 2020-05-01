@@ -3,7 +3,6 @@ import React from "react"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { connectRequest } from "redux-query-react"
-import type { RouterHistory } from "react-router"
 import moment from "moment"
 import { find, fromPairs, join, propEq } from "ramda"
 import { createStructuredSelector } from "reselect"
@@ -17,6 +16,7 @@ import queries from "../../lib/queries"
 import { currentUserSelector } from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
 
+import type { RouterHistory } from "react-router"
 import type { Country, CurrentUser } from "../../flow/authTypes"
 
 type StateProps = {|
