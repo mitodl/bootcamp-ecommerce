@@ -13,7 +13,12 @@ import queries from "../../lib/queries"
 import EditProfileForm from "../../components/forms/EditProfileForm"
 
 import type { RouterHistory } from "react-router"
-import type {Country, CurrentUser, User, UserResponse} from "../../flow/authTypes"
+import type {
+  Country,
+  CurrentUser,
+  User,
+  UserResponse
+} from "../../flow/authTypes"
 
 type StateProps = {|
   countries: ?Array<Country>,
