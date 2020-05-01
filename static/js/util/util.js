@@ -73,3 +73,5 @@ export function* incrementer(): Generator<number, *, *> {
     yield int++
   }
 }
+
+export const formatTitle = (text: string) => `MIT Bootcamps | ${text}`

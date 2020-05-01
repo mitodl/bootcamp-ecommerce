@@ -7,6 +7,8 @@ import urljoin from "url-join"
 import { routes } from "../lib/urls"
 
 import ProfilePages from "./profile/ProfilePages"
+import LoginPages from "./login/LoginPages"
+import RegisterPages from "./register/RegisterPages"
 import PaymentPage from "./PaymentPage"
 
 import { compose } from "redux"
@@ -39,6 +41,14 @@ export class App extends React.Component<Props, void> {
           <Route
             path={urljoin(match.url, String(routes.profile))}
             component={ProfilePages}
+          />
+          <Route
+            path={urljoin(match.url, String(routes.login))}
+            component={LoginPages}
+          />
+          <Route
+            path={urljoin(match.url, String(routes.register))}
+            component={RegisterPages}
           />
         </Switch>
       </div>

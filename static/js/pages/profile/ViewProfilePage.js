@@ -6,15 +6,18 @@ import { connectRequest } from "redux-query-react"
 import moment from "moment"
 import { find, fromPairs, join, propEq } from "ramda"
 import { createStructuredSelector } from "reselect"
+import { MetaTags } from "react-meta-tags"
 
 import {
   EMPLOYMENT_EXPERIENCE,
   EMPLOYMENT_SIZE,
-  GENDER_CHOICES
+  GENDER_CHOICES,
+  VIEW_PROFILE_PAGE_TITLE
 } from "../../constants"
 import queries from "../../lib/queries"
 import { currentUserSelector } from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
+import { formatTitle } from "../../util/util"
 
 import type { RouterHistory } from "react-router"
 import type { Country, CurrentUser } from "../../flow/authTypes"
@@ -38,6 +41,9 @@ export class ViewProfilePage extends React.Component<Props> {
     const { currentUser, countries, history } = this.props
     return countries && currentUser ? (
       <div className="container auth-page registration-page">
+        <MetaTags>
+          <title>{formatTitle(VIEW_PROFILE_PAGE_TITLE)}</title>
+        </MetaTags>
         <div className="auth-header row d-flex  align-items-center justify-content-between flex-nowrap">
           <div className="col-auto flex-shrink-1">
             <h1>Profile</h1>

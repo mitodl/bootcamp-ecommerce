@@ -99,3 +99,30 @@ export const HIGHEST_EDUCATION_CHOICES = [
   "No formal education",
   "Other education"
 ]
+
+export const ALERT_TYPE_TEXT = "text"
+export const ALERT_TYPE_UNUSED_COUPON = "unused-coupon"
+export const ALTER_TYPE_B2B_ORDER_STATUS = "b2b-order-status"
+
+// HTML title for different pages
+export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
+export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE
+
+export const FORGOT_PASSWORD_PAGE_TITLE = "Forgot Password"
+export const FORGOT_PASSWORD_CONFIRM_PAGE_TITLE = FORGOT_PASSWORD_PAGE_TITLE
+
+export const EDIT_PROFILE_PAGE_TITLE = "Edit Profile"
+export const VIEW_PROFILE_PAGE_TITLE = "View Profile"
+
+export const REGISTER_EMAIL_PAGE_TITLE = "Register"
+export const REGISTER_CONFIRM_PAGE_TITLE = REGISTER_EMAIL_PAGE_TITLE
+export const REGISTER_DETAILS_PAGE_TITLE = REGISTER_EMAIL_PAGE_TITLE
+export const REGISTER_EXTRA_DETAILS_PAGE_TITLE = REGISTER_EMAIL_PAGE_TITLE
+
+export const REGISTER_ERROR_PAGE_TITLE = "Registration Error"
+export const REGISTER_DENIED_PAGE_TITLE = REGISTER_ERROR_PAGE_TITLE
+
+export const ACCOUNT_SETTINGS_PAGE_TITLE = "Account Settings"
+export const EMAIL_CONFIRM_PAGE_TITLE = "Confirm Email Change"
+
+export const RECEIPT_PAGE_TITLE = "Receipt"

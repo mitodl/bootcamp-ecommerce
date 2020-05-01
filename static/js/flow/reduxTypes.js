@@ -5,6 +5,7 @@ import type {
 
 export type Dispatcher<T> = (d: Dispatch<*>) => Promise<T>;
 
+// $FlowFixMe
 export type Action = ReduxAction<string> & {
   payload: any,
 };

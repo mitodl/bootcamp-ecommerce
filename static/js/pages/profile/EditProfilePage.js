@@ -6,10 +6,14 @@ import { connect } from "react-redux"
 import { connectRequest } from "redux-query-react"
 import { mutateAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
+import { MetaTags } from "react-meta-tags"
 
+import { EDIT_PROFILE_PAGE_TITLE } from "../../constants"
 import users, { currentUserSelector } from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
 import queries from "../../lib/queries"
+import { formatTitle } from "../../util/util"
+
 import EditProfileForm from "../../components/forms/EditProfileForm"
 
 import type { RouterHistory } from "react-router"
@@ -17,7 +21,7 @@ import type {
   Country,
   CurrentUser,
   User,
-  UserResponse
+  HttpAuthResponse
 } from "../../flow/authTypes"
 
 type StateProps = {|
@@ -26,7 +30,7 @@ type StateProps = {|
 |}
 
 type DispatchProps = {|
-  editProfile: (userProfileData: User) => Promise<UserResponse>
+  editProfile: (userProfileData: User) => Promise<HttpAuthResponse<User>>
 |}
 
 type ProfileProps = {|
@@ -65,7 +69,8 @@ export class EditProfilePage extends React.Component<Props> {
     try {
       const {
         body: { errors }
-      }: { body: Object } = await editProfile(payload)
+      }: // $FlowFixMe
+      { body: Object } = await editProfile(payload)
 
       if (errors && errors.length > 0) {
         setErrors({
@@ -83,6 +88,9 @@ export class EditProfilePage extends React.Component<Props> {
     const { countries, currentUser } = this.props
     return countries && currentUser ? (
       <div className="container auth-page registration-page">
+        <MetaTags>
+          <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
+        </MetaTags>
         <div className="auth-header row d-flex  align-items-center justify-content-between flex-nowrap">
           <div className="col-auto flex-shrink-1">
             <h1>Edit Profile</h1>
