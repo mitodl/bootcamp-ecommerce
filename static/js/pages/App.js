@@ -6,10 +6,13 @@ import urljoin from "url-join"
 
 import { routes } from "../lib/urls"
 
+import PrivateRoute from "../components/PrivateRoute"
 import ProfilePages from "./profile/ProfilePages"
 import LoginPages from "./login/LoginPages"
 import RegisterPages from "./register/RegisterPages"
 import PaymentPage from "./PaymentPage"
+import EmailConfirmPage from "./settings/EmailConfirmPage"
+import AccountSettingsPage from "./settings/AccountSettingsPage"
 
 import { compose } from "redux"
 import { connect } from "react-redux"
@@ -20,7 +23,6 @@ import { connectRequest } from "redux-query-react"
 import type { Match } from "react-router"
 import type { Store } from "redux"
 import type { CurrentUser } from "../flow/authTypes"
-import { EmailConfirmPage } from "./settings/EmailConfirmPage"
 
 type Props = {
   match: Match,
@@ -62,6 +64,10 @@ export class App extends React.Component<Props, void> {
           <Route
             path={urljoin(match.url, String(routes.account.confirmEmail))}
             component={EmailConfirmPage}
+          />
+          <PrivateRoute
+            path={urljoin(match.url, String(routes.accountSettings))}
+            component={AccountSettingsPage}
           />
         </Switch>
       </div>

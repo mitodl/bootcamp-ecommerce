@@ -24,7 +24,6 @@ import type {
   HttpAuthResponse,
   updateEmailResponse
 } from "../../flow/authTypes"
-import users from "../../lib/queries/users"
 import type { User } from "../../flow/authTypes"
 
 type Props = {
@@ -111,7 +110,7 @@ const mapStateToProps = createStructuredSelector({
 
 const getCurrentUser = () =>
   requestAsync({
-    ...users.currentUserQuery(),
+    ...queries.users.currentUserQuery(),
     force: true
   })
 
