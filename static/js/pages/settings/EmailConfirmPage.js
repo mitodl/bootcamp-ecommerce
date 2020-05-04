@@ -4,24 +4,27 @@ import React from "react"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { Link } from "react-router-dom"
-import { mutateAsync, connectRequest, requestAsync } from "redux-query"
+import { mutateAsync, requestAsync } from "redux-query"
+import { connectRequest } from "redux-query-react"
 import { path, pathOr } from "ramda"
 import { createStructuredSelector } from "reselect"
-import {MetaTags} from "react-meta-tags"
+import { MetaTags } from "react-meta-tags"
 
 import { addUserNotification } from "../../actions"
-import {ALERT_TYPE_TEXT, VIEW_PROFILE_PAGE_TITLE} from "../../constants"
+import { ALERT_TYPE_TEXT, EMAIL_CONFIRM_PAGE_TITLE } from "../../constants"
 import queries from "../../lib/queries"
 import { routes } from "../../lib/urls"
-import {formatTitle} from "../../util/util"
+import { formatTitle } from "../../util/util"
 
 import { updateEmailSelector } from "../../lib/queries/auth"
 import { qsVerificationCodeSelector } from "../../lib/selectors"
 
 import type { RouterHistory, Location } from "react-router"
-import type { updateEmailResponse } from "../../flow/authTypes"
+import type {
+  HttpAuthResponse,
+  updateEmailResponse
+} from "../../flow/authTypes"
 import users from "../../lib/queries/users"
-import type { Response } from "redux-query"
 import type { User } from "../../flow/authTypes"
 
 type Props = {
@@ -30,7 +33,7 @@ type Props = {
   location: Location,
   history: RouterHistory,
   updateEmail: ?updateEmailResponse,
-  getCurrentUser: () => Promise<Response<User>>
+  getCurrentUser: () => Promise<HttpAuthResponse<User>>
 }
 
 export class EmailConfirmPage extends React.Component<Props> {
@@ -70,30 +73,30 @@ export class EmailConfirmPage extends React.Component<Props> {
   render() {
     const { isLoading, updateEmail } = this.props
     return (
-        <div className="container auth-page">
-                  <MetaTags>
+      <div className="container auth-page">
+        <MetaTags>
           <title>{formatTitle(EMAIL_CONFIRM_PAGE_TITLE)}</title>
         </MetaTags>
-          <div className="row">
-            <div className="col">
-              {isLoading && <p>Confirming...</p>}
-              {!isLoading && updateEmail && updateEmail.confirmed && (
-                <p>Confirmed!</p>
-              )}
+        <div className="row">
+          <div className="col">
+            {isLoading && <p>Confirming...</p>}
+            {!isLoading && updateEmail && updateEmail.confirmed && (
+              <p>Confirmed!</p>
+            )}
 
-              {!isLoading &&
-                ((updateEmail && !updateEmail.confirmed) || !updateEmail) && (
-                <React.Fragment>
-                  <p>No confirmation code was provided or it has expired.</p>
-                  <Link to={routes.accountSettings}>
-                      Click Account Settings
-                  </Link>{" "}
-                    to change the email again.
-                </React.Fragment>
-              )}
-            </div>
+            {!isLoading &&
+              ((updateEmail && !updateEmail.confirmed) || !updateEmail) && (
+              <React.Fragment>
+                <p>No confirmation code was provided or it has expired.</p>
+                <Link to={routes.accountSettings}>
+                    Click Account Settings
+                </Link>{" "}
+                  to change the email again.
+              </React.Fragment>
+            )}
           </div>
         </div>
+      </div>
     )
   }
 }
@@ -113,6 +116,7 @@ const getCurrentUser = () =>
   })
 
 const confirmEmail = (code: string) =>
+  // $FlowFixMe
   mutateAsync(queries.auth.confirmEmailMutation(code))
 
 const mapPropsToConfig = ({ params: { verificationCode } }) =>
@@ -124,9 +128,7 @@ const mapDispatchToProps = {
 }
 
 export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
+  connect(mapStateToProps, mapDispatchToProps),
+  // $FlowFixMe
   connectRequest(mapPropsToConfig)
 )(EmailConfirmPage)

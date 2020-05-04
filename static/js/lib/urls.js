@@ -13,7 +13,8 @@ export const routes = {
     update: "edit/"
   }),
 
-  logout: "/logout/",
+  accountSettings: "/account-settings/",
+  logout:          "/logout/",
 
   // authentication related routes
   login: include("/signin/", {

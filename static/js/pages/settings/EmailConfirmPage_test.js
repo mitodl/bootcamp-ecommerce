@@ -1,27 +1,19 @@
 // @flow
 import { assert } from "chai"
 
-import IntegrationTestHelper from "../../../util/integration_test_helper"
-import EmailConfirmPage, {
-  EmailConfirmPage as InnerEmailConfirmPage
-} from "./EmailConfirmPage"
-import { STATE_REGISTER_DETAILS } from "../../../lib/auth"
+import IntegrationTestHelper from "../../util/integration_test_helper"
+import EmailConfirmPage from "./EmailConfirmPage"
 
 describe("EmailConfirmPage", () => {
   let helper, renderPage
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
-    renderPage = helper.configureHOCRenderer(
-      EmailConfirmPage,
-      InnerEmailConfirmPage,
-      {},
-      {
-        location: {
-          search: ""
-        }
+    renderPage = helper.configureReduxQueryRenderer(EmailConfirmPage, {
+      location: {
+        search: ""
       }
-    )
+    })
   })
 
   afterEach(() => {
@@ -29,18 +21,19 @@ describe("EmailConfirmPage", () => {
   })
 
   it("shows a message when the confirmation page is displayed", async () => {
-    helper.handleRequestStub.returns({})
-    const token = "asdf"
-    const { inner, store } = await renderPage({
-      entities: {
-        updateEmail: {
-          confirmed: true
-        }
+    helper.handleRequestStub.returns({
+      status: 200,
+      body:   {
+        confirmed: true
       }
     })
+    const { wrapper, store } = await renderPage()
 
-    inner.instance().componentDidUpdate({}, {})
-    assert.deepEqual(store.getState().ui.userNotifications, {
+    wrapper
+      .find("EmailConfirmPage")
+      .instance()
+      .componentDidUpdate({})
+    assert.deepEqual(store.getState().userNotifications, {
       "email-verified": {
         type:  "text",
         props: {
@@ -52,18 +45,19 @@ describe("EmailConfirmPage", () => {
   })
 
   it("shows a message when the error page is displayed", async () => {
-    helper.handleRequestStub.returns({})
-    const token = "asdf"
-    const { inner, store } = await renderPage({
-      entities: {
-        updateEmail: {
-          confirmed: false
-        }
+    helper.handleRequestStub.returns({
+      status: 200,
+      body:   {
+        confirmed: false
       }
     })
+    const { wrapper, store } = await renderPage()
 
-    inner.instance().componentDidUpdate({}, {})
-    assert.deepEqual(store.getState().ui.userNotifications, {
+    wrapper
+      .find("EmailConfirmPage")
+      .instance()
+      .componentDidUpdate({})
+    assert.deepEqual(store.getState().userNotifications, {
       "email-verified": {
         type:  "text",
         color: "danger",

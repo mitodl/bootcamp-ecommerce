@@ -20,7 +20,7 @@ import { connectRequest } from "redux-query-react"
 import type { Match } from "react-router"
 import type { Store } from "redux"
 import type { CurrentUser } from "../flow/authTypes"
-import {EmailConfirmPage} from "./settings/EmailConfirmPage";
+import { EmailConfirmPage } from "./settings/EmailConfirmPage"
 
 type Props = {
   match: Match,
