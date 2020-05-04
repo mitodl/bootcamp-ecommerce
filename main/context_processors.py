@@ -18,3 +18,15 @@ def api_keys(request):
             "GOOGLE_TAG_MANAGER": settings.GTM_TRACKING_ID
         }
     }
+
+
+def configuration_context(request):
+    """
+    Configuration context for django templates
+    """
+    return {
+        "zendesk_config": {
+            "help_widget_enabled": settings.ZENDESK_CONFIG.get("HELP_WIDGET_ENABLED"),
+            "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
+        },
+    }

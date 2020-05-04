@@ -85,6 +85,16 @@ else:
 
 SECURE_SSL_REDIRECT = get_var('BOOTCAMP_SECURE_SSL_REDIRECT', True)
 
+ZENDESK_CONFIG = {
+    "HELP_WIDGET_ENABLED": get_bool(
+        "ZENDESK_HELP_WIDGET_ENABLED",
+        False,
+    ),
+    "HELP_WIDGET_KEY": get_string(
+        "ZENDESK_HELP_WIDGET_KEY",
+        "d99f12ec-89dd-4111-b5ea-7b36d01bba24",
+    ),
+}
 
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -236,6 +246,7 @@ TEMPLATES = [
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
                 'main.context_processors.api_keys',
+                'main.context_processors.configuration_context',
             ],
         },
     },

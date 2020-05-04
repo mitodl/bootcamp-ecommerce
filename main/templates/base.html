@@ -23,11 +23,28 @@
     {% block extrahead %}
     {% endblock %}
     {% endspaceless %}
+    {% if zendesk_config.help_widget_enabled %}
+      <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key={{zendesk_config.help_widget_key}}"> </script>
+    {% endif %}
   </head>
   <body>
     {% hijack_notification %}
     {% include "gtm_body.html" %}
     {% block content %}
     {% endblock %}
+    {% if zendesk_config.help_widget_enabled %}
+      <script type="text/javascript">
+        zE('webWidget', 'prefill', {
+            name: {
+                value: '{{user.name}}',
+            },
+            email: {
+                value: '{{user.email}}',
+            }
+        });
+        // set page title as a search term
+        zE('webWidget', 'helpCenter:setSuggestions', { search: document.title });
+      </script>
+    {% endif %}
   </body>
 </html>
