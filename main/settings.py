@@ -470,7 +470,7 @@ WAGTAIL_SITE_NAME = "MIT Bootcamp-Ecommerce"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-BOOTCAMP_ECOMMERCE_USE_S3 = get_bool('MICROMASTERS_USE_S3', False)
+BOOTCAMP_ECOMMERCE_USE_S3 = get_bool('BOOTCAMP_USE_S3', False)
 AWS_ACCESS_KEY_ID = get_string('AWS_ACCESS_KEY_ID', False)
 AWS_SECRET_ACCESS_KEY = get_string('AWS_SECRET_ACCESS_KEY', False)
 AWS_STORAGE_BUCKET_NAME = get_string('AWS_STORAGE_BUCKET_NAME', False)
@@ -490,10 +490,6 @@ if (
     )
 if BOOTCAMP_ECOMMERCE_USE_S3:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-else:
-    # by default use django.core.files.storage.FileSystemStorage with
-    # overwrite feature
-    DEFAULT_FILE_STORAGE = 'storages.backends.overwrite.OverwriteStorage'
 
 # Celery
 CELERY_BROKER_URL = get_var(
