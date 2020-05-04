@@ -20,6 +20,7 @@ import { connectRequest } from "redux-query-react"
 import type { Match } from "react-router"
 import type { Store } from "redux"
 import type { CurrentUser } from "../flow/authTypes"
+import {EmailConfirmPage} from "./settings/EmailConfirmPage";
 
 type Props = {
   match: Match,
@@ -49,6 +50,18 @@ export class App extends React.Component<Props, void> {
           <Route
             path={urljoin(match.url, String(routes.register))}
             component={RegisterPages}
+          />
+          <Route
+            path={urljoin(match.url, String(routes.login))}
+            component={LoginPages}
+          />
+          <Route
+            path={urljoin(match.url, String(routes.register))}
+            component={RegisterPages}
+          />
+          <Route
+            path={urljoin(match.url, String(routes.account.confirmEmail))}
+            component={EmailConfirmPage}
           />
         </Switch>
       </div>
