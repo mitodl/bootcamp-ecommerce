@@ -20,7 +20,7 @@ import dj_database_url
 from main.envs import get_string, get_bool, get_int, get_list, get_any
 
 
-VERSION = "0.39.2"
+VERSION = "0.40.0"
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

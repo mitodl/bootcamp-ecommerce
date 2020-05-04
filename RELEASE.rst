@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.40.0
+--------------
+
+- Initial port of auth and related apps
+- Fix environment variable for USE_S3, and remove reference to removed OverwriteStorage (#452)
+- add zendesk customer support section in the footer
+- Added resource pages in CMS
+
 Version 0.39.2 (Released May 01, 2020)
 --------------
 
