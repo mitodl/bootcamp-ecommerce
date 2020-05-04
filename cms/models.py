@@ -7,6 +7,7 @@ from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.models import Image
 from wagtail.core import blocks
 from wagtail.core.models import Page
+from cms.blocks import ResourceBlock
 
 
 class BootcampPage(Page):
@@ -37,4 +38,34 @@ class BootcampPage(Page):
     def get_context(self, request, *args, **kwargs):
         context = super(BootcampPage, self).get_context(request)
         context["title"] = self.title
+        return context
+
+
+class ResourcePage(Page):
+    """
+    Basic resource page for all resource page.
+    """
+    template = "resource_template.html"
+
+    sub_heading = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True,
+        help_text="Sub heading of the resource page.",
+    )
+
+    content = StreamField(
+        [("content", ResourceBlock())],
+        blank=False,
+        help_text="Enter details of content.",
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("sub_heading"),
+        StreamFieldPanel("content"),
+    ]
+
+    def get_context(self, request, *args, **kwargs):
+        context = super(ResourcePage, self).get_context(request)
+
         return context
