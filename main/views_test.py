@@ -32,6 +32,10 @@ class TestViews(TestCase):
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
             ENVIRONMENT=environment,
+            ZENDESK_CONFIG={
+                "HELP_WIDGET_ENABLED": False,
+                "HELP_WIDGET_KEY": "fake_key",
+            }
         ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get('/')
         self.assertContains(
@@ -51,7 +55,9 @@ class TestViews(TestCase):
             'release_version': version,
             'sentry_dsn': None,
             'public_path': '/static/bundles/',
-            'user': None
+            'user': None,
+            'zendesk_config': {"help_widget_enabled": False, "help_widget_key": "fake_key"},
+
         }
 
     def test_index_logged_in(self):
@@ -88,6 +94,10 @@ class TestViews(TestCase):
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
             ENVIRONMENT=environment,
+            ZENDESK_CONFIG={
+                "HELP_WIDGET_ENABLED": False,
+                "HELP_WIDGET_KEY": "fake_key",
+            }
         ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get(reverse('pay'))
 
@@ -107,5 +117,7 @@ class TestViews(TestCase):
             'user': {
                 'full_name': self.user.profile.name,
                 'username': None
-            }
+            },
+            "zendesk_config": {"help_widget_enabled": False, "help_widget_key": "fake_key"},
+
         }
