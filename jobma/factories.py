@@ -29,8 +29,8 @@ class InterviewFactory(DjangoModelFactory):
     interview_id = None
     candidate_first_name = FuzzyText()
     candidate_last_name = FuzzyText()
-    candidate_phone = FuzzyText()
-    candidate_email = FuzzyText()
+    candidate_phone = Faker("phone_number)
+    candidate_email = Faker("email")
 
     class Meta:
         model = Interview
