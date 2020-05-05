@@ -4,11 +4,22 @@ from urllib.parse import urljoin
 from django.urls import reverse
 import pytest
 
-from jobma.api import create_interview
+from jobma.api import create_interview, get_jobma_client
 from jobma.factories import InterviewFactory
 
 
 pytestmark = pytest.mark.django_db
+
+
+def test_get_jobma_client(settings):
+    """get_jobma_client should create a requests Session with relevant headers populated"""
+    settings.JOBMA_ACCESS_TOKEN = "jobma_token"
+    settings.VERSION = "9.8.7.6.5"
+    settings.SITE_BASE_URL = "http://a.fake.url"
+    session = get_jobma_client()
+    assert session.headers["Authorization"] == f"Bearer {settings.JOBMA_ACCESS_TOKEN}"
+    assert session.headers["User-Agent"] == f"BootcampEcommerceBot/{settings.VERSION} ({settings.SITE_BASE_URL})"
+
 
 
 def test_create_interview(mocker, settings):
