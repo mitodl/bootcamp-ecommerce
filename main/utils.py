@@ -6,10 +6,10 @@ import itertools
 import json
 import logging
 import re
+import pytz
 
 from django.conf import settings
 from django.core.serializers import serialize
-import pytz
 
 
 log = logging.getLogger(__name__)
@@ -28,15 +28,6 @@ def is_near_now(time):
     now = datetime.datetime.now(tz=pytz.UTC)
     five_seconds = datetime.timedelta(0, 5)
     return now - five_seconds < time < now + five_seconds
-
-
-def now_in_utc():
-    """
-    Get the current time in UTC
-    Returns:
-        datetime.datetime: A datetime object for the current time
-    """
-    return datetime.datetime.now(tz=pytz.UTC)
 
 
 def first_or_none(iterable):
@@ -222,6 +213,15 @@ def webpack_dev_server_url(request):
     Get the full URL where the webpack dev server should be running
     """
     return 'http://{}:{}'.format(webpack_dev_server_host(request), settings.WEBPACK_DEV_SERVER_PORT)
+
+
+def now_in_utc():
+    """
+    Get the current time in UTC
+    Returns:
+        datetime.datetime: A datetime object for the current time
+    """
+    return datetime.datetime.now(tz=pytz.UTC)
 
 
 def serialize_model_object(obj):

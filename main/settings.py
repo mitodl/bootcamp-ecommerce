@@ -120,6 +120,7 @@ INSTALLED_APPS = (
     "mail",
     "klasses",
     "profiles",
+    "applications",
     "hubspot",
     "authentication",
     "compliance",
