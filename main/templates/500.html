@@ -18,7 +18,7 @@
 {% include "footer.html" %}
 {% if request.sentry.id %}
 <script>
-  Raven.showReportDialog({
+  Sentry.showReportDialog({
     eventId: '{{ request.sentry.id }}',
     // use the public DSN (dont include your secret!)
     dsn: '{{ js_settings_json.sentry_dsn }}'

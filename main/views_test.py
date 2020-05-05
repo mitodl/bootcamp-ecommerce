@@ -55,7 +55,7 @@ class TestViews(TestCase):
         assert js_settings == {
             'environment': environment,
             'release_version': version,
-            'sentry_dsn': None,
+            'sentry_dsn': "",
             'public_path': '/static/bundles/',
             'user': None,
             'zendesk_config': {"help_widget_enabled": False, "help_widget_key": "fake_key"},
@@ -117,7 +117,7 @@ class TestViews(TestCase):
         assert js_settings == {
             'environment': environment,
             'release_version': version,
-            'sentry_dsn': None,
+            'sentry_dsn': "",
             'public_path': '/static/bundles/',
             'user': {
                 'full_name': self.user.profile.name,
