@@ -1,6 +1,7 @@
 """Factories for jobma models"""
 from factory import SubFactory
 from factory.django import DjangoModelFactory
+from faker import Faker
 
 from factory.fuzzy import (
     FuzzyInteger,
@@ -29,7 +30,7 @@ class InterviewFactory(DjangoModelFactory):
     interview_id = None
     candidate_first_name = FuzzyText()
     candidate_last_name = FuzzyText()
-    candidate_phone = Faker("phone_number)
+    candidate_phone = Faker("phone_number")
     candidate_email = Faker("email")
 
     class Meta:
