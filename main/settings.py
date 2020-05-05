@@ -921,6 +921,13 @@ RECAPTCHA_SECRET_KEY = get_string(
     "RECAPTCHA_SECRET_KEY", "", description="The ReCaptcha secret key"
 )
 
-JOBMA_BASE_URL = get_string("JOBMA_BASE_URL", "")
-JOBMA_ACCESS_TOKEN = get_string("JOBMA_ACCESS_TOKEN", "")
-JOBMA_WEBHOOK_ACCESS_TOKEN = get_string("JOBMA_WEBHOOK_ACCESS_TOKEN", "")
+JOBMA_BASE_URL = get_string(
+    "JOBMA_BASE_URL", "", description="The base URL for accessing Jobma"
+)
+JOBMA_ACCESS_TOKEN = get_string(
+    "JOBMA_ACCESS_TOKEN", "", description="The JOBMA access token used to access their REST API"
+)
+JOBMA_WEBHOOK_ACCESS_TOKEN = get_string(
+    "JOBMA_WEBHOOK_ACCESS_TOKEN", "",
+    description="The Jobma access token used by us to verify that a postback came from Jobma",
+)
