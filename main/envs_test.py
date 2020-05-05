@@ -15,7 +15,7 @@ FAKE_ENVIRONS = {
     "none": "None",
     "string": "a b c d e f g",
     "list_of_int": "[3,4,5]",
-    "list_of_str": '["x", "y", \'z\']',
+    "list_of_str": '["x", "y", "z"]',
 }
 
 
@@ -41,7 +41,7 @@ def test_get_any():
         "none": "None",
         "string": "a b c d e f g",
         "list_of_int": "[3,4,5]",
-        "list_of_str": '["x", "y", \'z\']',
+        "list_of_str": '["x", "y", "z"]',
     }
     for key, value in expected.items():
         assert envs.get_any(key, "default") == value
@@ -97,3 +97,9 @@ def test_get_bool():
 
     assert envs.get_bool("missing_true", True) is True
     assert envs.get_bool("missing_false", False) is False
+
+
+def test_get_list():
+    """get_list should parse a list of items"""
+    assert envs.get_list("list_of_int", []) == ["3", "4", "5"]
+    assert envs.get_list("list_of_str", []) == ["x", "y", "z"]

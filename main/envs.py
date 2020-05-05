@@ -181,10 +181,15 @@ def parse_list(name, value, default):  # pylint: disable=unused-argument
             the parsed value
     """
     parsed_value = value
-    if isinstance(value, str):
-        parsed_value = value.split(",")
-
-    return [item.strip(" ") for item in parsed_value]
+    if isinstance(parsed_value, str):
+        if parsed_value.startswith("[") and parsed_value.endswith("]"):
+            parsed_value = [
+                item.strip(" ").lstrip('"').rstrip('"')
+                for item in parsed_value.lstrip("[").rstrip("]").split(",")
+            ]
+        else:
+            parsed_value = [item.strip(" ") for item in parsed_value.split(",")]
+    return parsed_value
 
 
 def parse_any(name, value, default):
@@ -204,7 +209,7 @@ def parse_any(name, value, default):
             the environment variable value parsed as a bool, int, or a string
     """
     # attempt to parse the var in this order of parsers
-    for parser in [parse_bool, parse_int, parse_str, parse_list]:
+    for parser in [parse_bool, parse_int, parse_str]:
         try:
             return parser(name, value, default)
         except EnvironmentVariableParseException:
