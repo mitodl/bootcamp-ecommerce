@@ -114,6 +114,7 @@ INSTALLED_APPS = (
     # other third party APPS
 
     # wagtail
+
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -125,6 +126,7 @@ INSTALLED_APPS = (
     "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
+    "wagtail.contrib.routable_page",
     "modelcluster",
     "taggit",
     # Our INSTALLED_APPS
