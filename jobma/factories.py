@@ -1,7 +1,6 @@
 """Factories for jobma models"""
-from factory import SubFactory
+from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
-from faker import Faker
 
 from factory.fuzzy import (
     FuzzyInteger,
