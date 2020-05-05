@@ -13,13 +13,12 @@ class JobmaWebhookPermission(BasePermission):
     """Restrict access to jobma via access token"""
 
     def has_permission(self, request, view):
+        if not settings.JOBMA_WEBHOOK_ACCESS_TOKEN:
+            log.error("JOBMA_WEBHOOK_ACCESS_TOKEN not set")
+            return False
         header = request.headers.get("authorization", "")
         if header.startswith("Token "):
             token = header[len("Token "):]
-            if token == settings.JOBMA_WEBHOOK_ACCESS_TOKEN:
-                return True
-            else:
-                log.error("Token found but did not match")
-                return False
-        log.error("No token found in authorization")
+
+            return token == settings.JOBMA_WEBHOOK_ACCESS_TOKEN
         return False
