@@ -2,6 +2,7 @@
 Page models for the CMS
 """
 from django.db import models
+from django.utils.text import slugify
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.models import Image
@@ -12,8 +13,12 @@ from cms.blocks import ResourceBlock
 
 class BootcampPage(Page):
     """
-    CMS page representing a Bootcamp
+    CMS page representing a Bootcamp Page
     """
+
+    class Meta:
+        abstract = True
+
     description = RichTextField(
         blank=True, help_text="The description shown on the product page"
     )
@@ -40,6 +45,40 @@ class BootcampPage(Page):
         context["title"] = self.title
         return context
 
+class BootcampRunPage(BootcampPage):
+    """
+    CMS page representing a klass
+    """
+
+    template = "product_page.html"
+
+    klasses = models.OneToOneField(
+        "klasses.Klass",
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text="The Klass for this page",
+    )
+
+    content_panels = BootcampPage.content_panels + [FieldPanel("klasses")]
+
+    @property
+    def product(self):
+        """Gets the product associated with this page"""
+        return self.klasses
+
+    def get_context(self, request, *args, **kwargs):
+        """
+        return page context.
+        """
+        context = super(BootcampRunPage, self).get_context(request)
+        return context
+
+    def save(self, *args, **kwargs):
+        # autogenerate a unique slug so we don't hit a ValidationError
+        if not self.title:
+            self.title = self.__class__._meta.verbose_name.title()
+        self.slug = slugify("bootcamp-{}".format(self.product.klass_key))
+        super().save(*args, **kwargs)
 
 class ResourcePage(Page):
     """
