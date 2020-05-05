@@ -1,5 +1,5 @@
 """
-Views for Klasses app
+Views for bootcamps
 """
 import logging
 
@@ -20,17 +20,17 @@ from rest_framework.renderers import TemplateHTMLRenderer
 
 from backends.edxorg import EdxOrgOAuth2
 from main.serializers import serialize_maybe_user
-from klasses.api import serialize_user_klasses, serialize_user_klass
-from klasses.models import Klass
+from klasses.api import serialize_user_bootcamp_runs, serialize_user_bootcamp_run
+from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
 from ecommerce.models import Line
 
 log = logging.getLogger(__name__)
 
 
-class UserKlassList(APIView):
+class UserBootcampRunList(APIView):
     """
-    Class based view for user klass list view.
+    Class based view for user bootcamp run list view.
     """
     authentication_classes = (
         authentication.SessionAuthentication,
@@ -42,7 +42,7 @@ class UserKlassList(APIView):
 
     def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
         """
-        Returns information about the payments for the user in all the klasses she is allowed to pay.
+        Returns serialized bootcamp runs and payments for all runs that a user can pay for.
         """
         user = get_object_or_404(
             User,
@@ -50,12 +50,12 @@ class UserKlassList(APIView):
             social_auth__provider=EdxOrgOAuth2.name
         )
 
-        return Response(serialize_user_klasses(user=user))
+        return Response(serialize_user_bootcamp_runs(user=user))
 
 
-class UserKlassDetail(GenericAPIView):
+class UserBootcampRunDetail(GenericAPIView):
     """
-    Class based view for user klass view.
+    Class based view for user bootcamp run view.
     """
     authentication_classes = (
         authentication.SessionAuthentication,
@@ -64,26 +64,26 @@ class UserKlassDetail(GenericAPIView):
         permissions.IsAuthenticated,
         CanReadIfSelf,
     )
-    lookup_field = "klass_key"
-    lookup_url_kwarg = "klass_key"
-    queryset = Klass.objects.all()
+    lookup_field = "run_key"
+    lookup_url_kwarg = "run_key"
+    queryset = BootcampRun.objects.all()
 
     def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
         """
-        Returns information about the payments for the user in the specified klass.
+        Returns a serialized bootcamp run and payment for a user
         """
         user = get_object_or_404(
             User,
             social_auth__uid=username,
             social_auth__provider=EdxOrgOAuth2.name
         )
-        klass = self.get_object()
-        return Response(serialize_user_klass(user=user, klass=klass))
+        bootcamp_run = self.get_object()
+        return Response(serialize_user_bootcamp_run(user=user, bootcamp_run=bootcamp_run))
 
 
-class UserKlassStatement(RetrieveAPIView):
+class UserBootcampRunStatement(RetrieveAPIView):
     """
-    View class for a user's klass payment statement
+    View class for a user's bootcamp run payment statement
     """
     authentication_classes = (
         authentication.SessionAuthentication,
@@ -91,23 +91,23 @@ class UserKlassStatement(RetrieveAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
-    lookup_field = "klass_key"
-    lookup_url_kwarg = "klass_key"
-    queryset = Klass.objects.all()
+    lookup_field = "run_key"
+    lookup_url_kwarg = "run_key"
+    queryset = BootcampRun.objects.all()
     renderer_classes = (TemplateHTMLRenderer,)
 
     def get(self, request, *args, **kwargs):
         """
-        Fetches a user's klass payment information and renders their statement
-        (or raises a 404 if they have no payments for the specified klass)
+        Fetches a user's bootcamp run payment information and renders their statement
+        (or raises a 404 if they have no payments for the specified bootcamp run)
         """
-        klass = self.get_object()
-        if Line.for_user_klass(request.user, klass.klass_key).count() == 0:
+        bootcamp_run = self.get_object()
+        if Line.for_user_bootcamp_run(request.user, bootcamp_run.run_key).count() == 0:
             raise Http404
         return Response(
             {
                 "user": serialize_maybe_user(request.user),
-                "klass": serialize_user_klass(user=request.user, klass=klass)
+                "bootcamp_run": serialize_user_bootcamp_run(user=request.user, bootcamp_run=bootcamp_run)
             },
             template_name='bootcamp/statement.html'
         )

@@ -22,10 +22,10 @@ class PaymentSerializersTests(TestCase):
     """Tests for payment serializers"""
 
     @data(
-        [{"payment_amount": "345", "klass_key": 3}, True],
-        [{"payment_amount": "-3", "klass_key": 3}, False],
+        [{"payment_amount": "345", "run_key": 3}, True],
+        [{"payment_amount": "-3", "run_key": 3}, False],
         [{"payment_amount": "345"}, False],
-        [{"klass_key": "345"}, False],
+        [{"run_key": "345"}, False],
     )
     @unpack
     def test_validation(self, payload, is_valid):
@@ -62,7 +62,7 @@ class LineOrderSerializerTests(DjangoTestCase):
         Test for line serializer result
         """
         expected = {
-            'klass_key': self.line.klass_key,
+            'run_key': self.line.run_key,
             'description': self.line.description,
             'price': self.line.price,
             'order': {

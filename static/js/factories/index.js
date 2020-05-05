@@ -1,35 +1,35 @@
 import _ from "lodash"
 import moment from "moment"
 
-export const generateFakeKlasses = (
-  numKlasses = 1,
+export const generateFakeRuns = (
+  numRuns = 1,
   { hasInstallment = true, hasPayment = false } = {}
 ) => {
-  return _.times(numKlasses, i => {
-    const klassKey = i + 1
+  return _.times(numRuns, i => {
+    const runKey = i + 1
     return {
-      klass_name:              `Klass ${i}`,
-      display_title:           `Bootcamp Klass ${i}`,
-      klass_key:               klassKey,
+      bootcamp_run_name:       `Bootcamp Run ${i}`,
+      display_title:           `Bootcamp Run ${i}`,
+      run_key:                 runKey,
       payment_deadline:        moment(),
       total_paid:              hasPayment ? 100 : 0,
       price:                   1000,
       is_user_eligible_to_pay: true,
-      payments:                hasPayment ? [generateFakePayment({ klassKey: klassKey })] : [],
+      payments:                hasPayment ? [generateFakePayment({ runKey: runKey })] : [],
       installments:            hasInstallment ? [generateFakeInstallment()] : []
     }
   })
 }
 
-export const generateFakePayment = ({ klassKey = 1, price = 100 } = {}) => ({
+export const generateFakePayment = ({ runKey = 1, price = 100 } = {}) => ({
   order: {
-    id:         klassKey + 100,
+    id:         runKey + 100,
     status:     "fulfilled",
     created_on: "2017-05-09T13:57:20.414821Z",
     updated_on: "2017-05-09T15:54:54.232055Z"
   },
-  klass_key:   klassKey,
-  description: `Installment for Klass ${klassKey}`,
+  run_key:     runKey,
+  description: `Installment for Bootcamp Run ${runKey}`,
   price:       price
 })
 

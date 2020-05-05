@@ -19,7 +19,7 @@
   </section>
   <section>
     <h3 class="section-header">Bootcamp<hr /></h3>
-    <p>{{ klass.display_title }}</p>
+    <p>{{ bootcamp_run.display_title }}</p>
   </section>
   <section>
     <h3 class="section-header">Payment History<hr /></h3>
@@ -31,7 +31,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for payment in klass.payments %}
+        {% for payment in bootcamp_run.payments %}
           <tr>
             <td>{{ payment.order.created_on|parse_iso_datetime|date:"F d, Y" }}</td>
             <td>{{ payment.price|dollar_format }}</td>
@@ -41,7 +41,7 @@
       <tfoot>
         <tr>
           <td>Total</td>
-          <td>{{ klass.total_paid|dollar_format }}</td>
+          <td>{{ bootcamp_run.total_paid|dollar_format }}</td>
         </tr>
       </tfoot>
     </table>

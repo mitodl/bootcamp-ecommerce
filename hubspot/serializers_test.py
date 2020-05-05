@@ -86,7 +86,7 @@ def test_deal_serializer():
     personal_price.user.profile = profile
 
     serialized_data = {'application_stage': '',
-                       'bootcamp_name': personal_price.klass.bootcamp.title,
+                       'bootcamp_name': personal_price.bootcamp_run.bootcamp.title,
                        'price': personal_price.price.to_eng_string(),
                        'purchaser': format_hubspot_id(personal_price.user.profile.id),
                        'name': f'Bootcamp-application-{personal_price.id}',
@@ -102,6 +102,6 @@ def test_line_serializer():
     personal_price.user.profile = profile
 
     serialized_data = {'order': format_hubspot_id(personal_price.id),
-                       'product': format_hubspot_id(personal_price.klass.bootcamp_id)}
+                       'product': format_hubspot_id(personal_price.bootcamp_run.bootcamp_id)}
     data = HubspotLineSerializer(instance=personal_price).data
     assert data == serialized_data

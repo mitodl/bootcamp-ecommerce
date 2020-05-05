@@ -15,18 +15,18 @@ from profiles.factories import ProfileFactory
 pytestmark = pytest.mark.django_db
 
 
-def test_can_pay_klass():
+def test_can_pay_bootcamp_run():
     """
-    Test BootcampAdmissionClient.can_pay_klass with smapply klasses
+    Test BootcampAdmissionClient.can_pay_bootcamp_run with smapply bootcamp runs
     """
     profile = ProfileFactory.create(user__email="foo@example.com", fluidreview_id=9999, smapply_id=8888)
     user = profile.user
-    smapply_klass = 19
+    smapply_bootcamp_run = 19
     WebhookRequestSMAFactory(
-        award_id=smapply_klass,
+        award_id=smapply_bootcamp_run,
         user_id=user.profile.smapply_id,
         status=WebhookParseStatus.SUCCEEDED)
 
     boot_client = BootcampAdmissionClient(user)
-    assert boot_client.can_pay_klass(smapply_klass) is True
-    assert boot_client.can_pay_klass('foo') is False
+    assert boot_client.can_pay_bootcamp_run(smapply_bootcamp_run) is True
+    assert boot_client.can_pay_bootcamp_run('foo') is False

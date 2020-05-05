@@ -2,12 +2,12 @@ import { assert } from "chai"
 import moment from "moment"
 import _ from "lodash"
 
-import { generateFakeKlasses, generateFakeInstallment } from "../factories"
+import { generateFakeRuns, generateFakeInstallment } from "../factories"
 import {
   createForm,
   isNilOrBlank,
   formatDollarAmount,
-  getKlassWithFulfilledOrder,
+  getRunWithFulfilledOrder,
   getInstallmentDeadlineDates
 } from "./util"
 
@@ -56,31 +56,37 @@ describe("util", () => {
     })
   })
 
-  describe("getKlassWithFulfilledOrder", () => {
-    let klasses, klass
+  describe("getRunWithFulfilledOrder", () => {
+    let bootcampRuns, bootcampRun
 
     beforeEach(() => {
-      klasses = generateFakeKlasses(1, { hasPayment: true })
-      klass = klasses[0]
+      bootcampRuns = generateFakeRuns(1, { hasPayment: true })
+      bootcampRun = bootcampRuns[0]
     })
 
-    it("gets a fulfilled order from the payments in the klasses", () => {
-      klass.payments[0].order.status = "fulfilled"
+    it("gets a fulfilled order from the payments in the bootcamp runs", () => {
+      bootcampRun.payments[0].order.status = "fulfilled"
       assert.deepEqual(
-        getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
-        klass
+        getRunWithFulfilledOrder(
+          bootcampRuns,
+          bootcampRun.payments[0].order.id
+        ),
+        bootcampRun
       )
     })
 
     it("returns undefined if the order doesn't exist", () => {
-      klass.payments[0].order.status = "fulfilled"
-      assert.deepEqual(getKlassWithFulfilledOrder(klasses, 9999), undefined)
+      bootcampRun.payments[0].order.status = "fulfilled"
+      assert.deepEqual(getRunWithFulfilledOrder(bootcampRuns, 9999), undefined)
     })
 
     it("returns undefined if the order is not fulfilled", () => {
-      klass.payments[0].order.status = "created"
+      bootcampRun.payments[0].order.status = "created"
       assert.deepEqual(
-        getKlassWithFulfilledOrder(klasses, klass.payments[0].order.id),
+        getRunWithFulfilledOrder(
+          bootcampRuns,
+          bootcampRun.payments[0].order.id
+        ),
         undefined
       )
     })

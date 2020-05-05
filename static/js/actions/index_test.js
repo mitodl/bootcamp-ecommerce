@@ -1,12 +1,12 @@
 import { assertCreatedActionHelper } from "./test_util"
 
 import {
-  setSelectedKlassKey,
+  setSelectedBootcampRunKey,
   setPaymentAmount,
   setInitialTime,
   setTimeoutActive,
   setToastMessage,
-  SET_SELECTED_KLASS_KEY,
+  SET_SELECTED_BOOTCAMP_RUN_KEY,
   SET_PAYMENT_AMOUNT,
   SET_INITIAL_TIME,
   SET_TIMEOUT_ACTIVE,
@@ -17,7 +17,7 @@ describe("actions", () => {
   it("should create all action creators", () => {
     [
       [setPaymentAmount, SET_PAYMENT_AMOUNT],
-      [setSelectedKlassKey, SET_SELECTED_KLASS_KEY],
+      [setSelectedBootcampRunKey, SET_SELECTED_BOOTCAMP_RUN_KEY],
       [setInitialTime, SET_INITIAL_TIME],
       [setTimeoutActive, SET_TIMEOUT_ACTIVE],
       [setToastMessage, SET_TOAST_MESSAGE]

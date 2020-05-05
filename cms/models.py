@@ -45,26 +45,22 @@ class BootcampPage(Page):
         context["title"] = self.title
         return context
 
+
 class BootcampRunPage(BootcampPage):
     """
-    CMS page representing a klass
+    CMS page representing a bootcamp run
     """
 
     template = "product_page.html"
 
-    klasses = models.OneToOneField(
-        "klasses.Klass",
+    bootcamp_run = models.OneToOneField(
+        "klasses.BootcampRun",
         null=True,
         on_delete=models.SET_NULL,
-        help_text="The Klass for this page",
+        help_text="The bootcamp run for this page",
     )
 
-    content_panels = BootcampPage.content_panels + [FieldPanel("klasses")]
-
-    @property
-    def product(self):
-        """Gets the product associated with this page"""
-        return self.klasses
+    content_panels = BootcampPage.content_panels + [FieldPanel("bootcamp_run")]
 
     def get_context(self, request, *args, **kwargs):
         """
@@ -77,8 +73,9 @@ class BootcampRunPage(BootcampPage):
         # autogenerate a unique slug so we don't hit a ValidationError
         if not self.title:
             self.title = self.__class__._meta.verbose_name.title()
-        self.slug = slugify("bootcamp-{}".format(self.product.klass_key))
+        self.slug = slugify("bootcamp-{}".format(self.bootcamp_run.run_key))
         super().save(*args, **kwargs)
+
 
 class ResourcePage(Page):
     """

@@ -1,5 +1,5 @@
 """
-Permission classes for the klasses
+Permission classes for the bootcamps
 """
 from django.contrib.auth.models import User
 from django.http import Http404

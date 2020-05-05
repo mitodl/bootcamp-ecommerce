@@ -1,6 +1,6 @@
 // @flow
 export type PaymentPayload = {
-  klass_key: number,
+  run_key: number,
   payment_amount: string,
 }
 

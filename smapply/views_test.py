@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from klasses.constants import ApplicationSource
-from klasses.factories import KlassFactory
+from klasses.factories import BootcampRunFactory
 from smapply.api import SMApplyException
 from smapply.models import WebhookRequestSMA
 from profiles.factories import ProfileFactory
@@ -98,7 +98,7 @@ def test_webhook_parse_success(email, smapply_id, should_update, settings, clien
         user__email=existing_user,
         smapply_id=None if should_update else smapply_id
     )
-    KlassFactory.create(klass_key=81265, source=ApplicationSource.SMAPPLY)
+    BootcampRunFactory.create(run_key=81265, source=ApplicationSource.SMAPPLY)
     data = {
         'user_id': smapply_id,
         'id': 4533768,

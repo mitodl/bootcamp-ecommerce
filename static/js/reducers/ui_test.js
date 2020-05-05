@@ -3,7 +3,7 @@ import moment from "moment"
 import { assert } from "chai"
 
 import {
-  setSelectedKlassKey,
+  setSelectedBootcampRunKey,
   setPaymentAmount,
   setInitialTime,
   setTimeoutActive,
@@ -28,10 +28,10 @@ describe("ui reducers", () => {
     assertReducerResultState(setPaymentAmount, ui => ui.paymentAmount, "")
   })
 
-  it("should set the selected klass index", () => {
+  it("should set the selected bootcamp run key", () => {
     assertReducerResultState(
-      setSelectedKlassKey,
-      ui => ui.selectedKlassKey,
+      setSelectedBootcampRunKey,
+      ui => ui.selectedBootcampRunKey,
       undefined
     )
   })

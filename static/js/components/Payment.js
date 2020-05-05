@@ -22,18 +22,18 @@ export default class Payment extends React.Component<*, void> {
     hideDialog: (dialogKey: string) => void,
     ui: UIState,
     paymentProcessing: boolean,
-    payableKlassesData: Array<Object>,
-    selectedKlass: Object,
+    payableBootcampRunsData: Array<Object>,
+    selectedBootcampRun: Object,
     now: moment$Moment,
     sendPayment: () => void,
     setPaymentAmount: (event: InputEvent) => void,
-    setSelectedKlassKey: (event: InputEvent) => void,
+    setSelectedBootcampRunKey: (event: InputEvent) => void,
     showDialog: (dialogKey: string) => void
   }
 
   getTotalOwedUpToInstallment = (nextInstallmentIndex: number): number => {
     const {
-      selectedKlass: { installments }
+      selectedBootcampRun: { installments }
     } = this.props
 
     return R.compose(
@@ -44,19 +44,19 @@ export default class Payment extends React.Component<*, void> {
   }
 
   hasMissedPreviousInstallment = (nextInstallmentIndex: number): boolean => {
-    const { selectedKlass } = this.props
+    const { selectedBootcampRun } = this.props
 
     return (
       nextInstallmentIndex > 0 &&
-      selectedKlass.total_paid <
+      selectedBootcampRun.total_paid <
         this.getTotalOwedUpToInstallment(nextInstallmentIndex - 1)
     )
   }
 
   getPaymentDeadlineText = (): string => {
-    const { selectedKlass, now } = this.props
+    const { selectedBootcampRun, now } = this.props
 
-    const installments = selectedKlass.installments
+    const installments = selectedBootcampRun.installments
     let installmentDeadlineText = ""
 
     if (installments.length > 0) {
@@ -68,7 +68,7 @@ export default class Payment extends React.Component<*, void> {
         const totalOwedForInstallment = this.getTotalOwedUpToInstallment(
           nextInstallmentIndex
         )
-        if (selectedKlass.total_paid < totalOwedForInstallment) {
+        if (selectedBootcampRun.total_paid < totalOwedForInstallment) {
           installmentDeadlineText =
             `A deposit of ${formatDollarAmount(totalOwedForInstallment)} ` +
             `is due ${formatReadableDate(deadlineDates[nextInstallmentIndex])}.`
@@ -83,16 +83,16 @@ export default class Payment extends React.Component<*, void> {
     return installmentDeadlineText
   }
 
-  renderKlassDropdown = () => {
+  renderBootcampRunDropdown = () => {
     const {
-      payableKlassesData,
-      ui: { selectedKlassKey },
-      setSelectedKlassKey
+      payableBootcampRunsData,
+      ui: { selectedBootcampRunKey },
+      setSelectedBootcampRunKey
     } = this.props
 
-    const options = _.map(payableKlassesData, klass => (
-      <option value={klass.klass_key} key={klass.klass_key}>
-        {klass.display_title}
+    const options = _.map(payableBootcampRunsData, bootcampRun => (
+      <option value={bootcampRun.run_key} key={bootcampRun.run_key}>
+        {bootcampRun.display_title}
       </option>
     ))
     options.unshift(
@@ -100,8 +100,8 @@ export default class Payment extends React.Component<*, void> {
         Select...
       </option>
     )
-    const valueProp = selectedKlassKey ?
-      { value: selectedKlassKey } :
+    const valueProp = selectedBootcampRunKey ?
+      { value: selectedBootcampRunKey } :
       { defaultValue: "" }
 
     return (
@@ -110,7 +110,7 @@ export default class Payment extends React.Component<*, void> {
         <div className="styled-select-container">
           <select
             className="klass-select"
-            onChange={setSelectedKlassKey}
+            onChange={setSelectedBootcampRunKey}
             {...valueProp}
           >
             {options}
@@ -123,35 +123,35 @@ export default class Payment extends React.Component<*, void> {
   confirmPayment = () => {
     const {
       ui: { paymentAmount },
-      selectedKlass,
+      selectedBootcampRun,
       sendPayment,
       showDialog
     } = this.props
-    const actualPrice = selectedKlass.price
+    const actualPrice = selectedBootcampRun.price
 
     paymentAmount > actualPrice ?
       showDialog(PAYMENT_CONFIRMATION_DIALOG) :
       sendPayment()
   }
 
-  renderSelectedKlass = () => {
+  renderSelectedBootcampRun = () => {
     const {
       hideDialog,
       ui: { paymentAmount, dialogVisibility },
       paymentProcessing,
-      selectedKlass,
+      selectedBootcampRun,
       setPaymentAmount,
       sendPayment
     } = this.props
 
-    const totalPaid = selectedKlass.total_paid || 0
+    const totalPaid = selectedBootcampRun.total_paid || 0
 
     return (
       <div className="klass-display-section">
         <p className="desc">
-          You have been accepted to {selectedKlass.display_title}.<br />
+          You have been accepted to {selectedBootcampRun.display_title}.<br />
           You have paid {formatDollarAmount(totalPaid)} out of{" "}
-          {formatDollarAmount(selectedKlass.price)}.
+          {formatDollarAmount(selectedBootcampRun.price)}.
         </p>
         <p className="deadline-message">{this.getPaymentDeadlineText()}</p>
         <div className="payment">
@@ -199,28 +199,28 @@ export default class Payment extends React.Component<*, void> {
   }
 
   render() {
-    const { payableKlassesData, selectedKlass } = this.props
+    const { payableBootcampRunsData, selectedBootcampRun } = this.props
 
     const welcomeMessage = !isNilOrBlank(SETTINGS.user.full_name) ? (
       <h1 className="greeting">Hi {SETTINGS.user.full_name}!</h1>
     ) : null
-    let renderedKlassChoice
-    if (payableKlassesData.length > 1) {
-      renderedKlassChoice = this.renderKlassDropdown()
-    } else if (payableKlassesData.length === 0) {
-      renderedKlassChoice = (
+    let renderedRunChoice
+    if (payableBootcampRunsData.length > 1) {
+      renderedRunChoice = this.renderBootcampRunDropdown()
+    } else if (payableBootcampRunsData.length === 0) {
+      renderedRunChoice = (
         <p className="desc">No payment is required at this time.</p>
       )
     }
-    const renderedSelectedKlass = selectedKlass ?
-      this.renderSelectedKlass() :
+    const renderedSelectedRun = selectedBootcampRun ?
+      this.renderSelectedBootcampRun() :
       null
 
     return (
       <div className="payment-section">
         {welcomeMessage}
-        {renderedKlassChoice}
-        {renderedSelectedKlass}
+        {renderedRunChoice}
+        {renderedSelectedRun}
       </div>
     )
   }

@@ -13,8 +13,8 @@ from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
 from fluidreview.constants import WebhookParseStatus
 from fluidreview.utils import utc_now
-from klasses.factories import KlassFactory, InstallmentFactory
-from klasses.models import Bootcamp, Klass, PersonalPrice
+from klasses.factories import BootcampRunFactory, InstallmentFactory
+from klasses.models import Bootcamp, BootcampRun, PersonalPrice
 from profiles.factories import UserFactory, ProfileFactory
 from profiles.models import Profile
 from smapply.factories import OAuthTokenSMAFactory, WebhookRequestSMAFactory
@@ -83,16 +83,16 @@ def test_payment_data():
     """
     Sets up the data for payment tests in this module
     """
-    klass = KlassFactory()
+    bootcamp_run = BootcampRunFactory()
     profile = ProfileFactory(smapply_id=1)
-    InstallmentFactory(klass=klass)
+    InstallmentFactory(bootcamp_run=bootcamp_run)
     order = OrderFactory(user=profile.user, status=Order.FULFILLED)
-    LineFactory.create(order=order, klass_key=klass.klass_key, price=11.38)
+    LineFactory.create(order=order, run_key=bootcamp_run.run_key, price=11.38)
     webhook = WebhookRequestSMAFactory(
-        award_id=klass.klass_key, status=WebhookParseStatus.SUCCEEDED, user_id=profile.smapply_id, submission_id=1
+        award_id=bootcamp_run.run_key, status=WebhookParseStatus.SUCCEEDED, user_id=profile.smapply_id, submission_id=1
     )
 
-    return klass, order, webhook
+    return bootcamp_run, order, webhook
 
 
 def test_get_token_from_settings(settings):
@@ -295,19 +295,19 @@ def test_parse_webhook_user(settings, mocker, price, sends_email, mock_user_sync
     parse_webhook(hook)
     if sends_email:
         assert hook.status == WebhookParseStatus.SUCCEEDED
-        assert Klass.objects.filter(title=award_name).exists()
+        assert BootcampRun.objects.filter(title=award_name).exists()
         assert Bootcamp.objects.filter(title=award_name).exists()
         assert PersonalPrice.objects.filter(
-            klass__klass_key=award_id,
+            bootcamp_run__run_key=award_id,
             user__profile__smapply_id=user_id,
             application_stage='Admitted' * 40
         ).exists()
         assert send_email.call_count == 1
         assert send_email.call_args[0] == (
-            "Klass and Bootcamp {award_name} was created".format(award_name=award_name),
-            "Klass and Bootcamp {award_name} was created, for klass_key {klass_key} at {url}".format(
+            "BootcampRun and Bootcamp {award_name} was created".format(award_name=award_name),
+            "BootcampRun and Bootcamp {award_name} was created, for run_key {run_key} at {url}".format(
                 award_name=award_name,
-                klass_key=award_id,
+                run_key=award_id,
                 url=settings.BOOTCAMP_ECOMMERCE_BASE_URL
             ),
             'support@example.com',
@@ -492,14 +492,14 @@ def test_list_users(mocker):
 @pytest.mark.parametrize('is_legacy', [True, False])
 @pytest.mark.parametrize('is_fulfilled', [True, False])
 def test_post_payment(mocker, is_legacy, is_fulfilled, test_payment_data, settings):
-    """Test that posting a payment is called for non-legacy klasses, with correct data"""
+    """Test that posting a payment is called for non-legacy bootcamp runs, with correct data"""
     settings.SMAPPLY_AMOUNTPAID_ID = 100
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
     mock_api().patch.return_value.status_code = 200
-    klass, order, hook = test_payment_data
+    bootcamp_run, order, hook = test_payment_data
     if not is_fulfilled:
         order.status = Order.FAILED
-    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=is_legacy)
+    Bootcamp.objects.filter(id=bootcamp_run.bootcamp.id).update(legacy=is_legacy)
     post_payment(order)
     expected_data = {
         'custom_fields': [{
@@ -518,8 +518,8 @@ def test_post_payment_bad_response(mocker, test_payment_data):
     """Test that bad responses from SMApply raise expected exceptions"""
     mock_api = mocker.patch('smapply.api.SMApplyAPI')
     mock_api().patch.side_effect = HTTPError
-    klass, order, _ = test_payment_data
-    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
+    bootcamp_run, order, _ = test_payment_data
+    Bootcamp.objects.filter(id=bootcamp_run.bootcamp.id).update(legacy=False)
     with pytest.raises(SMApplyException) as exc:
         post_payment(order)
     assert 'Error updating amount paid by user' in str(exc.value)
@@ -528,10 +528,10 @@ def test_post_payment_bad_response(mocker, test_payment_data):
 def test_post_payment_bad_webhook(mocker, test_payment_data):
     """Test that a webhook without submission id raises expected exception"""
     mocker.patch('smapply.api.SMApplyAPI')
-    klass, order, hook = test_payment_data
+    bootcamp_run, order, hook = test_payment_data
     hook.submission_id = None
     hook.save()
-    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
+    Bootcamp.objects.filter(id=bootcamp_run.bootcamp.id).update(legacy=False)
     with pytest.raises(SMApplyException) as exc:
         post_payment(order)
     assert 'Webhook has no submission id for order' in str(exc.value)

@@ -12,14 +12,14 @@ import {
   clearUI,
   hideDialog,
   setPaymentAmount,
-  setSelectedKlassKey,
+  setSelectedBootcampRunKey,
   setTimeoutActive,
   setToastMessage,
   showDialog
 } from "../actions"
 import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
 import queries from "../lib/queries"
-import { createForm, getKlassWithFulfilledOrder } from "../util/util"
+import { createForm, getRunWithFulfilledOrder } from "../util/util"
 import Payment from "../components/Payment"
 import PaymentHistory from "../components/PaymentHistory"
 import Toast from "../components/Toast"
@@ -27,22 +27,24 @@ import Toast from "../components/Toast"
 import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
 import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
-import type { Klass, KlassesResponse } from "../flow/klassTypes"
+import type { BootcampRun, BootcampRunsResponse } from "../flow/bootcampTypes"
 
 type Props = {
   ui: UIState,
   clearUI: () => void,
-  fetchKlasses: (klassKey: string) => Promise<{ body: KlassesResponse }>,
+  fetchBootcampRuns: (
+    runKey: string
+  ) => Promise<{ body: BootcampRunsResponse }>,
   hideDialog: (dialogKey: string) => void,
   sendPayment: (payload: PaymentPayload) => Promise<{ body: PaymentResponse }>,
-  klasses: KlassesResponse,
-  klassesFinished: boolean,
-  klassesProcessing: boolean,
+  bootcampRuns: BootcampRunsResponse,
+  bootcampRunsFinished: boolean,
+  bootcampRunsProcessing: boolean,
   paymentProcessing: boolean,
-  payableKlassesData: KlassesResponse,
-  selectedKlass: ?Klass,
+  payableBootcampRunsData: BootcampRunsResponse,
+  selectedBootcampRun: ?BootcampRun,
   setPaymentAmount: (amount: string) => void,
-  setSelectedKlassKey: (klassKey: number) => void,
+  setSelectedBootcampRunKey: (runKey: number) => void,
   setTimeoutActive: (active: boolean) => void,
   setToastMessage: (payload: any) => void,
   showDialog: (dialogKey: string) => void
@@ -50,7 +52,7 @@ type Props = {
 
 export class PaymentPage extends React.Component<Props> {
   fetchAPIdata() {
-    this.fetchKlasses()
+    this.fetchBootcampRuns()
   }
 
   componentDidMount() {
@@ -61,7 +63,7 @@ export class PaymentPage extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
     // This is meant to be an identity check, not a deep equality check. This shows whether we received an update
     // for enrollments based on the forceReload
-    if (prevProps.klasses !== this.props.klasses) {
+    if (prevProps.bootcampRuns !== this.props.bootcampRuns) {
       this.handleOrderStatus()
     }
   }
@@ -71,10 +73,10 @@ export class PaymentPage extends React.Component<Props> {
     clearUI()
   }
 
-  fetchKlasses() {
-    const { fetchKlasses, klassesProcessing } = this.props
-    if (!klassesProcessing) {
-      fetchKlasses(SETTINGS.user.username)
+  fetchBootcampRuns() {
+    const { fetchBootcampRuns, bootcampRunsProcessing } = this.props
+    if (!bootcampRunsProcessing) {
+      fetchBootcampRuns(SETTINGS.user.username)
     }
   }
 
@@ -82,12 +84,12 @@ export class PaymentPage extends React.Component<Props> {
     const {
       sendPayment,
       ui: { paymentAmount },
-      selectedKlass
+      selectedBootcampRun
     } = this.props
-    if (selectedKlass && paymentAmount) {
+    if (selectedBootcampRun && paymentAmount) {
       const result = await sendPayment({
         payment_amount: paymentAmount,
-        klass_key:      selectedKlass.klass_key
+        run_key:        selectedBootcampRun.run_key
       })
       const {
         body: { url, payload }
@@ -108,20 +110,20 @@ export class PaymentPage extends React.Component<Props> {
     setPaymentAmount(event.target.value)
   }
 
-  setSelectedKlassKey = (event: InputEvent) => {
-    const { setSelectedKlassKey } = this.props
-    setSelectedKlassKey(parseInt(event.target.value))
+  setSelectedBootcampRunKey = (event: InputEvent) => {
+    const { setSelectedBootcampRunKey } = this.props
+    setSelectedBootcampRunKey(parseInt(event.target.value))
   }
 
-  getKlassDataWithPayments = R.filter(
+  getRunDataWithPayments = R.filter(
     R.compose(R.not, R.equals(0), R.propOr(0, "total_paid"))
   )
 
   handleOrderStatus = (): void => {
-    const { klasses, klassesFinished } = this.props
+    const { bootcampRuns, bootcampRunsFinished } = this.props
     let query = new URI().query(true)
-    if (!klassesFinished) {
-      // wait until we have access to the klasses
+    if (!bootcampRunsFinished) {
+      // wait until we have access to the bootcamp runs
       return
     }
 
@@ -133,8 +135,8 @@ export class PaymentPage extends React.Component<Props> {
     const status = query.status
     if (status === "receipt") {
       const orderId = parseInt(query.order)
-      const klass = getKlassWithFulfilledOrder(klasses, orderId)
-      if (klass) {
+      const bootcampRun = getRunWithFulfilledOrder(bootcampRuns, orderId)
+      if (bootcampRun) {
         this.handleOrderSuccess()
       } else {
         this.handleOrderPending()
@@ -159,7 +161,7 @@ export class PaymentPage extends React.Component<Props> {
   }
 
   handleOrderPending = (): void => {
-    const { fetchKlasses, setTimeoutActive, setToastMessage } = this.props
+    const { fetchBootcampRuns, setTimeoutActive, setToastMessage } = this.props
     if (!this.props.ui.timeoutActive) {
       setTimeout(() => {
         const { ui } = this.props
@@ -167,7 +169,7 @@ export class PaymentPage extends React.Component<Props> {
         const deadline = moment(ui.initialTime).add(2, "minutes")
         const now = moment()
         if (now.isBefore(deadline)) {
-          fetchKlasses(SETTINGS.user.username)
+          fetchBootcampRuns(SETTINGS.user.username)
         } else {
           setToastMessage({
             message: "Order was not processed",
@@ -247,37 +249,39 @@ export class PaymentPage extends React.Component<Props> {
       hideDialog,
       ui,
       paymentProcessing,
-      klasses,
-      klassesFinished,
-      payableKlassesData,
-      selectedKlass,
+      bootcampRuns,
+      bootcampRunsFinished,
+      payableBootcampRunsData,
+      selectedBootcampRun,
       showDialog
     } = this.props
 
     let renderedPayment = null
     let renderedPaymentHistory = null
 
-    if (klassesFinished) {
+    if (bootcampRunsFinished) {
       renderedPayment = (
         <Payment
           hideDialog={hideDialog}
           showDialog={showDialog}
           ui={ui}
           paymentProcessing={paymentProcessing}
-          payableKlassesData={payableKlassesData}
-          selectedKlass={selectedKlass}
+          payableBootcampRunsData={payableBootcampRunsData}
+          selectedBootcampRun={selectedBootcampRun}
           now={moment()}
           sendPayment={this.sendPayment}
           setPaymentAmount={this.setPaymentAmount}
-          setSelectedKlassKey={this.setSelectedKlassKey}
+          setSelectedBootcampRunKey={this.setSelectedBootcampRunKey}
         />
       )
 
-      const klassDataWithPayments = this.getKlassDataWithPayments(klasses || [])
+      const runDataWithPayments = this.getRunDataWithPayments(
+        bootcampRuns || []
+      )
       renderedPaymentHistory =
-        klassDataWithPayments.length > 0 ? (
+        runDataWithPayments.length > 0 ? (
           <div className="body-row">
-            <PaymentHistory klassDataWithPayments={klassDataWithPayments} />
+            <PaymentHistory runDataWithPayments={runDataWithPayments} />
           </div>
         ) : null
     }
@@ -294,51 +298,53 @@ export class PaymentPage extends React.Component<Props> {
   }
 }
 
-const withPayableKlasses = state => {
+const withPayableBootcampRuns = state => {
   return {
     ...state,
-    payableKlassesData: R.filter(R.propEq("is_user_eligible_to_pay", true))(
-      state.klasses || []
-    )
+    payableBootcampRunsData: R.filter(
+      R.propEq("is_user_eligible_to_pay", true)
+    )(state.bootcampRuns || [])
   }
 }
 
-const withDerivedSelectedKlass = state => {
+const withDerivedSelectedRun = state => {
   const {
-    payableKlassesData,
-    ui: { selectedKlassKey }
+    payableBootcampRunsData,
+    ui: { selectedBootcampRunKey }
   } = state
 
-  let selectedKlass
-  if (_.isNumber(selectedKlassKey)) {
-    selectedKlass = R.find(R.propEq("klass_key", selectedKlassKey))(
-      payableKlassesData
+  let selectedBootcampRun
+  if (_.isNumber(selectedBootcampRunKey)) {
+    selectedBootcampRun = R.find(R.propEq("run_key", selectedBootcampRunKey))(
+      payableBootcampRunsData
     )
-  } else if (payableKlassesData.length === 1) {
-    selectedKlass = payableKlassesData[0]
+  } else if (payableBootcampRunsData.length === 1) {
+    selectedBootcampRun = payableBootcampRunsData[0]
   }
 
-  return selectedKlass ? { ...state, selectedKlass: selectedKlass } : state
+  return selectedBootcampRun ?
+    { ...state, selectedBootcampRun: selectedBootcampRun } :
+    state
 }
 
 const mapStateToProps = R.compose(
-  withDerivedSelectedKlass,
-  withPayableKlasses,
+  withDerivedSelectedRun,
+  withPayableBootcampRuns,
   state => ({
     paymentProcessing: R.pathOr(
       false,
       ["queries", "payment", "isPending"],
       state
     ),
-    klasses:           R.pathOr([], ["entities", "klasses"], state),
-    klassesProcessing: R.pathOr(
+    bootcampRuns:           R.pathOr([], ["entities", "bootcampRuns"], state),
+    bootcampRunsProcessing: R.pathOr(
       false,
-      ["queries", "klasses", "isPending"],
+      ["queries", "bootcampRuns", "isPending"],
       state
     ),
-    klassesFinished: R.pathOr(
+    bootcampRunsFinished: R.pathOr(
       false,
-      ["queries", "klasses", "isFinished"],
+      ["queries", "bootcampRuns", "isFinished"],
       state
     ),
     ui: state.ui
@@ -346,15 +352,15 @@ const mapStateToProps = R.compose(
 )
 
 const mapDispatchToProps = dispatch => ({
-  clearUI:      () => dispatch(clearUI()),
-  fetchKlasses: (username: string) =>
-    dispatch(requestAsync(queries.klasses.klassQuery(username))),
+  clearUI:           () => dispatch(clearUI()),
+  fetchBootcampRuns: (username: string) =>
+    dispatch(requestAsync(queries.bootcamps.bootcampRunQuery(username))),
   hideDialog:  (dialogKey: string) => dispatch(hideDialog(dialogKey)),
   sendPayment: (payload: PaymentPayload) =>
     dispatch(mutateAsync(queries.ecommerce.paymentMutation(payload))),
-  setPaymentAmount:    (amount: string) => dispatch(setPaymentAmount(amount)),
-  setSelectedKlassKey: (klassKey: number) =>
-    dispatch(setSelectedKlassKey(klassKey)),
+  setPaymentAmount:          (amount: string) => dispatch(setPaymentAmount(amount)),
+  setSelectedBootcampRunKey: (runKey: number) =>
+    dispatch(setSelectedBootcampRunKey(runKey)),
   setToastMessage:  (payload: any) => dispatch(setToastMessage(payload)),
   setTimeoutActive: (active: boolean) => dispatch(setTimeoutActive(active)),
   showDialog:       (dialogKey: string) => dispatch(showDialog(dialogKey))

@@ -18,7 +18,7 @@ class LineAdmin(admin.ModelAdmin):
     model = Line
 
     readonly_fields = get_field_names(Line)
-    list_display = ('description', 'klass_key', 'price', 'order', )
+    list_display = ('description', 'run_key', 'price', 'order', )
 
     def has_add_permission(self, request):
         return False
@@ -32,7 +32,7 @@ class OrderAdmin(admin.ModelAdmin):
     model = Order
 
     readonly_fields = [name for name in get_field_names(Order) if name != 'status']
-    list_display = ('id', 'user', 'status', 'line_description', 'klass_title',)
+    list_display = ('id', 'user', 'status', 'line_description', 'run_title', )
     list_filter = ('status', )
 
     def has_add_permission(self, request):

@@ -15,7 +15,7 @@ from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
 from klasses.constants import ApplicationSource
-from klasses.models import Klass, Bootcamp
+from klasses.models import BootcampRun, Bootcamp
 from ecommerce.models import Line, Order
 from mail.api import MailgunClient
 from profiles.models import Profile
@@ -315,33 +315,33 @@ def parse_webhook_user(webhook):
             )).json()
             personal_price = get_custom_field(award_meta['custom_fields'], settings.SMAPPLY_AWARD_COST_ID)
 
-        klass = Klass.objects.filter(klass_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
-        if not klass:
+        bootcamp_run = BootcampRun.objects.filter(run_key=webhook.award_id, source=ApplicationSource.SMAPPLY).first()
+        if not bootcamp_run:
             if not personal_price:
                 raise SMApplyException(
-                    "Klass has no price and klass_key %s does not exist" %
+                    "BootcampRun has no price and run_key %s does not exist" %
                     webhook.award_id
                 )
-            klass_info = SMApplyAPI().get('/programs/{}'.format(webhook.award_id)).json()
-            bootcamp = Bootcamp.objects.create(title=klass_info['name'])
+            bootcamp_run_info = SMApplyAPI().get('/programs/{}'.format(webhook.award_id)).json()
+            bootcamp = Bootcamp.objects.create(title=bootcamp_run_info['name'])
 
             # Sync the newly created bootcamp
             from hubspot.task_helpers import sync_hubspot_product
             sync_hubspot_product(bootcamp)
 
-            klass = Klass.objects.create(
+            bootcamp_run = BootcampRun.objects.create(
                 bootcamp=bootcamp,
                 source=ApplicationSource.SMAPPLY,
-                title=klass_info['name'],
-                klass_key=klass_info['id'])
+                title=bootcamp_run_info['name'],
+                run_key=bootcamp_run_info['id'])
             try:
                 MailgunClient().send_individual_email(
-                    "Klass and Bootcamp {name} was created".format(
-                        name=klass_info['name'],
+                    "BootcampRun and Bootcamp {name} was created".format(
+                        name=bootcamp_run_info['name'],
                     ),
-                    "Klass and Bootcamp {name} was created, for klass_key {klass_key} at {base_url}".format(
-                        klass_key=klass_info['id'],
-                        name=klass_info['name'],
+                    "BootcampRun and Bootcamp {name} was created, for run_key {run_key} at {base_url}".format(
+                        run_key=bootcamp_run_info['id'],
+                        name=bootcamp_run_info['name'],
                         base_url=settings.BOOTCAMP_ECOMMERCE_BASE_URL
                     ),
                     settings.EMAIL_SUPPORT,
@@ -350,19 +350,19 @@ def parse_webhook_user(webhook):
             except:  # pylint: disable=bare-except
                 log.exception(
                     "Error occurred when sending the email to notify "
-                    "about Klass and Bootcamp creation for klass key %s",
-                    klass_info['id']
+                    "about BootcampRun and Bootcamp creation for bootcamp run key %s",
+                    bootcamp_run_info['id']
                 )
         if personal_price:
-            personal_price = user.klass_prices.update_or_create(
-                klass=klass,
+            personal_price = user.run_prices.update_or_create(
+                bootcamp_run=bootcamp_run,
                 defaults={'price': personal_price, 'application_stage': application_stage['title']}
             )[0]
             # Sync the personal price
             from hubspot.task_helpers import sync_hubspot_deal
             sync_hubspot_deal(personal_price)
         else:
-            user.klass_prices.filter(klass=klass).delete()
+            user.run_prices.filter(bootcamp_run=bootcamp_run).delete()
 
 
 def get_tasks(application_id):
@@ -431,18 +431,18 @@ def post_payment(order):
     """
     if order.status != Order.FULFILLED:
         return
-    klass = order.get_klass()
+    bootcamp_run = order.get_bootcamp_run()
     user = order.user
-    if not klass or klass.bootcamp.legacy:
+    if not bootcamp_run or bootcamp_run.bootcamp.legacy:
         return
-    total_paid = Line.total_paid_for_klass(order.user, klass.klass_key).get('total') or Decimal('0.00')
+    total_paid = Line.total_paid_for_bootcamp_run(order.user, bootcamp_run.run_key).get('total') or Decimal('0.00')
     payment_metadata = {
         'custom_fields': [{
             'id': settings.SMAPPLY_AMOUNTPAID_ID,
             'value': '{:0.2f}'.format(total_paid)
         }]
     }
-    webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smapply_id, award_id=klass.klass_key).last()
+    webhook = WebhookRequestSMA.objects.filter(user_id=user.profile.smapply_id, award_id=bootcamp_run.run_key).last()
     if webhook.submission_id is None:
         raise SMApplyException("Webhook has no submission id for order %s" % order.id)
     try:
@@ -452,7 +452,7 @@ def post_payment(order):
         )
     except Exception as exc:
         raise SMApplyException(
-            "Error updating amount paid by user %s to class %s" % (user.email, klass.klass_key)
+            "Error updating amount paid by user %s to class %s" % (user.email, bootcamp_run.run_key)
         ) from exc
 
 

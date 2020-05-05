@@ -1,5 +1,5 @@
 """
-Factories for ecommerce models
+Factories for bootcamp models
 """
 from factory import (
     Faker,
@@ -28,21 +28,21 @@ class BootcampFactory(DjangoModelFactory):
         model = models.Bootcamp
 
 
-class KlassFactory(DjangoModelFactory):
-    """Factory for Klass"""
-    title = FuzzyText(prefix="Klass ")
+class BootcampRunFactory(DjangoModelFactory):
+    """Factory for BootcampRun"""
+    title = FuzzyText(prefix="Bootcamp run ")
     bootcamp = SubFactory(BootcampFactory)
-    klass_key = Sequence(lambda n: n)
+    run_key = Sequence(lambda n: n)
     start_date = Faker('date_time_this_year', before_now=True, after_now=False, tzinfo=pytz.UTC)
     end_date = Faker('date_time_this_year', before_now=False, after_now=True, tzinfo=pytz.UTC)
 
     class Meta:
-        model = models.Klass
+        model = models.BootcampRun
 
 
 class InstallmentFactory(DjangoModelFactory):
     """Factory for Installment"""
-    klass = SubFactory(KlassFactory)
+    bootcamp_run = SubFactory(BootcampRunFactory)
     amount = FuzzyDecimal(low=1, high=2000)
     deadline = Faker('date_time_this_month', before_now=False, after_now=True, tzinfo=pytz.UTC)
 
@@ -52,7 +52,7 @@ class InstallmentFactory(DjangoModelFactory):
 
 class PersonalPriceFactory(DjangoModelFactory):
     """Factory for PersonalPrice"""
-    klass = SubFactory(KlassFactory)
+    bootcamp_run = SubFactory(BootcampRunFactory)
     user = SubFactory(UserFactory)
     price = FuzzyDecimal(low=1, high=2000)
 

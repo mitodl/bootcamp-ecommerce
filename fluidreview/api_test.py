@@ -18,8 +18,8 @@ from fluidreview.api import FluidReviewAPI, BASE_API_URL, process_user, parse_we
     FluidReviewException
 from fluidreview.models import OAuthToken, WebhookRequest
 from fluidreview.utils import utc_now
-from klasses.factories import KlassFactory, InstallmentFactory
-from klasses.models import Bootcamp, Klass, PersonalPrice
+from klasses.factories import BootcampRunFactory, InstallmentFactory
+from klasses.models import Bootcamp, BootcampRun, PersonalPrice
 from profiles.factories import UserFactory, ProfileFactory
 from profiles.models import Profile
 
@@ -39,16 +39,16 @@ def test_payment_data():
     """
     Sets up the data for payment tests in this module
     """
-    klass = KlassFactory()
+    bootcamp_run = BootcampRunFactory()
     profile = ProfileFactory(fluidreview_id=1)
-    InstallmentFactory(klass=klass)
+    InstallmentFactory(bootcamp_run=bootcamp_run)
     order = OrderFactory(user=profile.user, status=Order.FULFILLED)
-    LineFactory.create(order=order, klass_key=klass.klass_key, price=11.38)
+    LineFactory.create(order=order, run_key=bootcamp_run.run_key, price=11.38)
     webhook = WebhookRequestFactory(
-        award_id=klass.klass_key, status=WebhookParseStatus.SUCCEEDED, user_id=profile.fluidreview_id, submission_id=1
+        award_id=bootcamp_run.run_key, status=WebhookParseStatus.SUCCEEDED, user_id=profile.fluidreview_id, submission_id=1
     )
 
-    return klass, order, webhook
+    return bootcamp_run, order, webhook
 
 
 def test_get_token_from_settings(settings):
@@ -238,16 +238,16 @@ def test_parse_webhook_user(mocker, amount_to_pay, award_cost, sends_email):
     parse_webhook(hook)
     if sends_email:
         assert hook.status == WebhookParseStatus.SUCCEEDED
-        assert Klass.objects.filter(klass_key=award_id).exists()
+        assert BootcampRun.objects.filter(run_key=award_id).exists()
         assert Bootcamp.objects.filter(title=award_name).exists()
         assert PersonalPrice.objects.filter(
-            klass__klass_key=award_id,
+            bootcamp_run__run_key=award_id,
             user__profile__fluidreview_id=user_id
         ).exists()
         assert send_email.call_count == 1
         assert send_email.call_args[0] == (
-            "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
-            "Klass and Bootcamp created, for klass_key {klass_key}".format(klass_key=award_id),
+            "BootcampRun and Bootcamp created, for run_key {run_key}".format(run_key=award_id),
+            "BootcampRun and Bootcamp created, for run_key {run_key}".format(run_key=award_id),
             'support@example.com',
         )
     else:
@@ -265,7 +265,7 @@ def test_parse_webhook_user(mocker, amount_to_pay, award_cost, sends_email):
 ])
 def test_parse_success(mocker, amount_to_pay, award_cost, user_price, award_id):
     """Test that a webhookrequest body is successfully parsed into individual fields"""
-    klass = KlassFactory.create(klass_key=81265)
+    bootcamp_run = BootcampRunFactory.create(run_key=81265)
     user_id = 94379385
     mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().get.return_value.json.return_value = {
@@ -292,9 +292,9 @@ def test_parse_success(mocker, amount_to_pay, award_cost, user_price, award_id):
     assert hook.award_cost == (Decimal(data['award_cost']) if award_cost != '' else None)
     assert hook.status == WebhookParseStatus.SUCCEEDED
     if award_id is not None and user_price is not None:
-        assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == Decimal(user_price)
+        assert bootcamp_run.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == Decimal(user_price)
     else:
-        assert klass.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == klass.price
+        assert bootcamp_run.personal_price(User.objects.get(profile__fluidreview_id=user_id)) == bootcamp_run.price
 
 
 @pytest.mark.parametrize('body', [
@@ -360,14 +360,14 @@ def test_list_users(mocker):
 @pytest.mark.parametrize('is_legacy', [True, False])
 @pytest.mark.parametrize('is_fulfilled', [True, False])
 def test_post_payment(mocker, is_legacy, is_fulfilled, test_payment_data, settings):
-    """Test that posting a payment is called for non-legacy klasses, with correct data"""
+    """Test that posting a payment is called for non-legacy bootcamp runs, with correct data"""
     settings.FLUIDREVIEW_AMOUNTPAID_ID = 100
     mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().put.return_value.status_code = 200
-    klass, order, hook = test_payment_data
+    bootcamp_run, order, hook = test_payment_data
     if not is_fulfilled:
         order.status = Order.FAILED
-    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=is_legacy)
+    Bootcamp.objects.filter(id=bootcamp_run.bootcamp.id).update(legacy=is_legacy)
     post_payment(order)
     expected_data = {'value': '11.38'}
     assert mock_api().put.call_count == (0 if is_legacy or not is_fulfilled else 1)
@@ -381,8 +381,8 @@ def test_post_payment_bad_response(mocker, test_payment_data):
     """Test that bad responses from FluidReview raise expected exceptions"""
     mock_api = mocker.patch('fluidreview.api.FluidReviewAPI')
     mock_api().put.side_effect = HTTPError
-    klass, order, _ = test_payment_data
-    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
+    bootcamp_run, order, _ = test_payment_data
+    Bootcamp.objects.filter(id=bootcamp_run.bootcamp.id).update(legacy=False)
     with pytest.raises(FluidReviewException) as exc:
         post_payment(order)
     assert 'Error updating amount paid by user' in str(exc)
@@ -391,10 +391,10 @@ def test_post_payment_bad_response(mocker, test_payment_data):
 def test_post_payment_bad_webhook(mocker, test_payment_data):
     """Test that a webhook without submission id raises expected exception"""
     mocker.patch('fluidreview.api.FluidReviewAPI')
-    klass, order, hook = test_payment_data
+    bootcamp_run, order, hook = test_payment_data
     hook.submission_id = None
     hook.save()
-    Bootcamp.objects.filter(id=klass.bootcamp.id).update(legacy=False)
+    Bootcamp.objects.filter(id=bootcamp_run.bootcamp.id).update(legacy=False)
     with pytest.raises(FluidReviewException) as exc:
         post_payment(order)
     assert 'Webhook has no submission id for order' in str(exc)
