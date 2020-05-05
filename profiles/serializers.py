@@ -236,6 +236,7 @@ class UserSerializer(serializers.ModelSerializer):
         username = validated_data.pop("username")
         email = validated_data.pop("email")
         password = validated_data.pop("password")
+        profile = None
 
         with transaction.atomic():
             user = User.objects.create_user(
@@ -256,8 +257,10 @@ class UserSerializer(serializers.ModelSerializer):
                 profile = UserProfileSerializer(user.profile, data=profile_data)
                 if profile.is_valid():
                     profile.save()
-
-        sync_hubspot_user(user)
+        try:
+            sync_hubspot_user(user.profile)
+        except Profile.DoesNotExist:
+            pass
 
         return user
 
@@ -289,7 +292,10 @@ class UserSerializer(serializers.ModelSerializer):
 
             user = super().update(instance, validated_data)
 
-        sync_hubspot_user(user)
+        try:
+            sync_hubspot_user(user.profile)
+        except Profile.DoesNotExist:
+            pass
         return user
 
     class Meta:

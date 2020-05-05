@@ -8,6 +8,7 @@ import { getCookie } from "../api"
 import type {
   AuthResponse,
   LegalAddress,
+  PartialProfile,
   ProfileForm
 } from "../../flow/authTypes"
 
@@ -64,7 +65,7 @@ export default {
   }),
 
   registerDetailsMutation: (
-    name: string,
+    profile: PartialProfile,
     password: string,
     legalAddress: LegalAddress,
     partialToken: string
@@ -72,7 +73,7 @@ export default {
     ...DEFAULT_OPTIONS,
     url:  "/api/register/details/",
     body: {
-      name,
+      profile,
       password,
       legal_address: legalAddress,
       flow:          FLOW_REGISTER,

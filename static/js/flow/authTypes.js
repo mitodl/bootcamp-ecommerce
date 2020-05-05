@@ -40,6 +40,10 @@ export type AuthResponse = {
   extra_data:    AuthExtraData
 }
 
+export type PartialProfile = {
+  name: string
+}
+
 export type LegalAddress = {
   first_name: string,
   last_name: string,

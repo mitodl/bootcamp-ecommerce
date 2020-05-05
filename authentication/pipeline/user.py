@@ -155,8 +155,8 @@ def create_profile(
         raise RequireProfileException(
             backend, current_partial, errors=serializer.errors
         )
-    serializer.save()
-    sync_hubspot_user(user)
+    profile = serializer.save()
+    sync_hubspot_user(profile)
     return {}
 
 

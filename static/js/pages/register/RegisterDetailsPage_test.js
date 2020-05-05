@@ -18,7 +18,9 @@ import { makeCountries } from "../../factories/user"
 describe("RegisterDetailsPage", () => {
   const countries = makeCountries()
   const detailsData = {
-    name:          "Sally",
+    profile: {
+      name: "Sally"
+    },
     password:      "password1",
     legal_address: {
       address: "main st"

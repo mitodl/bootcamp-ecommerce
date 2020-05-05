@@ -96,12 +96,6 @@ export const passwordValidation = yup.object().shape({
 
 export const profileValidation = yup.object().shape({
   profile: yup.object().shape({
-    name: yup
-      .string()
-      .label("Full Name")
-      .trim()
-      .required()
-      .min(2),
     gender: yup
       .string()
       .label("Gender")

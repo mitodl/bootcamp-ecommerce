@@ -27,7 +27,8 @@ import type {
   LegalAddress,
   User,
   Country,
-  HttpAuthResponse
+  HttpAuthResponse,
+  PartialProfile
 } from "../../flow/authTypes"
 
 type RegisterProps = {|
@@ -63,11 +64,11 @@ export class RegisterDetailsPage extends React.Component<Props> {
       registerDetails,
       params: { partialToken }
     } = this.props
-
+    console.log(detailsData)
     try {
       // $FlowFixMe
       const { body } = await registerDetails(
-        detailsData.name,
+        detailsData.profile,
         detailsData.password,
         detailsData.legal_address,
         partialToken
@@ -130,14 +131,14 @@ const mapStateToProps = createStructuredSelector({
 const mapPropsToConfig = () => [queries.users.countriesQuery()]
 
 const registerDetails = (
-  name: string,
+  profile: PartialProfile,
   password: string,
   legalAddress: LegalAddress,
   partialToken: string
 ) =>
   mutateAsync(
     // $FlowFixMe
-    auth.registerDetailsMutation(name, password, legalAddress, partialToken)
+    auth.registerDetailsMutation(profile, password, legalAddress, partialToken)
   )
 
 const getCurrentUser = () =>

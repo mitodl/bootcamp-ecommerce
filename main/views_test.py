@@ -78,12 +78,6 @@ class TestViews(TestCase):
         assert resp.status_code == HTTP_302_FOUND
         assert resp.url == reverse('pay') + '?foo=bar'
 
-    def test_pay_anonymous(self):
-        """
-        Test that anonymous users can't see the anonymous view
-        """
-        assert self.client.get(reverse('pay')).status_code == HTTP_302_FOUND
-
     @override_settings(USE_WEBPACK_DEV_SERVER=False)
     def test_pay(self):
         """
