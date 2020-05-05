@@ -81,8 +81,7 @@ export type User = {
     created_on: string,
     updated_on: string,
     profile: ?Profile,
-    legal_address: ?LegalAddress,
-    unused_coupons: Array<UnusedCoupon>
+    legal_address: ?LegalAddress
 }
 
 export type AnonymousUser = {
