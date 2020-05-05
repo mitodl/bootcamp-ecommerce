@@ -17,11 +17,28 @@ from urllib.parse import urljoin, urlparse
 
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
+
 from main.envs import get_string, get_bool, get_int, get_list, get_any
+from main.sentry import init_sentry
 
 
 VERSION = "0.39.2"
 
+ENVIRONMENT = get_string(
+    "BOOTCAMP_ENVIRONMENT",
+    "dev",
+    description="The execution environment that the app is in (e.g. dev, staging, prod)",
+)
+# initialize Sentry before doing anything else so we capture any config errors
+SENTRY_DSN = get_string(
+    "SENTRY_DSN", "", description="The connection settings for Sentry"
+)
+SENTRY_LOG_LEVEL = get_string(
+    "SENTRY_LOG_LEVEL", "ERROR", description="The log level for Sentry"
+)
+init_sentry(
+    dsn=SENTRY_DSN, environment=ENVIRONMENT, version=VERSION, log_level=SENTRY_LOG_LEVEL
+)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -95,7 +112,7 @@ INSTALLED_APPS = (
     "compat",
     "hijack_admin",
     # other third party APPS
-    "raven.contrib.django.raven_compat",
+
     # wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -132,17 +149,16 @@ if not DISABLE_WEBPACK_LOADER_STATS:
 
 
 MIDDLEWARE = (
-    "django.middleware.security.SecurityMiddleware",
-    "raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "social_django.middleware.SocialAuthExceptionMiddleware",
-    "wagtail.core.middleware.SiteMiddleware",
-    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 )
 
 # enable the nplusone profiler only in debug mode
@@ -492,9 +508,6 @@ LOG_LEVEL = get_string(
 DJANGO_LOG_LEVEL = get_string(
     "DJANGO_LOG_LEVEL", "INFO", description="The log level for Django"
 )
-SENTRY_LOG_LEVEL = get_string(
-    "SENTRY_LOG_LEVEL", "ERROR", description="The log level for Sentry"
-)
 ES_LOG_LEVEL = get_string(
     "ES_LOG_LEVEL", "INFO", description="The log level for elasticsearch"
 )
@@ -541,17 +554,12 @@ LOGGING = {
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
         },
-        "sentry": {
-            "level": SENTRY_LOG_LEVEL,
-            "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-            "formatter": "verbose",
-        },
     },
     "loggers": {
         "django": {
             "propagate": True,
             "level": DJANGO_LOG_LEVEL,
-            "handlers": ["console", "syslog", "sentry"],
+            "handlers": ["console", "syslog"],
         },
         "django.request": {
             "handlers": ["mail_admins"],
@@ -560,25 +568,9 @@ LOGGING = {
         },
         "urllib3": {"level": "INFO"},
         "elasticsearch": {"level": ES_LOG_LEVEL},
-        "raven": {"level": SENTRY_LOG_LEVEL, "handlers": []},
         "nplusone": {"handlers": ["console"], "level": "ERROR"},
     },
-    "root": {"handlers": ["console", "syslog", "sentry"], "level": LOG_LEVEL},
-}
-
-# Sentry
-ENVIRONMENT = get_string(
-    "BOOTCAMP_ENVIRONMENT",
-    "dev",
-    description="The execution environment that the app is in (e.g. dev, staging, prod)",
-)
-SENTRY_CLIENT = "raven.contrib.django.raven_compat.DjangoClient"
-RAVEN_CONFIG = {
-    "dsn": get_string(
-        "SENTRY_DSN", "", description="The connection settings for Sentry"
-    ),
-    "environment": ENVIRONMENT,
-    "release": VERSION,
+    "root": {"handlers": ["console", "syslog"], "level": LOG_LEVEL},
 }
 
 # to run the app locally on mac you need to bypass syslog

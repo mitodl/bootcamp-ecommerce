@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from raven.contrib.django.raven_compat.models import client as sentry
 
 from main.templatetags.render_bundle import public_path
 from main.serializers import serialize_maybe_user
@@ -18,7 +17,7 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
     return {
         "release_version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
-        "sentry_dsn": sentry.get_public_dsn(),
+        "sentry_dsn": settings.SENTRY_DSN,
         "public_path": public_path(request),
         "user": serialize_maybe_user(request.user),
         "zendesk_config": {
