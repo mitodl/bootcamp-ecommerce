@@ -1,7 +1,7 @@
 """jobma models"""
 from django.db import models
 
-from klasses.models import Klass
+from klasses.models import BootcampRun
 from main.models import AuditableModel, AuditModel
 from main.utils import serialize_model_object
 
@@ -13,7 +13,7 @@ class Job(AuditableModel):
     job_code = models.TextField()
     job_title = models.TextField()
     interview_template_id = models.IntegerField()
-    run = models.ForeignKey(Klass, on_delete=models.CASCADE)
+    run = models.ForeignKey(BootcampRun, on_delete=models.CASCADE)
 
     @classmethod
     def get_audit_class(cls):

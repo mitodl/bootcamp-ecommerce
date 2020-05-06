@@ -8,7 +8,7 @@ from factory.fuzzy import (
 )
 
 from jobma.models import Interview, Job
-from klasses.factories import KlassFactory
+from klasses.factories import BootcampRunFactory
 
 
 class JobFactory(DjangoModelFactory):
@@ -17,7 +17,7 @@ class JobFactory(DjangoModelFactory):
     job_code = FuzzyText()
     job_title = FuzzyText()
     interview_template_id = FuzzyInteger(10, 12345)
-    run = SubFactory(KlassFactory)
+    run = SubFactory(BootcampRunFactory)
 
     class Meta:
         model = Job
