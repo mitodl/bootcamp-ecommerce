@@ -13,8 +13,8 @@ from ecommerce.factories import (
     ReceiptFactory,
 )
 from ecommerce.models import Order, Line
-from klasses.factories import KlassFactory
-from klasses.models import Klass
+from klasses.factories import BootcampRunFactory
+from klasses.models import BootcampRun
 
 
 @override_settings(CYBERSOURCE_SECURITY_KEY='fake')
@@ -32,9 +32,9 @@ class OrderTests(TestCase):
         """Test Line.__str__"""
         line = LineFactory.create()
         assert str(line) == (
-            "Line for {order}, price={price}, klass_key={klass_key}, description={description}".format(
+            "Line for {order}, price={price}, run_key={run_key}, description={description}".format(
                 order=line.order,
-                klass_key=line.klass_key,
+                run_key=line.run_key,
                 price=line.price,
                 description=line.description,
             )
@@ -79,25 +79,25 @@ class LineDescriptionTests(TestCase):
         assert line.order.line_description == line.description
 
 
-class KlassTitleTests(TestCase):
-    """Tests for Order.klass_title"""
+class BootcampRunTitleTests(TestCase):
+    """Tests for Order.run_title"""
 
     def test_empty(self):
         """If there is no Line there should be an empty string"""
         order = OrderFactory.create()
-        assert order.klass_title == ""
+        assert order.run_title == ""
 
-    def test_no_klass(self):
-        """If there is no Klass there should be an empty string"""
+    def test_no_bootcamp_run(self):
+        """If there is no BootcampRun there should be an empty string"""
         line = LineFactory.create()
-        assert Klass.objects.filter(klass_key=line.klass_key).exists() is False
-        assert line.order.klass_title == ""
+        assert BootcampRun.objects.filter(run_key=line.run_key).exists() is False
+        assert line.order.run_title == ""
 
-    def test_klass_title(self):
-        """klass_title should be klass.title for the given klass_key"""
-        klass = KlassFactory.create()
-        line = LineFactory.create(klass_key=klass.klass_key)
-        assert line.order.klass_title == klass.title
+    def test_run_title(self):
+        """run_title should be bootcamp run title for the given run_key"""
+        bootcamp_run = BootcampRunFactory.create()
+        line = LineFactory.create(run_key=bootcamp_run.run_key)
+        assert line.order.run_title == bootcamp_run.title
 
 
 class LineTest(TestCase):
@@ -112,27 +112,27 @@ class LineTest(TestCase):
         cls.order_fulfilled_1 = OrderFactory.create(status=Order.FULFILLED)
         cls.line_fulfilled_1 = LineFactory.create(order=cls.order_fulfilled_1)
         cls.user = cls.order_fulfilled_1.user
-        cls.klass_key = cls.line_fulfilled_1.klass_key
+        cls.run_key = cls.line_fulfilled_1.run_key
         cls.order_fulfilled_2 = OrderFactory.create(user=cls.user, status=Order.FULFILLED)
         cls.line_fulfilled_2 = LineFactory.create(order=cls.order_fulfilled_2)
         cls.order_created = OrderFactory.create(user=cls.user, status=Order.CREATED)
-        cls.line_created = LineFactory.create(order=cls.order_created, klass_key=cls.klass_key)
+        cls.line_created = LineFactory.create(order=cls.order_created, run_key=cls.run_key)
 
     def test_fulfilled_for_user(self):
         """
         Test for the fulfilled_for_user classmethod
         """
         assert list(Line.fulfilled_for_user(self.user)) == sorted(
-            [self.line_fulfilled_1, self.line_fulfilled_2], key=lambda x: x.klass_key)
+            [self.line_fulfilled_1, self.line_fulfilled_2], key=lambda x: x.run_key)
 
-    def test_for_user_klass(self):
+    def test_for_user_bootcamp_run(self):
         """
-        Test for the for_user_klass classmethod
+        Test for the for_user_bootcamp_run classmethod
         """
-        assert list(Line.for_user_klass(self.user, self.klass_key)) == [self.line_fulfilled_1]
+        assert list(Line.for_user_bootcamp_run(self.user, self.run_key)) == [self.line_fulfilled_1]
 
-    def test_total_paid_for_klass(self):
+    def test_total_paid_for_bootcamp_run(self):
         """
-        Test for the total_paid_for_klass classmethod
+        Test for the total_paid_for_bootcamp_run classmethod
         """
-        assert Line.total_paid_for_klass(self.user, self.klass_key).get('total') == self.line_fulfilled_1.price
+        assert Line.total_paid_for_bootcamp_run(self.user, self.run_key).get('total') == self.line_fulfilled_1.price

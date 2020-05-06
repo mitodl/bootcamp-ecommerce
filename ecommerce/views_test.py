@@ -15,7 +15,7 @@ from rest_framework import status as statuses
 
 from ecommerce.api import make_reference_id
 from ecommerce.api_test import (
-    create_purchasable_klass,
+    create_purchasable_bootcamp_run,
     create_test_order,
 )
 from ecommerce.exceptions import EcommerceException
@@ -51,7 +51,7 @@ class PaymentTests(TestCase):
         self.client.force_login(user)
         resp = self.client.post(payment_url, data={
             "payment_amount": "-1",
-            "klass_key": 3,
+            "run_key": 3,
         })
         assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
         assert resp.json() == {
@@ -72,7 +72,7 @@ class PaymentTests(TestCase):
         """
         If a user POSTs to the payment API an unfulfilled order should be created
         """
-        klass, user = create_purchasable_klass()
+        bootcamp_run, user = create_purchasable_bootcamp_run()
         self.client.force_login(user)
         fake_payload = "fake_payload"
         fake_order = 'fake_order'
@@ -82,8 +82,8 @@ class PaymentTests(TestCase):
             'ecommerce.views.create_unfulfilled_order', autospec=True, return_value=fake_order
         ) as create_unfulfilled_order_mock:
             resp = self.client.post(reverse('create-payment'), data={
-                "payment_amount": klass.price,
-                "klass_key": klass.klass_key,
+                "payment_amount": bootcamp_run.price,
+                "run_key": bootcamp_run.run_key,
             })
         assert resp.status_code == statuses.HTTP_200_OK
         assert resp.json() == {
@@ -93,7 +93,7 @@ class PaymentTests(TestCase):
         assert generate_cybersource_sa_payload_mock.call_count == 1
         generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/pay/")
         assert create_unfulfilled_order_mock.call_count == 1
-        create_unfulfilled_order_mock.assert_any_call(user, klass.klass_key, klass.price)
+        create_unfulfilled_order_mock.assert_any_call(user, bootcamp_run.run_key, bootcamp_run.price)
 
 
 @override_settings(
@@ -111,15 +111,15 @@ class OrderFulfillmentViewTests(TestCase):
         """
         Test the happy case
         """
-        klass, user = create_purchasable_klass()
+        bootcamp_run, user = create_purchasable_bootcamp_run()
         user.profile.fluidreview_id = 999
         user.profile.save()
         payment = 123
-        order = create_test_order(user, klass.klass_key, payment)
+        order = create_test_order(user, bootcamp_run.run_key, payment)
         WebhookRequestFactory(
             user_email=user.email,
             user_id=user.profile.fluidreview_id,
-            award_id=klass.klass_key,
+            award_id=bootcamp_run.run_key,
             status=WebhookParseStatus.SUCCEEDED
         )
         data_before = order.to_dict()
@@ -182,8 +182,8 @@ class OrderFulfillmentViewTests(TestCase):
         """
         If the decision is not ACCEPT then the order should be marked as failed
         """
-        klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        order = create_test_order(user, bootcamp_run.run_key, 123)
 
         data = {
             'req_reference_number': make_reference_id(order),
@@ -216,8 +216,8 @@ class OrderFulfillmentViewTests(TestCase):
         """
         If the decision is CANCEL and we already have a duplicate failed order, don't change anything.
         """
-        klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        order = create_test_order(user, bootcamp_run.run_key, 123)
         order.status = Order.FAILED
         order.save()
 
@@ -243,8 +243,8 @@ class OrderFulfillmentViewTests(TestCase):
     @ddt.unpack
     def test_error_on_duplicate_order(self, order_status, decision):
         """If there is a duplicate message (except for CANCEL), raise an exception"""
-        klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        order = create_test_order(user, bootcamp_run.run_key, 123)
         order.status = order_status
         order.save()
 

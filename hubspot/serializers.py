@@ -140,13 +140,13 @@ class HubspotDealSerializer(serializers.ModelSerializer):
 
     def get_bootcamp_name(self, instance):
         """Get the name of the bootcamp"""
-        return instance.klass.bootcamp.title
+        return instance.bootcamp_run.bootcamp.title
 
     def to_representation(self, instance):
         # Populate order data
         data = super().to_representation(instance)
 
-        orders = Order.objects.filter(user=instance.user, line__klass_key=instance.klass.klass_key)
+        orders = Order.objects.filter(user=instance.user, line__run_key=instance.bootcamp_run.run_key)
         if orders.exists():
             amount_paid = Decimal(0)
             for order in orders:
@@ -185,7 +185,7 @@ class HubspotLineSerializer(serializers.ModelSerializer):
     def get_product(self, instance):
         """Get the id of the associated Bootcamp"""
         from hubspot.api import format_hubspot_id
-        return format_hubspot_id(instance.klass.bootcamp.id)
+        return format_hubspot_id(instance.bootcamp_run.bootcamp.id)
 
     class Meta:
         model = PersonalPrice

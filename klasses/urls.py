@@ -1,21 +1,21 @@
 """
-URLs for klasses
+URLs for bootcamps
 """
 from django.conf.urls import url
 
 from klasses.views import (
-    UserKlassList,
-    UserKlassDetail,
-    UserKlassStatement,
+    UserBootcampRunList,
+    UserBootcampRunDetail,
+    UserBootcampRunStatement,
 )
 
 
 urlpatterns = [
-    url(r'^api/v0/klasses/(?P<username>[-\w.]+)/$', UserKlassList.as_view(), name='klass-list'),
+    url(r'^api/v0/bootcamps/(?P<username>[-\w.]+)/$', UserBootcampRunList.as_view(), name='bootcamp-run-list'),
     url(
-        r'^api/v0/klasses/(?P<username>[-\w.]+)/(?P<klass_key>[\d]+)/$',
-        UserKlassDetail.as_view(),
-        name='klass-detail'
+        r'^api/v0/bootcamps/(?P<username>[-\w.]+)/(?P<run_key>[\d]+)/$',
+        UserBootcampRunDetail.as_view(),
+        name='bootcamp-run-detail'
     ),
-    url(r'^statement/(?P<klass_key>[0-9]+)/$', UserKlassStatement.as_view(), name='klass-statement'),
+    url(r'^statement/(?P<run_key>[0-9]+)/$', UserBootcampRunStatement.as_view(), name='bootcamp-run-statement'),
 ]

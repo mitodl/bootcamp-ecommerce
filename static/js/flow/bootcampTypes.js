@@ -6,7 +6,7 @@ export type Payment = {
     created_on: string,
     updated_on: string,
   },
-  klass_key: string,
+  run_key: string,
   price: number,
   description: string,
 }
@@ -16,9 +16,9 @@ export type Installment = {
   deadline: string,
 }
 
-export type Klass = {
-  klass_key: number,
-  klass_name: string,
+export type BootcampRun = {
+  run_key: number,
+  bootcamp_run_name: string,
   display_name: string,
   start_date: string,
   end_date: string,
@@ -29,4 +29,4 @@ export type Klass = {
   installments: Array<Installment>
 }
 
-export type KlassesResponse = Array<Klass>
+export type BootcampRunsResponse = Array<BootcampRun>

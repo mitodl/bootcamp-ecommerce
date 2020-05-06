@@ -41,31 +41,31 @@ from klasses.factories import InstallmentFactory
 from profiles.factories import UserFactory, ProfileFactory
 
 
-def create_purchasable_klass():
+def create_purchasable_bootcamp_run():
     """
-    Creates a purchasable klass and an associated user. Klass price is at least $200, in two installments
+    Creates a purchasable bootcamp run and an associated user. Bootcamp run price is at least $200, in two installments
     """
     installment_1 = InstallmentFactory.create(amount=200)
-    InstallmentFactory.create(klass=installment_1.klass)
+    InstallmentFactory.create(bootcamp_run=installment_1.bootcamp_run)
     profile = ProfileFactory.create()
     user = profile.user
     user.social_auth.create(
         provider=EdxOrgOAuth2.name,
         uid="{}_edx".format(user.username),
     )
-    return installment_1.klass, user
+    return installment_1.bootcamp_run, user
 
 
-def create_test_order(user, klass_key, payment_amount):
+def create_test_order(user, run_key, payment_amount):
     """
-    Pass through arguments to create_unfulfilled_order and mock payable_klasses_keys
+    Pass through arguments to create_unfulfilled_order and mock payable_bootcamp_run_keys
     """
     with patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
+        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
         new_callable=PropertyMock,
-        return_value=[klass_key],
+        return_value=[run_key],
     ):
-        return create_unfulfilled_order(user, klass_key, payment_amount)
+        return create_unfulfilled_order(user, run_key, payment_amount)
 
 
 @ddt.ddt
@@ -78,7 +78,7 @@ class PurchasableTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.klass, cls.user = create_purchasable_klass()
+        cls.bootcamp_run, cls.user = create_purchasable_bootcamp_run()
 
     @ddt.data(0, -1.23)
     def test_less_or_equal_to_zero(self, payment_amount):
@@ -86,16 +86,16 @@ class PurchasableTests(TestCase):
         An order may not have a negative or zero price
         """
         with self.assertRaises(ValidationError) as ex:
-            create_test_order(self.user, self.klass.klass_key, payment_amount)
+            create_test_order(self.user, self.bootcamp_run.run_key, payment_amount)
 
         assert ex.exception.args[0] == 'Payment is less than or equal to zero'
 
     def test_create_order(self):  # pylint: disable=too-many-locals
         """
-        Create Order from a purchasable klass
+        Create Order from a purchasable bootcamp run
         """
         payment = 123
-        order = create_test_order(self.user, self.klass.klass_key, payment)
+        order = create_test_order(self.user, self.bootcamp_run.run_key, payment)
 
         assert Order.objects.count() == 1
         assert order.status == Order.CREATED
@@ -104,8 +104,8 @@ class PurchasableTests(TestCase):
 
         assert order.line_set.count() == 1
         line = order.line_set.first()
-        assert line.klass_key == self.klass.klass_key
-        assert line.description == 'Installment for {}'.format(self.klass.title)
+        assert line.run_key == self.bootcamp_run.run_key
+        assert line.description == 'Installment for {}'.format(self.bootcamp_run.title)
         assert line.price == payment
 
         assert OrderAudit.objects.count() == 1
@@ -127,12 +127,12 @@ class PurchasableTests(TestCase):
         """
         payment = 123
         with patch(
-            'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_klasses_keys',
+            'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
             new_callable=PropertyMock,
             return_value=[],
         ), self.assertRaises(ValidationError) as ex:
-            create_unfulfilled_order(self.user, self.klass.klass_key, payment)
-        assert ex.exception.args[0] == "User is unable to pay for klass {}".format(self.klass.klass_key)
+            create_unfulfilled_order(self.user, self.bootcamp_run.run_key, payment)
+        assert ex.exception.args[0] == "User is unable to pay for bootcamp run {}".format(self.bootcamp_run.run_key)
 
 
 class GetPaidTests(TestCase):
@@ -142,9 +142,9 @@ class GetPaidTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.klass, cls.user = create_purchasable_klass()
+        cls.bootcamp_run, cls.user = create_purchasable_bootcamp_run()
         cls.payment = 123
-        order = create_test_order(cls.user, cls.klass.klass_key, cls.payment)
+        order = create_test_order(cls.user, cls.bootcamp_run.run_key, cls.payment)
         order.status = Order.FULFILLED
         order.save()
 
@@ -154,34 +154,34 @@ class GetPaidTests(TestCase):
         """
         # Multiple payments should be added together
         next_payment = 50
-        order = create_test_order(self.user, self.klass.klass_key, next_payment)
+        order = create_test_order(self.user, self.bootcamp_run.run_key, next_payment)
         order.status = Order.FULFILLED
         order.save()
-        assert get_total_paid(self.user, self.klass.klass_key) == self.payment + next_payment
+        assert get_total_paid(self.user, self.bootcamp_run.run_key) == self.payment + next_payment
 
     def test_other_user(self):
         """other_user's payments shouldn't affect user"""
         other_user = UserFactory.create()
-        assert get_total_paid(other_user, self.klass.klass_key) == 0
+        assert get_total_paid(other_user, self.bootcamp_run.run_key) == 0
 
     def test_skip_unfulfilled(self):
         """Unfulfilled orders should be ignored"""
-        create_test_order(self.user, self.klass.klass_key, 45)
-        assert get_total_paid(self.user, self.klass.klass_key) == self.payment
+        create_test_order(self.user, self.bootcamp_run.run_key, 45)
+        assert get_total_paid(self.user, self.bootcamp_run.run_key) == self.payment
 
-    def test_skip_other_klass(self):
-        """Orders for other klasses should be ignored"""
-        other_klass, other_user = create_purchasable_klass()
-        other_order = create_test_order(other_user, other_klass.klass_key, 50)
+    def test_skip_other_bootcamp_run(self):
+        """Orders for other bootcamp runs should be ignored"""
+        other_bootcamp_run, other_user = create_purchasable_bootcamp_run()
+        other_order = create_test_order(other_user, other_bootcamp_run.run_key, 50)
         other_order.status = Order.FULFILLED
         other_order.save()
 
-        assert get_total_paid(self.user, self.klass.klass_key) == self.payment
+        assert get_total_paid(self.user, self.bootcamp_run.run_key) == self.payment
 
     def test_no_payments(self):
         """If there are no payments get_total_paid should return 0"""
         Order.objects.all().update(status=Order.REFUNDED)
-        assert get_total_paid(self.user, self.klass.klass_key) == 0
+        assert get_total_paid(self.user, self.bootcamp_run.run_key) == 0
 
 
 CYBERSOURCE_ACCESS_KEY = 'access'
@@ -227,9 +227,9 @@ class CybersourceTests(TestCase):
         """
         A valid payload should be signed appropriately
         """
-        klass, user = create_purchasable_klass()
+        bootcamp_run, user = create_purchasable_bootcamp_run()
         payment = 123.45
-        order = create_test_order(user, klass.klass_key, payment)
+        order = create_test_order(user, bootcamp_run.run_key, payment)
         username = 'username'
         transaction_uuid = 'hex'
 
@@ -251,16 +251,16 @@ class CybersourceTests(TestCase):
             'consumer_id': username,
             'currency': 'USD',
             'item_0_code': 'klass',
-            'item_0_name': '{}'.format(klass.title),
+            'item_0_name': '{}'.format(bootcamp_run.title),
             'item_0_quantity': 1,
-            'item_0_sku': '{}'.format(klass.klass_key),
+            'item_0_sku': '{}'.format(bootcamp_run.run_key),
             'item_0_tax_amount': '0',
             'item_0_unit_price': str(order.total_price_paid),
             'line_item_count': 1,
             'locale': 'en-us',
             'override_custom_cancel_page': 'dashboard_url?status=cancel',
             'override_custom_receipt_page': 'dashboard_url?status=receipt&order={}&award={}'.format(
-                order.id, klass.klass_key
+                order.id, bootcamp_run.run_key
             ),
             'reference_number': make_reference_id(order),
             'profile_id': CYBERSOURCE_PROFILE_ID,
@@ -270,10 +270,10 @@ class CybersourceTests(TestCase):
             'transaction_uuid': transaction_uuid,
             'unsigned_field_names': '',
             'merchant_defined_data1': 'bootcamp',
-            'merchant_defined_data2': '{}'.format(klass.bootcamp.title),
+            'merchant_defined_data2': '{}'.format(bootcamp_run.bootcamp.title),
             'merchant_defined_data3': 'klass',
-            'merchant_defined_data4': '{}'.format(klass.title),
-            'merchant_defined_data5': '{}'.format(klass.klass_key),
+            'merchant_defined_data4': '{}'.format(bootcamp_run.title),
+            'merchant_defined_data5': '{}'.format(bootcamp_run.run_key),
             'merchant_defined_data6': 'learner',
             'merchant_defined_data7': '{}'.format(order.user.profile.name),
             'merchant_defined_data8': '{}'.format(order.user.email),
@@ -281,32 +281,32 @@ class CybersourceTests(TestCase):
         now_mock.assert_called_with(tz=pytz.UTC)
 
     @ddt.data("", "<h1></h1>")
-    def test_with_empty_or_html_klass_title(self, invalid_title):
-        """ Verify that Validation error raises if title of klass has only HTML or empty."""
+    def test_with_empty_or_html_run_title(self, invalid_title):
+        """ Verify that Validation error raises if title of bootcamp run has only HTML or empty."""
 
-        klass, user = create_purchasable_klass()
-        klass.title = invalid_title
-        klass.save()
-        order = create_test_order(user, klass.klass_key, '123.45')
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        bootcamp_run.title = invalid_title
+        bootcamp_run.save()
+        order = create_test_order(user, bootcamp_run.run_key, '123.45')
         with self.assertRaises(ValidationError) as ex:
             generate_cybersource_sa_payload(order, 'dashboard_url')
 
-        assert ex.exception.args[0] == 'Klass {klass_key} title is either empty or contains only HTML.'.format(
-            klass_key=klass.klass_key)
+        assert ex.exception.args[0] == 'Bootcamp run {run_key} title is either empty or contains only HTML.'.format(
+            run_key=bootcamp_run.run_key)
 
     @ddt.data("", "<h1></h1>")
     def test_with_empty_or_html_bootcamp_title(self, invalid_title):
         """ Verify that Validation error raises if title of bootcamp has only HTML or empty."""
 
-        klass, user = create_purchasable_klass()
-        klass.bootcamp.title = invalid_title
-        klass.bootcamp.save()
-        order = create_test_order(user, klass.klass_key, '123.45')
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        bootcamp_run.bootcamp.title = invalid_title
+        bootcamp_run.bootcamp.save()
+        order = create_test_order(user, bootcamp_run.run_key, '123.45')
         with self.assertRaises(ValidationError) as ex:
             generate_cybersource_sa_payload(order, 'dashboard_url')
 
         assert ex.exception.args[0] == 'Bootcamp {bootcamp_id} title is either empty or contains only HTML.'.format(
-            bootcamp_id=klass.bootcamp.id)
+            bootcamp_id=bootcamp_run.bootcamp.id)
 
 
 @ddt.ddt
@@ -320,16 +320,16 @@ class ReferenceNumberTests(TestCase):
         """
         make_reference_id should concatenate the reference prefix and the order id
         """
-        klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        order = create_test_order(user, bootcamp_run.run_key, 123)
         assert "BOOTCAMP-{}-{}".format(CYBERSOURCE_REFERENCE_PREFIX, order.id) == make_reference_id(order)
 
     def test_get_new_order_by_reference_number(self):
         """
         get_new_order_by_reference_number returns an Order with status created
         """
-        klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        order = create_test_order(user, bootcamp_run.run_key, 123)
         same_order = get_new_order_by_reference_number(make_reference_id(order))
         assert same_order.id == order.id
 
@@ -352,8 +352,8 @@ class ReferenceNumberTests(TestCase):
         """
         get_order_by_reference_number should only get orders with status=CREATED
         """
-        klass, user = create_purchasable_klass()
-        order = create_test_order(user, klass.klass_key, 123)
+        bootcamp_run, user = create_purchasable_bootcamp_run()
+        order = create_test_order(user, bootcamp_run.run_key, 123)
 
         order.status = Order.FAILED
         order.save()

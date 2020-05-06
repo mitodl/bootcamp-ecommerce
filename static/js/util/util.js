@@ -47,19 +47,19 @@ export const formatReadableDate = (datetime: moment$Moment): string =>
 export const formatReadableDateFromStr = (datetimeString: string): string =>
   formatReadableDate(moment(datetimeString))
 
-export const getKlassWithFulfilledOrder = (
-  klassData: ?Array<Object>,
+export const getRunWithFulfilledOrder = (
+  runData: ?Array<Object>,
   orderId: number
 ) =>
   R.find(
-    klass =>
+    bootcampRun =>
       R.any(
         payment =>
           payment.order.status === ORDER_FULFILLED &&
           payment.order.id === orderId,
-        klass.payments
+        bootcampRun.payments
       ),
-    klassData
+    runData
   )
 
 export const getInstallmentDeadlineDates = R.map(

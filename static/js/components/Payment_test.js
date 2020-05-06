@@ -6,7 +6,7 @@ import _ from "lodash"
 import moment from "moment"
 
 import Payment from "./Payment"
-import { generateFakeKlasses, generateFakeInstallment } from "../factories"
+import { generateFakeRuns, generateFakeInstallment } from "../factories"
 import {
   formatDollarAmount,
   formatReadableDate,
@@ -16,63 +16,63 @@ import {
 describe("Payment", () => {
   const paymentSectionSelector = ".payment-section"
   const deadlineMsgSelector = ".deadline-message"
-  const klassDropdownSelector = "select.klass-select"
+  const runDropdownSelector = "select.klass-select"
   const welcomeMsgSelector = "h1.greeting"
-  const klassTitleSelector = ".klass-display-section .desc"
+  const runTitleSelector = ".klass-display-section .desc"
 
   const defaultProps = {
-    ui:                  {},
-    payment:             {},
-    payableKlassesData:  [],
-    selectedKlass:       undefined,
-    now:                 moment(),
-    sendPayment:         () => {},
-    setPaymentAmount:    () => {},
-    setSelectedKlassKey: () => {}
+    ui:                        {},
+    payment:                   {},
+    payableBootcampRunsData:   [],
+    selectedBootcampRun:       undefined,
+    now:                       moment(),
+    sendPayment:               () => {},
+    setPaymentAmount:          () => {},
+    setSelectedBootcampRunKey: () => {}
   }
 
   const renderPayment = (props = {}) => {
     return shallow(<Payment {...defaultProps} {...props} />)
   }
 
-  it("should show the user a message when no klasses are eligible for payment", () => {
-    const wrapper = renderPayment({ payableKlassesData: [] })
+  it("should show the user a message when no bootcamp runs are eligible for payment", () => {
+    const wrapper = renderPayment({ payableBootcampRunsData: [] })
     assert.include(wrapper.html(), "No payment is required at this time.")
   })
 
   it("shows the name of the user in a welcome message", () => {
-    const fakeKlasses = generateFakeKlasses()
-    const wrapper = renderPayment({ payableKlassesData: fakeKlasses })
+    const fakeRuns = generateFakeRuns()
+    const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
     const welcomeMsg = wrapper.find(welcomeMsgSelector)
     assert.include(welcomeMsg.text(), SETTINGS.user.full_name)
   })
 
   it("does not show the welcome message if the name of the user is blank", () => {
     SETTINGS.user.full_name = ""
-    const fakeKlasses = generateFakeKlasses()
-    const wrapper = renderPayment({ payableKlassesData: fakeKlasses })
+    const fakeRuns = generateFakeRuns()
+    const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
     assert.isFalse(wrapper.find(welcomeMsgSelector).exists())
   })
 
-  it("shows the selected klass", () => {
-    const fakeKlasses = generateFakeKlasses(3)
+  it("shows the selected bootcamp run", () => {
+    const fakeRuns = generateFakeRuns(3)
     const wrapper = renderPayment({
-      payableKlassesData: fakeKlasses,
-      selectedKlass:      fakeKlasses[0]
+      payableBootcampRunsData: fakeRuns,
+      selectedBootcampRun:     fakeRuns[0]
     })
-    const title = wrapper.find(klassTitleSelector)
-    assert.include(title.text(), fakeKlasses[0].display_title)
+    const title = wrapper.find(runTitleSelector)
+    assert.include(title.text(), fakeRuns[0].display_title)
   })
   ;[
     [moment().format(), "non-null date message"],
     [null, "null date message"]
   ].forEach(([deadlineDateISO, deadlineDateDesc]) => {
     it(`shows payment due date message with ${deadlineDateDesc}`, () => {
-      const fakeKlasses = generateFakeKlasses(1)
-      fakeKlasses[0].payment_deadline = deadlineDateISO
+      const fakeRuns = generateFakeRuns(1)
+      fakeRuns[0].payment_deadline = deadlineDateISO
       const wrapper = renderPayment({
-        payableKlassesData: fakeKlasses,
-        selectedKlass:      fakeKlasses[0]
+        payableBootcampRunsData: fakeRuns,
+        selectedBootcampRun:     fakeRuns[0]
       })
       const deadlineText = wrapper.find(deadlineMsgSelector).text()
       if (!_.isEmpty(deadlineDateISO)) {
@@ -85,8 +85,8 @@ describe("Payment", () => {
   })
 
   it("should show terms and conditions message", () => {
-    const fakeKlass = generateFakeKlasses(1, { hasInstallment: true })[0]
-    const wrapper = renderPayment({ selectedKlass: fakeKlass })
+    const fakeRun = generateFakeRuns(1, { hasInstallment: true })[0]
+    const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
     const termsText = wrapper.find(".tac").text()
     const termsLink = wrapper.find(".tac-link")
 
@@ -97,18 +97,18 @@ describe("Payment", () => {
     assert.equal(termsLink.prop("href"), "/terms_and_conditions/")
   })
 
-  describe("klass dropdown", () => {
+  describe("bootcamp run dropdown", () => {
     [
       [1, false],
       [2, true]
-    ].forEach(([numKlasses, shouldShowDropdown]) => {
+    ].forEach(([numRuns, shouldShowDropdown]) => {
       it(`should${
         shouldShowDropdown ? "" : " not"
-      } be shown when ${numKlasses} klasses available`, () => {
-        const fakeKlasses = generateFakeKlasses(numKlasses)
-        const wrapper = renderPayment({ payableKlassesData: fakeKlasses })
+      } be shown when ${numRuns} bootcamp runs available`, () => {
+        const fakeRuns = generateFakeRuns(numRuns)
+        const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
         assert.equal(
-          wrapper.find(klassDropdownSelector).exists(),
+          wrapper.find(runDropdownSelector).exists(),
           shouldShowDropdown
         )
       })
@@ -121,12 +121,12 @@ describe("Payment", () => {
       [0, true],
       [1, false],
       [2, false]
-    ].forEach(([numKlasses, shouldShowMessage]) => {
+    ].forEach(([numRuns, shouldShowMessage]) => {
       it(`should${
         shouldShowMessage ? "" : " not"
-      } be shown when ${numKlasses} klasses available`, () => {
-        const fakeKlasses = generateFakeKlasses(numKlasses)
-        const wrapper = renderPayment({ payableKlassesData: fakeKlasses })
+      } be shown when ${numRuns} bootcamp runs available`, () => {
+        const fakeRuns = generateFakeRuns(numRuns)
+        const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
         assert.equal(
           wrapper
             .find(paymentSectionSelector)
@@ -140,11 +140,11 @@ describe("Payment", () => {
 
   describe("deadline message", () => {
     it("should show the final payment deadline date and no installment deadline with one installment", () => {
-      const fakeKlass = generateFakeKlasses(1, { hasInstallment: true })[0]
-      const wrapper = renderPayment({ selectedKlass: fakeKlass })
+      const fakeRun = generateFakeRuns(1, { hasInstallment: true })[0]
+      const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
       const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
       const expectedFinalDeadline = formatReadableDateFromStr(
-        fakeKlass.installments[0].deadline
+        fakeRun.installments[0].deadline
       )
       assert.include(
         deadlineMsgHtml,
@@ -154,9 +154,9 @@ describe("Payment", () => {
     })
 
     it("should show the final payment deadline date with multiple installments", () => {
-      const fakeKlass = generateFakeKlasses(1)[0]
+      const fakeRun = generateFakeRuns(1)[0]
       const future = moment().add(5, "days")
-      fakeKlass.installments = [
+      fakeRun.installments = [
         generateFakeInstallment({
           deadline: moment(future)
             .add(-2, "days")
@@ -169,7 +169,7 @@ describe("Payment", () => {
         }),
         generateFakeInstallment({ deadline: future.format() })
       ]
-      const wrapper = renderPayment({ selectedKlass: fakeKlass })
+      const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
       const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
       assert.include(
         deadlineMsgHtml,
@@ -178,9 +178,9 @@ describe("Payment", () => {
     })
 
     it("should show an installment deadline message when multiple installments exist", () => {
-      const fakeKlass = generateFakeKlasses(1)[0]
+      const fakeRun = generateFakeRuns(1)[0]
       const nextInstallmentDate = moment().add(5, "days")
-      fakeKlass.installments = [
+      fakeRun.installments = [
         generateFakeInstallment({ deadline: nextInstallmentDate.format() }),
         generateFakeInstallment({
           deadline: moment(nextInstallmentDate)
@@ -188,10 +188,10 @@ describe("Payment", () => {
             .format()
         })
       ]
-      const wrapper = renderPayment({ selectedKlass: fakeKlass })
+      const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
       const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
       const installmentAmount = formatDollarAmount(
-        fakeKlass.installments[0].amount
+        fakeRun.installments[0].amount
       )
       assert.include(
         deadlineMsgHtml,
@@ -204,11 +204,11 @@ describe("Payment", () => {
     describe("with multiple past installments", () => {
       const nextInstallmentDate = moment().add(2, "days")
       const amt = 100
-      let fakeKlass
+      let fakeRun
 
       beforeEach(() => {
-        fakeKlass = generateFakeKlasses(1)[0]
-        fakeKlass.installments = [
+        fakeRun = generateFakeRuns(1)[0]
+        fakeRun.installments = [
           generateFakeInstallment({
             deadline: moment(nextInstallmentDate)
               .add(-9, "days")
@@ -235,7 +235,7 @@ describe("Payment", () => {
       })
 
       it("should show a sum of installment amounts", () => {
-        const wrapper = renderPayment({ selectedKlass: fakeKlass })
+        const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
         const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
         const installmentAmount = formatDollarAmount(amt * 3)
         assert.include(
@@ -247,8 +247,8 @@ describe("Payment", () => {
       })
 
       it('should show "missed deadline" message if total payment is less than the last installment amount', () => {
-        fakeKlass.total_paid = 0
-        const wrapper = renderPayment({ selectedKlass: fakeKlass })
+        fakeRun.total_paid = 0
+        const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
         const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
         assert.include(
           deadlineMsgHtml,
@@ -257,8 +257,8 @@ describe("Payment", () => {
       })
 
       it('should not show "missed deadline" message if total payment is greater than last installment amount', () => {
-        fakeKlass.total_paid = amt * 3 - 1
-        const wrapper = renderPayment({ selectedKlass: fakeKlass })
+        fakeRun.total_paid = amt * 3 - 1
+        const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
         const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
         assert.notInclude(
           deadlineMsgHtml,
@@ -267,19 +267,19 @@ describe("Payment", () => {
       })
 
       it("should not show an installment deadline message if the next installment is the last", () => {
-        fakeKlass.installments = _.slice(
-          fakeKlass.installments,
+        fakeRun.installments = _.slice(
+          fakeRun.installments,
           0,
-          fakeKlass.installments.length - 1
+          fakeRun.installments.length - 1
         )
-        const wrapper = renderPayment({ selectedKlass: fakeKlass })
+        const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
         const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
         assert.notInclude(deadlineMsgHtml, "A deposit of ")
       })
 
       it("should not show an installment deadline message if there are no installments", () => {
-        fakeKlass.installments = []
-        const wrapper = renderPayment({ selectedKlass: fakeKlass })
+        fakeRun.installments = []
+        const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
         const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).text()
         assert.equal(deadlineMsgHtml, "")
       })

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import smart_text
 from requests_oauthlib import OAuth2Session
 
-from klasses.models import Klass, Bootcamp
+from klasses.models import BootcampRun, Bootcamp
 from ecommerce.models import Line, Order
 from mail.api import MailgunClient
 from profiles.models import Profile
@@ -236,42 +236,42 @@ def parse_webhook_user(webhook):
         user = profile.user
     if webhook.award_id is not None:
         personal_price = webhook.award_cost if webhook.amount_to_pay is None else webhook.amount_to_pay
-        klass = Klass.objects.filter(klass_key=webhook.award_id).first()
-        if not klass:
+        bootcamp_run = BootcampRun.objects.filter(run_key=webhook.award_id).first()
+        if not bootcamp_run:
             if not personal_price:
                 raise FluidReviewException(
-                    "Webhook has no personal price and klass_key %s does not exist" %
+                    "Webhook has no personal price and run_key %s does not exist" %
                     webhook.award_id
                 )
-            klass_info = FluidReviewAPI().get('/awards/{}'.format(webhook.award_id)).json()
-            bootcamp = Bootcamp.objects.create(title=klass_info['name'])
-            klass = Klass.objects.create(
+            run_info = FluidReviewAPI().get('/awards/{}'.format(webhook.award_id)).json()
+            bootcamp = Bootcamp.objects.create(title=run_info['name'])
+            bootcamp_run = BootcampRun.objects.create(
                 bootcamp=bootcamp,
-                title=klass_info['description'],
-                klass_key=klass_info['id'])
+                title=run_info['description'],
+                run_key=run_info['id'])
             try:
                 MailgunClient().send_individual_email(
-                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
-                        klass_key=klass_info['id']
+                    "BootcampRun and Bootcamp created, for run_key {run_key}".format(
+                        run_key=run_info['id']
                     ),
-                    "Klass and Bootcamp created, for klass_key {klass_key}".format(
-                        klass_key=klass_info['id']
+                    "BootcampRun and Bootcamp created, for run_key {run_key}".format(
+                        run_key=run_info['id']
                     ),
                     settings.EMAIL_SUPPORT
                 )
             except:  # pylint: disable=bare-except
                 log.exception(
                     "Error occurred when sending the email to notify "
-                    "about Klass and Bootcamp creation for klass key %s",
-                    klass_info['id']
+                    "about BootcampRun and Bootcamp creation for bootcamp run key %s",
+                    run_info['id']
                 )
         if personal_price is not None:
-            user.klass_prices.update_or_create(
-                klass=klass,
+            user.run_prices.update_or_create(
+                bootcamp_run=bootcamp_run,
                 defaults={'price': personal_price}
             )
         else:
-            user.klass_prices.filter(klass=klass).delete()
+            user.run_prices.filter(bootcamp_run=bootcamp_run).delete()
 
 
 def list_users():
@@ -303,15 +303,15 @@ def post_payment(order):
     """
     if order.status != Order.FULFILLED:
         return
-    klass = order.get_klass()
+    bootcamp_run = order.get_bootcamp_run()
     user = order.user
-    if not klass or klass.bootcamp.legacy:
+    if not bootcamp_run or bootcamp_run.bootcamp.legacy:
         return
-    total_paid = Line.total_paid_for_klass(order.user, klass.klass_key).get('total') or Decimal('0.00')
+    total_paid = Line.total_paid_for_bootcamp_run(order.user, bootcamp_run.run_key).get('total') or Decimal('0.00')
     payment_metadata = {
         'value': '{:0.2f}'.format(total_paid)
     }
-    webhook = WebhookRequest.objects.filter(user_id=user.profile.fluidreview_id, award_id=klass.klass_key).last()
+    webhook = WebhookRequest.objects.filter(user_id=user.profile.fluidreview_id, award_id=bootcamp_run.run_key).last()
     if webhook.submission_id is None:
         raise FluidReviewException("Webhook has no submission id for order %s" % order.id)
     try:
@@ -321,5 +321,5 @@ def post_payment(order):
         )
     except Exception as exc:
         raise FluidReviewException(
-            "Error updating amount paid by user %s to class %s" % (user.email, klass.klass_key)
+            "Error updating amount paid by user %s to class %s" % (user.email, bootcamp_run.run_key)
         ) from exc

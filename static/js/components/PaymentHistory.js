@@ -7,25 +7,25 @@ import { formatDollarAmount } from "../util/util"
 
 export default class PaymentHistory extends React.Component<*, void> {
   props: {
-    klassDataWithPayments: Array<Object>
+    runDataWithPayments: Array<Object>
   }
 
-  renderPaymentRow = (klass: Object) => {
+  renderPaymentRow = (bootcampRun: Object) => {
     const paymentAmountMsg =
-      klass.total_paid !== klass.price ?
-        `${formatDollarAmount(klass.total_paid)} out of ${formatDollarAmount(
-          klass.price
-        )}` :
-        `${formatDollarAmount(klass.total_paid)}`
+      bootcampRun.total_paid !== bootcampRun.price ?
+        `${formatDollarAmount(
+          bootcampRun.total_paid
+        )} out of ${formatDollarAmount(bootcampRun.price)}` :
+        `${formatDollarAmount(bootcampRun.total_paid)}`
 
     return (
-      <tr key={klass.klass_key}>
-        <td>{klass.display_title}</td>
+      <tr key={bootcampRun.run_key}>
+        <td>{bootcampRun.display_title}</td>
         <td>{paymentAmountMsg}</td>
         <td className="statement-column">
           <i className="material-icons">print</i>
           <a
-            href={`/statement/${klass.klass_key}`}
+            href={`/statement/${bootcampRun.run_key}`}
             target="_blank"
             rel="noopener noreferrer"
             className="statement-link"
@@ -38,7 +38,7 @@ export default class PaymentHistory extends React.Component<*, void> {
   }
 
   render() {
-    const { klassDataWithPayments } = this.props
+    const { runDataWithPayments } = this.props
 
     return (
       <div className="payment-history-section">
@@ -55,7 +55,7 @@ export default class PaymentHistory extends React.Component<*, void> {
                 <th className="col3" />
               </tr>
             </thead>
-            <tbody>{R.map(this.renderPaymentRow, klassDataWithPayments)}</tbody>
+            <tbody>{R.map(this.renderPaymentRow, runDataWithPayments)}</tbody>
           </table>
         </div>
       </div>

@@ -44,7 +44,7 @@ def sync_hubspot_deal_from_order(order):
     try:
         personal_price = PersonalPrice.objects.get(
             user=order.user,
-            klass=order.get_klass()  # Under tha assumption that its one klass per order
+            bootcamp_run=order.get_bootcamp_run()  # Under tha assumption that its one klass per order
         )
         sync_hubspot_deal(personal_price)
     except PersonalPrice.DoesNotExist:

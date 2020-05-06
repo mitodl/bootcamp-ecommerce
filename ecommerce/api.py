@@ -26,7 +26,7 @@ from ecommerce.models import (
     Order,
 )
 from klasses.bootcamp_admissions_client import BootcampAdmissionClient
-from klasses.models import Klass
+from klasses.models import BootcampRun
 
 
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -34,49 +34,49 @@ log = logging.getLogger(__name__)
 _REFERENCE_NUMBER_PREFIX = 'BOOTCAMP-'
 
 
-def get_total_paid(user, klass_key):
+def get_total_paid(user, run_key):
     """
-    Get total paid for a klass for a user
+    Get total paid for a bootcamp run for a user
     Args:
         user (User):
-            The purchaser of the klass
-        klass_key (int):
-            A klass key, a class within a bootcamp
+            The purchaser of the bootcamp run
+        run_key (int):
+            A bootcamp run key
 
     Returns:
-        Decimal: The total amount paid by a user for a klass
+        Decimal: The total amount paid by a user for a bootcamp run
     """
     return Line.objects.filter(
         order__status=Order.FULFILLED,
         order__user=user,
-        klass_key=klass_key,
+        run_key=run_key,
     ).aggregate(price=Sum('price'))['price'] or Decimal(0)
 
 
 @transaction.atomic
-def create_unfulfilled_order(user, klass_key, payment_amount):
+def create_unfulfilled_order(user, run_key, payment_amount):
     """
-    Create a new Order which is not fulfilled for a klass.
+    Create a new Order which is not fulfilled for a bootcamp run.
 
     Args:
         user (User):
-            The purchaser of the klass
-        klass_key (int):
-            A klass key, a class within a bootcamp
+            The purchaser of the bootcamp run
+        run_key (int):
+            A bootcamp run key, a class within a bootcamp
         payment_amount (Decimal): The payment of the user
     Returns:
-        Order: A newly created Order for the klass
+        Order: A newly created Order for the bootcamp run
     """
     payment_amount = Decimal(payment_amount)
     try:
-        klass = Klass.objects.get(klass_key=klass_key)
-    except Klass.DoesNotExist:
+        bootcamp_run = BootcampRun.objects.get(run_key=run_key)
+    except BootcampRun.DoesNotExist:
         # In the near future we should do other checking here based on information from Bootcamp REST API
-        raise ValidationError("Incorrect klass key {}".format(klass_key))
+        raise ValidationError("Incorrect bootcamp run key {}".format(run_key))
 
     bootcamp_client = BootcampAdmissionClient(user)
-    if not bootcamp_client.can_pay_klass(klass_key):
-        raise ValidationError("User is unable to pay for klass {}".format(klass_key))
+    if not bootcamp_client.can_pay_bootcamp_run(run_key):
+        raise ValidationError("User is unable to pay for bootcamp run {}".format(run_key))
 
     if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
@@ -88,8 +88,8 @@ def create_unfulfilled_order(user, klass_key, payment_amount):
     )
     Line.objects.create(
         order=order,
-        klass_key=klass_key,
-        description='Installment for {}'.format(klass.title),
+        run_key=run_key,
+        description='Installment for {}'.format(bootcamp_run.title),
         price=payment_amount,
     )
     order.save_and_log(user)
@@ -132,26 +132,26 @@ def generate_cybersource_sa_payload(order, redirect_url):
     # http://apps.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_WM/Secure_Acceptance_WM.pdf
     # Section: API Fields
 
-    klass_key = None
+    run_key = None
     line = order.line_set.first()
     if line is not None:
-        klass_key = line.klass_key
-    klass = Klass.objects.get(klass_key=klass_key)
+        run_key = line.run_key
+    bootcamp_run = BootcampRun.objects.get(run_key=run_key)
 
     # NOTE: be careful about max length here, many (all?) string fields have a max
     # length of 255. At the moment none of these fields should go over that, due to database
     # constraints or other reasons
 
-    klass_title = remove_html_tags(klass.title)
-    if not klass_title:
+    run_title = remove_html_tags(bootcamp_run.title)
+    if not run_title:
         raise ValidationError(
-            'Klass {klass_key} title is either empty or contains only HTML.'.format(klass_key=klass_key)
+            'Bootcamp run {run_key} title is either empty or contains only HTML.'.format(run_key=run_key)
         )
 
-    bootcamp_title = remove_html_tags(klass.bootcamp.title)
+    bootcamp_title = remove_html_tags(bootcamp_run.bootcamp.title)
     if not bootcamp_title:
         raise ValidationError(
-            'Bootcamp {bootcamp_id} title is either empty or contains only HTML.'.format(bootcamp_id=klass.bootcamp.id)
+            'Bootcamp {bootcamp_id} title is either empty or contains only HTML.'.format(bootcamp_id=bootcamp_run.bootcamp.id)
         )
 
     payload = {
@@ -161,9 +161,9 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'currency': 'USD',
         'locale': 'en-us',
         'item_0_code': 'klass',
-        'item_0_name': '{}'.format(klass_title),
+        'item_0_name': '{}'.format(run_title),
         'item_0_quantity': 1,
-        'item_0_sku': '{}'.format(klass_key),
+        'item_0_sku': '{}'.format(run_key),
         'item_0_tax_amount': '0',
         'item_0_unit_price': str(order.total_price_paid),
         'line_item_count': 1,
@@ -171,7 +171,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'override_custom_receipt_page': "{base}?status=receipt&order={order}&award={award}".format(
             base=redirect_url,
             order=order.id,
-            award=klass_key
+            award=run_key
         ),
         'reference_number': make_reference_id(order),
         'profile_id': settings.CYBERSOURCE_PROFILE_ID,
@@ -182,8 +182,8 @@ def generate_cybersource_sa_payload(order, redirect_url):
         'merchant_defined_data1': 'bootcamp',
         'merchant_defined_data2': '{}'.format(bootcamp_title),
         'merchant_defined_data3': 'klass',
-        'merchant_defined_data4': '{}'.format(klass_title),
-        'merchant_defined_data5': '{}'.format(klass_key),
+        'merchant_defined_data4': '{}'.format(run_title),
+        'merchant_defined_data5': '{}'.format(run_key),
         'merchant_defined_data6': 'learner',
         'merchant_defined_data7': '{}'.format(order.user.profile.name),
         'merchant_defined_data8': '{}'.format(order.user.email),

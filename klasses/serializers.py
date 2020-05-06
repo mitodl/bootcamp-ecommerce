@@ -1,5 +1,5 @@
 """
-Serializers for klasses
+Serializers for bootcamps
 """
 from rest_framework import serializers
 

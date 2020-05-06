@@ -19,7 +19,7 @@ from main.models import (
     TimestampedModel,
 )
 from main.utils import serialize_model_object
-from klasses.models import Klass
+from klasses.models import BootcampRun
 
 
 class Order(AuditableModel, TimestampedModel):
@@ -55,12 +55,12 @@ class Order(AuditableModel, TimestampedModel):
         return line.description
 
     @property
-    def klass_title(self):
-        """Title of the klass being paid for"""
-        klass = self.get_klass()
-        if not klass:
+    def run_title(self):
+        """Title of the bootcamp run that was purchased in this Order"""
+        bootcamp_run = self.get_bootcamp_run()
+        if not bootcamp_run:
             return ""
-        return klass.title
+        return bootcamp_run.title
 
     @classmethod
     def get_audit_class(cls):
@@ -74,18 +74,17 @@ class Order(AuditableModel, TimestampedModel):
         data['lines'] = [serialize_model_object(line) for line in self.line_set.all()]
         return data
 
-    def get_klass(self):
+    def get_bootcamp_run(self):
         """
-        klass being paid for
+        Fetches the bootcamp run that was purchased in this Order
 
         Returns:
-            Klass: klass that order is for.
-
+            BootcampRun: The bootcamp run that was purchased in this order.
         """
         line = self.line_set.first()
         if not line:
             return None
-        return Klass.objects.filter(klass_key=line.klass_key).first()
+        return BootcampRun.objects.filter(run_key=line.run_key).first()
 
 
 class OrderAudit(AuditModel):
@@ -108,16 +107,16 @@ class Line(TimestampedModel):
     Represents a line item in the order
     """
     order = ForeignKey(Order, on_delete=CASCADE)
-    klass_key = IntegerField()
+    run_key = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
 
     def __str__(self):
         """Description for Line"""
-        return "Line for {order}, price={price}, klass_key={klass_key}, description={description}".format(
+        return "Line for {order}, price={price}, run_key={run_key}, description={description}".format(
             order=self.order,
             price=self.price,
-            klass_key=self.klass_key,
+            run_key=self.run_key,
             description=self.description,
         )
 
@@ -126,21 +125,21 @@ class Line(TimestampedModel):
         """
         Returns the list of lines for fulfilled orders for a specific user
         """
-        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED).order_by('klass_key')
+        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED).order_by('run_key')
 
     @classmethod
-    def for_user_klass(cls, user, klass_key):
+    def for_user_bootcamp_run(cls, user, run_key):
         """
-        Returns all the orders that are associated to the payment of a specific klass_key
+        Returns all the orders that are associated to the payment of a specific run_key
         """
-        return cls.fulfilled_for_user(user).filter(klass_key=klass_key).order_by('order__created_on')
+        return cls.fulfilled_for_user(user).filter(run_key=run_key).order_by('order__created_on')
 
     @classmethod
-    def total_paid_for_klass(cls, user, klass_key):
+    def total_paid_for_bootcamp_run(cls, user, run_key):
         """
-        Returns the total amount paid for a klass
+        Returns the total amount paid for a bootcamp run
         """
-        return cls.for_user_klass(user, klass_key).aggregate(total=Sum('price'))
+        return cls.for_user_bootcamp_run(user, run_key).aggregate(total=Sum('price'))
 
 
 class Receipt(TimestampedModel):

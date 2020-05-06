@@ -7,14 +7,14 @@ import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
 import PaymentPage, { PaymentPage as InnerPaymentPage } from "./PaymentPage"
 import { PAYMENT_CONFIRMATION_DIALOG } from "../components/Payment"
 import * as util from "../util/util"
-import { generateFakeKlasses } from "../factories"
+import { generateFakeRuns } from "../factories"
 import IntegrationTestHelper from "../util/integration_test_helper"
 
 describe("PaymentPage", () => {
   const paymentInputSelector = 'input[id="payment-amount"]'
   const paymentBtnSelector = "button.large-cta"
 
-  let helper, klassesUrl, fakeKlasses, renderPage
+  let helper, bootcampRunsUrl, fakeRuns, renderPage
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
@@ -23,8 +23,8 @@ describe("PaymentPage", () => {
       full_name: "john doe",
       username:  "johndoe"
     }
-    klassesUrl = `/api/v0/klasses/${SETTINGS.user.username}/`
-    fakeKlasses = generateFakeKlasses(3, {
+    bootcampRunsUrl = `/api/v0/bootcamps/${SETTINGS.user.username}/`
+    fakeRuns = generateFakeRuns(3, {
       hasInstallment: true,
       hasPayment:     true
     })
@@ -34,11 +34,11 @@ describe("PaymentPage", () => {
       InnerPaymentPage,
       {
         entities: {
-          klasses: fakeKlasses,
-          payment: null
+          bootcampRuns: fakeRuns,
+          payment:      null
         },
         queries: {
-          klasses: {
+          bootcampRuns: {
             isPending:  false,
             isFinished: true
           },
@@ -56,29 +56,29 @@ describe("PaymentPage", () => {
     helper.cleanup()
   })
 
-  it("does not have a selected klass by default", async () => {
+  it("does not have a selected bootcamp run by default", async () => {
     const { wrapper } = await renderPage()
-    assert.isUndefined(wrapper.find("PaymentPage").prop("selectedKlass"))
+    assert.isUndefined(wrapper.find("PaymentPage").prop("selectedBootcampRun"))
   })
 
-  it("sets a selected klass", async () => {
+  it("sets a selected bootcamp run", async () => {
     const { inner } = await renderPage({
       ui: {
-        selectedKlassKey: 3
+        selectedBootcampRunKey: 3
       }
     })
 
     assert.deepEqual(
-      inner.find("Payment").prop("selectedKlass"),
-      fakeKlasses[2]
+      inner.find("Payment").prop("selectedBootcampRun"),
+      fakeRuns[2]
     )
   })
 
-  it("only passes payable fakeKlasses to the Payment component", async () => {
-    fakeKlasses[1].is_user_eligible_to_pay = false
+  it("only passes payable fakeRuns to the Payment component", async () => {
+    fakeRuns[1].is_user_eligible_to_pay = false
 
     const { inner } = await renderPage()
-    assert.lengthOf(inner.find("Payment").prop("payableKlassesData"), 2)
+    assert.lengthOf(inner.find("Payment").prop("payableBootcampRunsData"), 2)
   })
 
   it("does not show the payment & payment history sections while API results are still pending", async () => {
@@ -101,8 +101,8 @@ describe("PaymentPage", () => {
     [0, false, "no past payments should not"]
   ].forEach(([totalPaid, shouldShowPayHistory, testDescription]) => {
     it(`for user with ${testDescription} include payment history component`, async () => {
-      for (const klass of fakeKlasses) {
-        klass.total_paid = totalPaid
+      for (const run of fakeRuns) {
+        run.total_paid = totalPaid
       }
 
       const { inner } = await renderPage()
@@ -115,8 +115,8 @@ describe("PaymentPage", () => {
     it("when user overpay", async () => {
       const { inner } = await renderPage({
         ui: {
-          selectedKlassKey: 1,
-          dialogVisibility: {
+          selectedBootcampRunKey: 1,
+          dialogVisibility:       {
             [PAYMENT_CONFIRMATION_DIALOG]: true
           },
           paymentAmount: "2000"
@@ -145,7 +145,7 @@ describe("PaymentPage", () => {
     it("sets a price", async () => {
       const { inner, store } = await renderPage({
         ui: {
-          selectedKlassKey: fakeKlasses[1].klass_key
+          selectedBootcampRunKey: fakeRuns[1].run_key
         }
       })
       inner
@@ -185,8 +185,8 @@ describe("PaymentPage", () => {
 
     const { inner } = await renderPage({
       ui: {
-        paymentAmount:    "123",
-        selectedKlassKey: fakeKlasses[1].klass_key
+        paymentAmount:          "123",
+        selectedBootcampRunKey: fakeRuns[1].run_key
       }
     })
     inner
@@ -207,22 +207,22 @@ describe("PaymentPage", () => {
     assert.deepEqual(submitStub.args[0], [])
   })
 
-  it("selects a klass", async () => {
+  it("selects a bootcamp run", async () => {
     const { inner, store } = await renderPage()
 
-    const klassKeyText = "12345"
+    const runKeyText = "12345"
 
-    inner.find("Payment").prop("setSelectedKlassKey")({
-      target: { value: klassKeyText }
+    inner.find("Payment").prop("setSelectedBootcampRunKey")({
+      target: { value: runKeyText }
     })
-    assert.equal(store.getState().ui.selectedKlassKey, 12345)
+    assert.equal(store.getState().ui.selectedBootcampRunKey, 12345)
   })
 
   describe("order receipt and cancellation pages", () => {
     let orderId
 
     beforeEach(() => {
-      orderId = fakeKlasses[0].payments[0].order.id
+      orderId = fakeRuns[0].payments[0].order.id
     })
 
     //
@@ -304,12 +304,18 @@ describe("PaymentPage", () => {
         })
       })
 
-      it("refetches the fakeKlasses after 3 seconds if 30 seconds has not passed", async () => {
+      it("refetches the fakeRuns after 3 seconds if 30 seconds has not passed", async () => {
         window.location = `/pay?status=receipt&order=missing`
         await renderPage()
-        assert.equal(helper.handleRequestStub.withArgs(klassesUrl).callCount, 1)
+        assert.equal(
+          helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
+          1
+        )
         clock.tick(3501)
-        assert.equal(helper.handleRequestStub.withArgs(klassesUrl).callCount, 2)
+        assert.equal(
+          helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
+          2
+        )
       })
 
       it("shows an error message if more than 30 seconds have passed", async () => {

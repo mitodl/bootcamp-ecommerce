@@ -50,7 +50,7 @@ class BootcampRunApplicationStep(models.Model):
         related_name='run_steps'
     )
     bootcamp_run = models.ForeignKey(
-        'klasses.Klass',
+        'klasses.BootcampRun',
         on_delete=models.CASCADE,
         related_name='application_steps'
     )
@@ -81,7 +81,7 @@ class BootcampApplication(TimestampedModel):
         related_name='bootcamp_applications'
     )
     bootcamp_run = models.ForeignKey(
-        'klasses.Klass',
+        'klasses.BootcampRun',
         on_delete=models.CASCADE,
         related_name='applications'
     )

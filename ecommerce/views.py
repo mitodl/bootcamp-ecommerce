@@ -52,9 +52,9 @@ class PaymentView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payment_amount = Decimal(serializer.data['payment_amount'])
-        klass_key = serializer.data['klass_key']
+        run_key = serializer.data['run_key']
 
-        order = create_unfulfilled_order(self.request.user, klass_key, payment_amount)
+        order = create_unfulfilled_order(self.request.user, run_key, payment_amount)
 
         # Sync order data with hubspot
         sync_hubspot_deal_from_order(order)
@@ -125,7 +125,7 @@ class OrderFulfillmentView(APIView):
 
         order.save_and_log(acting_user=None)
         try:
-            if order.get_klass().source == ApplicationSource.FLUIDREVIEW:
+            if order.get_bootcamp_run().source == ApplicationSource.FLUIDREVIEW:
                 post_payment_fluid(order)
             else:
                 post_payment_sma(order)

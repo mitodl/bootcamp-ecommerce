@@ -1,4 +1,4 @@
-"""Models for klasses"""
+"""Models for bootcamps"""
 import datetime
 
 import pytz
@@ -19,7 +19,7 @@ class Bootcamp(models.Model):
         return "Bootcamp {title}".format(title=self.title)
 
 
-class Klass(models.Model):
+class BootcampRun(models.Model):
     """
     A class within a bootcamp
     """
@@ -31,12 +31,12 @@ class Klass(models.Model):
         default=ApplicationSource.FLUIDREVIEW,
         max_length=10,
     )
-    klass_key = models.IntegerField()
+    run_key = models.IntegerField()
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 
     class Meta:
-        unique_together = ('klass_key', 'source')
+        unique_together = ('run_key', 'source')
 
     @property
     def price(self):
@@ -81,7 +81,7 @@ class Klass(models.Model):
     @property
     def display_title(self):
         """
-        Returns a string that will be used to represent the bootcamp/klass in the app
+        Returns a string that will be used to represent the bootcamp/run in the app
         """
         title_parts = [self.bootcamp.title]
         formatted_date_range = self.formatted_date_range
@@ -127,13 +127,13 @@ class Klass(models.Model):
 
     def personal_price(self, user):
         """
-        Returns the personal price (if any) or standard price for a klass
+        Returns the personal price (if any) or standard price for a bootcamp run
 
         Args:
             user(User): the user to get a price for
 
         Returns:
-            Decimal: the price for the klass
+            Decimal: the price for the bootcamp run
         """
         personal_price = self.personal_prices.filter(user=user).first()
         if personal_price is not None:
@@ -148,37 +148,37 @@ class Installment(models.Model):
     """
     A payment installment
     """
-    klass = models.ForeignKey(Klass, on_delete=models.CASCADE)
+    bootcamp_run = models.ForeignKey(BootcampRun, on_delete=models.CASCADE)
     deadline = models.DateTimeField(null=False)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
 
     class Meta:
-        index_together = ['klass', 'deadline']
-        unique_together = ('klass', 'deadline')
-        ordering = ['klass', 'deadline', ]
+        index_together = ['bootcamp_run', 'deadline']
+        unique_together = ('bootcamp_run', 'deadline')
+        ordering = ['bootcamp_run', 'deadline', ]
 
     def __str__(self):
-        return "Installment for '{klass}'; ${amount}; deadline {deadline}".format(
-            klass=self.klass.title,
+        return "Installment for '{bootcamp_run}'; ${amount}; deadline {deadline}".format(
+            bootcamp_run=self.bootcamp_run.title,
             amount=self.amount,
             deadline=self.deadline.strftime('%b %d %Y')
         )
 
 
 class PersonalPrice(models.Model):
-    """Personal price for a klass"""
-    klass = models.ForeignKey(
-        Klass,
+    """Personal price for a bootcamp run"""
+    bootcamp_run = models.ForeignKey(
+        BootcampRun,
         on_delete=models.CASCADE,
         related_name='personal_prices'
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='klass_prices'
+        related_name='run_prices'
     )
     price = models.DecimalField(max_digits=20, decimal_places=2)
     application_stage = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('klass', 'user')
+        unique_together = ('bootcamp_run', 'user')

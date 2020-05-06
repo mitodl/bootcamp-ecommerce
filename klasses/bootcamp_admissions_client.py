@@ -10,9 +10,9 @@ from smapply.models import WebhookRequestSMA
 log = logging.getLogger(__name__)
 
 
-def fetch_fluidreview_klass_keys(fluid_user_id):
+def fetch_fluidreview_run_keys(fluid_user_id):
     """
-    Collect all the unique award ids (== klass ids) from WebhookRequests by user email
+    Collect all the unique award ids (== bootcamp run ids) from WebhookRequests by user email
 
     Args:
         fluid_user_id(int): FluidReview id for a user
@@ -28,9 +28,9 @@ def fetch_fluidreview_klass_keys(fluid_user_id):
     )
 
 
-def fetch_smapply_klass_keys(sma_user_id):
+def fetch_smapply_run_keys(sma_user_id):
     """
-    Collect all the unique award ids (== klass ids) from WebhookRequestSMA by user email
+    Collect all the unique award ids (== bootcamp run ids) from WebhookRequestSMA by user email
 
     Args:
         sma_user_id(int): SMApply id for a user
@@ -48,7 +48,7 @@ def fetch_smapply_klass_keys(sma_user_id):
 
 class BootcampAdmissionClient:
     """
-    Client for the retrieving information about user admissions to klasses
+    Client for the retrieving information about user admissions to bootcamp runs
     """
 
     def __init__(self, user):
@@ -58,18 +58,18 @@ class BootcampAdmissionClient:
         Args:
             user (User): A user
         """
-        self._klass_keys = fetch_fluidreview_klass_keys(user.profile.fluidreview_id) + \
-            fetch_smapply_klass_keys(user.profile.smapply_id)
+        self._run_keys = fetch_fluidreview_run_keys(user.profile.fluidreview_id) + \
+            fetch_smapply_run_keys(user.profile.smapply_id)
 
     @property
-    def payable_klasses_keys(self):
+    def payable_bootcamp_run_keys(self):
         """
-        A list of klass keys which the user can pay for
+        A list of bootcamp run keys which the user can pay for
         """
-        return self._klass_keys
+        return self._run_keys
 
-    def can_pay_klass(self, klass_key):
+    def can_pay_bootcamp_run(self, run_key):
         """
-        Whether the user can pay for a specific klass
+        Whether the user can pay for a specific bootcamp run
         """
-        return klass_key in self.payable_klasses_keys
+        return run_key in self.payable_bootcamp_run_keys

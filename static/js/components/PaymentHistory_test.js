@@ -4,44 +4,46 @@ import { assert } from "chai"
 import _ from "lodash"
 
 import PaymentHistory from "./PaymentHistory"
-import { generateFakeKlasses } from "../factories"
+import { generateFakeRuns } from "../factories"
 
 describe("PaymentHistory", () => {
   const statementLinkSelector = "a.statement-link"
 
-  const renderPaymentHistory = klassDataWithPayments =>
-    shallow(<PaymentHistory klassDataWithPayments={klassDataWithPayments} />)
+  const renderPaymentHistory = runDataWithPayments =>
+    shallow(<PaymentHistory runDataWithPayments={runDataWithPayments} />)
 
-  const setPaymentValues = (klassesData, paymentAmount) =>
-    _.map(klassesData, klass => _.set(klass, "total_paid", paymentAmount))
+  const setPaymentValues = (bootcampRunsData, paymentAmount) =>
+    _.map(bootcampRunsData, bootcampRun =>
+      _.set(bootcampRun, "total_paid", paymentAmount)
+    )
 
   it("should show rows of payment history information", () => {
-    const klassCount = 3
+    const bootcampCount = 3
     const paymentAmount = 100
-    let fakeKlasses = generateFakeKlasses(klassCount)
-    // Set all fake klasses to have payments
-    fakeKlasses = setPaymentValues(fakeKlasses, paymentAmount)
-    fakeKlasses[0].price = 1000
-    fakeKlasses[1].price = paymentAmount
+    let fakeRuns = generateFakeRuns(bootcampCount)
+    // Set all fake bootcamp runs to have payments
+    fakeRuns = setPaymentValues(fakeRuns, paymentAmount)
+    fakeRuns[0].price = 1000
+    fakeRuns[1].price = paymentAmount
 
-    const wrapper = renderPaymentHistory(fakeKlasses)
+    const wrapper = renderPaymentHistory(fakeRuns)
     const paymentHistoryTableRows = wrapper.find("tbody tr")
-    assert.equal(paymentHistoryTableRows.length, klassCount)
+    assert.equal(paymentHistoryTableRows.length, bootcampCount)
     const firstRowHtml = paymentHistoryTableRows.at(0).html()
-    assert.include(firstRowHtml, fakeKlasses[0].display_title)
+    assert.include(firstRowHtml, fakeRuns[0].display_title)
     assert.include(firstRowHtml, `$${paymentAmount} out of $1,000`)
     const secondRowHtml = paymentHistoryTableRows.at(1).html()
-    assert.include(secondRowHtml, fakeKlasses[1].display_title)
+    assert.include(secondRowHtml, fakeRuns[1].display_title)
     assert.include(secondRowHtml, `$${paymentAmount}`)
   })
 
   it("should show a link to view a payment statement", () => {
-    const fakeKlasses = generateFakeKlasses(1)
-    const wrapper = renderPaymentHistory(fakeKlasses)
+    const fakeRuns = generateFakeRuns(1)
+    const wrapper = renderPaymentHistory(fakeRuns)
     const statementLink = wrapper.find(statementLinkSelector)
     assert.equal(
       statementLink.prop("href"),
-      `/statement/${fakeKlasses[0].klass_key}`
+      `/statement/${fakeRuns[0].run_key}`
     )
   })
 })

@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from klasses.models import Klass
+from klasses.models import BootcampRun
 
 
 def patch_get_admissions(mocker):
@@ -14,9 +14,9 @@ def patch_get_admissions(mocker):
     Helper function to build admission service responses based on the local database.
     """
     mocker.patch(
-        'klasses.bootcamp_admissions_client.fetch_smapply_klass_keys',
+        'klasses.bootcamp_admissions_client.fetch_smapply_run_keys',
         autospec=True,
-        return_value=list(Klass.objects.all().values_list('klass_key', flat=True))
+        return_value=list(BootcampRun.objects.all().values_list('run_key', flat=True))
     )
 
 

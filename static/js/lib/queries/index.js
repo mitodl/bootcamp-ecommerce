@@ -1,8 +1,8 @@
 // @flow
 import ecommerce from "./ecommerce"
-import klasses from "./klasses"
+import bootcamps from "./bootcamps"
 
 export default {
   ecommerce,
-  klasses
+  bootcamps
 }
