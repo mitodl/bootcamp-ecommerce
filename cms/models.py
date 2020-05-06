@@ -1,14 +1,18 @@
 """
 Page models for the CMS
 """
+import json
+
 from django.db import models
 from django.utils.text import slugify
-from wagtail.core.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
-from wagtail.images.models import Image
-from wagtail.core import blocks
+from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
+from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.images.models import Image
+
 from cms.blocks import ResourceBlock
+from main.views import _serialize_js_settings
 
 
 class BootcampPage(Page):
@@ -20,12 +24,20 @@ class BootcampPage(Page):
         abstract = True
 
     description = RichTextField(
-        blank=True, help_text="The description shown on the product page"
+        blank=True, help_text="The description shown on the page."
     )
-    content = StreamField([
-        ('rich_text', blocks.RichTextBlock())
-    ], blank=True, help_text='The content of the benefits page')
-
+    subhead = models.CharField(
+        max_length=255,
+        help_text="The subhead to display in the header section on the page.",
+    )
+    header_image = models.ForeignKey(
+        Image,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Header image size must be at least 1900x650 pixels.",
+    )
     thumbnail_image = models.ForeignKey(
         Image,
         null=True,
@@ -34,16 +46,21 @@ class BootcampPage(Page):
         related_name="+",
         help_text="Thumbnail size must be at least 690x530 pixels.",
     )
-    content_panels = Page.content_panels + [
+    content_panels = [
+        FieldPanel("title", classname="full"),
+        FieldPanel("subhead", classname="full"),
         FieldPanel("description", classname="full"),
-        FieldPanel("thumbnail_image"),
-        StreamFieldPanel("content"),
+        ImageChooserPanel("header_image"),
+        ImageChooserPanel("thumbnail_image"),
     ]
 
     def get_context(self, request, *args, **kwargs):
-        context = super(BootcampPage, self).get_context(request)
-        context["title"] = self.title
-        return context
+        return {
+            **super().get_context(request),
+            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            "title": self.title,
+        }
+
 
 
 class BootcampRunPage(BootcampPage):
@@ -66,7 +83,7 @@ class BootcampRunPage(BootcampPage):
         """
         return page context.
         """
-        context = super(BootcampRunPage, self).get_context(request)
+        context = super().get_context(request)
         return context
 
     def save(self, *args, **kwargs):
@@ -102,6 +119,6 @@ class ResourcePage(Page):
     ]
 
     def get_context(self, request, *args, **kwargs):
-        context = super(ResourcePage, self).get_context(request)
+        context = super().get_context(request)
 
         return context

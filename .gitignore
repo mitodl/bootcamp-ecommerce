@@ -107,3 +107,4 @@ webpack-stats.json
 
 # Celery Beat
 celerybeat-schedule
+/media/
