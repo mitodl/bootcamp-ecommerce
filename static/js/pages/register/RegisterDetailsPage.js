@@ -64,7 +64,6 @@ export class RegisterDetailsPage extends React.Component<Props> {
       registerDetails,
       params: { partialToken }
     } = this.props
-    console.log(detailsData)
     try {
       // $FlowFixMe
       const { body } = await registerDetails(
