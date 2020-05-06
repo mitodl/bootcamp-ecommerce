@@ -28,5 +28,6 @@
           </div>
       </div>
   </div>
+  {% if three_column_image_text_section %} {% include "partials/three-column-image-text-section.html" with page=three_column_image_text_section %} {% endif %}
   {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
 {% endblock %}
