@@ -1,8 +1,10 @@
 """
 Admin views for bootcamp applications
 """
-
+from django import forms
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -97,6 +99,13 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
     get_run_title.admin_order_field = "bootcamp_run__title"
 
 
+class AppStepSubmissionInline(GenericTabularInline):
+    """Admin class for ApplicationStepSubmission"""
+    model = models.ApplicationStepSubmission
+    max_num = 1
+    raw_id_fields = ("bootcamp_application", "run_application_step",)
+
+
 class SubmissionTypeAdmin(TimestampedModelAdmin):
     """Base admin class for submission types"""
     list_display = ('id', 'get_user_email', 'get_run_title', 'app_step_submission_link')
@@ -106,6 +115,9 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
         "app_step_submissions__bootcamp_application__bootcamp_run__title",
         "app_step_submissions__bootcamp_application__bootcamp_run__bootcamp__title",
     )
+    inlines = [
+        AppStepSubmissionInline
+    ]
 
     def get_queryset(self, request):
         """Overrides base queryset"""
@@ -119,7 +131,7 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
     def get_user_email(self, obj):
         """Returns the user email"""
         app_step_submission = obj.app_step_submissions.first()
-        return app_step_submission.bootcamp_application.user.email
+        return None if app_step_submission is None else app_step_submission.bootcamp_application.user.email
 
     get_user_email.short_description = "Application User"
     get_user_email.admin_order_field = "app_step_submission__bootcamp_application__user__email"
@@ -127,7 +139,7 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
     def get_run_title(self, obj):
         """Returns the bootcamp run title"""
         app_step_submission = obj.app_step_submissions.first()
-        return app_step_submission.bootcamp_application.bootcamp_run.title
+        return None if app_step_submission is None else app_step_submission.bootcamp_application.bootcamp_run.title
 
     get_run_title.short_description = "Application Bootcamp Run"
     get_run_title.admin_order_field = "app_step_submission__bootcamp_application__bootcamp_run__title"
@@ -135,6 +147,8 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
     def app_step_submission_link(self, obj):
         """Returns a link to the related bootcamp application"""
         app_step_submission = obj.app_step_submissions.first()
+        if app_step_submission is None:
+            return None
         return mark_safe('<a href="{}">Submission ({})</a>'.format(
             reverse(
                 "admin:applications_{}_change".format(models.ApplicationStepSubmission._meta.model_name),
@@ -161,9 +175,21 @@ class QuizSubmissionAdmin(SubmissionTypeAdmin):
         return tuple(super().get_list_display(request) or ()) + ("started_date",)
 
 
+class ApplicationStepSubmissionForm(forms.ModelForm):
+    """Form for ApplicationStepSubmission admin"""
+    def clean_object_id(self):
+        """Validates the object_id input"""
+        content_type = self.cleaned_data.get("content_type")
+        object_id = self.cleaned_data.get("object_id")
+        if content_type and not content_type.model_class().objects.filter(id=object_id).exists():
+            raise ValidationError(f"The object_id must match the id of a {content_type.model} object")
+        return object_id
+
+
 class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
     """Admin for ApplicationStepSubmission"""
     model = models.ApplicationStepSubmission
+    form = ApplicationStepSubmissionForm
     list_display = (
         'id',
         'bootcamp_application_id',
@@ -193,6 +219,8 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
 
     def submission_content_obj_link(self, obj):
         """Returns a link to the content object"""
+        if obj.content_object is None:
+            return None
         return mark_safe('<a href="{}">{}</a>'.format(
             reverse(
                 "admin:applications_{}_change".format(obj.content_object._meta.model_name),

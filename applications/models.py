@@ -3,6 +3,7 @@ from uuid import uuid4
 from functools import reduce
 from operator import or_
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -16,7 +17,7 @@ from applications.constants import (
     VALID_APP_STATE_CHOICES,
     VALID_REVIEW_STATUS_CHOICES
 )
-from main.models import TimestampedModel
+from main.models import TimestampedModel, ValidateOnSaveMixin
 
 
 class ApplicationStep(models.Model):
@@ -39,7 +40,7 @@ class ApplicationStep(models.Model):
         return f"bootcamp='{self.bootcamp.title}', step={self.step_order}, type={self.submission_type}"
 
 
-class BootcampRunApplicationStep(models.Model):
+class BootcampRunApplicationStep(ValidateOnSaveMixin):
     """
     Defines a due date and other metadata for a bootcamp application step as it applies to a specific run
     of that bootcamp
@@ -55,6 +56,16 @@ class BootcampRunApplicationStep(models.Model):
         related_name='application_steps'
     )
     due_date = models.DateTimeField(null=True, blank=True)
+
+    def clean(self):
+        if self.bootcamp_run.bootcamp_id != self.application_step.bootcamp_id:
+            raise ValidationError(
+                "The bootcamp run does not match the bootcamp linked to the application step ({}, {}).".format(
+                    self.bootcamp_run.bootcamp_id,
+                    self.application_step.bootcamp_id,
+                )
+            )
+        return super().clean()
 
     def __str__(self):
         return (
@@ -85,7 +96,7 @@ class BootcampApplication(TimestampedModel):
         on_delete=models.CASCADE,
         related_name='applications'
     )
-    resume_file = models.FileField(upload_to=_get_resume_upload_path, null=True)
+    resume_file = models.FileField(upload_to=_get_resume_upload_path, null=True, blank=True)
     order = models.ForeignKey(
         'ecommerce.Order',
         on_delete=models.CASCADE,
@@ -146,7 +157,7 @@ class QuizSubmission(SubmissionTypeModel):
 APP_SUBMISSION_MODELS = [VideoInterviewSubmission, QuizSubmission]
 
 
-class ApplicationStepSubmission(TimestampedModel):
+class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
     """An item that was uploaded/submitted for review by a user as part of their bootcamp application"""
     bootcamp_application = models.ForeignKey(
         BootcampApplication,
@@ -174,6 +185,20 @@ class ApplicationStepSubmission(TimestampedModel):
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+    class Meta:
+        # Users should not be able to provide multiple submissions for the same application step
+        unique_together = ["bootcamp_application", "run_application_step"]
+
+    def clean(self):
+        if self.bootcamp_application.bootcamp_run != self.run_application_step.bootcamp_run:
+            raise ValidationError(
+                "The application step does not match the application's bootcamp run ({}, {}).".format(
+                    self.bootcamp_application.bootcamp_run_id,
+                    self.run_application_step.bootcamp_run_id,
+                )
+            )
+        return super().clean()
 
     def __str__(self):
         return (

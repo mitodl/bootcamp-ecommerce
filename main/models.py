@@ -125,3 +125,17 @@ class AuditableModel(Model):
         audit_class = self.get_audit_class()
         audit_kwargs[audit_class.get_related_field_name()] = self
         audit_class.objects.create(**audit_kwargs)
+
+
+class ValidateOnSaveMixin(Model):
+    """Mixin that calls field/model validation methods before saving a model object"""
+
+    class Meta:
+        abstract = True
+
+    def save(
+        self, force_insert=False, force_update=False, **kwargs
+    ):  # pylint: disable=arguments-differ
+        if not (force_insert or force_update):
+            self.full_clean()
+        super().save(force_insert=force_insert, force_update=force_update, **kwargs)
