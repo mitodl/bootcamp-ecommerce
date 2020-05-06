@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.40.0
+Version 0.40.0 (Released May 06, 2020)
 --------------
 
 - Fix env var list parsing
