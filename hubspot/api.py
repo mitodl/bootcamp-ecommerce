@@ -9,13 +9,13 @@ from urllib.parse import urljoin, urlencode
 
 import requests
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 from hubspot.decorators import try_again
-from hubspot.serializers import HubspotContactSerializer, HubspotProductSerializer, \
+from hubspot.serializers import HubspotProductSerializer, \
     HubspotDealSerializer, HubspotLineSerializer
 from klasses.models import Bootcamp, PersonalPrice
-from profiles.models import Profile
 
 
 HUBSPOT_API_BASE_URL = "https://api.hubapi.com"
@@ -216,21 +216,25 @@ def exists_in_hubspot(object_type, object_id):
         return sync_status["hubspotId"] is not None
 
 
-def make_contact_sync_message(profile_id, task_cache=None):
+def make_contact_sync_message(user_id):
     """
     Create the body of a sync message for a contact.
 
     Args:
-        profile_id (int): Profile id
-        task_cache (SMApplyTaskCache): Optional task cache to reduce api calls for bulk contact sync operations
+        user_id (int): User id
 
     Returns:
         list: dict containing serializable sync-message data
     """
+    from profiles.serializers import UserSerializer
 
-    profile = Profile.objects.get(id=profile_id)
-    properties = HubspotContactSerializer(instance=profile, task_cache=task_cache).data
-    return [make_sync_message(profile.id, properties)]
+    user = User.objects.get(id=user_id)
+    properties = UserSerializer(user).data
+    properties.update(properties.pop("legal_address") or {})
+    properties.update(properties.pop("profile") or {})
+    if "street_address" in properties:
+        properties["street_address"] = "\n".join(properties.pop("street_address"))
+    return [make_sync_message(user.profile.id, properties)]
 
 
 def make_product_sync_message(bootcamp_id):

@@ -53,6 +53,22 @@ CUSTOM_ECOMMERCE_PROPERTIES = {
         "groups": [],
         "properties": [
             {
+                "name": "highest_education",
+                "label": "Highest Education",
+                "description": "Highest education level",
+                "groupName": "contactinformation",
+                "type": "string",
+                "fieldType": "text",
+            },
+            {
+                "name": "birth_year",
+                "label": "Year of Birth",
+                "description": "Year of birth",
+                "groupName": "contactinformation",
+                "type": "string",
+                "fieldType": "text",
+            },
+            {
                 'description': 'Once you heard about the program, what made you decide to apply?',
                 'fieldType': 'text',
                 'groupName': 'contactinformation',
@@ -267,6 +283,11 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
                 "dataType": "STRING",
             },
             {
+                "propertyName": "name",
+                "targetHubspotProperty": "name",
+                "dataType": "STRING",
+            },
+            {
                 "propertyName": "first_name",
                 "targetHubspotProperty": "firstname",
                 "dataType": "STRING",
@@ -292,13 +313,48 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
                 "dataType": "STRING",
             },
             {
+                "propertyName": "street_address",
+                "targetHubspotProperty": "address",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "city",
+                "targetHubspotProperty": "city",
+                "dataType": "STRING",
+            },
+            {
                 "propertyName": "country",
                 "targetHubspotProperty": "country",
                 "dataType": "STRING",
             },
             {
+                "propertyName": "state_or_territory",
+                "targetHubspotProperty": "state",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "postal_code",
+                "targetHubspotProperty": "zip",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "birth_year",
+                "targetHubspotProperty": "birth_year",
+                "dataType": "STRING",
+            },
+            {
                 "propertyName": "gender",
                 "targetHubspotProperty": "gender",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "company",
+                "targetHubspotProperty": "company",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "company_size",
+                "targetHubspotProperty": "company_size",
                 "dataType": "STRING",
             },
             {
@@ -309,6 +365,31 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
             {
                 "propertyName": "date_of_birth",
                 "targetHubspotProperty": "date_of_birth",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "job_title",
+                "targetHubspotProperty": "jobtitle",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "job_function",
+                "targetHubspotProperty": "job_function",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "years_experience",
+                "targetHubspotProperty": "years_experience",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "leadership_level",
+                "targetHubspotProperty": "leadership_level",
+                "dataType": "STRING",
+            },
+            {
+                "propertyName": "highest_education",
+                "targetHubspotProperty": "highest_education",
                 "dataType": "STRING",
             },
             {

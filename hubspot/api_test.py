@@ -14,8 +14,8 @@ from requests import HTTPError
 
 from hubspot import api
 
-from hubspot.serializers import HubspotContactSerializer
 from profiles.factories import ProfileFactory
+from profiles.serializers import UserSerializer
 
 fake = Faker()
 
@@ -140,14 +140,17 @@ def test_make_sync_message():
 def test_make_contact_sync_message():
     """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
     profile = ProfileFactory.create(smapply_id=123456)
-    contact_sync_message = api.make_contact_sync_message(profile.id)
-    serialized_profile = HubspotContactSerializer(instance=profile).data
+    contact_sync_message = api.make_contact_sync_message(profile.user.id)
+    serialized_user = UserSerializer(instance=profile.user).data
+    serialized_user.update(serialized_user.pop("legal_address") or {})
+    serialized_user.update(serialized_user.pop("profile") or {})
+    serialized_user["street_address"] = "\n".join(serialized_user.pop("street_address"))
     assert contact_sync_message == [
         {
             "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.id),
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
-            "propertyNameToValues": api.sanitize_properties(serialized_profile),
+            "propertyNameToValues": api.sanitize_properties(serialized_user),
         }
     ]
 

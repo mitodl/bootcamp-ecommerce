@@ -22,7 +22,6 @@ from hubspot.tasks import (
     sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot, sync_bulk_with_hubspot)
 from klasses.factories import BootcampFactory, PersonalPriceFactory
 from profiles.factories import ProfileFactory
-from smapply.api import SMApplyTaskCache
 
 pytestmark = [pytest.mark.django_db]
 
@@ -41,8 +40,8 @@ def test_sync_contact_with_hubspot(mock_hubspot_request, user_data):
     profile.smapply_id = 102132
     profile.smapply_user_data = user_data
     profile.save()
-    sync_contact_with_hubspot(profile.id)
-    body = make_contact_sync_message(profile.id)
+    sync_contact_with_hubspot(profile.user.id)
+    body = make_contact_sync_message(profile.user.id)
     body[0]["changeOccurredTimestamp"] = ANY
     mock_hubspot_request.assert_called_once_with(
         "CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body
@@ -126,18 +125,8 @@ def test_sync_bulk(mocker):
     """Test the hubspot bulk sync function"""
     mock_request = mocker.patch('hubspot.tasks.send_hubspot_request')
     profile = ProfileFactory(smapply_user_data={'first_name': 'test', 'last_name': 'test', 'email': 'email'})
-    task_cache = SMApplyTaskCache()
-    sync_bulk_with_hubspot([profile], make_contact_sync_message, "CONTACT", task_cache=task_cache)
+    sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")
     mock_request.assert_called_once()
-
-
-def test_sync_bulk_no_profiles(mocker):
-    """Test the hubspot bulk sync function when no contacts have data to sync"""
-    mock_request = mocker.patch('hubspot.tasks.send_hubspot_request')
-    profile = ProfileFactory()
-    task_cache = SMApplyTaskCache()
-    sync_bulk_with_hubspot([profile], make_contact_sync_message, "CONTACT", task_cache=task_cache)
-    mock_request.assert_not_called()
 
 
 def test_sync_bulk_logs_errors(mocker):
@@ -147,7 +136,6 @@ def test_sync_bulk_logs_errors(mocker):
     mock_log = mocker.patch('hubspot.api.log.exception')
 
     profile = ProfileFactory(smapply_user_data={'first_name': 'test', 'last_name': 'test', 'email': 'email'})
-    task_cache = SMApplyTaskCache()
-    sync_bulk_with_hubspot([profile], make_contact_sync_message, "CONTACT", task_cache=task_cache)
+    sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")
     assert mock_request.call_count == 3
     mock_log.assert_called_once()
