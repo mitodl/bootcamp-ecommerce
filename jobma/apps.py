@@ -1,4 +1,4 @@
-"""Apps for klasses"""
+"""App config for Jobma"""
 from django.apps import AppConfig
 
 

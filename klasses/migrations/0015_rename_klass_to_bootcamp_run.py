@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         ('mail', '0003_remove_mail_models'),
         ('ecommerce', '0003_rename_line_klass_id_to_klass_key'),
         ('cms', '0003_bootcamp_product_run_page'),
+        ('jobma', '0001_initial'),
     ]
 
     operations = [
