@@ -276,6 +276,18 @@
       "description": "Hub spot portal id.",
       "required": false
     },
+    "JOBMA_ACCESS_TOKEN": {
+      "description": "The JOBMA access token used to access their REST API",
+      "required": false
+    },
+    "JOBMA_BASE_URL": {
+      "description": "The base URL for accessing Jobma",
+      "required": false
+    },
+    "JOBMA_WEBHOOK_ACCESS_TOKEN": {
+      "description": "The Jobma access token used by us to verify that a postback came from Jobma",
+      "required": false
+    },
     "MAILGUN_BATCH_CHUNK_SIZE": {
       "description": "Maximum number of emails to send in a batch",
       "required": false
