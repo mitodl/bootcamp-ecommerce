@@ -12,6 +12,7 @@ import { routes, getNextParam } from "../../lib/urls"
 import {
   STATE_ERROR,
   STATE_REGISTER_REQUIRED,
+  STATE_REGISTER_BACKEND_EMAIL,
   handleAuthResponse
 } from "../../lib/auth"
 import { LOGIN_EMAIL_PAGE_TITLE } from "../../constants"
@@ -45,14 +46,19 @@ export class LoginEmailPage extends React.Component<Props> {
     try {
       const { body } = await loginEmail(email, nextUrl)
 
-      handleAuthResponse(history, body, {
-        // eslint-disable-next-line camelcase
-        [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors),
-        // eslint-disable-next-line camelcase
-        [STATE_REGISTER_REQUIRED]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors)
-      })
+      handleAuthResponse(
+        history,
+        body,
+        {
+          // eslint-disable-next-line camelcase
+          [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
+            setErrors(field_errors),
+          // eslint-disable-next-line camelcase
+          [STATE_REGISTER_REQUIRED]: ({ field_errors }: AuthResponse) =>
+            setErrors(field_errors)
+        },
+        STATE_REGISTER_BACKEND_EMAIL
+      )
     } finally {
       setSubmitting(false)
     }

@@ -29,6 +29,9 @@ export const STATE_REGISTER_DETAILS = "register/details"
 export const STATE_REGISTER_EXTRA_DETAILS = "register/extra"
 export const STATE_REGISTER_REQUIRED = "register/required"
 
+export const STATE_REGISTER_BACKEND_EDX = "edxorg"
+export const STATE_REGISTER_BACKEND_EMAIL = "email"
+
 export const ALL_STATES = [
   STATE_ERROR,
   STATE_ERROR_TEMPORARY,
@@ -68,10 +71,13 @@ const getErrorQs = (errors: Array<string>) =>
 export const handleAuthResponse = (
   history: RouterHistory,
   response: AuthResponse,
-  handlers: StateHandlers
+  handlers: StateHandlers,
+  backend?: string
 ) => {
   /* eslint-disable camelcase */
   const { state, redirect_url, partial_token, errors, field_errors } = response
+
+  backend = backend || STATE_REGISTER_BACKEND_EDX
 
   // If a specific handler function was passed in for this response state, invoke it
   if (has(state, handlers)) {
@@ -84,12 +90,14 @@ export const handleAuthResponse = (
     history.push(routes.login.password)
   } else if (state === STATE_REGISTER_DETAILS) {
     const params = qs.stringify({
-      partial_token
+      partial_token,
+      backend
     })
     history.push(`${routes.register.details}?${params}`)
   } else if (state === STATE_REGISTER_EXTRA_DETAILS) {
     const params = qs.stringify({
-      partial_token
+      partial_token,
+      backend
     })
     history.push(`${routes.register.extra}?${params}`)
   } else if (state === STATE_USER_BLOCKED) {

@@ -11,7 +11,9 @@ import {
   STATE_USER_BLOCKED,
   STATE_ERROR,
   STATE_ERROR_TEMPORARY,
-  STATE_REGISTER_EXTRA_DETAILS
+  STATE_REGISTER_EXTRA_DETAILS,
+  STATE_REGISTER_BACKEND_EDX,
+  STATE_REGISTER_BACKEND_EMAIL
 } from "../../lib/auth"
 import { routes } from "../../lib/urls"
 import { makeRegisterAuthResponse } from "../../factories/auth"
@@ -58,7 +60,7 @@ describe("RegisterExtraDetailsPage", () => {
       {
         location: {
           // $FlowFixMe: partialToken is not undefined
-          search: `?partial_token=${partialToken}`
+          search: `?partial_token=${partialToken}&backend=${STATE_REGISTER_BACKEND_EMAIL}`
         }
       }
     )
@@ -97,7 +99,7 @@ describe("RegisterExtraDetailsPage", () => {
 
     sinon.assert.calledWith(
       helper.handleRequestStub,
-      "/api/register/extra/",
+      `/api/register/${STATE_REGISTER_BACKEND_EMAIL}/extra/`,
       "POST",
       { body, headers: undefined, credentials: undefined }
     )
@@ -107,34 +109,49 @@ describe("RegisterExtraDetailsPage", () => {
     sinon.assert.calledWith(setSubmittingStub, false)
   })
 
-  it(`redirects to / when it receives auth state ${STATE_SUCCESS}`, async () => {
-    const { inner } = await renderPage()
+  //
+  ;[STATE_REGISTER_BACKEND_EMAIL, STATE_REGISTER_BACKEND_EDX].forEach(
+    backend => {
+      it(`redirects to / when it receives auth state ${STATE_SUCCESS}`, async () => {
+        const { inner } = await helper.configureHOCRenderer(
+          RegisterExtraDetailsPage,
+          InnerRegisterExtraDetailsPage,
+          {},
+          {
+            location: {
+              // $FlowFixMe: partialToken is not undefined
+              search: `?partial_token=${partialToken}&backend=${backend}`
+            }
+          }
+        )()
 
-    helper.handleRequestStub.returns({
-      body: makeRegisterAuthResponse({
-        state:         STATE_SUCCESS,
-        partial_token: undefined
+        helper.handleRequestStub.returns({
+          body: makeRegisterAuthResponse({
+            state:         STATE_SUCCESS,
+            partial_token: undefined
+          })
+        })
+
+        const onSubmit = inner.find("RegisterExtraDetailsForm").prop("onSubmit")
+
+        await onSubmit(profileData, {
+          setSubmitting: setSubmittingStub,
+          setErrors:     setErrorsStub
+        })
+
+        sinon.assert.calledWith(
+          helper.handleRequestStub,
+          `/api/register/${backend}/extra/`,
+          "POST",
+          { body, headers: undefined, credentials: undefined }
+        )
+        assert.equal(window.location.href, `http://fake${routes.root}`)
+
+        sinon.assert.notCalled(setErrorsStub)
+        sinon.assert.calledWith(setSubmittingStub, false)
       })
-    })
-
-    const onSubmit = inner.find("RegisterExtraDetailsForm").prop("onSubmit")
-
-    await onSubmit(profileData, {
-      setSubmitting: setSubmittingStub,
-      setErrors:     setErrorsStub
-    })
-
-    sinon.assert.calledWith(
-      helper.handleRequestStub,
-      "/api/register/extra/",
-      "POST",
-      { body, headers: undefined, credentials: undefined }
-    )
-    assert.equal(window.location.href, `http://fake${routes.root}`)
-
-    sinon.assert.notCalled(setErrorsStub)
-    sinon.assert.calledWith(setSubmittingStub, false)
-  })
+    }
+  )
 
   //
   ;[
@@ -168,7 +185,7 @@ describe("RegisterExtraDetailsPage", () => {
 
       sinon.assert.calledWith(
         helper.handleRequestStub,
-        "/api/register/extra/",
+        `/api/register/${STATE_REGISTER_BACKEND_EMAIL}/extra/`,
         "POST",
         { body, headers: undefined, credentials: undefined }
       )

@@ -14,6 +14,7 @@ import {
   STATE_ERROR,
   STATE_REGISTER_CONFIRM_SENT,
   STATE_LOGIN_PASSWORD,
+  STATE_REGISTER_BACKEND_EMAIL,
   handleAuthResponse
 } from "../../lib/auth"
 import { qsNextSelector } from "../../lib/selectors"
@@ -57,29 +58,34 @@ export class RegisterEmailPage extends React.Component<Props> {
     try {
       const { body } = await registerEmail(email, recaptcha, next)
 
-      handleAuthResponse(history, body, {
-        [STATE_REGISTER_CONFIRM_SENT]: () => {
-          const params = qs.stringify({
-            email
-          })
-          history.push(`${routes.register.confirmSent}?${params}`)
-        },
+      handleAuthResponse(
+        history,
+        body,
+        {
+          [STATE_REGISTER_CONFIRM_SENT]: () => {
+            const params = qs.stringify({
+              email
+            })
+            history.push(`${routes.register.confirmSent}?${params}`)
+          },
 
-        [STATE_LOGIN_PASSWORD]: () => {
-          addUserNotification({
-            "account-exists": {
-              type:  ALERT_TYPE_TEXT,
-              color: "danger",
-              props: {
-                text: accountExistsNotificationText(email)
+          [STATE_LOGIN_PASSWORD]: () => {
+            addUserNotification({
+              "account-exists": {
+                type:  ALERT_TYPE_TEXT,
+                color: "danger",
+                props: {
+                  text: accountExistsNotificationText(email)
+                }
               }
-            }
-          })
+            })
+          },
+          // eslint-disable-next-line camelcase
+          [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
+            setErrors(field_errors)
         },
-        // eslint-disable-next-line camelcase
-        [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors)
-      })
+        STATE_REGISTER_BACKEND_EMAIL
+      )
     } finally {
       setSubmitting(false)
     }

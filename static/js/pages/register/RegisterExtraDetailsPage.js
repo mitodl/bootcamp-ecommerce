@@ -13,7 +13,7 @@ import { STATE_ERROR, handleAuthResponse } from "../../lib/auth"
 import auth from "../../lib/queries/auth"
 import users from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
-import { qsPartialTokenSelector } from "../../lib/selectors"
+import { qsBackendSelector, qsPartialTokenSelector } from "../../lib/selectors"
 import { formatTitle } from "../../util/util"
 
 import RegisterExtraDetailsForm from "../../components/forms/RegisterExtraDetailsForm"
@@ -29,13 +29,14 @@ import type {
 type RegisterProps = {|
   location: Location,
   history: RouterHistory,
-  params: { partialToken: string }
+  params: { partialToken: string, backend: string }
 |}
 
 type DispatchProps = {|
   registerExtraDetails: (
     profileData: ProfileForm,
-    partialToken: string
+    partialToken: string,
+    backend?: string
   ) => Promise<HttpAuthResponse<AuthResponse>>,
   getCurrentUser: () => Promise<HttpAuthResponse<User>>
 |}
@@ -50,17 +51,26 @@ export class RegisterExtraDetailsPage extends React.Component<Props> {
     const {
       history,
       registerExtraDetails,
-      params: { partialToken }
+      params: { partialToken, backend }
     } = this.props
 
     try {
-      const { body } = await registerExtraDetails(profileData, partialToken)
+      const { body } = await registerExtraDetails(
+        profileData,
+        partialToken,
+        backend
+      )
 
-      handleAuthResponse(history, body, {
-        // eslint-disable-next-line camelcase
-        [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors)
-      })
+      handleAuthResponse(
+        history,
+        body,
+        {
+          // eslint-disable-next-line camelcase
+          [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
+            setErrors(field_errors)
+        },
+        backend
+      )
     } finally {
       setSubmitting(false)
     }
@@ -101,12 +111,21 @@ export class RegisterExtraDetailsPage extends React.Component<Props> {
 }
 
 const mapStateToProps = createStructuredSelector({
-  params: createStructuredSelector({ partialToken: qsPartialTokenSelector })
+  params: createStructuredSelector({
+    partialToken: qsPartialTokenSelector,
+    backend:      qsBackendSelector
+  })
 })
 
-const registerExtraDetails = (profileData: ProfileForm, partialToken: string) =>
-  // $FlowFixMe
-  mutateAsync(auth.registerExtraDetailsMutation(profileData, partialToken))
+const registerExtraDetails = (
+  profileData: ProfileForm,
+  partialToken: string,
+  backend: string
+) =>
+  mutateAsync(
+    // $FlowFixMe
+    auth.registerExtraDetailsMutation(profileData, partialToken, backend)
+  )
 
 const getCurrentUser = () =>
   requestAsync({

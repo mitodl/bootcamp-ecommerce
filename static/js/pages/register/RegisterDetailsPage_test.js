@@ -9,7 +9,9 @@ import {
   STATE_USER_BLOCKED,
   STATE_ERROR,
   STATE_ERROR_TEMPORARY,
-  FLOW_REGISTER
+  FLOW_REGISTER,
+  STATE_REGISTER_BACKEND_EDX,
+  STATE_REGISTER_BACKEND_EMAIL
 } from "../../lib/auth"
 import { routes } from "../../lib/urls"
 import { makeRegisterAuthResponse } from "../../factories/auth"
@@ -46,7 +48,7 @@ describe("RegisterDetailsPage", () => {
 
     renderPage = helper.configureReduxQueryRenderer(RegisterDetailsPage, {
       location: {
-        search: `?partial_token=${partialToken}`
+        search: `?backend=${STATE_REGISTER_BACKEND_EDX}&partial_token=${partialToken}`
       }
     })
   })
@@ -84,7 +86,7 @@ describe("RegisterDetailsPage", () => {
 
     sinon.assert.calledWith(
       helper.handleRequestStub,
-      "/api/register/details/",
+      `/api/register/${STATE_REGISTER_BACKEND_EDX}/details/`,
       "POST",
       { body, headers: undefined, credentials: undefined }
     )
@@ -96,24 +98,52 @@ describe("RegisterDetailsPage", () => {
 
   //
   ;[
-    [STATE_ERROR_TEMPORARY, [], routes.register.error, ""],
-    [STATE_ERROR, [], routes.register.error, ""], // cover the case with an error but no  messages
+    [
+      STATE_ERROR_TEMPORARY,
+      [],
+      routes.register.error,
+      STATE_REGISTER_BACKEND_EDX,
+      ""
+    ],
+    [STATE_ERROR, [], routes.register.error, STATE_REGISTER_BACKEND_EMAIL, ""], // cover the case with an error but no  messages
     [
       STATE_REGISTER_EXTRA_DETAILS,
       [],
       routes.register.extra,
-      "?partial_token=new_partial_token"
+      STATE_REGISTER_BACKEND_EDX,
+      `?backend=${STATE_REGISTER_BACKEND_EDX}&partial_token=new_partial_token`
+    ],
+    [
+      STATE_REGISTER_EXTRA_DETAILS,
+      [],
+      routes.register.extra,
+      STATE_REGISTER_BACKEND_EMAIL,
+      `?backend=${STATE_REGISTER_BACKEND_EMAIL}&partial_token=new_partial_token`
     ],
     [
       STATE_USER_BLOCKED,
       ["error_code"],
       routes.register.denied,
+      STATE_REGISTER_BACKEND_EMAIL,
       "?error=error_code"
     ],
-    [STATE_USER_BLOCKED, [], routes.register.denied, ""]
-  ].forEach(([state, errors, pathname, search]) => {
+    [
+      STATE_USER_BLOCKED,
+      [],
+      routes.register.denied,
+      STATE_REGISTER_BACKEND_EDX,
+      ""
+    ]
+  ].forEach(([state, errors, pathname, backend, search]) => {
     it(`redirects to ${pathname} when it receives auth state ${state}`, async () => {
-      const { wrapper } = await renderPage()
+      const { wrapper } = await helper.configureReduxQueryRenderer(
+        RegisterDetailsPage,
+        {
+          location: {
+            search: `?backend=${backend}&partial_token=${partialToken}`
+          }
+        }
+      )()
 
       helper.handleRequestStub.returns({
         body: makeRegisterAuthResponse({
@@ -132,7 +162,7 @@ describe("RegisterDetailsPage", () => {
 
       sinon.assert.calledWith(
         helper.handleRequestStub,
-        "/api/register/details/",
+        `/api/register/${backend}/details/`,
         "POST",
         { body, headers: undefined, credentials: undefined }
       )

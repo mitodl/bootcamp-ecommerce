@@ -50,13 +50,13 @@ export default {
     next: ?string
   ) => ({
     ...DEFAULT_OPTIONS,
-    url:  "/api/register/email/",
+    url:  "/api/register/email/email/",
     body: { email, recaptcha, next, flow: FLOW_REGISTER }
   }),
 
   registerConfirmEmailMutation: (code: string, partialToken: string) => ({
     ...DEFAULT_OPTIONS,
-    url:  "/api/register/confirm/",
+    url:  "/api/register/email/confirm/",
     body: {
       verification_code: code,
       partial_token:     partialToken,
@@ -68,10 +68,11 @@ export default {
     profile: PartialProfile,
     password: string,
     legalAddress: LegalAddress,
-    partialToken: string
+    partialToken: string,
+    backend: string
   ) => ({
     ...DEFAULT_OPTIONS,
-    url:  "/api/register/details/",
+    url:  `/api/register/${backend}/details/`,
     body: {
       profile,
       password,
@@ -83,10 +84,11 @@ export default {
 
   registerExtraDetailsMutation: (
     profileData: ProfileForm,
-    partialToken: string
+    partialToken: string,
+    backend: string
   ) => ({
     ...DEFAULT_OPTIONS,
-    url:  "/api/register/extra/",
+    url:  `/api/register/${backend}/extra/`,
     body: {
       flow:          FLOW_REGISTER,
       partial_token: partialToken,

@@ -15,7 +15,7 @@ import users from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
 import { STATE_ERROR, handleAuthResponse } from "../../lib/auth"
 import queries from "../../lib/queries"
-import { qsPartialTokenSelector } from "../../lib/selectors"
+import { qsBackendSelector, qsPartialTokenSelector } from "../../lib/selectors"
 import { formatTitle } from "../../util/util"
 
 import RegisterDetailsForm from "../../components/forms/RegisterDetailsForm"
@@ -34,7 +34,7 @@ import type {
 type RegisterProps = {|
   location: Location,
   history: RouterHistory,
-  params: { partialToken: string }
+  params: { partialToken: string, backend: string }
 |}
 
 type StateProps = {|
@@ -46,7 +46,8 @@ type DispatchProps = {|
     name: string,
     password: string,
     legalAddress: LegalAddress,
-    partialToken: string
+    partialToken: string,
+    backend: string
   ) => Promise<HttpAuthResponse<AuthResponse>>,
   getCurrentUser: () => Promise<HttpAuthResponse<User>>
 |}
@@ -62,7 +63,7 @@ export class RegisterDetailsPage extends React.Component<Props> {
     const {
       history,
       registerDetails,
-      params: { partialToken }
+      params: { partialToken, backend }
     } = this.props
     try {
       // $FlowFixMe
@@ -70,14 +71,20 @@ export class RegisterDetailsPage extends React.Component<Props> {
         detailsData.profile,
         detailsData.password,
         detailsData.legal_address,
-        partialToken
+        partialToken,
+        backend
       )
 
-      handleAuthResponse(history, body, {
-        // eslint-disable-next-line camelcase
-        [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors)
-      })
+      handleAuthResponse(
+        history,
+        body,
+        {
+          // eslint-disable-next-line camelcase
+          [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
+            setErrors(field_errors)
+        },
+        backend
+      )
     } finally {
       setSubmitting(false)
     }
@@ -123,7 +130,10 @@ export class RegisterDetailsPage extends React.Component<Props> {
 }
 
 const mapStateToProps = createStructuredSelector({
-  params:    createStructuredSelector({ partialToken: qsPartialTokenSelector }),
+  params: createStructuredSelector({
+    partialToken: qsPartialTokenSelector,
+    backend:      qsBackendSelector
+  }),
   countries: queries.users.countriesSelector
 })
 
@@ -133,11 +143,18 @@ const registerDetails = (
   profile: PartialProfile,
   password: string,
   legalAddress: LegalAddress,
-  partialToken: string
+  partialToken: string,
+  backend
 ) =>
   mutateAsync(
     // $FlowFixMe
-    auth.registerDetailsMutation(profile, password, legalAddress, partialToken)
+    auth.registerDetailsMutation(
+      profile,
+      password,
+      legalAddress,
+      partialToken,
+      backend
+    )
   )
 
 const getCurrentUser = () =>

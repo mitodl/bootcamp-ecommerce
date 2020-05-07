@@ -23,7 +23,8 @@ import {
 import { authSelector } from "../../lib/queries/auth"
 import {
   qsVerificationCodeSelector,
-  qsPartialTokenSelector
+  qsPartialTokenSelector,
+  qsBackendSelector
 } from "../../lib/selectors"
 import { formatTitle } from "../../util/util"
 
@@ -34,28 +35,39 @@ type Props = {
   addUserNotification: Function,
   location: Location,
   history: RouterHistory,
-  auth: ?AuthResponse
+  auth: ?AuthResponse,
+  params: { verificationCode: string, partialToken: string, backend?: string }
 }
 
 export class RegisterConfirmPage extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
-    const { addUserNotification, auth, history } = this.props
+    const {
+      addUserNotification,
+      auth,
+      history,
+      params: { backend }
+    } = this.props
     const prevState = path(["auth", "state"], prevProps)
 
     if (auth && auth.state !== prevState) {
-      handleAuthResponse(history, auth, {
-        [STATE_REGISTER_DETAILS]: () => {
-          addUserNotification({
-            "email-verified": {
-              type:  ALERT_TYPE_TEXT,
-              props: {
-                text:
-                  "Success! We've verified your email. Please finish your account creation below."
+      handleAuthResponse(
+        history,
+        auth,
+        {
+          [STATE_REGISTER_DETAILS]: () => {
+            addUserNotification({
+              "email-verified": {
+                type:  ALERT_TYPE_TEXT,
+                props: {
+                  text:
+                    "Success! We've verified your email. Please finish your account creation below."
+                }
               }
-            }
-          })
-        }
-      })
+            })
+          }
+        },
+        backend
+      )
     }
   }
 
@@ -89,7 +101,8 @@ const mapStateToProps = createStructuredSelector({
   auth:   authSelector,
   params: createStructuredSelector({
     verificationCode: qsVerificationCodeSelector,
-    partialToken:     qsPartialTokenSelector
+    partialToken:     qsPartialTokenSelector,
+    backend:          qsBackendSelector
   })
 })
 

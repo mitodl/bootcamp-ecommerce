@@ -3,7 +3,10 @@ import { assert } from "chai"
 
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import RegisterConfirmPage from "./RegisterConfirmPage"
-import { STATE_REGISTER_DETAILS } from "../../lib/auth"
+import {
+  STATE_REGISTER_BACKEND_EDX,
+  STATE_REGISTER_DETAILS
+} from "../../lib/auth"
 
 describe("RegisterConfirmPage", () => {
   let helper, renderPage
@@ -55,6 +58,9 @@ describe("RegisterConfirmPage", () => {
       }
     })
     assert.equal(helper.currentLocation.pathname, "/create-account/details/")
-    assert.equal(helper.currentLocation.search, `?partial_token=${token}`)
+    assert.equal(
+      helper.currentLocation.search,
+      `?backend=${STATE_REGISTER_BACKEND_EDX}&partial_token=${token}`
+    )
   })
 })
