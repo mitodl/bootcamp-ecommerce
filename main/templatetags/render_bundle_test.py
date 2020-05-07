@@ -1,18 +1,10 @@
 """
 Tests for render_bundle
 """
-from unittest.mock import (
-    patch,
-    Mock,
-)
-
 from django.test.client import RequestFactory
-from django.test import (
-    override_settings,
-    TestCase,
-)
-from main.utils import webpack_dev_server_url
+import pytest
 
+from main.utils import webpack_dev_server_url
 from main.templatetags.render_bundle import render_bundle, public_path
 
 
@@ -24,78 +16,80 @@ FAKE_COMMON_BUNDLE = [
 ]
 
 
-@override_settings(DISABLE_WEBPACK_LOADER_STATS=False)
-class TestRenderBundle(TestCase):
+@pytest.fixture(autouse=True)
+def render_bundle_settings(settings):
+    """Settings for render_bundle_test"""
+    settings.DISABLE_WEBPACK_LOADER_STATS = False
+
+
+def test_debug(settings, mocker):
     """
-    Tests for render_bundle
+    If USE_WEBPACK_DEV_SERVER=True, return a hot reload URL
     """
+    settings.USE_WEBPACK_DEV_SERVER = True
+    request = RequestFactory().get('/')
+    context = {"request": request}
 
-    @override_settings(USE_WEBPACK_DEV_SERVER=True)
-    def test_debug(self):
-        """
-        If USE_WEBPACK_DEV_SERVER=True, return a hot reload URL
-        """
-        request = RequestFactory().get('/')
-        context = {"request": request}
+    # convert to generator
+    common_bundle = (chunk for chunk in FAKE_COMMON_BUNDLE)
+    get_bundle = mocker.Mock(return_value=common_bundle)
+    loader = mocker.Mock(get_bundle=get_bundle)
+    bundle_name = 'bundle_name'
+    get_loader = mocker.patch('main.templatetags.render_bundle.get_loader', return_value=loader)
+    assert render_bundle(context, bundle_name) == (
+        '<script type="text/javascript" src="{base}/{filename}" >'
+        '</script>'.format(
+            base=webpack_dev_server_url(request),
+            filename=FAKE_COMMON_BUNDLE[0]['name'],
+        )
+    )
 
-        # convert to generator
-        common_bundle = (chunk for chunk in FAKE_COMMON_BUNDLE)
-        get_bundle = Mock(return_value=common_bundle)
-        loader = Mock(get_bundle=get_bundle)
-        bundle_name = 'bundle_name'
-        with patch('main.templatetags.render_bundle.get_loader', return_value=loader) as get_loader:
-            assert render_bundle(context, bundle_name) == (
-                '<script type="text/javascript" src="{base}/{filename}" >'
-                '</script>'.format(
-                    base=webpack_dev_server_url(request),
-                    filename=FAKE_COMMON_BUNDLE[0]['name'],
-                )
-            )
+    assert public_path(request) == webpack_dev_server_url(request) + "/"
 
-            assert public_path(request) == webpack_dev_server_url(request) + "/"
+    get_bundle.assert_called_with(bundle_name)
+    get_loader.assert_called_with('DEFAULT')
 
-            get_bundle.assert_called_with(bundle_name)
-            get_loader.assert_called_with('DEFAULT')
 
-    @override_settings(USE_WEBPACK_DEV_SERVER=False)
-    def test_production(self):
-        """
-        If USE_WEBPACK_DEV_SERVER=False, return a static URL for production
-        """
-        request = RequestFactory().get('/')
-        context = {"request": request}
+def test_production(settings, mocker):
+    """
+    If USE_WEBPACK_DEV_SERVER=False, return a static URL for production
+    """
+    settings.USE_WEBPACK_DEV_SERVER = False
+    request = RequestFactory().get('/')
+    context = {"request": request}
 
-        # convert to generator
-        common_bundle = (chunk for chunk in FAKE_COMMON_BUNDLE)
-        get_bundle = Mock(return_value=common_bundle)
-        loader = Mock(get_bundle=get_bundle)
-        bundle_name = 'bundle_name'
-        with patch('main.templatetags.render_bundle.get_loader', return_value=loader) as get_loader:
-            assert render_bundle(context, bundle_name) == (
-                '<script type="text/javascript" src="{base}/{filename}" >'
-                '</script>'.format(
-                    base="/static/bundles",
-                    filename=FAKE_COMMON_BUNDLE[0]['name'],
-                )
-            )
+    # convert to generator
+    common_bundle = (chunk for chunk in FAKE_COMMON_BUNDLE)
+    get_bundle = mocker.Mock(return_value=common_bundle)
+    loader = mocker.Mock(get_bundle=get_bundle)
+    bundle_name = 'bundle_name'
+    get_loader = mocker.patch('main.templatetags.render_bundle.get_loader', return_value=loader)
+    assert render_bundle(context, bundle_name) == (
+        '<script type="text/javascript" src="{base}/{filename}" >'
+        '</script>'.format(
+            base="/static/bundles",
+            filename=FAKE_COMMON_BUNDLE[0]['name'],
+        )
+    )
 
-            assert public_path(request) == "/static/bundles/"
+    assert public_path(request) == "/static/bundles/"
 
-            get_bundle.assert_called_with(bundle_name)
-            get_loader.assert_called_with('DEFAULT')
+    get_bundle.assert_called_with(bundle_name)
+    get_loader.assert_called_with('DEFAULT')
 
-    def test_missing_file(self):
-        """
-        If webpack-stats.json is missing, return an empty string
-        """
-        request = RequestFactory().get('/')
-        context = {"request": request}
 
-        get_bundle = Mock(side_effect=OSError)
-        loader = Mock(get_bundle=get_bundle)
-        bundle_name = 'bundle_name'
-        with patch('main.templatetags.render_bundle.get_loader', return_value=loader) as get_loader:
-            assert render_bundle(context, bundle_name) == ''
+def test_missing_file(mocker):
+    """
+    If webpack-stats.json is missing, return an empty string
+    """
+    request = RequestFactory().get('/')
+    context = {"request": request}
 
-            get_bundle.assert_called_with(bundle_name)
-            get_loader.assert_called_with('DEFAULT')
+    get_bundle = mocker.Mock(side_effect=OSError)
+    loader = mocker.Mock(get_bundle=get_bundle)
+    bundle_name = 'bundle_name'
+    get_loader = mocker.patch('main.templatetags.render_bundle.get_loader', return_value=loader)
+    assert render_bundle(context, bundle_name) == ''
+
+    get_bundle.assert_called_with(bundle_name)
+    get_loader.assert_called_with('DEFAULT')
