@@ -10,33 +10,10 @@ from requests.exceptions import HTTPError
 from backends import utils
 from backends.utils import get_social_username
 from backends.edxorg import EdxOrgOAuth2
-from profiles.factories import UserFactory
 # pylint: disable=protected-access
 
 
-social_extra_data = {
-    "access_token": "fooooootoken",
-    "refresh_token": "baaaarrefresh",
-}
-
-
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def user():
-    """Create a user with social auth"""
-    # create a user
-    user = UserFactory.create()
-    user.social_auth.create(
-        provider='not_edx',
-    )
-    user.social_auth.create(
-        provider=EdxOrgOAuth2.name,
-        uid="{}_edx".format(user.username),
-        extra_data=social_extra_data
-    )
-    yield user
 
 
 @pytest.fixture
@@ -54,7 +31,7 @@ def update_social_extra_data(user, data):
 
 
 @pytest.fixture
-def mock_refresh(mocker):
+def mock_refresh(mocker, social_extra_data):
     yield mocker.patch('backends.edxorg.EdxOrgOAuth2.refresh_token', return_value=social_extra_data, autospec=True)
 
 

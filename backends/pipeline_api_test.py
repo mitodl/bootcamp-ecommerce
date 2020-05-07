@@ -7,26 +7,9 @@ import pytest
 
 from backends import pipeline_api, edxorg
 from backends.utils import get_social_username
-from profiles.factories import UserFactory
 
 
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def user():
-    """
-    Set up user with social auth
-    """
-    user = UserFactory.create()
-    user.social_auth.create(
-        provider='not_edx',
-    )
-    user.social_auth.create(
-        provider=edxorg.EdxOrgOAuth2.name,
-        uid="{}_edx".format(user.username),
-    )
-    yield user
 
 
 @pytest.mark.parametrize("is_new", [True, False])

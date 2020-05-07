@@ -7,19 +7,40 @@ from django.test.client import Client
 from rest_framework.test import APIClient
 from wagtail.core.models import Site
 
+from backends.edxorg import EdxOrgOAuth2
 from profiles.factories import UserFactory
 
 
 @pytest.fixture
-def user(db):
-    """Creates a user"""
-    return UserFactory.create()
+def social_extra_data():
+    """Some fake data for populating social auth"""
+    yield {
+        "access_token": "fooooootoken",
+        "refresh_token": "baaaarrefresh",
+    }
 
 
 @pytest.fixture
-def staff_user(db):
+def user(db, social_extra_data):
+    """Creates a user"""
+    # create a user
+    user = UserFactory.create()
+    user.social_auth.create(
+        provider='not_edx',
+    )
+    user.social_auth.create(
+        provider=EdxOrgOAuth2.name,
+        uid="{}_edx".format(user.username),
+        extra_data=social_extra_data
+    )
+    yield user
+
+
+@pytest.fixture
+def staff_user(db, user):
     """Staff user fixture"""
-    return UserFactory.create(is_staff=True)
+    user.is_staff = True
+    user.save()
 
 
 @pytest.fixture
