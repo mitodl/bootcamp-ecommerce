@@ -69,7 +69,7 @@ def assert_api_call(
     """Run the API call and perform basic assertions"""
     assert bool(get_user(client).is_authenticated) is False
 
-    response = client.post(reverse(url), payload, content_type="application/json")
+    response = client.post(url, payload, content_type="application/json")
     actual = response.json()
 
     defaults = {
@@ -211,7 +211,7 @@ class AuthStateMachine(RuleBasedStateMachine):
                 stack.enter_context(override_settings(**{"RECAPTCHA_SITE_KEY": "fake"}))
             result = assert_api_call(
                 self.client,
-                "psa-register-email",
+                reverse("psa-register-email"),
                 {
                     "flow": SocialAuthState.FLOW_REGISTER,
                     "email": self.email,
@@ -245,7 +245,7 @@ class AuthStateMachine(RuleBasedStateMachine):
 
             result = assert_api_call(
                 self.client,
-                "psa-register-email",
+                reverse("psa-register-email"),
                 {
                     "flow": SocialAuthState.FLOW_REGISTER,
                     "email": self.email,
@@ -279,7 +279,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         ):
             assert_api_call(
                 self.client,
-                "psa-register-email",
+                reverse("psa-register-email"),
                 {
                     "flow": SocialAuthState.FLOW_REGISTER,
                     "email": NEW_EMAIL,
@@ -299,7 +299,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         self.flow_started = True
         assert_api_call(
             self.client,
-            "psa-login-email",
+            reverse("psa-login-email"),
             {"flow": SocialAuthState.FLOW_LOGIN, "email": self.email},
             {
                 "field_errors": {"email": "Couldn't find your account"},
@@ -319,7 +319,7 @@ class AuthStateMachine(RuleBasedStateMachine):
 
         return assert_api_call(
             self.client,
-            "psa-login-email",
+            reverse("psa-login-email"),
             {
                 "flow": SocialAuthState.FLOW_LOGIN,
                 "email": self.user.email,
@@ -346,7 +346,7 @@ class AuthStateMachine(RuleBasedStateMachine):
 
         return assert_api_call(
             self.client,
-            "psa-login-email",
+            reverse("psa-login-email"),
             {
                 "flow": SocialAuthState.FLOW_LOGIN,
                 "email": self.user.email,
@@ -367,7 +367,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         """Login with an abandoned registration user"""
         return assert_api_call(
             self.client,
-            "psa-login-password",
+            reverse("psa-login-password"),
             {
                 "flow": auth_state["flow"],
                 "partial_token": auth_state["partial_token"],
@@ -384,7 +384,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         """Login with a valid password"""
         assert_api_call(
             self.client,
-            "psa-login-password",
+            reverse("psa-login-password"),
             {
                 "flow": auth_state["flow"],
                 "partial_token": auth_state["partial_token"],
@@ -404,7 +404,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         """Login with an invalid password"""
         return assert_api_call(
             self.client,
-            "psa-login-password",
+            reverse("psa-login-password"),
             {
                 "flow": auth_state["flow"],
                 "partial_token": auth_state["partial_token"],
@@ -433,7 +433,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         with cm:
             assert_api_call(
                 self.client,
-                "psa-login-password",
+                reverse("psa-login-password"),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -457,7 +457,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         ):
             assert_api_call(
                 self.client,
-                "psa-login-password",
+                reverse("psa-login-password"),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -482,7 +482,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         _, _, code, partial_token = self.mock_email_send.call_args[0]
         return assert_api_call(
             self.client,
-            "psa-register-confirm",
+            reverse("psa-register-confirm", kwargs={"backend_name": EmailAuth.name}),
             {
                 "flow": auth_state["flow"],
                 "verification_code": code.code,
@@ -500,7 +500,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         _, _, code, partial_token = self.mock_email_send.call_args[0]
         assert_api_call(
             self.client,
-            "psa-register-confirm",
+            reverse("psa-register-confirm", kwargs={"backend_name": EmailAuth.name}),
             {
                 "flow": auth_state["flow"],
                 "verification_code": code.code,
@@ -523,7 +523,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         """Complete the register confirmation details page"""
         result = assert_api_call(
             self.client,
-            "psa-register-details",
+            reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
             {
                 "flow": auth_state["flow"],
                 "partial_token": auth_state["partial_token"],
@@ -556,7 +556,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         with export_check_response("100_success"):
             result = assert_api_call(
                 self.client,
-                "psa-register-details",
+                reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -593,7 +593,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         with export_check_response("700_reject"):
             assert_api_call(
                 self.client,
-                "psa-register-details",
+                reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -632,7 +632,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         ):
             assert_api_call(
                 self.client,
-                "psa-register-details",
+                reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -665,7 +665,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         """Complete the user's extra details"""
         assert_api_call(
             Client(),
-            "psa-register-extra",
+            reverse("psa-register-extra", kwargs={"backend_name": EmailAuth.name}),
             {
                 "flow": auth_state["flow"],
                 "partial_token": auth_state["partial_token"],
@@ -705,7 +705,7 @@ def test_new_register_no_session_partial(client):
     """
     assert_api_call(
         client,
-        "psa-register-email",
+        reverse("psa-register-email"),
         {"flow": SocialAuthState.FLOW_REGISTER, "email": NEW_EMAIL},
         {
             "flow": SocialAuthState.FLOW_REGISTER,

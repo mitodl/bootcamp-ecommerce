@@ -6,6 +6,8 @@ declare var SETTINGS: {
   },
   gaTrackingID: string,
   reactGaDebug: boolean,
+  recaptchaKey: ?string,
+  support_email: string,
   zendesk_config: {
     help_widget_enabled: boolean,
     help_widget_key: ?string

@@ -1,11 +1,15 @@
 /* global SETTINGS: false */
 import React from "react"
+import { Provider } from "react-redux"
+import { Provider as ReduxQueryProvider } from "redux-query-react"
+import { Router } from "react-router"
 import R from "ramda"
-import { shallow } from "enzyme"
+import { mount, shallow } from "enzyme"
 import sinon from "sinon"
 import { createMemoryHistory } from "history"
 
-import configureStoreMain from "../store/configureStore"
+import { getQueries } from "../lib/redux_query"
+import * as storeLib from "../store/configureStore"
 import * as networkInterfaceFuncs from "../store/network_interface"
 
 import type { Sandbox } from "../flow/sinonTypes"
@@ -57,6 +61,31 @@ export default class IntegrationTestHelper {
     this.sandbox.restore()
   }
 
+  createFullStore(initialState) {
+    return storeLib.default(initialState)
+  }
+
+  configureReduxQueryRenderer(Component, defaultProps = {}, initialStore = {}) {
+    const history = this.browserHistory
+    return async (extraProps = { history }, beforeRenderActions = []) => {
+      const store = this.createFullStore(initialStore)
+      beforeRenderActions.forEach(action => store.dispatch(action))
+
+      const wrapper = await mount(
+        <Provider store={store}>
+          <ReduxQueryProvider queriesSelector={getQueries}>
+            <Router store={store} history={this.browserHistory}>
+              <Component {...defaultProps} {...extraProps} />
+            </Router>
+          </ReduxQueryProvider>
+        </Provider>
+      )
+      this.wrapper = wrapper
+      wrapper.update()
+      return { wrapper, store }
+    }
+  }
+
   configureHOCRenderer(
     WrappedComponent: Class<React.Component<*, *>>,
     InnerComponent: Class<React.Component<*, *>>,
@@ -66,7 +95,7 @@ export default class IntegrationTestHelper {
     const history = this.browserHistory
     return async (extraState = {}, extraProps = {}) => {
       const initialState = R.mergeDeepRight(defaultState, extraState)
-      const store = configureStoreMain(initialState)
+      const store = storeLib.default(initialState)
       const wrapper = await shallow(
         <WrappedComponent
           store={store}

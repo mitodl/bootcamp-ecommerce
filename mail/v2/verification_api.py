@@ -19,7 +19,7 @@ def send_verification_email(
         code (social_django.models.Code): the confirmation code used to confirm the email address
         partial_token (str): token used to resume a halted pipeline
     """
-    url = "{}?verification_code={}&partial_token={}".format(
+    url = "{}?verification_code={}&partial_token={}&backend=email".format(
         strategy.build_absolute_uri(reverse("register-confirm")),
         quote_plus(code.code),
         quote_plus(partial_token),

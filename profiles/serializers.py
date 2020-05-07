@@ -257,7 +257,7 @@ class UserSerializer(serializers.ModelSerializer):
                 if profile.is_valid():
                     profile.save()
 
-        sync_hubspot_user(user)
+        sync_hubspot_user(user.profile)
 
         return user
 
@@ -289,7 +289,7 @@ class UserSerializer(serializers.ModelSerializer):
 
             user = super().update(instance, validated_data)
 
-        sync_hubspot_user(user)
+        sync_hubspot_user(user.profile)
         return user
 
     class Meta:

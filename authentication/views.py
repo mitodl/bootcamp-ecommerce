@@ -47,14 +47,14 @@ class SocialAuthAPIView(APIView):
         """Return the serializer cls"""
         raise NotImplementedError("get_serializer_cls must be implemented")
 
-    def post(self, request):
+    def post(self, request, backend_name=EmailAuth.name):
         """Processes a request"""
         if request.session.get("is_hijacked_user", False):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer_cls = self.get_serializer_cls()
         strategy = load_drf_strategy(request)
-        backend = load_backend(strategy, EmailAuth.name, None)
+        backend = load_backend(strategy, backend_name, None)
         serializer = serializer_cls(
             data=request.data,
             context={"request": request, "strategy": strategy, "backend": backend},
@@ -89,7 +89,7 @@ class RegisterEmailView(SocialAuthAPIView):
         """Return the serializer cls"""
         return RegisterEmailSerializer
 
-    def post(self, request):
+    def post(self, request, backend_name=EmailAuth.name):
         """ Verify recaptcha response before proceeding """
         if request.session.get("is_hijacked_user", False):
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -103,7 +103,7 @@ class RegisterEmailView(SocialAuthAPIView):
             response = r.json()
             if not response["success"]:
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        return super().post(request)
+        return super().post(request, backend_name=backend_name)
 
 
 class RegisterConfirmView(SocialAuthAPIView):

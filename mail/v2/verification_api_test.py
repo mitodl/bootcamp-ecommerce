@@ -33,7 +33,7 @@ def test_send_verification_email(mocker, rf):
 
     email_body = send_messages_mock.call_args[0][0][0].body
     assert (
-        "/create-account/confirm/?verification_code=abc&partial_token=def" in email_body
+        "/create-account/confirm/?verification_code=abc&partial_token=def&backend=email" in email_body
     )
 
 

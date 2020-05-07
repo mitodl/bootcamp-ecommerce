@@ -387,7 +387,7 @@ def test_create_profile(
         "company"
     )
     if hubspot_key is not None:
-        mock_user_sync.assert_called_with(user.id)
+        mock_user_sync.assert_called_with(user.profile.id)
     else:
         mock_user_sync.assert_not_called()
 

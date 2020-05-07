@@ -4,7 +4,6 @@ bootcamp views
 import json
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
@@ -48,7 +47,6 @@ def index(request):
     })
 
 
-@login_required
 @csrf_exempt
 def react(request):
     """

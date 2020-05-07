@@ -26,3 +26,9 @@ export const showDialog = createAction(SHOW_DIALOG)
 
 export const HIDE_DIALOG = "HIDE_DIALOG"
 export const hideDialog = createAction(HIDE_DIALOG)
+
+export const ADD_USER_NOTIFICATION = "ADD_USER_NOTIFICATION"
+export const addUserNotification = createAction(ADD_USER_NOTIFICATION)
+
+export const REMOVE_USER_NOTIFICATION = "REMOVE_USER_NOTIFICATION"
+export const removeUserNotification = createAction(REMOVE_USER_NOTIFICATION)
