@@ -70,7 +70,7 @@ class BootcampRunApplicationStep(ValidateOnSaveMixin):
     def __str__(self):
         return (
             f"run='{self.bootcamp_run.title}', step={self.application_step.step_order}, "
-            f"due={self.due_date.strftime('%m/%d/%Y')}"
+            f"due={None if self.due_date is None else self.due_date.strftime('%m/%d/%Y')}"
         )
 
 
@@ -113,10 +113,6 @@ class BootcampApplication(TimestampedModel):
 class SubmissionTypeModel(TimestampedModel):
     """Base model for any type of submission that is required on a user's bootcamp application"""
     submission_type = None
-
-    submitted_date = models.DateTimeField(null=True, blank=True)
-    review_status = models.CharField(max_length=20, choices=VALID_REVIEW_STATUS_CHOICES, null=True, blank=True)
-    review_status_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -169,6 +165,9 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
         on_delete=models.CASCADE,
         related_name='submissions'
     )
+    submitted_date = models.DateTimeField(null=True, blank=True)
+    review_status = models.CharField(max_length=20, choices=VALID_REVIEW_STATUS_CHOICES, null=True, blank=True)
+    review_status_date = models.DateTimeField(null=True, blank=True)
     # This limits the choice of content type to models we have specified as application submission models
     valid_submission_types = reduce(
         or_,
