@@ -2,10 +2,13 @@
 import React from "react"
 import { Provider } from "react-redux"
 import { Route, Router as ReactRouter } from "react-router-dom"
+import { Provider as ReduxQueryProvider } from "redux-query-react"
 
 import ScrollToTop from "./components/ScrollToTop"
 import App from "./pages/App"
 import withTracker from "./util/withTracker"
+
+import { getQueries } from "./lib/redux_query"
 
 import type { Store } from "redux"
 
@@ -15,18 +18,18 @@ type Props = {
   children: React$Element<*>
 }
 
-export default class Router extends React.Component<Props> {
-  render() {
-    const { children, history, store } = this.props
+export default function Router(props: Props) {
+  const { children, history, store } = props
 
-    return (
-      <Provider store={store}>
+  return (
+    <Provider store={store}>
+      <ReduxQueryProvider queriesSelector={getQueries}>
         <ReactRouter history={history}>
           <ScrollToTop>{children}</ScrollToTop>
         </ReactRouter>
-      </Provider>
-    )
-  }
+      </ReduxQueryProvider>
+    </Provider>
+  )
 }
 
 export const routes = <Route url="/" component={withTracker(App)} />
