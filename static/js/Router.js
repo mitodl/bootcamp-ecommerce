@@ -3,6 +3,7 @@ import React from "react"
 import { Provider } from "react-redux"
 import { Route, Router as ReactRouter } from "react-router-dom"
 
+import ScrollToTop from "./components/ScrollToTop"
 import App from "./pages/App"
 import withTracker from "./util/withTracker"
 
@@ -20,7 +21,9 @@ export default class Router extends React.Component<Props> {
 
     return (
       <Provider store={store}>
-        <ReactRouter history={history}>{children}</ReactRouter>
+        <ReactRouter history={history}>
+          <ScrollToTop>{children}</ScrollToTop>
+        </ReactRouter>
       </Provider>
     )
   }
