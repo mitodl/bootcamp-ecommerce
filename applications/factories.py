@@ -13,7 +13,7 @@ import faker
 import pytz
 
 from applications import models
-from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, VALID_APP_STATE_CHOICES
+from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, VALID_APP_STATE_CHOICES, ALL_REVIEW_STATUSES
 from ecommerce.factories import OrderFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
 from main.utils import now_in_utc
@@ -77,6 +77,9 @@ class ApplicationStepSubmissionFactory(DjangoModelFactory):
     content_object = SubFactory(VideoInterviewSubmissionFactory)
     bootcamp_application = SubFactory(BootcampApplicationFactory)
     run_application_step = SubFactory(BootcampRunApplicationStepFactory)
+    submitted_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())
+    review_status = fuzzy.FuzzyChoice(choices=ALL_REVIEW_STATUSES)
+    review_status_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())
 
     class Meta:
         model = models.ApplicationStepSubmission
