@@ -7,6 +7,8 @@ import faker
 import pytest
 from rest_framework import status as statuses
 
+from applications.constants import AppStates
+from applications.factories import BootcampApplicationFactory
 from ecommerce.api import make_reference_id
 from ecommerce.api_test import (
     create_purchasable_bootcamp_run,
@@ -19,6 +21,7 @@ from ecommerce.models import (
     Receipt,
 )
 from ecommerce.serializers import PaymentSerializer
+from klasses.models import BootcampRunEnrollment
 from fluidreview.api import FluidReviewException
 from fluidreview.constants import WebhookParseStatus
 from fluidreview.factories import WebhookRequestFactory
@@ -98,7 +101,9 @@ def test_payment(mocker, client):
 
 
 @pytest.mark.parametrize("side_effect", [None, FluidReviewException])
-def test_order_fulfilled(client, mocker, side_effect):
+@pytest.mark.parametrize("has_application", [True, False])
+@pytest.mark.parametrize("has_paid", [True, False])
+def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid):
     """
     Test the happy case
     """
@@ -126,6 +131,13 @@ def test_order_fulfilled(client, mocker, side_effect):
         'ecommerce.views.MailgunClient.send_individual_email',
     )
     mockapi = mocker.patch('fluidreview.api.FluidReviewAPI.put', side_effect=side_effect)
+    paid_in_full_mock = mocker.patch('ecommerce.views.is_paid_in_full', return_value=has_paid)
+
+    application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_PAYMENT.value,
+        order=order,
+    ) if has_application else None
+
     resp = client.post(reverse('order-fulfillment'), data=data)
 
     assert len(resp.content) == 0
@@ -143,6 +155,18 @@ def test_order_fulfilled(client, mocker, side_effect):
     assert order_audit.order == order
     assert order_audit.data_before == data_before
     assert order_audit.data_after == order.to_dict()
+    paid_in_full_mock.assert_called_once_with(user=user, run_key=bootcamp_run.run_key)
+
+    if has_application:
+        application.refresh_from_db()
+        assert application.state == (
+            AppStates.COMPLETE.value if has_paid else AppStates.AWAITING_PAYMENT.value
+        )
+
+    assert BootcampRunEnrollment.objects.filter(bootcamp_run=bootcamp_run, user=user).count() == (
+        1 if has_paid else 0
+    )
+
 
 
 def test_missing_fields(client, mocker):

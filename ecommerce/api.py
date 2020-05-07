@@ -26,7 +26,7 @@ from ecommerce.models import (
     Order,
 )
 from klasses.bootcamp_admissions_client import BootcampAdmissionClient
-from klasses.models import BootcampRun
+from klasses.models import BootcampRun, PersonalPrice
 
 
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -51,6 +51,27 @@ def get_total_paid(user, run_key):
         order__user=user,
         run_key=run_key,
     ).aggregate(price=Sum('price'))['price'] or Decimal(0)
+
+
+def is_paid_in_full(*, user, run_key):
+    """
+    Is the bootcamp run paid for in full for the user?
+
+    Args:
+        user (User):
+            The purchaser of the bootcamp run
+        run_key (int):
+            A bootcamp run key
+
+    Returns:
+        bool: Whether the run is fully paid for
+    """
+    total_paid = get_total_paid(user=user, run_key=run_key)
+    try:
+        price = PersonalPrice.objects.get(bootcamp_run__run_key=run_key, user=user).price
+    except PersonalPrice.DoesNotExist:
+        price = BootcampRun.objects.get(run_key=run_key).price
+    return total_paid >= price
 
 
 @transaction.atomic

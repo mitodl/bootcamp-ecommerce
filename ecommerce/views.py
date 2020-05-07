@@ -11,10 +11,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from applications.constants import AppStates
+from applications.models import BootcampApplication
 from ecommerce.api import (
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
     get_new_order_by_reference_number,
+    is_paid_in_full,
 )
 from ecommerce.constants import (
     CYBERSOURCE_DECISION_ACCEPT,
@@ -31,6 +34,7 @@ from fluidreview.api import post_payment as post_payment_fluid
 from hubspot.task_helpers import sync_hubspot_deal_from_order
 from smapply.api import post_payment as post_payment_sma
 from klasses.constants import ApplicationSource
+from klasses.models import BootcampRunEnrollment
 from mail.api import MailgunClient
 
 
@@ -124,8 +128,23 @@ class OrderFulfillmentView(APIView):
             order.status = Order.FULFILLED
 
         order.save_and_log(acting_user=None)
+
+        run = order.get_bootcamp_run()
+        if is_paid_in_full(user=order.user, run_key=run.run_key):
+            BootcampRunEnrollment.objects.get_or_create(
+                user=order.user,
+                bootcamp_run=run,
+            )
+
+            try:
+                application = order.applications.get()
+                application.complete()
+                application.save()
+            except BootcampApplication.DoesNotExist:
+                log.exception("Missing application for order %d. Unable to set application state.", order.id)
+
         try:
-            if order.get_bootcamp_run().source == ApplicationSource.FLUIDREVIEW:
+            if run.source == ApplicationSource.FLUIDREVIEW:
                 post_payment_fluid(order)
             else:
                 post_payment_sma(order)
