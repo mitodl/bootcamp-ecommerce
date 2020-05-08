@@ -13,7 +13,6 @@ from hubspot.api import (
 from hubspot.tasks import sync_bulk_with_hubspot
 from klasses.models import PersonalPrice, Bootcamp
 from profiles.models import Profile
-from smapply.api import SMApplyTaskCache
 
 
 class Command(BaseCommand):
@@ -43,12 +42,10 @@ class Command(BaseCommand):
         Sync all profiles with contacts in hubspot
         """
         print("  Syncing users with hubspot contacts...")
-        task_cache = SMApplyTaskCache()
         self.bulk_sync_model(
             Profile.objects.all(),
             make_contact_sync_message,
             "CONTACT",
-            task_cache=task_cache,
         )
         print("  Finished")
 

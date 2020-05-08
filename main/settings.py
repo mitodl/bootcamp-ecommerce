@@ -658,14 +658,6 @@ CELERY_RESULT_BACKEND = get_string(
 )
 CELERY_TIMEZONE = "UTC"
 CELERY_BEAT_SCHEDULE = {
-    "sync-new-users-from-smapply": {
-        "task": "smapply.tasks.sync_all_users",
-        "schedule": get_int(
-            "SMAPPLY_USER_SYNC_FREQUENCY",
-            900,
-            description="How often in seconds to sync SMApply user data",
-        ),
-    },
     "check-for-hubspot-sync-errors": {
         "task": "hubspot.tasks.check_hubspot_api_errors",
         "schedule": get_int(
