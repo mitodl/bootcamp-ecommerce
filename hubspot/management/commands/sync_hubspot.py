@@ -42,7 +42,7 @@ class Command(BaseCommand):
         """
         print("  Syncing users with hubspot contacts...")
         self.bulk_sync_model(
-            User.objects.all(),
+            User.objects.filter(profile__isnull=False),
             make_contact_sync_message,
             "CONTACT",
         )

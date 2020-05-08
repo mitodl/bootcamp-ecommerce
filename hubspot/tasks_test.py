@@ -21,7 +21,7 @@ from hubspot.tasks import (
     check_hubspot_api_errors,
     sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot, sync_bulk_with_hubspot)
 from klasses.factories import BootcampFactory, PersonalPriceFactory
-from profiles.factories import ProfileFactory
+from profiles.factories import ProfileFactory, UserFactory
 
 pytestmark = [pytest.mark.django_db]
 
@@ -46,6 +46,12 @@ def test_sync_contact_with_hubspot(mock_hubspot_request, user_data):
     mock_hubspot_request.assert_called_once_with(
         "CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body
     )
+
+def test_sync_contact_with_hubspot_missing_email(mock_hubspot_request):
+    """Test that send_hubspot_request is not called if email is not in message"""
+    user = UserFactory.create(profile=None)
+    sync_contact_with_hubspot(user.id)
+    mock_hubspot_request.assert_not_called()
 
 
 def test_sync_product_with_hubspot(mock_hubspot_request):

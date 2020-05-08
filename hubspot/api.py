@@ -3,6 +3,7 @@ Hubspot Ecommerce Bridge API sync utilities
 
 https://developers.hubspot.com/docs/methods/ecomm-bridge/ecomm-bridge-overview
 """
+from builtins import hasattr
 import logging
 import re
 from urllib.parse import urljoin, urlencode
@@ -229,12 +230,15 @@ def make_contact_sync_message(user_id):
     from profiles.serializers import UserSerializer
 
     user = User.objects.get(id=user_id)
+    if not hasattr(user, "profile"):
+        return [{}]
     properties = UserSerializer(user).data
     properties.update(properties.pop("legal_address") or {})
     properties.update(properties.pop("profile") or {})
+    properties["work_experience"] = properties.pop("years_experience", None)
     if "street_address" in properties:
         properties["street_address"] = "\n".join(properties.pop("street_address"))
-    return [make_sync_message(user.id, properties)]
+    return [make_sync_message(user.profile.id, properties)]
 
 
 def make_product_sync_message(bootcamp_id):

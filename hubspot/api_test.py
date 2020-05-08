@@ -14,7 +14,7 @@ from requests import HTTPError
 
 from hubspot import api
 
-from profiles.factories import ProfileFactory
+from profiles.factories import ProfileFactory, UserFactory
 from profiles.serializers import UserSerializer
 
 fake = Faker()
@@ -144,15 +144,23 @@ def test_make_contact_sync_message():
     serialized_user = UserSerializer(instance=profile.user).data
     serialized_user.update(serialized_user.pop("legal_address") or {})
     serialized_user.update(serialized_user.pop("profile") or {})
+    serialized_user["work_experience"] = serialized_user.pop("years_experience")
     serialized_user["street_address"] = "\n".join(serialized_user.pop("street_address"))
     assert contact_sync_message == [
         {
-            "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.user.id),
+            "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.id),
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
             "propertyNameToValues": api.sanitize_properties(serialized_user),
         }
     ]
+
+@pytest.mark.django_db
+def test_make_contact_sync_message_no_profile():
+    """Test make_contact_sync_message returns an empty message for a user without a profile"""
+    user = UserFactory.create(profile=None)
+    contact_sync_message = api.make_contact_sync_message(user.id)
+    assert contact_sync_message == [{}]
 
 
 @pytest.mark.parametrize("offset", [0, 10])
