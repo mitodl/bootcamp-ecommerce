@@ -39,6 +39,7 @@ from profiles.factories import UserFactory, ProfileFactory
 pytestmark = pytest.mark.django_db
 
 
+# pylint: disable=redefined-outer-name, unused-argument
 def create_purchasable_bootcamp_run():
     """Create a purchasable bootcamp run, and a user to be associated with it"""
     profile = ProfileFactory.create()

@@ -35,6 +35,7 @@ individual_recipient_arg = 'a@example.com'
 
 @pytest.fixture
 def mock_post(mocker, mocked_json):
+    """Mock post with successful json response"""
     mocked = mocker.patch('requests.post', autospec=True, return_value=mocker.Mock(
         spec=Response,
         status_code=HTTP_200_OK,
@@ -43,6 +44,7 @@ def mock_post(mocker, mocked_json):
     yield mocked
 
 
+# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("sender_name", [None, 'Tester'])
 def test_send_batch(settings, sender_name, mock_post):
     """
@@ -181,7 +183,7 @@ def test_send_batch_400_no_raise(settings, mocker, mock_post, mocked_json):
     chunk_size = 10
     recipient_tuples = [("{0}@example.com".format(letter), None) for letter in string.ascii_letters]
     assert len(recipient_tuples) == 52
-    settings.MAILGUN_RECIPIENT_OVERRIDE=None
+    settings.MAILGUN_RECIPIENT_OVERRIDE = None
     resp_list = MailgunClient.send_batch(
         'email subject', 'email body', recipient_tuples, chunk_size=chunk_size, raise_for_status=False
     )
