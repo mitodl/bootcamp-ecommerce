@@ -2,7 +2,7 @@
 Management command to sync all Users, Orders, Products, and Lines with Hubspot
 and Line Items
 """
-
+from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 
 from hubspot.api import (
@@ -12,7 +12,6 @@ from hubspot.api import (
     make_line_sync_message)
 from hubspot.tasks import sync_bulk_with_hubspot
 from klasses.models import PersonalPrice, Bootcamp
-from profiles.models import Profile
 
 
 class Command(BaseCommand):
@@ -43,7 +42,7 @@ class Command(BaseCommand):
         """
         print("  Syncing users with hubspot contacts...")
         self.bulk_sync_model(
-            Profile.objects.all(),
+            User.objects.all(),
             make_contact_sync_message,
             "CONTACT",
         )

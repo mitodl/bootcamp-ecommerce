@@ -1,7 +1,6 @@
 """
 SMApply API backend
 """
-import copy
 import json
 import logging
 
@@ -263,7 +262,7 @@ def parse_webhook_user(webhook):
         log.exception('Demographics form name was not found within application tasks')
 
     from hubspot.task_helpers import sync_hubspot_user
-    sync_hubspot_user(user.profile)
+    sync_hubspot_user(user)
 
     if webhook.award_id is not None:
         application_meta = SMApplyAPI().get('/applications/{}/'.format(

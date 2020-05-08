@@ -147,7 +147,7 @@ def test_make_contact_sync_message():
     serialized_user["street_address"] = "\n".join(serialized_user.pop("street_address"))
     assert contact_sync_message == [
         {
-            "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.id),
+            "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.user.id),
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
             "propertyNameToValues": api.sanitize_properties(serialized_user),

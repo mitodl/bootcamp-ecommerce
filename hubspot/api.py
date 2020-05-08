@@ -234,7 +234,7 @@ def make_contact_sync_message(user_id):
     properties.update(properties.pop("profile") or {})
     if "street_address" in properties:
         properties["street_address"] = "\n".join(properties.pop("street_address"))
-    return [make_sync_message(user.profile.id, properties)]
+    return [make_sync_message(user.id, properties)]
 
 
 def make_product_sync_message(bootcamp_id):
