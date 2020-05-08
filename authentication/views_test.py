@@ -815,10 +815,11 @@ class DjoserViewTests:
         assert update_session_patch.called is expected_session_update
 
 
-def test_get_social_auth_types(client, user):
+def test_get_social_auth_types(client):
     """Verify that get_social_auth_types returns a list of providers that the user has authenticated with"""
     social_auth_providers = ["provider1", "provider2"]
     url = reverse("get-auth-types-api")
+    user = UserFactory.create()
     UserSocialAuthFactory.create_batch(
         2, user=user, provider=factory.Iterator(social_auth_providers)
     )

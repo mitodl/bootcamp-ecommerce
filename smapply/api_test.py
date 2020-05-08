@@ -6,7 +6,6 @@ import json
 
 import pytest
 from django.contrib.auth.models import User
-from django.test import override_settings
 from requests import HTTPError
 
 from ecommerce.factories import OrderFactory, LineFactory
@@ -159,7 +158,6 @@ def test_save_token_update():
     assert 7185 <= smapi.session.token['expires_in'] <= 7200
 
 
-@override_settings(SMAPPLY_BASE_URL="http://test.bootcamp.zzz")
 @pytest.mark.parametrize(['method', 'url', 'full_url', 'kwargs'], [
     ['get', 'users', '{}users', {}],
     ['get', '/users', '{}users', {}],
@@ -167,8 +165,10 @@ def test_save_token_update():
     ['put', 'installments/2', '{}installments/2', {'data': {'transaction': 1}}],
     ['post', 'transactions', '{}transactions', {'data': {'application': 3}}]
 ])
-def test_oauth_requests(mocker, method, url, full_url, kwargs):
+def test_oauth_requests(settings, mocker, method, url, full_url, kwargs):
     """Test that OAuth2Session calls the correct request method with correct arguments"""
+    settings.SMAPPLY_BASE_URL = "http://test.bootcamp.zzz"
+
     mock_oauth = mocker.patch('smapply.api.OAuth2Session.{}'.format(method))
     SMApplyAPI().request(method, url, **kwargs)
     mock_oauth.assert_called_once_with(full_url.format(BASE_API_URL), **kwargs)
