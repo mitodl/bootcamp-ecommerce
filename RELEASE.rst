@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.40.1
+Version 0.40.1 (Released May 11, 2020)
 --------------
 
 - pre_commit and detect-secrets (#422)
