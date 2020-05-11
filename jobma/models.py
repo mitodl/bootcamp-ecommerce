@@ -45,7 +45,7 @@ class Interview(AuditableModel):
 
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
-    interview_id = models.IntegerField(blank=True, null=True)  # this will be null until published on Jobma
+    interview_url = models.TextField(blank=True, null=True)  # this will be null until published on Jobma
     candidate_first_name = models.TextField()
     candidate_last_name = models.TextField()
     candidate_phone = models.TextField()

@@ -25,8 +25,8 @@ def test_get_jobma_client(settings):
 def test_create_interview(mocker, settings):
     """create_interview should send an existing interview to Jobma"""
     client_mock = mocker.patch('jobma.api.get_jobma_client')
-    new_interview_id = 987654321
-    client_mock.return_value.post.return_value.json.return_value = {"interview_id": str(new_interview_id)}
+    new_interview_url = "https://path.to/url/for/interview/"
+    client_mock.return_value.post.return_value.json.return_value = {"interview_link": new_interview_url}
 
     interview = InterviewFactory.create()
     settings.JOBMA_BASE_URL = "http://theothersiteurl.org"
@@ -53,4 +53,4 @@ def test_create_interview(mocker, settings):
     })
     client_mock.return_value.post.return_value.raise_for_status.assert_called_once_with()
     interview.refresh_from_db()
-    assert interview.interview_id == new_interview_id
+    assert interview.interview_url == new_interview_url
