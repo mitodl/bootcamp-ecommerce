@@ -102,6 +102,7 @@ def test_run_title():
 
 @pytest.fixture
 def lines_fulfilled():
+    """Create fulfilled orders and lines"""
     order_fulfilled_1 = OrderFactory.create(status=Order.FULFILLED)
     line_fulfilled_1 = LineFactory.create(order=order_fulfilled_1)
     user = order_fulfilled_1.user
@@ -109,11 +110,12 @@ def lines_fulfilled():
     order_fulfilled_2 = OrderFactory.create(user=user, status=Order.FULFILLED)
     line_fulfilled_2 = LineFactory.create(order=order_fulfilled_2)
     order_created = OrderFactory.create(user=user, status=Order.CREATED)
-    line_created = LineFactory.create(order=order_created, run_key=run_key)
+    LineFactory.create(order=order_created, run_key=run_key)
 
     yield line_fulfilled_1, line_fulfilled_2, user, run_key
 
 
+# pylint: disable=redefined-outer-name
 def test_fulfilled_for_user(lines_fulfilled):
     """
     Test for the fulfilled_for_user classmethod

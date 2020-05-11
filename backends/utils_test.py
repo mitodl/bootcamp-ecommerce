@@ -32,9 +32,11 @@ def update_social_extra_data(user, data):
 
 @pytest.fixture
 def mock_refresh(mocker, social_extra_data):
+    """Mock refresh_token"""
     yield mocker.patch('backends.edxorg.EdxOrgOAuth2.refresh_token', return_value=social_extra_data, autospec=True)
 
 
+# pylint: disable=redefined-outer-name
 def test_refresh(mock_refresh, now, user):
     """The refresh needs to be called"""
 

@@ -14,6 +14,7 @@ def profile():
     yield ProfileFactory.create(name='Full Name')
 
 
+# pylint: disable=redefined-outer-name,unused-argument
 def test_serialize_maybe_user(mocker, profile):
     """Test that a user is correctly serialized"""
     mocker.patch('main.serializers.get_social_username', return_value='abc')

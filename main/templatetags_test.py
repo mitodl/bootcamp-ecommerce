@@ -3,10 +3,11 @@ Tests for templatetags in the main Django app
 """
 # NOTE: This file is located here and not in main/templatetags/ because Django attempts to load
 # all files in the 'templatetags' directory as template tags, even '_test.py' files.
-import pytest
 from datetime import datetime
-from pytz import utc
+
 from django.test.client import RequestFactory
+import pytest
+from pytz import utc
 
 from main.utils import webpack_dev_server_url
 from main.templatetags.render_bundle import render_bundle, public_path
