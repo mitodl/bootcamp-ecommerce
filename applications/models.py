@@ -84,8 +84,32 @@ def _get_resume_upload_path(instance, filename):
     return f"resumes/{instance.user.id}/{uuid4()}_{filename}"
 
 
+class BootcampApplicationQuerySet(models.QuerySet):
+    """Custom queryset for BootcampApplication model"""
+    def prefetch_state_data(self):
+        """Prefetches models that inform the state of bootcamp applications"""
+        return (
+            self.select_related(
+                "user__profile", "order"
+            ).prefetch_related(
+                "submissions", "application_steps"
+            )
+        )
+
+
+class BootcampApplicationManager(models.Manager):
+    """Custom manager for BootcampApplication model"""
+    def get_queryset(self):  # pylint:disable=missing-docstring
+        return BootcampApplicationQuerySet(self.model, using=self._db)
+
+    def prefetch_state_data(self):
+        """Prefetches models that inform the state of bootcamp applications"""
+        return self.get_queryset().prefetch_state_data()
+
+
 class BootcampApplication(TimestampedModel):
     """A user's application to a run of a bootcamp"""
+    objects = BootcampApplicationManager()
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
