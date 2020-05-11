@@ -33,6 +33,7 @@ batch_recipient_arg = [('a@example.com', None), ('b@example.com', {"name": "B"})
 individual_recipient_arg = 'a@example.com'
 
 
+# pylint: disable=redefined-outer-name
 @pytest.fixture
 def mock_post(mocker, mocked_json):
     """Mock post with successful json response"""

@@ -32,6 +32,7 @@ def line():
     yield LineFactory.create()
 
 
+# pylint: disable=redefined-outer-name
 def test_orderpartial_serializer(line):
     """
     Test order partial serializer result

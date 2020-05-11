@@ -164,8 +164,8 @@ def test_save_token_update():
     ['get', '/users?testing=true', '{}users?testing=true', {}],
     ['put', 'installments/2', '{}installments/2', {'data': {'transaction': 1}}],
     ['post', 'transactions', '{}transactions', {'data': {'application': 3}}]
-])
-def test_oauth_requests(settings, mocker, method, url, full_url, kwargs):  # pylint: disable=too-many-arguments
+])  # pylint: disable=too-many-arguments
+def test_oauth_requests(settings, mocker, method, url, full_url, kwargs):
     """Test that OAuth2Session calls the correct request method with correct arguments"""
     settings.SMAPPLY_BASE_URL = "http://test.bootcamp.zzz"
 
