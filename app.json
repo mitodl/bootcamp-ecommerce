@@ -312,6 +312,10 @@
       "description": "The API url for mailfun",
       "required": false
     },
+    "MEDIA_ROOT": {
+      "description": "Django MEDIA_ROOT setting",
+      "required": false
+    },
     "MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS": {
       "description": "Maximum age for feature flag cookies",
       "required": false

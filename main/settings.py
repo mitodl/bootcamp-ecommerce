@@ -606,7 +606,7 @@ SITE_NAME = get_string(
 )
 WAGTAIL_SITE_NAME = SITE_NAME
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = get_string("MEDIA_ROOT", os.path.join(BASE_DIR, "media"), description="Django MEDIA_ROOT setting")
 MEDIA_URL = "/media/"
 
 BOOTCAMP_ECOMMERCE_USE_S3 = get_bool(
