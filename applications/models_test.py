@@ -4,6 +4,7 @@ from operator import or_
 import pytest
 
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
 from applications.constants import SubmissionTypes
@@ -11,7 +12,9 @@ from applications.models import (
     ApplicationStepSubmission,
     APP_SUBMISSION_MODELS,
 )
-from applications.factories import BootcampRunApplicationStepFactory, ApplicationStepSubmissionFactory
+from applications.factories import BootcampRunApplicationStepFactory, ApplicationStepSubmissionFactory, \
+    BootcampApplicationFactory
+from applications.constants import AppStates
 from klasses.factories import BootcampFactory, BootcampRunFactory
 
 
@@ -35,6 +38,30 @@ def test_submission_types():
     assert (
         ApplicationStepSubmission._meta.get_field("content_type").get_limit_choices_to() == expected_content_type_limit
     )  # pylint: disable=protected-access
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("file_name,expected", [
+    ('resume.pdf', True),
+    ('resume', False),
+    ('resume.doc', True),
+    ('resume.docx', True),
+    ('resume.png', False)
+])
+def test_bootcamp_application_resume_file_validation(file_name, expected):
+    """
+    A BootcampApplication should raise an exception if profile is not complete or extension is not allowed
+    """
+    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_RESUME)
+    resume_file = SimpleUploadedFile(file_name, b'file_content')
+
+    if expected:
+        bootcamp_application.upload_resume(resume_file)
+        assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS
+    else:
+        with pytest.raises(ValidationError):
+            bootcamp_application.upload_resume(resume_file)
+        assert bootcamp_application.state == AppStates.AWAITING_RESUME
 
 
 @pytest.mark.django_db

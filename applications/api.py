@@ -59,3 +59,25 @@ def derive_application_state(bootcamp_application):  # pylint: disable=too-many-
     if bootcamp_application.order is None or bootcamp_application.order.status != Order.FULFILLED:
         return AppStates.AWAITING_PAYMENT.value
     return AppStates.COMPLETE.value
+
+
+class InvalidApplicationException(Exception):
+    """
+    Custom exception for BootcampApplication
+    """
+
+
+def process_upload_resume(resume_file, bootcamp_application):
+    """
+    Process the resume file and save it to BootcampApplication
+
+    Args:
+        resume_file (request.FILES['file']): file profided by the user
+        bootcamp_application (BootcampApplication): A bootcamp application
+
+    """
+    if bootcamp_application.state == AppStates.AWAITING_PROFILE_COMPLETION:
+        raise InvalidApplicationException("The BootcampApplication is still awaiting profile completion")
+    bootcamp_application.upload_resume(resume_file)
+    # when state transition happens need to save manually
+    bootcamp_application.save()
