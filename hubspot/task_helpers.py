@@ -6,7 +6,7 @@ from hubspot import tasks
 from klasses.models import PersonalPrice
 
 
-def sync_hubspot_user(profile):
+def sync_hubspot_user(user):
     """
     Trigger celery task to sync a Profile to Hubspot
 
@@ -14,7 +14,7 @@ def sync_hubspot_user(profile):
         profile (Profile): The profile to sync
     """
     if settings.HUBSPOT_API_KEY:
-        tasks.sync_contact_with_hubspot.delay(profile.id)
+        tasks.sync_contact_with_hubspot.delay(user.id)
 
 
 def sync_hubspot_deal(personal_price):

@@ -399,10 +399,6 @@
       "description": "Refresh token for SMApply API",
       "required": true
     },
-    "SMAPPLY_USER_SYNC_FREQUENCY": {
-      "description": "How often in seconds to sync SMApply user data",
-      "required": false
-    },
     "SMAPPLY_WEBHOOK_AUTH_TOKEN": {
       "description": "Authentication token for SMApply webhooks",
       "required": true

@@ -28,9 +28,9 @@ ASSOCIATED_DEAL_RE = re.compile(fr"\[hs_assoc__deal_id: (.+)\]")
 
 
 @app.task
-def sync_contact_with_hubspot(profile_id):
+def sync_contact_with_hubspot(user_id):
     """Send a sync-message to sync a user with a hubspot contact"""
-    body = make_contact_sync_message(profile_id)
+    body = make_contact_sync_message(user_id)
     if not body[0].get('propertyNameToValues', {}).get('email'):
         return  # Skip if message is missing required field
 

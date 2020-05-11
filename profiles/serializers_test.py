@@ -151,7 +151,7 @@ def test_update_user_serializer(
     serializer.save()
     assert user.legal_address.street_address_1 == sample_address.get("street_address_1")
     if hubspot_api_key is not None:
-        mock_user_sync.assert_called_with(user.profile.id)
+        mock_user_sync.assert_called_with(user.id)
     else:
         mock_user_sync.assert_not_called()
 
@@ -175,7 +175,7 @@ def test_create_user_serializer(
     assert serializer.is_valid()
     user = serializer.save()
     if hubspot_api_key is not None:
-        mock_user_sync.assert_called_with(user.profile.id)
+        mock_user_sync.assert_called_with(user.id)
     else:
         mock_user_sync.assert_not_called()
 
