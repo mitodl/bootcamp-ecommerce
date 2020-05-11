@@ -306,7 +306,7 @@
     },
     "MAILGUN_SENDER_DOMAIN": {
       "description": "The domain to send mailgun email through",
-      "required": true
+      "required": false
     },
     "MAILGUN_URL": {
       "description": "The API url for mailfun",

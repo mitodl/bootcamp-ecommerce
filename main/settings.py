@@ -475,7 +475,6 @@ MAILGUN_SENDER_DOMAIN = get_string(
     "MAILGUN_SENDER_DOMAIN",
     None,
     description="The domain to send mailgun email through",
-    required=True,
 )
 
 BOOTCAMP_REPLY_TO_ADDRESS = get_string(
