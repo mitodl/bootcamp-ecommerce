@@ -238,6 +238,7 @@ def make_contact_sync_message(user_id):
     properties["work_experience"] = properties.pop("years_experience", None)
     if "street_address" in properties:
         properties["street_address"] = "\n".join(properties.pop("street_address"))
+    # Use profile id to maintain consistency with existing hubspot contacts
     return [make_sync_message(user.profile.id, properties)]
 
 
