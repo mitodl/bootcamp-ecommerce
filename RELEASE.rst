@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Version 0.40.1 (Released May 11, 2020)
+--------------
+
+- pre_commit and detect-secrets (#422)
+- Fixed 'Klass' reference in jobma app
+- Initial work for supporting Jobma (#444)
+- Renamed 'klass' model various code references
+- Basic Bootcamp Run Page
+
 Version 0.40.0 (Released May 06, 2020)
 --------------
 
