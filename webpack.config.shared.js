@@ -4,15 +4,33 @@ const webpack = require("webpack")
 module.exports = {
   config: {
     entry: {
-      root:  ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/root"],
-      sentry_client: './static/js/entry/sentry_client.js',
-      style: "./static/js/entry/style"
+      root: [
+        "core-js/stable",
+        "regenerator-runtime/runtime",
+        "./static/js/entry/root"
+      ],
+      sentry_client: "./static/js/entry/sentry_client.js",
+      style:         "./static/js/entry/style",
+      third_party:   "./static/js/entry/third-party"
     },
     module: {
       rules: [
         {
           test: /\.(svg|ttf|woff|woff2|eot|gif)$/,
           use:  "url-loader"
+        },
+        {
+          test: require.resolve("jquery"),
+          use:  [
+            {
+              loader:  "expose-loader",
+              options: "jQuery"
+            },
+            {
+              loader:  "expose-loader",
+              options: "$"
+            }
+          ]
         }
       ]
     },

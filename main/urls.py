@@ -12,6 +12,7 @@ from django.views.generic import TemplateView
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.images.views.serve import ServeView
 
 from main.views import (
     index,
@@ -61,6 +62,11 @@ urlpatterns = [
     path("profile/", react, name="profile-view"),
     path("profile/edit/", react, name="profile-edit"),
     # Wagtail
+    re_path(
+        r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",
+        ServeView.as_view(),
+        name="wagtailimages_serve",
+    ),
     re_path(r'^cms/', include(wagtailadmin_urls)),
     re_path(r'^documents/', include(wagtaildocs_urls)),
     re_path(r'bootcamps/', include(wagtail_urls)),

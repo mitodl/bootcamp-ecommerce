@@ -5,27 +5,28 @@
 {% block title %}{{ site_name }} | {{ page.title }}{% endblock %}
 
 {% block content %}
-    <div class="header">
-        {% image page.header_image fill-1920x1080 %}
-        <div class="d-flex flex-column container-fluid">
-            <div class="row flex-grow-1"></div>
-            <div class="row">
-                <div class="col-md-10 offset-md-2 title">
-                    <h1>{{ page.title }}</h1>
-                    <h2>{{ page.subhead }}</h2>
-                    <h3>{{ page.bootcamp_run.start_date|date }} - {{ page.bootcamp_run.end_date|date }}</h3>
-                </div>
-            </div>
-            <div class="row flex-grow-1"></div>
-            <div class="row">
-                <div class="col-md-8 col-sm-12 bg-white py-5">
-                    <div class="row">
-                        <div class="col-md-10 offset-md-2 col-sm-12 border-left">
-                            {{ page.description|richtext }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="header">
+      {% image page.header_image fill-1920x1080 %}
+      <div class="d-flex flex-column container-fluid">
+          <div class="row flex-grow-1"></div>
+          <div class="row">
+              <div class="col-md-10 offset-md-2 title">
+                  <h1>{{ page.title }}</h1>
+                  <h2>{{ page.subhead }}</h2>
+                  <h3>{{ page.bootcamp_run.start_date|date }} - {{ page.bootcamp_run.end_date|date }}</h3>
+              </div>
+          </div>
+          <div class="row flex-grow-1"></div>
+          <div class="row">
+              <div class="col-md-8 col-sm-12 bg-white py-5">
+                  <div class="row">
+                      <div class="col-md-10 offset-md-2 col-sm-12 border-left">
+                          {{ page.description|richtext }}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
 {% endblock %}
