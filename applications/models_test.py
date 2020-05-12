@@ -52,16 +52,16 @@ def test_bootcamp_application_resume_file_validation(file_name, expected):
     """
     A BootcampApplication should raise an exception if profile is not complete or extension is not allowed
     """
-    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_RESUME)
+    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_RESUME.value)
     resume_file = SimpleUploadedFile(file_name, b'file_content')
 
     if expected:
         bootcamp_application.upload_resume(resume_file)
-        assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS
+        assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS.value
     else:
         with pytest.raises(ValidationError):
             bootcamp_application.upload_resume(resume_file)
-        assert bootcamp_application.state == AppStates.AWAITING_RESUME
+        assert bootcamp_application.state == AppStates.AWAITING_RESUME.value
 
 
 @pytest.mark.django_db
