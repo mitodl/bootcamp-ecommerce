@@ -161,7 +161,6 @@ class Profile(TimestampedModel):
     years_experience = models.IntegerField(
         null=True, blank=True, choices=YRS_EXPERIENCE_CHOICES
     )
-    leadership_level = models.CharField(max_length=60, blank=True, default="")
     highest_education = models.CharField(
         max_length=60, blank=True, default="", choices=HIGHEST_EDUCATION_CHOICES
     )

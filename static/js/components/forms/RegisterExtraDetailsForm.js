@@ -2,7 +2,8 @@
 import React from "react"
 import { Formik, Form } from "formik"
 
-import { ProfileFields, profileValidation } from "./ProfileFormFields"
+import { profileValidation } from "../../lib/validation"
+import { ProfileFields } from "./ProfileFormFields"
 
 type Props = {
   onSubmit: Function
