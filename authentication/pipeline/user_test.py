@@ -221,14 +221,16 @@ def test_user_password_not_exists(rf):
             flow=SocialAuthState.FLOW_LOGIN,
         )
 
-
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "has_user,is_api_enabled", [(False, False), (True, False), (True, True)]
 )
-def test_create_user_via_email_exit(mocker, user, has_user, is_api_enabled):
+def test_create_user_via_email_exit(mocker, has_user, is_api_enabled):
     """
     Tests that create_user_via_email returns if the user exists or the api is disabled
     """
+    user = UserFactory.create()
+    user.set_password("123")
     mock_strategy = mocker.Mock()
     mock_strategy.is_api_enabled.return_value = is_api_enabled
     mock_backend = mocker.Mock()
@@ -251,39 +253,38 @@ def test_create_user_via_email(mocker, mock_email_backend, mock_create_user_stra
     Tests that create_user_via_email creates a user via social_core.pipeline.user.create_user_via_email,
     generates a username, and sets a name and password
     """
-    email = "user@example.com"
-    generated_username = "testuser123"
-    fake_user = UserFactory.build(username=generated_username)
+    user = UserFactory.create()
     patched_usernameify = mocker.patch(
-        "authentication.pipeline.user.usernameify", return_value=generated_username
+        "authentication.pipeline.user.usernameify", return_value=user.username
     )
     patched_create_user = mocker.patch(
         "authentication.pipeline.user.create_user_with_generated_username",
-        return_value=fake_user,
+        return_value=user,
     )
 
     response = user_actions.create_user_via_email(
         mock_create_user_strategy,
         mock_email_backend,
-        details=dict(email=email),
+        details=dict(email=user.email),
         pipeline_index=0,
         flow=SocialAuthState.FLOW_REGISTER,
+        user=None
     )
     assert response == {
-        "user": fake_user,
-        "username": generated_username,
+        "user": user,
+        "username": user.username,
         "is_new": True,
     }
     request_data = mock_create_user_strategy.request_data()
     patched_usernameify.assert_called_once_with(
-        request_data["profile"]["name"], email=email
+        request_data["profile"]["name"], email=user.email
     )
     patched_create_user.assert_called_once()
     # Confirm that a UserSerializer object was passed to create_user_with_generated_username, and
     # that it was instantiated with the data we expect.
     serializer = patched_create_user.call_args_list[0][0][0]
-    assert serializer.initial_data["username"] == generated_username
-    assert serializer.initial_data["email"] == email
+    assert serializer.initial_data["username"] == user.username
+    assert serializer.initial_data["email"] == user.email
     assert serializer.initial_data["profile"]["name"] == request_data["profile"]["name"]
     assert serializer.initial_data["password"] == request_data["password"]
 

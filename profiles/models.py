@@ -19,6 +19,7 @@ from profiles.constants import (
     COMPANY_SIZE_CHOICES,
     YRS_EXPERIENCE_CHOICES,
     HIGHEST_EDUCATION_CHOICES,
+    COUNTRIES_REQUIRING_POSTAL_CODE,
 )
 
 
@@ -132,6 +133,22 @@ class LegalAddress(TimestampedModel):
             if line
         ]
 
+    @property
+    def is_complete(self):
+        """Returns True if the profile is complete"""
+        country = pycountry.countries.get(alpha_2=self.country)
+        return all(
+            (
+                self.first_name,
+                self.last_name,
+                self.street_address,
+                self.city,
+                self.country,
+                self.state_or_territory or country not in COUNTRIES_REQUIRING_POSTAL_CODE,
+                self.postal_code or country not in COUNTRIES_REQUIRING_POSTAL_CODE,
+            )
+        )
+
 
 class Profile(TimestampedModel):
     """Used to store information about the User"""
@@ -168,7 +185,19 @@ class Profile(TimestampedModel):
     @property
     def is_complete(self):
         """Returns True if the profile is complete"""
-        return all((self.gender, self.birth_year, self.company, self.job_title))
+        return all(
+            (
+                self.gender,
+                self.birth_year,
+                self.company,
+                self.job_title,
+                self.industry,
+                self.job_function,
+                self.company_size,
+                self.years_experience,
+                self.highest_education,
+            )
+        )
 
     def __str__(self):
         return "Profile for user {}".format(self.user)

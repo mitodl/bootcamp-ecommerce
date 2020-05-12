@@ -1,4 +1,7 @@
 """User constants"""
+import pycountry
+
+
 USERNAME_MAX_LEN = 30
 
 
@@ -48,4 +51,9 @@ HIGHEST_EDUCATION_CHOICES = (
     ("Elementary/primary school", "Elementary/primary school"),
     ("No formal education", "No formal education"),
     ("Other education", "Other education"),
+)
+
+COUNTRIES_REQUIRING_POSTAL_CODE = (
+    pycountry.countries.get(alpha_2='US'),
+    pycountry.countries.get(alpha_2='CA')
 )
