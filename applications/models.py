@@ -130,7 +130,7 @@ class BootcampApplication(TimestampedModel):
     )
     state = FSMField(default=AppStates.AWAITING_PROFILE_COMPLETION.value, choices=VALID_APP_STATE_CHOICES)
 
-    @transition(field=state, source='*', target=AppStates.COMPLETE.value)
+    @transition(field=state, source=AppStates.AWAITING_PAYMENT.value, target=AppStates.COMPLETE.value)
     def complete(self):
         """Mark the application as completed"""
 

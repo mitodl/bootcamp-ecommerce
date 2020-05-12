@@ -4,6 +4,7 @@ import logging
 
 from django.conf import settings
 from django.urls import reverse
+from django_fsm import TransitionNotAllowed
 from rest_framework import status as statuses
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView
@@ -11,7 +12,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from applications.constants import AppStates
 from applications.models import BootcampApplication
 from ecommerce.api import (
     create_unfulfilled_order,
@@ -142,6 +142,8 @@ class OrderFulfillmentView(APIView):
                 application.save()
             except BootcampApplication.DoesNotExist:
                 log.exception("Missing application for order %d. Unable to set application state.", order.id)
+            except TransitionNotAllowed:
+                log.exception("Application received full payment but state cannot transition to COMPLETE")
 
         try:
             if run.source == ApplicationSource.FLUIDREVIEW:

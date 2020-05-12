@@ -168,7 +168,6 @@ def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid)
     )
 
 
-
 def test_missing_fields(client, mocker):
     """
     If CyberSource POSTs with fields missing, we should at least save it in a receipt.
