@@ -2,7 +2,6 @@
 from uuid import uuid4
 from functools import reduce
 from operator import or_
-import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
