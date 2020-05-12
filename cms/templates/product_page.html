@@ -5,6 +5,7 @@
 {% block title %}{{ site_name }} | {{ page.title }}{% endblock %}
 
 {% block content %}
+  {% include "top_nav.html" %}
   <div class="header">
       {% image page.header_image fill-1920x1080 %}
       <div class="d-flex flex-column container-fluid">
