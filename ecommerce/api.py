@@ -12,9 +12,11 @@ import uuid
 from django.conf import settings
 from django.db import transaction
 from django.db.models.aggregates import Sum
+from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
+from applications.models import BootcampApplication
 from backends.utils import get_social_username
 from main.utils import remove_html_tags
 from ecommerce.exceptions import (
@@ -25,8 +27,12 @@ from ecommerce.models import (
     Line,
     Order,
 )
+from fluidreview.api import post_payment as post_payment_fluid
+from hubspot.task_helpers import sync_hubspot_deal_from_order
 from klasses.bootcamp_admissions_client import BootcampAdmissionClient
-from klasses.models import BootcampRun, PersonalPrice
+from klasses.constants import ApplicationSource
+from klasses.models import BootcampRun, BootcampRunEnrollment
+from smapply.api import post_payment as post_payment_sma
 
 
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -53,24 +59,23 @@ def get_total_paid(user, run_key):
     ).aggregate(price=Sum('price'))['price'] or Decimal(0)
 
 
-def is_paid_in_full(*, user, run_key):
+def is_paid_in_full(*, user, bootcamp_run):
     """
     Is the bootcamp run paid for in full for the user?
 
     Args:
         user (User):
             The purchaser of the bootcamp run
-        run_key (int):
-            A bootcamp run key
+        bootcamp_run (BootcampRun):
+            A bootcamp run
 
     Returns:
         bool: Whether the run is fully paid for
     """
-    total_paid = get_total_paid(user=user, run_key=run_key)
-    try:
-        price = PersonalPrice.objects.get(bootcamp_run__run_key=run_key, user=user).price
-    except PersonalPrice.DoesNotExist:
-        price = BootcampRun.objects.get(run_key=run_key).price
+    total_paid = get_total_paid(user=user, run_key=bootcamp_run.run_key)
+    price = bootcamp_run.personal_prices.values_list("price", flat=True).first()
+    if price is None:
+        price = bootcamp_run.price
     return total_paid >= price
 
 
@@ -265,3 +270,43 @@ def make_reference_id(order):
             A reference number for use with CyberSource to keep track of orders
     """
     return "{}{}-{}".format(_REFERENCE_NUMBER_PREFIX, settings.CYBERSOURCE_REFERENCE_PREFIX, order.id)
+
+
+def complete_order(order):
+    """
+    Once an order is fulfilled, we need to create an enrollment and notify other services.
+
+    Args:
+        order (Order): An order which has just been fulfilled
+    """
+    run = order.get_bootcamp_run()
+    if is_paid_in_full(user=order.user, bootcamp_run=run):
+        BootcampRunEnrollment.objects.get_or_create(
+            user=order.user,
+            bootcamp_run=run,
+        )
+
+        try:
+            application = order.applications.get()
+            try:
+                application.complete()
+                application.save()
+            except TransitionNotAllowed:
+                log.exception(
+                    "Application received full payment but state cannot transition to COMPLETE from %s for order %d",
+                    application.state,
+                    order.id,
+                )
+        except BootcampApplication.DoesNotExist:
+            log.exception("Missing application for order %d. Unable to set application state.", order.id)
+
+    try:
+        if run.source == ApplicationSource.FLUIDREVIEW:
+            post_payment_fluid(order)
+        else:
+            post_payment_sma(order)
+    except:  # pylint: disable=bare-except
+        log.exception('Error occurred posting payment to FluidReview for order %s', order)
+
+    # Sync order data with hubspot
+    sync_hubspot_deal_from_order(order)

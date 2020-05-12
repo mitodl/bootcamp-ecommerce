@@ -132,7 +132,7 @@ def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid)
         'ecommerce.views.MailgunClient.send_individual_email',
     )
     mockapi = mocker.patch('fluidreview.api.FluidReviewAPI.put', side_effect=side_effect)
-    paid_in_full_mock = mocker.patch('ecommerce.views.is_paid_in_full', return_value=has_paid)
+    paid_in_full_mock = mocker.patch('ecommerce.api.is_paid_in_full', return_value=has_paid)
 
     application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_PAYMENT.value,
@@ -156,7 +156,7 @@ def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid)
     assert order_audit.order == order
     assert order_audit.data_before == data_before
     assert order_audit.data_after == order.to_dict()
-    paid_in_full_mock.assert_called_once_with(user=user, run_key=bootcamp_run.run_key)
+    paid_in_full_mock.assert_called_once_with(user=user, bootcamp_run=bootcamp_run)
 
     if has_application:
         application.refresh_from_db()

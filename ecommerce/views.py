@@ -4,7 +4,6 @@ import logging
 
 from django.conf import settings
 from django.urls import reverse
-from django_fsm import TransitionNotAllowed
 from rest_framework import status as statuses
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView
@@ -12,12 +11,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from applications.models import BootcampApplication
 from ecommerce.api import (
+    complete_order,
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
     get_new_order_by_reference_number,
-    is_paid_in_full,
 )
 from ecommerce.constants import (
     CYBERSOURCE_DECISION_ACCEPT,
@@ -30,11 +28,7 @@ from ecommerce.models import (
 )
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
-from fluidreview.api import post_payment as post_payment_fluid
 from hubspot.task_helpers import sync_hubspot_deal_from_order
-from smapply.api import post_payment as post_payment_sma
-from klasses.constants import ApplicationSource
-from klasses.models import BootcampRunEnrollment
 from mail.api import MailgunClient
 
 
@@ -129,32 +123,7 @@ class OrderFulfillmentView(APIView):
 
         order.save_and_log(acting_user=None)
 
-        run = order.get_bootcamp_run()
-        if is_paid_in_full(user=order.user, run_key=run.run_key):
-            BootcampRunEnrollment.objects.get_or_create(
-                user=order.user,
-                bootcamp_run=run,
-            )
-
-            try:
-                application = order.applications.get()
-                application.complete()
-                application.save()
-            except BootcampApplication.DoesNotExist:
-                log.exception("Missing application for order %d. Unable to set application state.", order.id)
-            except TransitionNotAllowed:
-                log.exception("Application received full payment but state cannot transition to COMPLETE")
-
-        try:
-            if run.source == ApplicationSource.FLUIDREVIEW:
-                post_payment_fluid(order)
-            else:
-                post_payment_sma(order)
-        except:  # pylint: disable=bare-except
-            log.exception('Error occurred posting payment to FluidReview for order %s', order)
-
-        # Sync order data with hubspot
-        sync_hubspot_deal_from_order(order)
+        complete_order(order)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)
