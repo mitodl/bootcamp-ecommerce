@@ -375,7 +375,7 @@ def test_status(bootcamp_run, user):
     [-1, False],
     [0, True],
     [1, True]
-])
+])  # pylint: disable=too-many-arguments
 def test_is_paid_in_full(mocker, bootcamp_run, user, delta_paid, has_personal_price, expected):
     """
     is_paid_in_full should return true if the payments match or exceed the price of the run

@@ -100,6 +100,7 @@ def test_payment(mocker, client):
     create_unfulfilled_order_mock.assert_any_call(user, bootcamp_run.run_key, bootcamp_run.price)
 
 
+# pylint: disable=too-many-locals
 @pytest.mark.parametrize("side_effect", [None, FluidReviewException])
 @pytest.mark.parametrize("has_application", [True, False])
 @pytest.mark.parametrize("has_paid", [True, False])
