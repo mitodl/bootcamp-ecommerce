@@ -50,6 +50,7 @@ class TestViews(TestCase):
         assert set(bundles) == {
             'sentry_client',
             'style',
+            'third_party',
         }
         js_settings = json.loads(resp.context['js_settings_json'])
         assert js_settings == {
@@ -66,7 +67,8 @@ class TestViews(TestCase):
     def test_index_logged_in(self):
         """Verify the user is redirected to pay if logged in"""
         self.client.force_login(self.user)
-        assert self.client.get(reverse('bootcamp-index')).status_code == HTTP_302_FOUND
+        assert self.client.get(reverse('bootcamp-index')
+                               ).status_code == HTTP_302_FOUND
 
     def test_index_logged_in_post(self):
         """
@@ -105,6 +107,7 @@ class TestViews(TestCase):
             'root',
             'sentry_client',
             'style',
+            'third_party',
         }
 
         js_settings = json.loads(resp.context['js_settings_json'])

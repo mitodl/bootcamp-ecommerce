@@ -1,0 +1,108 @@
+.instructor-block {
+  color: $matterhorn;
+
+  .subheading {
+    margin: 10px 0;
+  }
+
+  hr {
+    border-top: 3px solid $matterhorn;
+    margin: 0;
+  }
+
+  .instructor {
+    img {
+      width: 200px;
+      height: 200px;
+    }
+
+    h5 {
+      padding-top: 10px;
+    }
+
+    p {
+      margin-top: -8px;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.slider {
+  position: relative;
+  margin: 0 -15px;
+
+  &:after {
+    display: block;
+    clear: both;
+    content: "";
+  }
+
+  .slide {
+    @include media-breakpoint-up(xl) {
+      padding: 0 60px;
+    }
+
+    display: inline;
+    float: left;
+    width: 33.333%;
+    padding: 0 30px;
+  }
+
+  .slick-list {
+    @include media-breakpoint-up(xl) {
+      margin: 0 -45px;
+    }
+
+    overflow: hidden;
+    margin: 0 -15px;
+  }
+
+  .slide-holder {
+    background: white;
+    padding: 0 0 10px;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: 20px;
+    line-height: 26px;
+    overflow: hidden;
+    font-weight: 500;
+  }
+
+  img {
+    width: 100%;
+    display: block;
+    margin: 0 auto 20px;
+  }
+
+  h2 {
+    margin: 0 0 20px;
+    font-size: 28px;
+    line-height: 28px;
+    font-weight: bold;
+    color: $navy-blue;
+  }
+
+  .text-holder {
+    overflow-y: auto;
+    height: 78px;
+    padding: 0 10px;
+    word-wrap: break-word;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .slick-prev,
+  .slick-next {
+    @include media-breakpoint-up(md) {
+      background: $gray-42;
+      color: $white;
+
+      &:hover {
+        background: $primary;
+      }
+    }
+  }
+}
