@@ -54,6 +54,6 @@ def create_interview(interview):
         interview.interview_url = result["interview_link"]
         interview.save_and_log(None)
     else:
-        log.error("Interview link not found in payload %s", result)
+        log.error("Interview link not found in payload - %s", result)
 
     # Now we wait for the postback
