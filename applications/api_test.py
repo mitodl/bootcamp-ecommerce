@@ -126,7 +126,7 @@ def test_process_upload_resume():
     """
     process_upload_resume should raise an exception if in wrong state
     """
-    existing_app = BootcampApplicationFactory(state=AppStates.AWAITING_PROFILE_COMPLETION)
+    existing_app = BootcampApplicationFactory(state=AppStates.AWAITING_PROFILE_COMPLETION.value)
     resume_file = SimpleUploadedFile('resume.pdf', b'file_content')
     with pytest.raises(InvalidApplicationException):
         process_upload_resume(resume_file, existing_app)

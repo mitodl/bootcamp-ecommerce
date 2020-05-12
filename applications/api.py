@@ -2,6 +2,7 @@
 from django.db import transaction
 
 from applications.constants import AppStates, REVIEW_STATUS_REJECTED
+from applications.exceptions import InvalidApplicationException
 from applications.models import BootcampApplication
 from ecommerce.models import Order
 
@@ -61,22 +62,16 @@ def derive_application_state(bootcamp_application):  # pylint: disable=too-many-
     return AppStates.COMPLETE.value
 
 
-class InvalidApplicationException(Exception):
-    """
-    Custom exception for BootcampApplication
-    """
-
-
 def process_upload_resume(resume_file, bootcamp_application):
     """
     Process the resume file and save it to BootcampApplication
 
     Args:
-        resume_file (request.FILES['file']): file profided by the user
+        resume_file (File): file profided by the user
         bootcamp_application (BootcampApplication): A bootcamp application
 
     """
-    if bootcamp_application.state == AppStates.AWAITING_PROFILE_COMPLETION:
+    if bootcamp_application.state == AppStates.AWAITING_PROFILE_COMPLETION.value:
         raise InvalidApplicationException("The BootcampApplication is still awaiting profile completion")
     bootcamp_application.upload_resume(resume_file)
     # when state transition happens need to save manually

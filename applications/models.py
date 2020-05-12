@@ -20,6 +20,7 @@ from applications.constants import (
 )
 from applications.utils import validate_file_extension
 from main.models import TimestampedModel, ValidateOnSaveMixin
+from main.utils import now_in_utc
 
 
 class ApplicationStep(models.Model):
@@ -135,14 +136,14 @@ class BootcampApplication(TimestampedModel):
 
     @transition(
         field=state,
-        source=[AppStates.AWAITING_RESUME, AppStates.AWAITING_USER_SUBMISSIONS],
-        target=AppStates.AWAITING_USER_SUBMISSIONS
+        source=[AppStates.AWAITING_RESUME.value, AppStates.AWAITING_USER_SUBMISSIONS.value],
+        target=AppStates.AWAITING_USER_SUBMISSIONS.value
     )
     def upload_resume(self, resume_file):
         """Save resume and make sure that the state can be transitioned to a new state"""
         validate_file_extension(resume_file)
         self.resume_file = resume_file
-        self.resume_upload_date = datetime.datetime.now()
+        self.resume_upload_date = now_in_utc()
         self.save()
 
     def __str__(self):
