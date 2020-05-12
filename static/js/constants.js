@@ -77,17 +77,6 @@ export const EMPLOYMENT_FUNCTION = [
   "Other"
 ]
 
-export const EMPLOYMENT_LEVEL = [
-  "Upper Management",
-  "Middle Management",
-  "Junior First Line Management",
-  "Individual Contributor",
-  "Consultant/Contractor",
-  "Temporary Employee",
-  "Other",
-  "Prefer not to say"
-]
-
 export const HIGHEST_EDUCATION_CHOICES = [
   "Doctorate",
   "Master's or professional degree",
@@ -99,6 +88,15 @@ export const HIGHEST_EDUCATION_CHOICES = [
   "No formal education",
   "Other education"
 ]
+
+export const ADDRESS_LINES_MAX = 4
+export const US_ALPHA_2 = "US"
+export const CA_ALPHA_2 = "CA"
+
+export const US_POSTAL_CODE_REGEX = /[0-9]{5}(-[0-9]{4}){0,1}/
+export const CA_POSTAL_CODE_REGEX = /[A-Z][0-9][A-Z] [0-9][A-Z][0-9]/
+export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
+export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
 
 export const ALERT_TYPE_TEXT = "text"
 export const ALERT_TYPE_UNUSED_COUPON = "unused-coupon"

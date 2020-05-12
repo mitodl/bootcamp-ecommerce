@@ -4,9 +4,9 @@ import { Formik, Form } from "formik"
 
 import {
   passwordValidation,
-  legalAddressValidation,
-  LegalAddressFields
-} from "./ProfileFormFields"
+  legalAddressValidation
+} from "../../lib/validation"
+import { LegalAddressFields } from "./ProfileFormFields"
 
 import type { Country } from "../../flow/authTypes"
 

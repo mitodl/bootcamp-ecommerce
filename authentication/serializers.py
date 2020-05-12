@@ -318,9 +318,6 @@ class RegisterExtraDetailsSerializer(SocialAuthSerializer):
     company_size = serializers.CharField(
         write_only=True, allow_blank=True, required=False
     )
-    leadership_level = serializers.CharField(
-        write_only=True, allow_blank=True, required=False
-    )
     highest_education = serializers.CharField(
         write_only=True, allow_blank=True, required=False
     )

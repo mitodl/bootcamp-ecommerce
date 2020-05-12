@@ -175,12 +175,6 @@ export class ViewProfilePage extends React.Component<Props> {
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col">Leadership Level</div>
-                    <div className="col">
-                      {currentUser.profile.leadership_level}
-                    </div>
-                  </div>
-                  <div className="row">
                     <div className="col">Highest Level of Education</div>
                     <div className="col">
                       {currentUser.profile.highest_education}

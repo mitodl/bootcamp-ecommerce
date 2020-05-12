@@ -3,12 +3,8 @@ import React from "react"
 import { pathOr } from "ramda"
 import { Formik, Form } from "formik"
 
-import {
-  profileValidation,
-  legalAddressValidation,
-  LegalAddressFields,
-  ProfileFields
-} from "./ProfileFormFields"
+import { profileValidation, legalAddressValidation } from "../../lib/validation"
+import { LegalAddressFields, ProfileFields } from "./ProfileFormFields"
 
 import type { Country, User } from "../../flow/authTypes"
 
@@ -26,9 +22,10 @@ const getInitialValues = (user: User) => ({
     ...user.profile,
     // Should be null but React complains about null values in form fields. So we need to convert to
     // string and then back to null on submit.
+    gender:            pathOr("", ["gender"], user.profile),
+    birth_year:        pathOr("", ["birth_year"], user.profile),
     job_function:      pathOr("", ["job_function"], user.profile),
     company_size:      pathOr("", ["company_size"], user.profile),
-    leadership_level:  pathOr("", ["leadership_level"], user.profile),
     years_experience:  pathOr("", ["years_experience"], user.profile),
     highest_education: pathOr("", ["highest_education"], user.profile)
   }

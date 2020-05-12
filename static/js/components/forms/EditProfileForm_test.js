@@ -129,7 +129,6 @@ describe("EditProfileForm", () => {
       const keys = [
         "job_function",
         "company_size",
-        "leadership_level",
         "years_experience",
         "highest_education"
       ]

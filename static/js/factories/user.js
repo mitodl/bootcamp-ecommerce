@@ -43,7 +43,6 @@ export const makeUser = (username: ?string): LoggedInUser => ({
     industry:          "",
     job_title:         casual.word,
     job_function:      "",
-    leadership_level:  "",
     years_experience:  20,
     highest_education: "Doctorate"
   },

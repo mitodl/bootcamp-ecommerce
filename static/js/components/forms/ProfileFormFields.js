@@ -1,121 +1,25 @@
 import React from "react"
 import moment from "moment"
-import { __, find, includes, propEq, range, reverse } from "ramda"
+import { find, includes, propEq, range, reverse } from "ramda"
 import { ErrorMessage, Field, FieldArray } from "formik"
-import * as yup from "yup"
 
 import {
+  ADDRESS_LINES_MAX,
+  CA_ALPHA_2,
+  COUNTRIES_REQUIRING_POSTAL_CODE,
+  COUNTRIES_REQUIRING_STATE,
   EMPLOYMENT_EXPERIENCE,
   EMPLOYMENT_FUNCTION,
   EMPLOYMENT_INDUSTRY,
-  EMPLOYMENT_LEVEL,
   EMPLOYMENT_SIZE,
-  HIGHEST_EDUCATION_CHOICES
+  HIGHEST_EDUCATION_CHOICES,
+  US_ALPHA_2
 } from "../../constants"
 import FormError from "./elements/FormError"
-import { newPasswordFieldValidation } from "../../lib/validation"
 
-const US_ALPHA_2 = "US"
-const CA_ALPHA_2 = "CA"
+import type { Country } from "../../flow/authTypes"
 
-const US_POSTAL_CODE_REGEX = /[0-9]{5}(-[0-9]{4}){0,1}/
-const CA_POSTAL_CODE_REGEX = /[A-Z][0-9][A-Z] [0-9][A-Z][0-9]/
-const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
-const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
-
-const ADDRESS_LINES_MAX = 4
 const seedYear = moment().year()
-
-export const legalAddressValidation = yup.object().shape({
-  profile: yup.object().shape({
-    name: yup
-      .string()
-      .label("Full Name")
-      .trim()
-      .required()
-      .min(2)
-  }),
-  legal_address: yup.object().shape({
-    first_name: yup
-      .string()
-      .label("First Name")
-      .trim()
-      .required(),
-    last_name: yup
-      .string()
-      .label("Last Name")
-      .trim()
-      .required(),
-    city: yup
-      .string()
-      .label("City")
-      .trim()
-      .required(),
-    street_address: yup
-      .array()
-      .label("Street address")
-      .of(yup.string().max(60))
-      .min(1)
-      .max(ADDRESS_LINES_MAX)
-      .compact()
-      .required(),
-    state_or_territory: yup
-      .mixed()
-      .label("State/Territory")
-      .when("country", {
-        is:   includes(__, COUNTRIES_REQUIRING_STATE),
-        then: yup.string().required()
-      }),
-    country: yup
-      .string()
-      .label("Country")
-      .length(2)
-      .required(),
-    postal_code: yup
-      .string()
-      .label("Zip/Postal Code")
-      .trim()
-      .when("country", (country, schema) => {
-        if (country === US_ALPHA_2) {
-          return schema.required().matches(US_POSTAL_CODE_REGEX, {
-            message:
-              "Postal Code must be formatted as either 'NNNNN' or 'NNNNN-NNNN'"
-          })
-        } else if (country === CA_ALPHA_2) {
-          return schema.required().matches(CA_POSTAL_CODE_REGEX, {
-            message: "Postal Code must be formatted as 'ANA NAN'"
-          })
-        }
-      })
-  })
-})
-
-export const passwordValidation = yup.object().shape({
-  password: newPasswordFieldValidation
-})
-
-export const profileValidation = yup.object().shape({
-  profile: yup.object().shape({
-    gender: yup
-      .string()
-      .label("Gender")
-      .required(),
-    birth_year: yup
-      .string()
-      .label("Birth Year")
-      .required(),
-    company: yup
-      .string()
-      .label("Company")
-      .trim()
-      .required(),
-    job_title: yup
-      .string()
-      .label("Job Title")
-      .trim()
-      .required()
-  })
-})
 
 type LegalAddressProps = {
   countries: Array<Country>,
@@ -378,7 +282,7 @@ export const ProfileFields = () => (
     <div className="form-group dotted" />
     <div className="form-group">
       <label htmlFor="profile.industry" className="font-weight-bold">
-        Industry
+        Industry*
       </label>
       <Field
         component="select"
@@ -392,10 +296,11 @@ export const ProfileFields = () => (
           </option>
         ))}
       </Field>
+      <ErrorMessage name="profile.industry" component={FormError} />
     </div>
     <div className="form-group">
       <label htmlFor="profile.job_function" className="font-weight-bold">
-        Job Function
+        Job Function*
       </label>
       <Field
         component="select"
@@ -409,10 +314,11 @@ export const ProfileFields = () => (
           </option>
         ))}
       </Field>
+      <ErrorMessage name="profile.job_function" component={FormError} />
     </div>
     <div className="form-group">
       <label htmlFor="profile.company_size" className="font-weight-bold">
-        Company Size
+        Company Size*
       </label>
       <Field
         component="select"
@@ -426,6 +332,7 @@ export const ProfileFields = () => (
           </option>
         ))}
       </Field>
+      <ErrorMessage name="profile.company_size" component={FormError} />
     </div>
     <div className="form-group">
       <div className="row">
@@ -434,7 +341,7 @@ export const ProfileFields = () => (
             htmlFor="profile.years_experience"
             className="font-weight-bold"
           >
-            Years of Work Experience
+            Years of Work Experience*
           </label>
           <Field
             component="select"
@@ -448,26 +355,7 @@ export const ProfileFields = () => (
               </option>
             ))}
           </Field>
-        </div>
-        <div className="col">
-          <label
-            htmlFor="profile.leadership_level"
-            className="font-weight-bold"
-          >
-            Leadership Level
-          </label>
-          <Field
-            component="select"
-            name="profile.leadership_level"
-            className="form-control"
-          >
-            <option value="">-----</option>
-            {EMPLOYMENT_LEVEL.map((level, i) => (
-              <option key={i} value={level}>
-                {level}
-              </option>
-            ))}
-          </Field>
+          <ErrorMessage name="profile.years_experience" component={FormError} />
         </div>
       </div>
     </div>
@@ -478,7 +366,7 @@ export const ProfileFields = () => (
             htmlFor="profile.highest_education"
             className="font-weight-bold"
           >
-            Highest Level of Education
+            Highest Level of Education*
           </label>
           <Field
             component="select"
@@ -492,6 +380,10 @@ export const ProfileFields = () => (
               </option>
             ))}
           </Field>
+          <ErrorMessage
+            name="profile.highest_education"
+            component={FormError}
+          />
         </div>
       </div>
     </div>

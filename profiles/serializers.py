@@ -167,7 +167,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             "job_title",
             "job_function",
             "years_experience",
-            "leadership_level",
             "highest_education",
             "created_on",
             "updated_on",
@@ -197,7 +196,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "job_title",
             "job_function",
             "years_experience",
-            "leadership_level",
             "highest_education",
         )
 

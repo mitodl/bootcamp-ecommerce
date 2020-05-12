@@ -383,11 +383,6 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
                 "dataType": "STRING",
             },
             {
-                "propertyName": "leadership_level",
-                "targetHubspotProperty": "leadership_level",
-                "dataType": "STRING",
-            },
-            {
                 "propertyName": "highest_education",
                 "targetHubspotProperty": "highest_education",
                 "dataType": "STRING",
