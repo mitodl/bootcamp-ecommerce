@@ -1,6 +1,23 @@
 Release Notes
 =============
 
+Version 0.41.0
+--------------
+
+- Hubspot profile sync update (#488)
+- Update hubspot contact sync code (#459)
+- Fix accidental removal of pylint from pytest.ini (#495)
+- Added internal API for starting applications and setting correct state
+- Fix Jobma webhook permissions check (#489)
+- Moved templatetags tests out of templatetags module to fix build
+- Convert all tests to pytest (#480)
+- Header section for product page - #441
+- Front-end code for profiles, registration (#415)
+- Bump wagtail from 2.8.1 to 2.8.2
+- Moved application submission review fields
+- Pin ddt dependency
+- Fixed model admin, unique constraints, and added factories
+
 Version 0.40.1 (Released May 11, 2020)
 --------------
 
