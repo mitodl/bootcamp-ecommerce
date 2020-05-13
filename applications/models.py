@@ -8,7 +8,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from django_fsm import FSMField
+from django_fsm import FSMField, transition
 
 from applications.constants import (
     SubmissionTypes,
@@ -17,7 +17,9 @@ from applications.constants import (
     VALID_APP_STATE_CHOICES,
     VALID_REVIEW_STATUS_CHOICES
 )
+from applications.utils import validate_file_extension
 from main.models import TimestampedModel, ValidateOnSaveMixin
+from main.utils import now_in_utc
 
 
 class ApplicationStep(models.Model):
@@ -121,6 +123,7 @@ class BootcampApplication(TimestampedModel):
         related_name='applications'
     )
     resume_file = models.FileField(upload_to=_get_resume_upload_path, null=True, blank=True)
+    resume_upload_date = models.DateTimeField(null=True, blank=True)
     order = models.ForeignKey(
         'ecommerce.Order',
         on_delete=models.CASCADE,
@@ -129,6 +132,18 @@ class BootcampApplication(TimestampedModel):
         blank=True
     )
     state = FSMField(default=AppStates.AWAITING_PROFILE_COMPLETION.value, choices=VALID_APP_STATE_CHOICES)
+
+    @transition(
+        field=state,
+        source=[AppStates.AWAITING_RESUME.value, AppStates.AWAITING_USER_SUBMISSIONS.value],
+        target=AppStates.AWAITING_USER_SUBMISSIONS.value
+    )
+    def upload_resume(self, resume_file):
+        """Save resume and make sure that the state can be transitioned to a new state"""
+        validate_file_extension(resume_file)
+        self.resume_file = resume_file
+        self.resume_upload_date = now_in_utc()
+        self.save()
 
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"
