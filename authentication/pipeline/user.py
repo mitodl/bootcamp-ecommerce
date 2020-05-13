@@ -114,12 +114,12 @@ def create_user_via_email(
         )
 
     data["email"] = kwargs.get("email", kwargs.get("details", {}).get("email"))
-    username = usernameify(data["profile"]["name"], email=data["email"])
-    data["username"] = username
 
     is_new = user is None
 
     if is_new:
+        username = usernameify(data["profile"]["name"], email=data["email"])
+        data["username"] = username
         serializer = UserSerializer(data=data)
     else:
         serializer = UserSerializer(user, data=data)

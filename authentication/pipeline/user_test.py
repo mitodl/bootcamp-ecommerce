@@ -257,10 +257,10 @@ def test_create_user_via_email(mocker, mock_email_backend, mock_create_user_stra
         "is_new": is_new,
     }
     request_data = mock_create_user_strategy.request_data()
-    patched_usernameify.assert_called_once_with(
-        request_data["profile"]["name"], email=user.email
-    )
     if is_new:
+        patched_usernameify.assert_called_once_with(
+            request_data["profile"]["name"], email=user.email
+        )
         patched_create_user.assert_called_once()
         # Confirm that a UserSerializer object was passed to create_user_with_generated_username, and
         # that it was instantiated with the data we expect.
@@ -271,6 +271,7 @@ def test_create_user_via_email(mocker, mock_email_backend, mock_create_user_stra
         assert serializer.initial_data["password"] == request_data["password"]
     else:
         patched_create_user.assert_not_called()
+        patched_usernameify.assert_not_called()
 
 
 @pytest.mark.django_db
