@@ -18,6 +18,8 @@ from rest_framework.exceptions import ValidationError
 
 from applications.models import BootcampApplication
 from backends.utils import get_social_username
+from klasses.api import payable_bootcamp_run_keys
+from klasses.models import BootcampRun, BootcampRunEnrollment
 from main.utils import remove_html_tags
 from ecommerce.constants import CYBERSOURCE_DECISION_CANCEL
 from ecommerce.exceptions import (
@@ -28,8 +30,6 @@ from ecommerce.models import (
     Line,
     Order,
 )
-from klasses.bootcamp_admissions_client import BootcampAdmissionClient
-from klasses.models import BootcampRun, BootcampRunEnrollment
 from mail.api import MailgunClient
 
 
@@ -98,8 +98,7 @@ def create_unfulfilled_order(user, run_key, payment_amount):
         # In the near future we should do other checking here based on information from Bootcamp REST API
         raise ValidationError("Incorrect bootcamp run key {}".format(run_key))
 
-    bootcamp_client = BootcampAdmissionClient(user)
-    if not bootcamp_client.can_pay_bootcamp_run(run_key):
+    if not bootcamp_run.run_key in payable_bootcamp_run_keys(user):
         raise ValidationError("User is unable to pay for bootcamp run {}".format(run_key))
 
     if payment_amount <= 0:

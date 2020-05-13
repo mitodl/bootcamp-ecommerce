@@ -32,7 +32,7 @@ def test_bootcamp_run_price(test_data):
 def test_bootcamp_run_personal_price(test_data):
     """Price should be person's custom cost if any or default price"""
     _, bootcamp_run = test_data
-    profile = ProfileFactory.create(fluidreview_id=100)
+    profile = ProfileFactory.create()
     assert bootcamp_run.personal_price(profile.user) == bootcamp_run.price
     personal_price = PersonalPriceFactory.create(bootcamp_run=bootcamp_run, user=profile.user)
     assert bootcamp_run.personal_price(profile.user) == personal_price.price

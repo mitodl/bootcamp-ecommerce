@@ -2,20 +2,18 @@
 Tests for api module
 """
 from decimal import Decimal
-from unittest.mock import PropertyMock
 
 import pytest
 
+from applications.constants import AppStates
+from applications.factories import BootcampApplicationFactory
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order, Line
 from ecommerce.serializers import LineSerializer
-from fluidreview.constants import WebhookParseStatus
-from fluidreview.factories import WebhookRequestFactory
 from klasses.api import (
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
 )
-from klasses.bootcamp_admissions_client import BootcampAdmissionClient
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from klasses.serializers import InstallmentSerializer
 from profiles.factories import ProfileFactory
@@ -32,17 +30,9 @@ def test_data(mocker):
     """
     profile = ProfileFactory.create()
     run_paid = BootcampRunFactory.create()
+    BootcampApplicationFactory.create(bootcamp_run=run_paid, user=profile.user, state=AppStates.AWAITING_PAYMENT.value)
     run_not_paid = BootcampRunFactory.create()
-    WebhookRequestFactory(
-        award_id=run_paid.run_key,
-        user_email=profile.user.email,
-        user_id=profile.fluidreview_id,
-        status=WebhookParseStatus.SUCCEEDED)
-    WebhookRequestFactory(
-        award_id=run_not_paid.run_key,
-        user_email=profile.user.email,
-        user_id=profile.fluidreview_id,
-        status=WebhookParseStatus.SUCCEEDED)
+    BootcampApplicationFactory.create(bootcamp_run=run_not_paid, user=profile.user, state=AppStates.AWAITING_PAYMENT.value)
 
     InstallmentFactory.create(bootcamp_run=run_paid)
     InstallmentFactory.create(bootcamp_run=run_not_paid)
@@ -53,14 +43,14 @@ def test_data(mocker):
     return profile.user, run_paid, run_not_paid
 
 
-def test_serialize_user_bootcamp_run_bootclient_equivalent(test_data):
+def test_serialize_user_bootcamp_run(test_data):
     """
     Test for serialize_user_bootcamp_run to verify that passing or not passing the bootcamp client is equivalent.
     """
     user, run_paid, _ = test_data
 
     assert serialize_user_bootcamp_run(user, run_paid) == serialize_user_bootcamp_run(
-        user, run_paid, BootcampAdmissionClient(user))
+        user, run_paid)
 
 
 def test_serialize_user_run_paid(test_data):
@@ -150,8 +140,7 @@ def test_serialize_user_bootcamp_runs_paid_not_payable(test_data, mocker):
     """
     user, run_paid, run_not_paid = test_data
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
-        new_callable=PropertyMock,
+        'klasses.api.payable_bootcamp_run_keys',
         return_value=[run_not_paid.run_key],
     )
     res = serialize_user_bootcamp_runs(user)

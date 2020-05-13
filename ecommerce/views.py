@@ -29,10 +29,7 @@ from ecommerce.models import (
 )
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
-from fluidreview.api import post_payment as post_payment_fluid
 from hubspot.task_helpers import sync_hubspot_deal_from_order
-from klasses.constants import ApplicationSource
-from smapply.api import post_payment as post_payment_sma
 
 
 log = logging.getLogger(__name__)
@@ -102,14 +99,6 @@ class OrderFulfillmentView(APIView):
             handle_rejected_order(order=order, decision=decision)
         else:
             complete_successful_order(order)
-
-        try:
-            if order.get_bootcamp_run().source == ApplicationSource.FLUIDREVIEW:
-                post_payment_fluid(order)
-            else:
-                post_payment_sma(order)
-        except:  # pylint: disable=bare-except
-            log.exception('Error occurred posting payment to FluidReview for order %s', order)
 
         # Sync order data with hubspot
         sync_hubspot_deal_from_order(order)

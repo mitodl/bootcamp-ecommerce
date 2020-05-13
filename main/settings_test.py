@@ -14,10 +14,6 @@ import semantic_version
 
 from main import envs
 
-REQUIRED = {
-    'FLUIDREVIEW_WEBHOOK_AUTH_TOKEN': 'asdfasdf',
-}
-
 
 def cleanup_settings():
     """Cleanup settings after a test"""
@@ -53,7 +49,6 @@ class TestSettings(TestCase):
         settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': '',
-            **REQUIRED,
         })
         self.assertFalse(settings_vars.get('ADMINS', False))
 
@@ -61,7 +56,6 @@ class TestSettings(TestCase):
         settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_ADMIN_EMAIL': test_admin_email,
-            **REQUIRED,
         })
         self.assertEqual(
             (('Admins', test_admin_email),),
@@ -79,7 +73,6 @@ class TestSettings(TestCase):
         # Check default state is SSL on
         settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            **REQUIRED,
         })
         self.assertEqual(
             settings_vars['DATABASES']['default']['OPTIONS'],
@@ -90,7 +83,6 @@ class TestSettings(TestCase):
         settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': 'True',
-            **REQUIRED,
         })
         self.assertEqual(
             settings_vars['DATABASES']['default']['OPTIONS'],
@@ -101,7 +93,6 @@ class TestSettings(TestCase):
         settings_vars = self.patch_settings({
             'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
             'BOOTCAMP_DB_DISABLE_SSL': 'False',
-            **REQUIRED,
         })
         self.assertEqual(
             settings_vars['DATABASES']['default']['OPTIONS'],

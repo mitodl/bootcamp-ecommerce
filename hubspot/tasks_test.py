@@ -34,12 +34,9 @@ def mock_hubspot_request(mocker):
     yield mocker.patch("hubspot.tasks.send_hubspot_request", autospec=True)
 
 
-def test_sync_contact_with_hubspot(mock_hubspot_request, user_data):
+def test_sync_contact_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a CONTACT sync"""
     profile = ProfileFactory.create()
-    profile.smapply_id = 102132
-    profile.smapply_user_data = user_data
-    profile.save()
     sync_contact_with_hubspot(profile.user.id)
     body = make_contact_sync_message(profile.user.id)
     body[0]["changeOccurredTimestamp"] = ANY
@@ -67,7 +64,7 @@ def test_sync_product_with_hubspot(mock_hubspot_request):
 
 def test_sync_deal_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a DEAL sync"""
-    personal_price = PersonalPriceFactory.create(user__profile__smapply_id=102132)
+    personal_price = PersonalPriceFactory.create()
 
     sync_deal_with_hubspot(personal_price.id)
     body = make_deal_sync_message(personal_price.id)
@@ -79,7 +76,7 @@ def test_sync_deal_with_hubspot(mock_hubspot_request):
 
 def test_sync_line_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a LINE sync"""
-    personal_price = PersonalPriceFactory.create(user__profile__smapply_id=102132)
+    personal_price = PersonalPriceFactory.create()
 
     sync_line_with_hubspot(personal_price.id)
     body = make_line_sync_message(personal_price.id)
@@ -130,7 +127,7 @@ def test_skip_error_checks(settings, mock_hubspot_errors):
 def test_sync_bulk(mocker):
     """Test the hubspot bulk sync function"""
     mock_request = mocker.patch('hubspot.tasks.send_hubspot_request')
-    profile = ProfileFactory(smapply_user_data={'first_name': 'test', 'last_name': 'test', 'email': 'email'})
+    profile = ProfileFactory.create()
     sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")
     mock_request.assert_called_once()
 
@@ -141,7 +138,7 @@ def test_sync_bulk_logs_errors(mocker):
         raise_for_status=Mock(side_effect=HTTPError())))
     mock_log = mocker.patch('hubspot.api.log.exception')
 
-    profile = ProfileFactory(smapply_user_data={'first_name': 'test', 'last_name': 'test', 'email': 'email'})
+    profile = ProfileFactory.create()
     sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")
     assert mock_request.call_count == 3
     mock_log.assert_called_once()

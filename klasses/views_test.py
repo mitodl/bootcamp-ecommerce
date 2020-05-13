@@ -1,16 +1,15 @@
 """
 Tests for views
 """
-from unittest.mock import PropertyMock
-
 import pytest
 from django.urls import reverse
 from rest_framework import status
 
+from applications.constants import AppStates
+from applications.factories import BootcampApplicationFactory
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
-from klasses.conftest import patch_get_admissions
 from klasses.factories import BootcampRunFactory
 from profiles.factories import ProfileFactory
 
@@ -50,8 +49,8 @@ def test_data(mocker):
 
     for _ in range(3):
         bootcamp_run = BootcampRunFactory.create()
+    BootcampApplicationFactory.create(bootcamp_run=bootcamp_run, user=user, state=AppStates.AWAITING_PAYMENT.value)
 
-    patch_get_admissions(mocker)
     # just need one bootcamp run, so returning the last created
     return user, other_user, bootcamp_run
 
@@ -128,7 +127,7 @@ def test_bootcamp_run_list(test_data, client):
     response = client.get(bootcamp_run_list_url)
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()
-    assert len(response_json) == 3
+    assert len(response_json) == 1
     for resp in response_json:
         assert sorted(list(resp.keys())) == sorted(BOOTCAMP_RUN_FIELDS)
 
@@ -139,8 +138,7 @@ def test_bootcamp_run_list_with_no_authorized_runs(test_data, client, mocker):
     """
     user, _, _ = test_data
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
-        new_callable=PropertyMock,
+        'klasses.api.payable_bootcamp_run_keys',
         return_value=[],
     )
     bootcamp_run_list_url = reverse('bootcamp-run-list', kwargs={'username': user.username})
@@ -157,8 +155,7 @@ def test_bootcamp_run_list_paid_with_no_authorized_runs(test_data, fulfilled_ord
     """
     user, _, bootcamp_run = test_data
     mocker.patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
-        new_callable=PropertyMock,
+        'klasses.api.payable_bootcamp_run_keys',
         return_value=[],
     )
 

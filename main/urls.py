@@ -32,8 +32,6 @@ urlpatterns = [
     url(r"^admin/", admin.site.urls),
     url(r'^hijack/', include('hijack.urls', namespace='hijack')),
     url('', include('ecommerce.urls')),
-    url('', include('fluidreview.urls')),
-    url('', include('smapply.urls')),
     url('', include('social_django.urls', namespace='social')),
     url('', include('klasses.urls')),
     path("", include("authentication.urls")),

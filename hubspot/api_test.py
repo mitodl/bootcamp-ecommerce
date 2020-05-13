@@ -139,7 +139,7 @@ def test_make_sync_message():
 @pytest.mark.django_db
 def test_make_contact_sync_message():
     """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
-    profile = ProfileFactory.create(smapply_id=123456)
+    profile = ProfileFactory.create()
     contact_sync_message = api.make_contact_sync_message(profile.user.id)
     serialized_user = UserSerializer(instance=profile.user).data
     serialized_user.update(serialized_user.pop("legal_address") or {})
