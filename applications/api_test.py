@@ -3,7 +3,8 @@ import pytest
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from applications.api import get_or_create_bootcamp_application, derive_application_state
+from applications.api import get_or_create_bootcamp_application, derive_application_state, process_upload_resume, \
+    InvalidApplicationException
 from applications.constants import (
     AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
 )
@@ -118,3 +119,14 @@ def test_get_or_create_bootcamp_application(mocker):
     )
     bootcamp_app = get_or_create_bootcamp_application(bootcamp_run=bootcamp_runs[1], user=users[1])
     assert bootcamp_app == existing_app
+
+
+@pytest.mark.django_db
+def test_process_upload_resume():
+    """
+    process_upload_resume should raise an exception if in wrong state
+    """
+    existing_app = BootcampApplicationFactory(state=AppStates.AWAITING_PROFILE_COMPLETION.value)
+    resume_file = SimpleUploadedFile('resume.pdf', b'file_content')
+    with pytest.raises(InvalidApplicationException):
+        process_upload_resume(resume_file, existing_app)
