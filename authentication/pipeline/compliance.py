@@ -27,6 +27,9 @@ def verify_exports_compliance(
         backend (social_core.backends.base.BaseAuth): the backend being used to authenticate
         user (User): the current user
     """
+    if not strategy.is_api_enabled():
+        return {}
+
     if not api.is_exports_verification_enabled():
         log.warning("Export compliance checks are disabled")
         return {}

@@ -38,26 +38,6 @@ def mock_email_backend(mocker, backend_settings):
 
 
 @pytest.fixture
-def mock_create_user_strategy(mocker):
-    """Fixture that returns a valid strategy for create_user_via_email"""
-    strategy = mocker.Mock()
-    strategy.request_data.return_value = {
-        "profile": {"name": "Jane Doe"},
-        "password": "password1",
-        "legal_address": {
-            "first_name": "Jane",
-            "last_name": "Doe",
-            "street_address_1": "1 Main st",
-            "city": "Boston",
-            "state_or_territory": "US-MA",
-            "country": "US",
-            "postal_code": "02101",
-        },
-    }
-    return strategy
-
-
-@pytest.fixture
 def mock_create_profile_strategy(mocker):
     """Fixture that returns a valid strategy for create_profile"""
     strategy = mocker.Mock()
@@ -477,20 +457,35 @@ def test_send_user_to_hubspot(mocker, settings):
     ],
 )
 def test_activate_user(
-    mocker, user, is_active, is_new, is_enabled, has_inquiry, computed_result, expected
+    settings, mocker, mock_create_user_strategy, user, is_active, is_new, is_enabled, has_inquiry, computed_result, expected
 ):  # pylint: disable=too-many-arguments
     """Test that activate_user takes the correct action"""
+    settings.FEATURES["SOCIAL_AUTH_API"] = True
     user.is_active = is_active
     if has_inquiry:
         ExportsInquiryLogFactory.create(user=user, computed_result=computed_result)
 
-    mocker.patch(
+    mock_compliance_api = mocker.patch(
         "authentication.pipeline.user.compliance_api.is_exports_verification_enabled",
         return_value=is_enabled,
     )
 
-    assert user_actions.activate_user(None, None, user=user, is_new=is_new) == {}
+    assert user_actions.activate_user(mock_create_user_strategy, None, user=user, is_new=is_new) == {}
 
-    if not user.is_active:
+    if not is_active:
         # only if the user is inactive and just registered
         assert user.is_active is expected
+        mock_compliance_api.assert_called_once()
+    else:
+        mock_compliance_api.assert_not_called()
+
+
+def test_activate_user_social_auth_disabled(mocker, user, mock_create_user_strategy):
+    """ Test that activate_user returns {} without checking compliance if social_auth is disabled"""
+    mock_compliance_api = mocker.patch(
+        "authentication.pipeline.user.compliance_api.is_exports_verification_enabled"
+    )
+    mock_create_user_strategy.is_api_enabled = mocker.Mock(return_value=False)
+    user.is_active = False
+    assert user_actions.activate_user(mock_create_user_strategy, None, user=user, is_new=False) == {}
+    mock_compliance_api.assert_not_called()
