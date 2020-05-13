@@ -129,7 +129,7 @@ def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid)
     data['decision'] = 'ACCEPT'
     mocker.patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True)
     send_email = mocker.patch(
-        'ecommerce.views.MailgunClient.send_individual_email',
+        'ecommerce.api.MailgunClient.send_individual_email',
     )
     mockapi = mocker.patch('fluidreview.api.FluidReviewAPI.put', side_effect=side_effect)
     paid_in_full_mock = mocker.patch('ecommerce.api.is_paid_in_full', return_value=has_paid)
@@ -212,7 +212,7 @@ def test_not_accept(mocker, client, decision, should_send_email):
         return_value=True
     )
     send_email = mocker.patch(
-        'ecommerce.views.MailgunClient.send_individual_email',
+        'ecommerce.api.MailgunClient.send_individual_email',
     )
     resp = client.post(reverse('order-fulfillment'), data=data)
     assert resp.status_code == statuses.HTTP_200_OK
