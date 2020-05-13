@@ -50,6 +50,11 @@ urlpatterns = [
         react,
         name="password-reset-confirm",
     ),
+    re_path(
+        r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",
+        ServeView.as_view(),
+        name="wagtailimages_serve",
+    ),
     path("create-account/", react, name="signup"),
     path("create-account/details/", react, name="signup-details"),
     path("create-account/extra/", react, name="signup-extra"),

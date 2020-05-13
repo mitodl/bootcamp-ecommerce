@@ -46,3 +46,17 @@ class InstructorSectionBlock(blocks.StructBlock):
         [("member", InstructorBlock())],
         help_text="The instructors to display in this section",
     )
+
+
+class ThreeColumnImageTextBlock(blocks.StructBlock):
+    """
+    A generic custom block used to input heading, sub-heading, body and image.
+    """
+
+    heading = blocks.CharBlock(max_length=100, help_text="Heading that will highlight the main point.",)
+    sub_heading = blocks.CharBlock(max_length=250, help_text="Area sub heading.")
+    body = blocks.RichTextBlock()
+    image = ImageChooserBlock(help_text="image size must be at least 150x50 pixels.",)
+
+    class Meta:
+        icon = "plus"

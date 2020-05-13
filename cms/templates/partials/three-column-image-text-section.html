@@ -1,0 +1,15 @@
+{% load image_version_url %}
+<div class="three-column-image-text-section">
+  <div class="row section-row">
+    {% for column_area in page.column_image_text_section %}
+      <div class="col-sm-4 px-0">
+        <img class='w-100' style="height: 300px;" src="{% image_version_url column_area.value.image 'max-1000x500' %}" alt="Column image text section" />
+        <div class="col-border-padding">
+          <h2>{{ column_area.value.heading }}</h2>
+          <h5>{{ column_area.value.sub_heading }}</h5>
+          <p>{{ column_area.value.body }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

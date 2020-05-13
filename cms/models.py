@@ -12,8 +12,9 @@ from wagtail.core.models import Page
 from wagtail.core.utils import WAGTAIL_APPEND_SLASH
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
+from wagtail.core.blocks import StreamBlock
 
-from cms.blocks import ResourceBlock, InstructorSectionBlock
+from cms.blocks import ResourceBlock, InstructorSectionBlock, ThreeColumnImageTextBlock
 from main.views import _serialize_js_settings
 
 
@@ -56,15 +57,18 @@ class BootcampPage(Page):
         ImageChooserPanel("thumbnail_image"),
     ]
 
-    subpage_types = [
-        "InstructorsPage",
-    ]
+    def _get_child_page_of_type(self, cls):
+        """Gets the first child page of the given type if it exists"""
+        child = self.get_children().type(cls).live().first()
+        return child.specific if child else None
 
     def get_context(self, request, *args, **kwargs):
         return {
-            **super().get_context(request),
+            **super().get_context(request, *args, **kwargs),
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "title": self.title,
+            # The context variables below are added to avoid duplicate queries within the templates
+            "three_column_image_text_section": self.three_column_image_text_section,
         }
 
     def _get_child_page_of_type(self, cls):
@@ -76,6 +80,16 @@ class BootcampPage(Page):
     def instructors(self):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(InstructorsPage)
+
+    @property
+    def three_column_image_text_section(self):
+        """Gets the three column image text section child page"""
+        return self._get_child_page_of_type(ThreeColumnImageTextPage)
+
+    subpage_types = [
+        "ThreeColumnImageTextPage",
+        "InstructorsPage",
+    ]
 
 
 class BootcampRunPage(BootcampPage):
@@ -92,7 +106,7 @@ class BootcampRunPage(BootcampPage):
         help_text="The bootcamp run for this page",
     )
 
-    content_panels = BootcampPage.content_panels + [FieldPanel("bootcamp_run")]
+    content_panels = [FieldPanel("bootcamp_run")] + BootcampPage.content_panels
 
     def get_context(self, request, *args, **kwargs):
         """
@@ -107,37 +121,6 @@ class BootcampRunPage(BootcampPage):
             self.title = self.__class__._meta.verbose_name.title()
         self.slug = slugify("bootcamp-{}".format(self.bootcamp_run.run_key))
         super().save(*args, **kwargs)
-
-
-class ResourcePage(Page):
-    """
-    Basic resource page for all resource page.
-    """
-    template = "resource_template.html"
-
-    sub_heading = models.CharField(
-        max_length=250,
-        null=True,
-        blank=True,
-        help_text="Sub heading of the resource page.",
-    )
-
-    content = StreamField(
-        [("content", ResourceBlock())],
-        blank=False,
-        help_text="Enter details of content.",
-    )
-
-    content_panels = Page.content_panels + [
-        FieldPanel("sub_heading"),
-        StreamFieldPanel("content"),
-    ]
-
-    def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request)
-
-        return context
-
 
 class BootcampRunChildPage(Page):
     """
@@ -164,7 +147,7 @@ class BootcampRunChildPage(Page):
         # autogenerate a unique slug so we don't hit a ValidationError
         if not self.title:
             self.title = self.__class__._meta.verbose_name.title()
-        self.slug = slugify("{}-{}".format(self.get_parent().id, self.title))
+        self.slug = slugify("{}-{}".format(self.title, self.id))
         super().save(*args, **kwargs)
 
     def get_url_parts(self, request=None):
@@ -196,6 +179,21 @@ class BootcampRunChildPage(Page):
         """
         raise Http404
 
+class ThreeColumnImageTextPage(BootcampRunChildPage):
+    """
+    Represents a three column section along with images on the top (in each column) and text fields.
+    Have a limit of maximum and minimum of three blocks.
+    """
+
+    column_image_text_section = StreamField(
+        StreamBlock([("column_image_text_section", ThreeColumnImageTextBlock())], min_num=3, max_num=3),
+        blank=False,
+        null=True,
+        help_text="Enter detail about area upto max 3 blocks.",
+    )
+
+    content_panels = [StreamFieldPanel("column_image_text_section")]
+
 
 class InstructorsPage(BootcampRunChildPage):
     """
@@ -209,3 +207,33 @@ class InstructorsPage(BootcampRunChildPage):
     content_panels = [
         StreamFieldPanel("sections"),
     ]
+
+class ResourcePage(Page):
+    """
+    Basic resource page for all resource page.
+    """
+
+    template = "resource_template.html"
+
+    sub_heading = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True,
+        help_text="Sub heading of the resource page.",
+    )
+
+    content = StreamField(
+        [("content", ResourceBlock())],
+        blank=False,
+        help_text="Enter details of content.",
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("sub_heading"),
+        StreamFieldPanel("content"),
+    ]
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request)
+
+        return context

@@ -1,0 +1,42 @@
+// sass-lint:disable mixins-before-declarations
+
+html {
+  scroll-behavior: smooth;
+}
+
+.three-column-image-text-section {
+
+  padding-left: 15px;
+
+  .section-row {
+    .col-sm-4 {
+      &:first-child {
+        .col-border-padding {
+          margin-left: 80px;
+          @include media-breakpoint-down(sm) {
+            margin-left: 0;
+          }
+        }
+      }
+
+      &:last-child {
+        .col-border-padding {
+          margin-right: 80px;
+          @include media-breakpoint-down(sm) {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+
+  h5, p {
+    color: dimgray;
+  }
+
+  .col-border-padding {
+    padding-left: 10px;
+    border-left: 3px solid darkgrey;
+    margin-top: 35px;
+  }
+}
