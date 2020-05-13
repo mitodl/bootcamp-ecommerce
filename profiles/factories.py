@@ -58,6 +58,9 @@ class LegalAddressFactory(DjangoModelFactory):
     class Meta:
         model = LegalAddress
 
+    class Params:
+        incomplete = Trait(first_name="", country="", city="")
+
 
 class ProfileFactory(DjangoModelFactory):
     """Factory for Profile"""
