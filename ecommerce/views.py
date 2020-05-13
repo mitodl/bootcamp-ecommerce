@@ -12,9 +12,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ecommerce.api import (
+    complete_successful_order,
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
     get_new_order_by_reference_number,
+    handle_rejected_order,
 )
 from ecommerce.constants import (
     CYBERSOURCE_DECISION_ACCEPT,
@@ -29,9 +31,8 @@ from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
 from fluidreview.api import post_payment as post_payment_fluid
 from hubspot.task_helpers import sync_hubspot_deal_from_order
-from smapply.api import post_payment as post_payment_sma
 from klasses.constants import ApplicationSource
-from mail.api import MailgunClient
+from smapply.api import post_payment as post_payment_sma
 
 
 log = logging.getLogger(__name__)
@@ -98,32 +99,10 @@ class OrderFulfillmentView(APIView):
             raise EcommerceException("Order {} is expected to have status 'created'".format(order.id))
 
         if decision != CYBERSOURCE_DECISION_ACCEPT:
-            order.status = Order.FAILED
-            log.warning(
-                "Order fulfillment failed: received a decision that wasn't ACCEPT for order %s",
-                order,
-            )
-            if decision != CYBERSOURCE_DECISION_CANCEL:
-                try:
-                    MailgunClient().send_individual_email(
-                        "Order fulfillment failed, decision={decision}".format(
-                            decision=decision
-                        ),
-                        "Order fulfillment failed for order {order}".format(
-                            order=order,
-                        ),
-                        settings.ECOMMERCE_EMAIL
-                    )
-                except:  # pylint: disable=bare-except
-                    log.exception(
-                        "Error occurred when sending the email to notify "
-                        "about order fulfillment failure for order %s",
-                        order,
-                    )
+            handle_rejected_order(order=order, decision=decision)
         else:
-            order.status = Order.FULFILLED
+            complete_successful_order(order)
 
-        order.save_and_log(acting_user=None)
         try:
             if order.get_bootcamp_run().source == ApplicationSource.FLUIDREVIEW:
                 post_payment_fluid(order)

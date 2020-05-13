@@ -21,6 +21,7 @@ from ecommerce.api import (
     generate_cybersource_sa_signature,
     get_new_order_by_reference_number,
     get_total_paid,
+    is_paid_in_full,
     ISO_8601_FORMAT,
     make_reference_id,
 )
@@ -33,6 +34,7 @@ from ecommerce.models import (
     OrderAudit,
 )
 from klasses.factories import InstallmentFactory
+from klasses.models import Installment, PersonalPrice
 from profiles.factories import UserFactory, ProfileFactory
 
 
@@ -366,3 +368,25 @@ def test_status(bootcamp_run, user):
         assert not Order.objects.filter(id=order.id).exists()
         get_new_order_by_reference_number(make_reference_id(order))
     assert ex.value.args[0] == "Unable to find order {}".format(order.id)
+
+
+@pytest.mark.parametrize("run_price,personal_price,total_paid,expected", [
+    [10, None, 5, False],
+    [10, None, 10, True],
+    [10, 5, 3, False],
+    [10, 5, 5, True],
+])  # pylint: disable=too-many-arguments
+def test_is_paid_in_full(mocker, bootcamp_run, user, run_price, personal_price, total_paid, expected):
+    """
+    is_paid_in_full should return true if the payments match or exceed the price of the run
+    """
+    Installment.objects.all().delete()
+    for _ in range(2):
+        InstallmentFactory.create(amount=run_price/2, bootcamp_run=bootcamp_run)
+
+    if personal_price is not None:
+        PersonalPrice.objects.create(bootcamp_run=bootcamp_run, user=user, price=personal_price)
+
+    get_total_paid_mock = mocker.patch('ecommerce.api.get_total_paid', return_value=total_paid)
+    assert is_paid_in_full(bootcamp_run=bootcamp_run, user=user) is expected
+    get_total_paid_mock.assert_called_once_with(run_key=bootcamp_run.run_key, user=user)

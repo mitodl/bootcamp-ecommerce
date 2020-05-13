@@ -12,11 +12,14 @@ import uuid
 from django.conf import settings
 from django.db import transaction
 from django.db.models.aggregates import Sum
+from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
+from applications.models import BootcampApplication
 from backends.utils import get_social_username
 from main.utils import remove_html_tags
+from ecommerce.constants import CYBERSOURCE_DECISION_CANCEL
 from ecommerce.exceptions import (
     EcommerceException,
     ParseException,
@@ -26,7 +29,8 @@ from ecommerce.models import (
     Order,
 )
 from klasses.bootcamp_admissions_client import BootcampAdmissionClient
-from klasses.models import BootcampRun
+from klasses.models import BootcampRun, BootcampRunEnrollment
+from mail.api import MailgunClient
 
 
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -51,6 +55,26 @@ def get_total_paid(user, run_key):
         order__user=user,
         run_key=run_key,
     ).aggregate(price=Sum('price'))['price'] or Decimal(0)
+
+
+def is_paid_in_full(*, user, bootcamp_run):
+    """
+    Is the bootcamp run paid for in full for the user?
+
+    Args:
+        user (User):
+            The purchaser of the bootcamp run
+        bootcamp_run (BootcampRun):
+            A bootcamp run
+
+    Returns:
+        bool: Whether the run is fully paid for
+    """
+    total_paid = get_total_paid(user=user, run_key=bootcamp_run.run_key)
+    price = bootcamp_run.personal_prices.values_list("price", flat=True).first()
+    if price is None:
+        price = bootcamp_run.price
+    return total_paid >= price
 
 
 @transaction.atomic
@@ -244,3 +268,69 @@ def make_reference_id(order):
             A reference number for use with CyberSource to keep track of orders
     """
     return "{}{}-{}".format(_REFERENCE_NUMBER_PREFIX, settings.CYBERSOURCE_REFERENCE_PREFIX, order.id)
+
+
+def complete_successful_order(order):
+    """
+    Once an order is fulfilled, we need to create an enrollment and notify other services.
+
+    Args:
+        order (Order): An order which has just been fulfilled
+    """
+    order.status = Order.FULFILLED
+    order.save_and_log(None)
+
+    run = order.get_bootcamp_run()
+    if is_paid_in_full(user=order.user, bootcamp_run=run):
+        BootcampRunEnrollment.objects.get_or_create(
+            user=order.user,
+            bootcamp_run=run,
+        )
+
+        try:
+            application = order.applications.get()
+            try:
+                application.complete()
+                application.save()
+            except TransitionNotAllowed:
+                log.exception(
+                    "Application received full payment but state cannot transition to COMPLETE from %s for order %d",
+                    application.state,
+                    order.id,
+                )
+        except BootcampApplication.DoesNotExist:
+            log.exception("Missing application for order %d. Unable to set application state.", order.id)
+
+
+def handle_rejected_order(*, order, decision):
+    """
+    Report a response from Cybersource with a failed response of some kind
+
+    Args:
+        order (Order): An order
+        decision (str): The decision from Cybersource's response
+    """
+    order.status = Order.FAILED
+    order.save_and_log(None)
+
+    log.warning(
+        "Order fulfillment failed: received a decision that wasn't ACCEPT for order %s",
+        order,
+    )
+    if decision != CYBERSOURCE_DECISION_CANCEL:
+        try:
+            MailgunClient().send_individual_email(
+                "Order fulfillment failed, decision={decision}".format(
+                    decision=decision
+                ),
+                "Order fulfillment failed for order {order}".format(
+                    order=order,
+                ),
+                settings.ECOMMERCE_EMAIL
+            )
+        except:  # pylint: disable=bare-except
+            log.exception(
+                "Error occurred when sending the email to notify "
+                "about order fulfillment failure for order %s",
+                order,
+            )

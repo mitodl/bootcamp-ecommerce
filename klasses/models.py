@@ -2,9 +2,11 @@
 import datetime
 
 import pytz
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
+from main.models import TimestampedModel
 from klasses.constants import ApplicationSource
 
 
@@ -182,3 +184,15 @@ class PersonalPrice(models.Model):
 
     class Meta:
         unique_together = ('bootcamp_run', 'user')
+
+
+class BootcampRunEnrollment(TimestampedModel):
+    """An enrollment in a bootcamp run by a user"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="enrollments")
+    bootcamp_run = models.ForeignKey(BootcampRun, on_delete=models.CASCADE, related_name="enrollments")
+
+    class Meta:
+        unique_together = ("user", "bootcamp_run")
+
+    def __str__(self):
+        return f"Enrollment for {self.bootcamp_run}"
