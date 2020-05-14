@@ -14,7 +14,6 @@ import pytz
 
 from applications import models
 from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, VALID_APP_STATE_CHOICES, ALL_REVIEW_STATUSES
-from ecommerce.factories import OrderFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
 from main.utils import now_in_utc
 from profiles.factories import UserFactory
@@ -45,11 +44,11 @@ class BootcampRunApplicationStepFactory(DjangoModelFactory):
 
 
 class BootcampApplicationFactory(DjangoModelFactory):
-    """Factory for BootcampRunApplicationStep"""
+    """Factory for BootcampApplication"""
     user = SubFactory(UserFactory)
     bootcamp_run = SubFactory(BootcampRunFactory)
     resume_file = None
-    order = SubFactory(OrderFactory)
+    resume_upload_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())
     state = fuzzy.FuzzyChoice(choices=list(map(op.itemgetter(0), VALID_APP_STATE_CHOICES)))
 
     class Meta:

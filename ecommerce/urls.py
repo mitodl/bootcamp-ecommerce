@@ -1,5 +1,5 @@
 """
-URLs for bootcamp
+URLs for ecommerce
 """
 from django.conf.urls import url
 

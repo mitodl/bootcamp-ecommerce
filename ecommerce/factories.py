@@ -15,6 +15,7 @@ from factory.fuzzy import (
 )
 import faker
 
+from applications.factories import BootcampApplicationFactory
 from ecommerce.api import (
     make_reference_id,
     generate_cybersource_sa_signature,
@@ -37,6 +38,7 @@ class OrderFactory(DjangoModelFactory):
         Order.STATUSES
     )
     total_price_paid = FuzzyDecimal(low=0, high=12345)
+    application = SubFactory(BootcampApplicationFactory)
 
     class Meta:
         model = Order

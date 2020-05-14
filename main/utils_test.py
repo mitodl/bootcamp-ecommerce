@@ -223,6 +223,7 @@ class FieldNamesTests(unittest.TestCase):
             'user',
             'status',
             'total_price_paid',
+            'application',
             'created_on',
             'updated_on',
         }

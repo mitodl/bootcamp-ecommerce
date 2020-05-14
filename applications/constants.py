@@ -3,16 +3,10 @@
 from enum import Enum
 
 
-class SubmissionTypes(Enum):
-    """Enum of possible bootcamp application submission types"""
-    VIDEO_INTERVIEW = "video_interview"
-    QUIZ = "quiz"
-
-
-VALID_SUBMISSION_TYPE_CHOICES = list(zip(
-    (member.value for member in SubmissionTypes),
-    (member.value for member in SubmissionTypes),
-))
+VALID_SUBMISSION_TYPE_CHOICES = [
+    ("videointerviewsubmission", "Video Interview"),
+    ("quizsubmission", "Quiz"),
+]
 
 
 class AppStates(Enum):

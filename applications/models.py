@@ -11,7 +11,6 @@ from django.contrib.auth.models import User
 from django_fsm import FSMField, transition
 
 from applications.constants import (
-    SubmissionTypes,
     VALID_SUBMISSION_TYPE_CHOICES,
     AppStates,
     VALID_APP_STATE_CHOICES,
@@ -31,7 +30,7 @@ class ApplicationStep(models.Model):
     )
     step_order = models.PositiveSmallIntegerField(default=1)
     submission_type = models.CharField(
-        choices=VALID_SUBMISSION_TYPE_CHOICES, max_length=30
+        choices=VALID_SUBMISSION_TYPE_CHOICES, max_length=40
     )
 
     class Meta:
@@ -92,9 +91,11 @@ class BootcampApplicationQuerySet(models.QuerySet):
         """Prefetches models that inform the state of bootcamp applications"""
         return (
             self.select_related(
-                "user__profile", "order"
+                "user__profile",
             ).prefetch_related(
-                "submissions", "application_steps"
+                "submissions",
+                "orders",
+                "bootcamp_run__application_steps__application_step",
             )
         )
 
@@ -124,13 +125,6 @@ class BootcampApplication(TimestampedModel):
     )
     resume_file = models.FileField(upload_to=_get_resume_upload_path, null=True, blank=True)
     resume_upload_date = models.DateTimeField(null=True, blank=True)
-    order = models.ForeignKey(
-        'ecommerce.Order',
-        on_delete=models.CASCADE,
-        related_name='applications',
-        null=True,
-        blank=True
-    )
     state = FSMField(default=AppStates.AWAITING_PROFILE_COMPLETION.value, choices=VALID_APP_STATE_CHOICES)
 
     @transition(field=state, source=AppStates.AWAITING_PAYMENT.value, target=AppStates.COMPLETE.value)
@@ -155,7 +149,7 @@ class BootcampApplication(TimestampedModel):
 
 class SubmissionTypeModel(TimestampedModel):
     """Base model for any type of submission that is required on a user's bootcamp application"""
-    submission_type = None
+    submission_step_title = None
 
     class Meta:
         abstract = True
@@ -173,7 +167,7 @@ def _get_video_file_path(instance, filename):  # pylint: disable=unused-argument
 
 class VideoInterviewSubmission(SubmissionTypeModel):
     """A video interview that was submitted for review in a bootcamp application"""
-    submission_type = SubmissionTypes.VIDEO_INTERVIEW.value
+    submission_step_title = "Video Interview"
     app_step_submissions = GenericRelation(
         "applications.ApplicationStepSubmission",
         related_query_name="videointerviews"
@@ -184,7 +178,7 @@ class VideoInterviewSubmission(SubmissionTypeModel):
 
 class QuizSubmission(SubmissionTypeModel):
     """A quiz that was submitted for review in a bootcamp application"""
-    submission_type = SubmissionTypes.QUIZ.value
+    submission_step_title = "Quiz"
     app_step_submissions = GenericRelation(
         "applications.ApplicationStepSubmission",
         related_query_name="quizzes"

@@ -9,7 +9,9 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from applications import models
+from ecommerce.models import Order
 from main.admin import TimestampedModelAdmin
+from main.utils import get_field_names
 
 
 class ApplicationStepAdmin(admin.ModelAdmin):
@@ -63,13 +65,28 @@ class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
     get_step_order.admin_order_field = "application_step__step_order"
 
 
+class OrderInline(admin.StackedInline):
+    """Inline form for Order"""
+    model = Order
+    readonly_fields = get_field_names(Order)
+    extra = 0
+    show_change_link = True
+    can_delete = False
+    ordering = ("-created_on",)
+    min_num = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 class BootcampApplicationAdmin(TimestampedModelAdmin):
     """Admin for BootcampApplication"""
     model = models.BootcampApplication
+    inlines = [OrderInline]
     list_display = ('id', 'get_user_email', 'get_bootcamp_title', 'get_run_title', 'state')
     search_fields = ("user__email", "user__username")
     list_filter = ("bootcamp_run__bootcamp",)
-    raw_id_fields = ("user", "bootcamp_run", "order")
+    raw_id_fields = ("user", "bootcamp_run")
 
     def get_queryset(self, request):
         """Overrides base queryset"""
