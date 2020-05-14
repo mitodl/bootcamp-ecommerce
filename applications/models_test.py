@@ -69,6 +69,31 @@ def test_bootcamp_application_resume_file_validation(file_name, expected):
 
 
 @pytest.mark.django_db
+def test_has_incomplete_submissions():
+    """
+    has_incomplete_submissions should return true if there are other submissions that are waiting for review
+    """
+    bootcamp_run = BootcampRunFactory()
+    submission = ApplicationStepSubmissionFactory.create(
+        bootcamp_application__bootcamp_run=bootcamp_run,
+        run_application_step__bootcamp_run=bootcamp_run,
+    )
+    bootcamp_application = submission.bootcamp_application
+    assert bootcamp_application.has_incomplete_submissions() is False
+
+    application_step = BootcampRunApplicationStepFactory.create(
+        bootcamp_run=bootcamp_run,
+        application_step__bootcamp=bootcamp_run.bootcamp
+    )
+    ApplicationStepSubmissionFactory.create(
+        review_status=None,
+        bootcamp_application=bootcamp_application,
+        run_application_step=application_step,
+    )
+    assert bootcamp_application.has_incomplete_submissions() is True
+
+
+@pytest.mark.django_db
 def test_bootcamp_run_application_step_validation():
     """
     A BootcampRunApplicationStep object should raise an exception if it is saved when the bootcamp of the bootcamp run

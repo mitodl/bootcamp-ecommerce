@@ -6,7 +6,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from applications.api import get_or_create_bootcamp_application, derive_application_state, process_upload_resume, \
-    InvalidApplicationException
+    InvalidApplicationException, submit_review_for_application_submission
 from applications.constants import (
     AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
 )
@@ -138,3 +138,34 @@ def test_process_upload_resume():
     resume_file = SimpleUploadedFile('resume.pdf', b'file_content')
     with pytest.raises(InvalidApplicationException):
         process_upload_resume(resume_file, existing_app)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("review,other_submissions,expected", [
+    (REVIEW_STATUS_APPROVED, True, AppStates.AWAITING_SUBMISSION_REVIEW.value),
+    (REVIEW_STATUS_APPROVED, False, AppStates.AWAITING_PAYMENT.value),
+    (REVIEW_STATUS_REJECTED, False, AppStates.REJECTED.value),
+])
+def test_submit_review_for_application_submission(review, other_submissions, expected):
+    """
+    submit_review_for_application_submission should set submission review and update application state
+    """
+    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_SUBMISSION_REVIEW.value)
+    submission = ApplicationStepSubmissionFactory(
+        review_status=None,
+        bootcamp_application=bootcamp_application,
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run
+    )
+    if other_submissions:
+        application_step = BootcampRunApplicationStepFactory.create(
+            bootcamp_run=bootcamp_application.bootcamp_run,
+            application_step__bootcamp=bootcamp_application.bootcamp_run.bootcamp
+        )
+        ApplicationStepSubmissionFactory.create(
+            review_status=None,
+            bootcamp_application=bootcamp_application,
+            run_application_step=application_step,
+        )
+    submit_review_for_application_submission(review, submission)
+    assert submission.review_status == review
+    assert bootcamp_application.state == expected
