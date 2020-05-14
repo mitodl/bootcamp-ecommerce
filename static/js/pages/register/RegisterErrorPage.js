@@ -17,7 +17,11 @@ const RegisterErrorPage = () => (
         <p>Sorry, we cannot create an account for you at this time.</p>
         <p>
           Please try again later or contact us at our{" "}
-          <a href={SETTINGS.support_url} target="_blank" rel="noopener noreferrer">
+          <a
+            href={SETTINGS.support_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Customer Support Center
           </a>
         </p>

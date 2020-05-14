@@ -31,7 +31,11 @@ export class RegisterDeniedPage extends React.Component<Props> {
             {error ? <p className="error-detail">{error}</p> : null}
             <p>
               Please contact us at our{" "}
-              <a href={SETTINGS.support_url} target="_blank" rel="noopener noreferrer">
+              <a
+                href={SETTINGS.support_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Customer Support Center
               </a>
             </p>
