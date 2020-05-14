@@ -34,7 +34,6 @@ urlpatterns = [
     url('', include('applications.urls')),
     url('', include('ecommerce.urls')),
     url('', include('social_django.urls', namespace='social')),
-    url('', include('klasses.urls')),
     path("", include("authentication.urls")),
     path("", include("profiles.urls")),
     url('', include('jobma.urls')),

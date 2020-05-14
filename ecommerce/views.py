@@ -3,20 +3,27 @@ from decimal import Decimal
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.http.response import Http404
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from rest_framework import status as statuses
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import (
     complete_successful_order,
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
     get_new_order_by_reference_number,
     handle_rejected_order,
+    serialize_user_bootcamp_run,
+    serialize_user_bootcamp_runs,
 )
 from ecommerce.constants import (
     CYBERSOURCE_DECISION_ACCEPT,
@@ -24,15 +31,20 @@ from ecommerce.constants import (
 )
 from ecommerce.exceptions import EcommerceException
 from ecommerce.models import (
+    Line,
     Order,
     Receipt,
 )
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import PaymentSerializer
 from hubspot.task_helpers import sync_hubspot_deal_from_order
+from klasses.models import BootcampRun
+from klasses.permissions import CanReadIfSelf
+from main.serializers import serialize_maybe_user
 
 
 log = logging.getLogger(__name__)
+User = get_user_model()
 
 
 class PaymentView(CreateAPIView):
@@ -105,3 +117,88 @@ class OrderFulfillmentView(APIView):
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)
+
+
+class UserBootcampRunDetail(GenericAPIView):
+    """
+    Class based view for user bootcamp run view.
+    """
+    authentication_classes = (
+        SessionAuthentication,
+    )
+    permission_classes = (
+        IsAuthenticated,
+        CanReadIfSelf,
+    )
+    lookup_field = "run_key"
+    lookup_url_kwarg = "run_key"
+    queryset = BootcampRun.objects.all()
+
+    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
+        """
+        Returns a serialized bootcamp run and payment for a user
+        """
+        user = get_object_or_404(
+            User,
+            social_auth__uid=username,
+            social_auth__provider=EdxOrgOAuth2.name
+        )
+        bootcamp_run = self.get_object()
+        return Response(serialize_user_bootcamp_run(user=user, bootcamp_run=bootcamp_run))
+
+
+class UserBootcampRunStatement(RetrieveAPIView):
+    """
+    View class for a user's bootcamp run payment statement
+    """
+    authentication_classes = (
+        SessionAuthentication,
+    )
+    permission_classes = (
+        IsAuthenticated,
+    )
+    lookup_field = "run_key"
+    lookup_url_kwarg = "run_key"
+    queryset = BootcampRun.objects.all()
+    renderer_classes = (TemplateHTMLRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Fetches a user's bootcamp run payment information and renders their statement
+        (or raises a 404 if they have no payments for the specified bootcamp run)
+        """
+        bootcamp_run = self.get_object()
+        if Line.for_user_bootcamp_run(request.user, bootcamp_run.run_key).count() == 0:
+            raise Http404
+        return Response(
+            {
+                "user": serialize_maybe_user(request.user),
+                "bootcamp_run": serialize_user_bootcamp_run(user=request.user, bootcamp_run=bootcamp_run)
+            },
+            template_name='bootcamp/statement.html'
+        )
+
+
+class UserBootcampRunList(APIView):
+    """
+    Class based view for user bootcamp run list view.
+    """
+    authentication_classes = (
+        SessionAuthentication,
+    )
+    permission_classes = (
+        IsAuthenticated,
+        CanReadIfSelf,
+    )
+
+    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
+        """
+        Returns serialized bootcamp runs and payments for all runs that a user can pay for.
+        """
+        user = get_object_or_404(
+            User,
+            social_auth__uid=username,
+            social_auth__provider=EdxOrgOAuth2.name
+        )
+
+        return Response(serialize_user_bootcamp_runs(user=user))
