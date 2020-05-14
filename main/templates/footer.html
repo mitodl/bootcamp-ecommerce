@@ -1,28 +1,70 @@
 {% load static %}
-<footer class="footer-row">
+<script src="https://use.fontawesome.com/987f113d64.js"></script>
+<footer id="footer">
   <div class="container">
-    <div class="row">
-      <div class="col left-col">
-        <a href="http://www.mit.edu" target="_blank"><img src="{% static 'images/mit-logo-ltgray-white@72x38.svg' %}" alt="MIT" width="72" height="38"></a>
-        <div class="footer-links">
-          <a href="{% url 'bootcamp-tos' %}" target="_blank">Bootcamps Terms of Service</a>
-          <a href="https://www.edx.org/" target="_blank">edX</a>
-          <a href="https://odl.mit.edu/" target="_blank">Office of Digital Learning</a>
+    <div class="row footer-top">
+      <div class="col-sm-8">
+        <div class="row">
+          <div class="col-6 links-info">
+            <h2><a href="https://mitbootcamps.zendesk.com/hc/">Help & FAQ</a></h2>
+          </div>
+          <div class="col-6 links-info">
+            <h2><a href="https://mitbootcamps.zendesk.com/hc/en-us/requests/new">Contact Us</a></h2>
+          </div>
         </div>
-        <address class="footer-address">
-          Massachusetts Institute of Technology<br/> Cambridge, MA 02139
-        </address>
       </div>
-      <div class="col right-col">
-        <div>
-          <a href="https://giving.mit.edu/explore/campus-student-life/digital-learning"
-             class="btn give-btn"
-             target="_blank"
-          >
-            Give to MIT
-          </a>
+      <div class="col-sm-4">
+        <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2-legacy.js"></script>
+        <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
+        <script>
+            hbspt.forms.create({
+              portalId: '{{ hubspot_portal_id }}',
+              formId: '{{ hubspot_footer_form_guid }}'
+            });
+        </script>
+      </div>
+    </div>
+    <div class=" footer-bottom">
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="row">
+            <div class="col-6">
+              <ul class="list-unstyled links">
+                <li><a href="/about-us">About MIT Bootcamps</a></li>
+                <li><a href="/admissions">Admissions</a></li>
+                <li><a href="/bootcamps-programs">Bootcamps Programs</a></li>
+              </ul>
+            </div>
+            <div class="col-6">
+              <ul class="list-unstyled links">
+                <li><a href="/terms-of-service">Term of Service</a></li>
+                <li><a href="/privacy-policy">Privacy Policy</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="footer-copy">&copy; 2016-{% now "Y" %} Massachusetts Institute of Technology</div>
+        <div class="col-md-4">
+          <div class="address-area">
+            <h3>MIT Bootcamps</h3>
+            <address>
+                <b>Massachusettes Institute Of Technology </br>
+                77 Massachusettes Ave Cambridge, MA 02139, USA</b>
+            </address>
+            <a class="mit-open-learning" href="https://openlearning.mit.edu">MIT Open Learning</a>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <ul class="list-unstyled social-networks">
+            <li class="facebook"><a href="https://facebook.com/MITBootcamps"><i class="fa fa-facebook-f"></i></a></li>
+            <li class="linkedin"><a href="https://linkedin.com/company/11182752"><i class="fa fa-linkedin"></i></a></li>
+            <li class="twitter"><a href="https://twitter.com/MITBootcamps"><i class="fa fa-twitter"></i></a></li>
+            <li class="youtube"><a href="https://www.youtube.com/MITBootcamps"><i class="fa fa-youtube"></i></a></li>
+            <li class="instagram"><a href="https://instagram.com/MITBootcamps"><i class="fa fa-instagram"></i></a></li>
+            <li class="soundcloud"><a href="https://soundcloud.com/MITBootcamps"><i class="fa fa-soundcloud"></i></a></li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

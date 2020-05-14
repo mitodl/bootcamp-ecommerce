@@ -25,8 +25,12 @@ def configuration_context(request):
     Configuration context for django templates
     """
     return {
+        "hubspot_portal_id": settings.HUBSPOT_CONFIG.get("HUBSPOT_PORTAL_ID"),
+        "hubspot_footer_form_guid": settings.HUBSPOT_CONFIG.get(
+            "HUBSPOT_FOOTER_FORM_GUID"
+        ),
         "zendesk_config": {
             "help_widget_enabled": settings.ZENDESK_CONFIG.get("HELP_WIDGET_ENABLED"),
             "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
-        }
+        },
     }
