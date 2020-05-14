@@ -54,22 +54,10 @@ describe("EditProfilePage", () => {
   })
 
   //
-  ;[
-    [true, true],
-    [true, false],
-    [false, true],
-    [false, false]
-  ].forEach(([hasError, hasEmptyFields]) => {
+  ;[true, false].forEach(hasError => {
     it(`submits the updated profile ${
-      hasEmptyFields ? "with some empty fields " : ""
-    }${hasError ? "and received an error" : "successfully"}`, async () => {
-      // $FlowFixMe
-      user.profile.company_size = hasEmptyFields ? "" : 50
-      // $FlowFixMe
-      user.profile.years_experience = hasEmptyFields ? "" : 5
-      // $FlowFixMe
-      user.profile.highest_education = hasEmptyFields ? "" : "Doctorate"
-
+      hasError ? "and received an error" : "successfully"
+    }`, async () => {
       const { wrapper } = await renderPage()
       const setSubmitting = helper.sandbox.stub()
       const setErrors = helper.sandbox.stub()
@@ -93,14 +81,6 @@ describe("EditProfilePage", () => {
         profile: {
           ...user.profile
         }
-      }
-      if (hasEmptyFields) {
-        // $FlowFixMe
-        expectedPayload.profile.company_size = null
-        // $FlowFixMe
-        expectedPayload.profile.years_experience = null
-        // $FlowFixMe
-        expectedPayload.profile.highest_education = ""
       }
       sinon.assert.calledWith(
         helper.handleRequestStub,

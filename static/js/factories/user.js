@@ -40,9 +40,9 @@ export const makeUser = (username: ?string): LoggedInUser => ({
     birth_year:        1980,
     company:           casual.company_name,
     company_size:      99,
-    industry:          "",
+    industry:          "Education",
     job_title:         casual.word,
-    job_function:      "",
+    job_function:      "Administrative",
     years_experience:  20,
     highest_education: "Doctorate"
   },
