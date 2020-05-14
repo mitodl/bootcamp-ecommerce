@@ -22,9 +22,6 @@ from ecommerce.models import (
 )
 from ecommerce.serializers import PaymentSerializer
 from klasses.models import BootcampRunEnrollment
-from fluidreview.api import FluidReviewException
-from fluidreview.constants import WebhookParseStatus
-from fluidreview.factories import WebhookRequestFactory
 from profiles.factories import UserFactory
 
 CYBERSOURCE_SECURITY_KEY = '🔑'
@@ -101,24 +98,15 @@ def test_payment(mocker, client):
 
 
 # pylint: disable=too-many-locals
-@pytest.mark.parametrize("side_effect", [None, FluidReviewException])
 @pytest.mark.parametrize("has_application", [True, False])
 @pytest.mark.parametrize("has_paid", [True, False])
-def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid):
+def test_order_fulfilled(client, mocker, has_application, has_paid):
     """
     Test the happy case
     """
     bootcamp_run, user = create_purchasable_bootcamp_run()
-    user.profile.fluidreview_id = 999
-    user.profile.save()
     payment = 123
     order = create_test_order(user, bootcamp_run.run_key, payment)
-    WebhookRequestFactory(
-        user_email=user.email,
-        user_id=user.profile.fluidreview_id,
-        award_id=bootcamp_run.run_key,
-        status=WebhookParseStatus.SUCCEEDED
-    )
     data_before = order.to_dict()
 
     data = {}
@@ -131,7 +119,6 @@ def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid)
     send_email = mocker.patch(
         'ecommerce.api.MailgunClient.send_individual_email',
     )
-    mockapi = mocker.patch('fluidreview.api.FluidReviewAPI.put', side_effect=side_effect)
     paid_in_full_mock = mocker.patch('ecommerce.api.is_paid_in_full', return_value=has_paid)
 
     application = BootcampApplicationFactory.create(
@@ -149,8 +136,6 @@ def test_order_fulfilled(client, mocker, side_effect, has_application, has_paid)
     assert order.receipt_set.first().data == data
 
     assert send_email.call_count == 0
-    mockapi.assert_called_once()
-    assert mockapi.call_args[1] == {'data': {'value': '{}.00'.format(payment)}}
     assert OrderAudit.objects.count() == 2
     order_audit = OrderAudit.objects.last()
     assert order_audit.order == order

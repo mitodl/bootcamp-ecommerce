@@ -2,12 +2,32 @@
 APIs for the bootcamps app
 """
 from decimal import Decimal
+from django.db.models import Q
 
+from applications.constants import AppStates
 from ecommerce.models import Line
 from ecommerce.serializers import LineSerializer
-from klasses.bootcamp_admissions_client import BootcampAdmissionClient
 from klasses.models import BootcampRun
 from klasses.serializers import InstallmentSerializer
+
+
+def payable_bootcamp_run_keys(user):
+    """
+    Fetches a list of bootcamp run keys for which the user has applied
+
+    Args:
+        user (User): a user
+
+    Returns:
+        list of int: bootcamp run keys the user has applied for
+
+    """
+    return (
+        BootcampRun.objects.prefetch_related("applications")
+            .filter((Q(applications__user=user) & Q(applications__state=AppStates.AWAITING_PAYMENT.value)) |
+                    Q(personal_prices__user=user))
+            .values_list("run_key", flat=True)
+    )
 
 
 def serialize_user_bootcamp_runs(user):
@@ -30,31 +50,26 @@ def serialize_user_bootcamp_runs(user):
     run_keys_in_lines = list(Line.fulfilled_for_user(user).values_list(
         'run_key', flat=True).distinct())
 
-    bootcamp_client = BootcampAdmissionClient(user)
-    all_bootcamp_run_keys = list(set(run_keys_in_lines).union(set(bootcamp_client.payable_bootcamp_run_keys)))
+    all_bootcamp_run_keys = list(set(run_keys_in_lines).union(set(payable_bootcamp_run_keys(user))))
     bootcamp_runs_qset = (
         BootcampRun.objects.filter(run_key__in=all_bootcamp_run_keys)
         .select_related('bootcamp').order_by('run_key')
     )
 
-    return [serialize_user_bootcamp_run(user, bootcamp_run, bootcamp_client) for bootcamp_run in bootcamp_runs_qset]
+    return [serialize_user_bootcamp_run(user, bootcamp_run) for bootcamp_run in bootcamp_runs_qset]
 
 
-def serialize_user_bootcamp_run(user, bootcamp_run, bootcamp_client=None):
+def serialize_user_bootcamp_run(user, bootcamp_run):
     """
     Returns the bootcamp run info for the user with payments details.
 
     Args:
         user (User): a user
         bootcamp_run (klasses.models.BootcampRun): a bootcamp run
-        bootcamp_client (BootcampAdmissionClient): an instance of the client to retrieve data
-            from the bootcamp authorization system
 
     Returns:
         dict: a dictionary describing a bootcamp run and payments for it by the user
     """
-    if bootcamp_client is None:
-        bootcamp_client = BootcampAdmissionClient(user)
 
     return {
         "run_key": bootcamp_run.run_key,
@@ -63,7 +78,7 @@ def serialize_user_bootcamp_run(user, bootcamp_run, bootcamp_client=None):
         "start_date": bootcamp_run.start_date,
         "end_date": bootcamp_run.end_date,
         "price": bootcamp_run.personal_price(user),
-        "is_user_eligible_to_pay": bootcamp_client.can_pay_bootcamp_run(bootcamp_run.run_key),
+        "is_user_eligible_to_pay": bootcamp_run.run_key in payable_bootcamp_run_keys(user),
         "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run.run_key).get('total') or Decimal('0.00'),
         "payments": LineSerializer(Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True).data,
         "installments": InstallmentSerializer(bootcamp_run.installment_set.order_by('deadline'), many=True).data,

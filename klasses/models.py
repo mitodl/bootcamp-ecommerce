@@ -28,9 +28,10 @@ class BootcampRun(models.Model):
     bootcamp = models.ForeignKey(Bootcamp, on_delete=models.CASCADE)
     title = models.TextField(blank=True)
     source = models.CharField(
-        null=False,
+        null=True,
+        blank=True,
         choices=[(source, source) for source in ApplicationSource.SOURCE_CHOICES],
-        default=ApplicationSource.FLUIDREVIEW,
+        default=None,
         max_length=10,
     )
     run_key = models.IntegerField()

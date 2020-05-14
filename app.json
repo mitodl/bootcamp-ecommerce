@@ -212,34 +212,6 @@
       "description": "The log level for elasticsearch",
       "required": false
     },
-    "FLUIDREVIEW_ACCESS_TOKEN": {
-      "description": "Access token for FluidReview API",
-      "required": true
-    },
-    "FLUIDREVIEW_AMOUNTPAID_ID": {
-      "description": "The FluidReview metadata id for Amount Paid",
-      "required": true
-    },
-    "FLUIDREVIEW_BASE_URL": {
-      "description": "Base URL for FluidReview API",
-      "required": true
-    },
-    "FLUIDREVIEW_CLIENT_ID": {
-      "description": "Client ID for FluidReview API",
-      "required": true
-    },
-    "FLUIDREVIEW_CLIENT_SECRET": {
-      "description": "Client secret for FluidReview API",
-      "required": true
-    },
-    "FLUIDREVIEW_REFRESH_TOKEN": {
-      "description": "Access token for SMApply API",
-      "required": true
-    },
-    "FLUIDREVIEW_WEBHOOK_AUTH_TOKEN": {
-      "description": "Authentication token for FluidReview webhooks",
-      "required": true
-    },
     "GA_TRACKING_ID": {
       "description": "Google Analytics tracking ID",
       "required": false
@@ -366,42 +338,6 @@
     "SL_TRACKING_ID": {
       "description": "The SL tracking ID",
       "required": false
-    },
-    "SMAPPLY_ACCESS_TOKEN": {
-      "description": "Access token for SMApply API",
-      "required": true
-    },
-    "SMAPPLY_AMOUNTPAID_ID": {
-      "description": "The SMApply metadata id for Amount Paid",
-      "required": true
-    },
-    "SMAPPLY_AMOUNT_TO_PAY_ID": {
-      "description": "The SMApply metadata id for Amount To Pay",
-      "required": true
-    },
-    "SMAPPLY_AWARD_COST_ID": {
-      "description": "The SMApply metadata id for Award Cost",
-      "required": true
-    },
-    "SMAPPLY_BASE_URL": {
-      "description": "Base URL for SMApply API",
-      "required": true
-    },
-    "SMAPPLY_CLIENT_ID": {
-      "description": "Client ID for SMApply API",
-      "required": true
-    },
-    "SMAPPLY_CLIENT_SECRET": {
-      "description": "Client secret for SMApply API",
-      "required": true
-    },
-    "SMAPPLY_REFRESH_TOKEN": {
-      "description": "Refresh token for SMApply API",
-      "required": true
-    },
-    "SMAPPLY_WEBHOOK_AUTH_TOKEN": {
-      "description": "Authentication token for SMApply webhooks",
-      "required": true
     },
     "STATUS_TOKEN": {
       "description": "Token to access the status API.",

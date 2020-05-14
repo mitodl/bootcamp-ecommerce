@@ -134,8 +134,6 @@ INSTALLED_APPS = (
     "main",
     "cms",
     "ecommerce",
-    "fluidreview",
-    "smapply",
     "mail",
     "klasses",
     "profiles",
@@ -738,101 +736,6 @@ CYBERSOURCE_EXPORT_SERVICE_SANCTIONS_LISTS = get_string(
     "CYBERSOURCE_EXPORT_SERVICE_SANCTIONS_LISTS",
     None,
     description="Additional sanctions lists to validate for exports. Refer to Cybersource docs.",
-)
-
-# FluidReview
-FLUIDREVIEW_ACCESS_TOKEN = get_string(
-    "FLUIDREVIEW_ACCESS_TOKEN",
-    None,
-    description="Access token for FluidReview API",
-    required=True,
-)
-FLUIDREVIEW_REFRESH_TOKEN = get_string(
-    "FLUIDREVIEW_REFRESH_TOKEN",
-    None,
-    description="Access token for SMApply API",
-    required=True,
-)
-FLUIDREVIEW_CLIENT_ID = get_string(
-    "FLUIDREVIEW_CLIENT_ID",
-    None,
-    description="Client ID for FluidReview API",
-    required=True,
-)
-FLUIDREVIEW_CLIENT_SECRET = get_string(
-    "FLUIDREVIEW_CLIENT_SECRET",
-    None,
-    description="Client secret for FluidReview API",
-    required=True,
-)
-FLUIDREVIEW_BASE_URL = get_string(
-    "FLUIDREVIEW_BASE_URL",
-    None,
-    description="Base URL for FluidReview API",
-    required=True,
-)
-FLUIDREVIEW_WEBHOOK_AUTH_TOKEN = get_string(
-    "FLUIDREVIEW_WEBHOOK_AUTH_TOKEN",
-    None,
-    description="Authentication token for FluidReview webhooks",
-    required=True,
-)
-FLUIDREVIEW_AMOUNTPAID_ID = get_string(
-    "FLUIDREVIEW_AMOUNTPAID_ID",
-    None,
-    description="The FluidReview metadata id for Amount Paid",
-    required=True,
-)
-
-
-# SMApply
-SMAPPLY_ACCESS_TOKEN = get_string(
-    "SMAPPLY_ACCESS_TOKEN",
-    None,
-    description="Access token for SMApply API",
-    required=True,
-)
-SMAPPLY_REFRESH_TOKEN = get_string(
-    "SMAPPLY_REFRESH_TOKEN",
-    None,
-    description="Refresh token for SMApply API",
-    required=True,
-)
-SMAPPLY_CLIENT_ID = get_string(
-    "SMAPPLY_CLIENT_ID", None, description="Client ID for SMApply API", required=True
-)
-SMAPPLY_CLIENT_SECRET = get_string(
-    "SMAPPLY_CLIENT_SECRET",
-    None,
-    description="Client secret for SMApply API",
-    required=True,
-)
-SMAPPLY_BASE_URL = get_string(
-    "SMAPPLY_BASE_URL", None, description="Base URL for SMApply API", required=True
-)
-SMAPPLY_WEBHOOK_AUTH_TOKEN = get_string(
-    "SMAPPLY_WEBHOOK_AUTH_TOKEN",
-    None,
-    description="Authentication token for SMApply webhooks",
-    required=True,
-)
-SMAPPLY_AMOUNTPAID_ID = get_int(
-    "SMAPPLY_AMOUNTPAID_ID",
-    None,
-    description="The SMApply metadata id for Amount Paid",
-    required=True,
-)
-SMAPPLY_AMOUNT_TO_PAY_ID = get_int(
-    "SMAPPLY_AMOUNT_TO_PAY_ID",
-    None,
-    description="The SMApply metadata id for Amount To Pay",
-    required=True,
-)
-SMAPPLY_AWARD_COST_ID = get_int(
-    "SMAPPLY_AWARD_COST_ID",
-    None,
-    description="The SMApply metadata id for Award Cost",
-    required=True,
 )
 
 # BOOTCAMP ADMISSION

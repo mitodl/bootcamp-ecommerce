@@ -5,10 +5,7 @@ from base64 import b64encode
 from datetime import datetime
 import hashlib
 import hmac
-from unittest.mock import (
-    patch,
-    PropertyMock,
-)
+from unittest.mock import patch
 
 import pytest
 import pytz
@@ -82,8 +79,7 @@ def create_test_order(user, run_key, payment_amount):
     Pass through arguments to create_unfulfilled_order and mock payable_bootcamp_run_keys
     """
     with patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
-        new_callable=PropertyMock,
+        'ecommerce.api.payable_bootcamp_run_keys',
         return_value=[run_key],
     ):
         return create_unfulfilled_order(user, run_key, payment_amount)
@@ -137,8 +133,7 @@ def test_not_eligible_to_pay(user, bootcamp_run):
     A validation error should be thrown if the user is not eligible to pay
     """
     with patch(
-        'klasses.bootcamp_admissions_client.BootcampAdmissionClient.payable_bootcamp_run_keys',
-        new_callable=PropertyMock,
+        'klasses.api.payable_bootcamp_run_keys',
         return_value=[],
     ), pytest.raises(ValidationError) as ex:
         create_unfulfilled_order(user, bootcamp_run.run_key, 123)
