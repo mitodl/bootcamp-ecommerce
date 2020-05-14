@@ -45,7 +45,6 @@ class SubmissionSerializer(serializers.ModelSerializer):
 
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     """Detailed BootcampApplication serializer"""
-    bootcamp_run = BootcampRunSerializer(read_only=True)
     resume_filename = serializers.SerializerMethodField()
     payment_deadline = serializers.SerializerMethodField()
     run_application_steps = serializers.SerializerMethodField()
@@ -75,8 +74,6 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
         model = models.BootcampApplication
         fields = [
             "id",
-            "user_id",
-            "bootcamp_run",
             "state",
             "resume_filename",
             "resume_upload_date",
@@ -85,4 +82,18 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "run_application_steps",
             "submissions",
             "orders",
+        ]
+
+
+class BootcampApplicationListSerializer(serializers.ModelSerializer):
+    """BootcampApplication serializer"""
+    bootcamp_run = BootcampRunSerializer(read_only=True)
+
+    class Meta:
+        model = models.BootcampApplication
+        fields = [
+            "id",
+            "state",
+            "created_on",
+            "bootcamp_run",
         ]

@@ -9,7 +9,7 @@ import factory
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampRunStepSerializer,
-    SubmissionSerializer,
+    SubmissionSerializer, BootcampApplicationListSerializer,
 )
 from applications.factories import (
     BootcampApplicationFactory,
@@ -48,13 +48,11 @@ def test_application_detail_serializer(app_data):
     data = BootcampApplicationDetailSerializer(instance=application).data
     assert data == {
         "id": application.id,
-        "user_id": application.user_id,
         "state": application.state,
         "resume_filename": None,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
         "payment_deadline": None,
         "created_on": serializer_date_format(application.created_on),
-        "bootcamp_run": BootcampRunSerializer(instance=application.bootcamp_run).data,
         "run_application_steps": BootcampRunStepSerializer(instance=app_data.run_steps, many=True).data,
         "submissions": [],
         "orders": [],
@@ -98,6 +96,26 @@ def test_application_detail_serializer_nested(app_data):
     data = BootcampApplicationDetailSerializer(instance=application).data
     assert data["submissions"] == SubmissionSerializer(instance=submissions, many=True).data
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
+
+
+@pytest.mark.django_db
+def test_application_list_serializer(app_data):
+    """
+    BootcampApplicationListSerializer should return serialized versions of all of a user's
+    bootcamp applications
+    """
+    other_app = BootcampApplicationFactory.create(user=app_data.application.user)
+    user_applications = [app_data.application, other_app]
+    data = BootcampApplicationListSerializer(instance=user_applications, many=True).data
+    assert data == [
+        {
+            "id": application.id,
+            "state": application.state,
+            "created_on": serializer_date_format(application.created_on),
+            "bootcamp_run": BootcampRunSerializer(instance=application.bootcamp_run).data,
+        }
+        for application in user_applications
+    ]
 
 
 def test_bootcamp_run_step_serializer():
