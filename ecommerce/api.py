@@ -16,7 +16,6 @@ from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
-from applications.models import BootcampApplication
 from backends.utils import get_social_username
 from klasses.api import payable_bootcamp_run_keys
 from klasses.models import BootcampRun, BootcampRunEnrollment
@@ -38,7 +37,7 @@ log = logging.getLogger(__name__)
 _REFERENCE_NUMBER_PREFIX = 'BOOTCAMP-'
 
 
-def get_total_paid(user, run_key):
+def get_total_paid(user, run_key, application_id=None):
     """
     Get total paid for a bootcamp run for a user
     Args:
@@ -46,15 +45,21 @@ def get_total_paid(user, run_key):
             The purchaser of the bootcamp run
         run_key (int):
             A bootcamp run key
+        application_id (Optional[int]):
+            The id of a BootcampApplication (if the payments should only be counted if they
+            were part of the given application)
 
     Returns:
         Decimal: The total amount paid by a user for a bootcamp run
     """
-    return Line.objects.filter(
+    line_qset = Line.objects.filter(
         order__status=Order.FULFILLED,
         order__user=user,
         run_key=run_key,
-    ).aggregate(price=Sum('price'))['price'] or Decimal(0)
+    )
+    if application_id is not None:
+        line_qset = line_qset.filter(order__application_id=application_id)
+    return line_qset.aggregate(price=Sum('price'))['price'] or Decimal(0)
 
 
 def is_paid_in_full(*, user, bootcamp_run):
@@ -250,7 +255,7 @@ def get_new_order_by_reference_number(reference_number):
         raise ParseException("CyberSource prefix doesn't match")
 
     try:
-        return Order.objects.get(id=order_id)
+        return Order.objects.select_related("application").get(id=order_id)
     except Order.DoesNotExist:
         raise EcommerceException("Unable to find order {}".format(order_id))
 
@@ -286,8 +291,8 @@ def complete_successful_order(order):
             bootcamp_run=run,
         )
 
-        try:
-            application = order.applications.get()
+        application = order.application
+        if application is not None:
             try:
                 application.complete()
                 application.save()
@@ -297,8 +302,6 @@ def complete_successful_order(order):
                     application.state,
                     order.id,
                 )
-        except BootcampApplication.DoesNotExist:
-            log.exception("Missing application for order %d. Unable to set application state.", order.id)
 
 
 def handle_rejected_order(*, order, decision):

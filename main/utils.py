@@ -5,6 +5,7 @@ import datetime
 import itertools
 import json
 import logging
+import os
 import re
 import pytz
 
@@ -254,6 +255,19 @@ def get_field_names(model):
     return [
         field.name for field in model._meta.get_fields() if not field.auto_created  # pylint: disable=protected-access
     ]
+
+
+def get_filename_from_path(filepath):
+    """
+    Returns a filename without a directory path
+
+    Args:
+        filepath (str): The file path (e.g.: "/path/to/file.txt")
+
+    Returns:
+        str: The filename without the directory path (e.g.: "file.txt")
+    """
+    return os.path.split(filepath)[1]
 
 
 def chunks(iterable, chunk_size=20):

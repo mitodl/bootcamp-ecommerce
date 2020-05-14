@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^status/', include('server_status.urls')),
     url(r"^admin/", admin.site.urls),
     url(r'^hijack/', include('hijack.urls', namespace='hijack')),
+    url('', include('applications.urls')),
     url('', include('ecommerce.urls')),
     url('', include('social_django.urls', namespace='social')),
     url('', include('klasses.urls')),

@@ -107,6 +107,9 @@ def test_order_fulfilled(client, mocker, has_application, has_paid):
     bootcamp_run, user = create_purchasable_bootcamp_run()
     payment = 123
     order = create_test_order(user, bootcamp_run.run_key, payment)
+    if has_application:
+        order.application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+        order.save()
     data_before = order.to_dict()
 
     data = {}
@@ -120,11 +123,6 @@ def test_order_fulfilled(client, mocker, has_application, has_paid):
         'ecommerce.api.MailgunClient.send_individual_email',
     )
     paid_in_full_mock = mocker.patch('ecommerce.api.is_paid_in_full', return_value=has_paid)
-
-    application = BootcampApplicationFactory.create(
-        state=AppStates.AWAITING_PAYMENT.value,
-        order=order,
-    ) if has_application else None
 
     resp = client.post(reverse('order-fulfillment'), data=data)
 
@@ -144,8 +142,8 @@ def test_order_fulfilled(client, mocker, has_application, has_paid):
     paid_in_full_mock.assert_called_once_with(user=user, bootcamp_run=bootcamp_run)
 
     if has_application:
-        application.refresh_from_db()
-        assert application.state == (
+        order.application.refresh_from_db()
+        assert order.application.state == (
             AppStates.COMPLETE.value if has_paid else AppStates.AWAITING_PAYMENT.value
         )
 

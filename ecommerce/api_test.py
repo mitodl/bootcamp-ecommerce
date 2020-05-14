@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import pytest
 import pytz
+import factory
 from rest_framework.exceptions import ValidationError
 
 from backends.pipeline_api import EdxOrgOAuth2
@@ -26,6 +27,7 @@ from ecommerce.exceptions import (
     EcommerceException,
     ParseException,
 )
+from ecommerce.factories import LineFactory
 from ecommerce.models import (
     Order,
     OrderAudit,
@@ -152,7 +154,7 @@ def fulfilled_order(bootcamp_run, user):
     yield order
 
 
-def test_multiple_payments(fulfilled_order, user, bootcamp_run):
+def test_get_total_paid(fulfilled_order, user, bootcamp_run):
     """
     get_total_paid should look through all fulfilled orders for the payment for a particular user
     """
@@ -164,19 +166,19 @@ def test_multiple_payments(fulfilled_order, user, bootcamp_run):
     assert get_total_paid(user, bootcamp_run.run_key) == PAYMENT + next_payment
 
 
-def test_other_user(fulfilled_order, user, bootcamp_run):
+def test_get_total_paid_other_user(fulfilled_order, user, bootcamp_run):
     """other_user's payments shouldn't affect user"""
     other_user = UserFactory.create()
     assert get_total_paid(other_user, bootcamp_run.run_key) == 0
 
 
-def test_skip_unfulfilled(fulfilled_order, user, bootcamp_run):
+def test_get_total_paid_unfulfilled(fulfilled_order, user, bootcamp_run):
     """Unfulfilled orders should be ignored"""
     create_test_order(user, bootcamp_run.run_key, 45)
     assert get_total_paid(user, bootcamp_run.run_key) == PAYMENT
 
 
-def test_skip_other_bootcamp_run(fulfilled_order, user, bootcamp_run):
+def test_get_total_paid_other_run(fulfilled_order, user, bootcamp_run):
     """Orders for other bootcamp runs should be ignored"""
     other_bootcamp_run, other_user = create_purchasable_bootcamp_run()
     other_order = create_test_order(other_user, other_bootcamp_run.run_key, 50)
@@ -186,10 +188,25 @@ def test_skip_other_bootcamp_run(fulfilled_order, user, bootcamp_run):
     assert get_total_paid(user, bootcamp_run.run_key) == PAYMENT
 
 
-def test_no_payments(fulfilled_order, user, bootcamp_run):
+def test_get_total_paid_no_payments(fulfilled_order, user, bootcamp_run):
     """If there are no payments get_total_paid should return 0"""
     Order.objects.all().update(status=Order.REFUNDED)
     assert get_total_paid(user, bootcamp_run.run_key) == 0
+
+
+def test_get_total_paid_app_limit(user, bootcamp_run):
+    """get_total_paid should limit the Lines it counts toward the total paid if an application id is specified"""
+    lines = LineFactory.create_batch(
+        2,
+        order__status=Order.FULFILLED,
+        order__user=user,
+        run_key=bootcamp_run.run_key,
+        price=factory.Iterator([10, 20]),
+    )
+    application_ids = [line.order.application_id for line in lines]
+    assert all(application_ids)
+    assert get_total_paid(user, bootcamp_run.run_key, application_id=application_ids[0]) == 10
+    assert get_total_paid(user, bootcamp_run.run_key, application_id=application_ids[1]) == 20
 
 
 CYBERSOURCE_ACCESS_KEY = 'access'

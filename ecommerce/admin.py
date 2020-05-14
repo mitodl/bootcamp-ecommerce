@@ -32,7 +32,7 @@ class OrderAdmin(admin.ModelAdmin):
     model = Order
 
     readonly_fields = [name for name in get_field_names(Order) if name != 'status']
-    list_display = ('id', 'user', 'status', 'line_description', 'run_title', )
+    list_display = ('id', 'user', 'status', 'line_description', 'run_title', 'application', )
     list_filter = ('status', )
 
     def has_add_permission(self, request):

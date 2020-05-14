@@ -1,4 +1,6 @@
 """Tests for applications API functionality"""
+from decimal import Decimal
+
 import pytest
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -13,9 +15,9 @@ from applications.factories import (
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
 )
-from ecommerce.factories import OrderFactory
+from ecommerce.factories import LineFactory
 from ecommerce.models import Order
-from klasses.factories import BootcampRunFactory
+from klasses.factories import BootcampRunFactory, InstallmentFactory
 from profiles.factories import ProfileFactory, UserFactory
 from main.utils import now_in_utc
 
@@ -24,6 +26,7 @@ from main.utils import now_in_utc
 def test_derive_application_state():
     """derive_application_state should return the correct state based on the bootcamp application and related data"""
     bootcamp_run = BootcampRunFactory.create()
+    installment = InstallmentFactory.create(bootcamp_run=bootcamp_run, amount=Decimal('100'))
     run_steps = BootcampRunApplicationStepFactory.create_batch(
         2,
         bootcamp_run=bootcamp_run
@@ -33,7 +36,6 @@ def test_derive_application_state():
         bootcamp_run=bootcamp_run,
         user__profile=None,
         resume_file=None,
-        order=None,
     )
     assert derive_application_state(app) == AppStates.AWAITING_PROFILE_COMPLETION.value
 
@@ -69,8 +71,13 @@ def test_derive_application_state():
     )
     assert derive_application_state(app) == AppStates.AWAITING_PAYMENT.value
 
-    app.order = OrderFactory.create(status=Order.FULFILLED, user=app.user)
-    app.save()
+    LineFactory.create(
+        order__status=Order.FULFILLED,
+        order__user=app.user,
+        order__application=app,
+        run_key=app.bootcamp_run.run_key,
+        price=installment.amount
+    )
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.COMPLETE.value
 

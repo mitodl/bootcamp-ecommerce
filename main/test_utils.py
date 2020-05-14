@@ -9,6 +9,7 @@ import tempfile
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 from requests.exceptions import HTTPError
 
@@ -148,3 +149,16 @@ def format_as_iso8601(time, remove_microseconds=True):
     if remove_microseconds:
         str_time = str_time[:-3]
     return str_time + "Z"
+
+
+def serializer_date_format(dt):
+    """
+    Helper function to return a date formatted in the same way that our serializers
+
+    Args:
+        dt (Optional[datetime.datetime]): The datetime object (or None)
+
+    Returns:
+        Optional[str]: The string representing the datetime (or None)
+    """
+    return serializers.DateTimeField().to_representation(dt)

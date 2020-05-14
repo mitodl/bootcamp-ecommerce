@@ -1,12 +1,12 @@
 """Tests for serializers"""
 import pytest
 
-from main.test_utils import format_as_iso8601
+from main.test_utils import serializer_date_format
 from ecommerce.factories import LineFactory
 from ecommerce.serializers import (
     PaymentSerializer,
     OrderPartialSerializer,
-    LineSerializer,
+    LineSerializer, ApplicationOrderSerializer,
 )
 
 
@@ -40,10 +40,23 @@ def test_orderpartial_serializer(line):
     expected = {
         'id': line.order.id,
         'status': line.order.status,
-        'created_on': format_as_iso8601(line.order.created_on, remove_microseconds=False),
-        'updated_on': format_as_iso8601(line.order.updated_on, remove_microseconds=False),
+        'created_on': serializer_date_format(line.order.created_on),
+        'updated_on': serializer_date_format(line.order.updated_on),
     }
     assert OrderPartialSerializer(line.order).data == expected
+
+
+def test_application_order_serializer(line):
+    """
+    Test application order serializer result
+    """
+    assert ApplicationOrderSerializer(line.order).data == {
+        'id': line.order.id,
+        'status': line.order.status,
+        'total_price_paid': line.price,
+        'created_on': serializer_date_format(line.order.created_on),
+        'updated_on': serializer_date_format(line.order.updated_on),
+    }
 
 
 def test_line_serializer(line):
@@ -57,8 +70,8 @@ def test_line_serializer(line):
         'order': {
             'id': line.order.id,
             'status': line.order.status,
-            'created_on': format_as_iso8601(line.order.created_on, remove_microseconds=False),
-            'updated_on': format_as_iso8601(line.order.updated_on, remove_microseconds=False),
+            'created_on': serializer_date_format(line.order.created_on),
+            'updated_on': serializer_date_format(line.order.updated_on),
         }
     }
 

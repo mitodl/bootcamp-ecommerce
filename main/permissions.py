@@ -8,7 +8,8 @@ class UserIsOwnerPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         """
         Returns True if the requesting user is the owner of the object as
-        determined by the "owner_field" property on the view (defaults to "user")
+        determined by the "owner_field" property on the view. If no "owner_field"
+        is given, the object itself is assumed to be the User object.
         """
         owner_field = getattr(view, "owner_field", None)
 

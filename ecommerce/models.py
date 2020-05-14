@@ -39,8 +39,15 @@ class Order(AuditableModel, TimestampedModel):
         default=CREATED,
         max_length=30,
     )
-
     total_price_paid = DecimalField(decimal_places=2, max_digits=20)
+    application = ForeignKey(
+        "applications.BootcampApplication",
+        on_delete=CASCADE,
+        null=True,
+        blank=True,
+        db_index=True,
+        related_name="orders"
+    )
 
     def __str__(self):
         """Description for Order"""

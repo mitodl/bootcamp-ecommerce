@@ -26,6 +26,21 @@ class OrderPartialSerializer(serializers.ModelSerializer):
         )
 
 
+class ApplicationOrderSerializer(serializers.ModelSerializer):
+    """Serializer for orders that are part of a bootcamp application"""
+    total_price_paid = serializers.DecimalField(decimal_places=2, max_digits=20)
+
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "status",
+            "total_price_paid",
+            "created_on",
+            "updated_on",
+        ]
+
+
 class LineSerializer(serializers.ModelSerializer):
     """
     Serializer for Line

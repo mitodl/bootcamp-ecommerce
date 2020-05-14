@@ -1,13 +1,14 @@
 """Applications models tests"""
 from functools import reduce
-from operator import or_
+from operator import or_, itemgetter
 import pytest
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
-from applications.constants import SubmissionTypes
+
+from applications.constants import VALID_SUBMISSION_TYPE_CHOICES
 from applications.models import (
     ApplicationStepSubmission,
     APP_SUBMISSION_MODELS,
@@ -20,13 +21,16 @@ from klasses.factories import BootcampFactory, BootcampRunFactory
 
 def test_submission_types():
     """
-    The enum of valid submission types should match the list of models that are defined as valid submission types,
+    The list of valid submission types should match the list of models that are defined as valid submission types,
     and the choices for the submissions' content type should be limited to that list of models
     """
-    assert len(SubmissionTypes) == len(APP_SUBMISSION_MODELS)
-    assert {model_cls.submission_type for model_cls in APP_SUBMISSION_MODELS} == {
-        sub_type.value for sub_type in SubmissionTypes
-    }
+    assert len(APP_SUBMISSION_MODELS) == len(VALID_SUBMISSION_TYPE_CHOICES)
+    # The choices for ApplicationStep.submission_type should match the models
+    # that we have defined as valid submission models
+    assert {model_cls._meta.model_name for model_cls in APP_SUBMISSION_MODELS} == set(
+        map(itemgetter(0), VALID_SUBMISSION_TYPE_CHOICES)
+    )
+
     # Build an OR query with every valid submission model
     expected_content_type_limit = reduce(
         or_,
