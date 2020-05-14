@@ -26,6 +26,7 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
             "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
         },
         "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
+        "support_url": settings.SUPPORT_URL,
     }
 
 
@@ -77,7 +78,7 @@ def standard_error_page(request, status_code, template_filename):
         template_filename,
         context={
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
-            "support_email": settings.EMAIL_SUPPORT,
+            "support_url": settings.SUPPORT_URL,
             "authenticated": authenticated,
         }
     )

@@ -16,9 +16,9 @@ const RegisterErrorPage = () => (
         <div className="register-error-icon" />
         <p>Sorry, we cannot create an account for you at this time.</p>
         <p>
-          Please try again later or contact us at{" "}
-          <a href={`mailto:${SETTINGS.support_email}`}>
-            {SETTINGS.support_email}
+          Please try again later or contact us at our{" "}
+          <a href={SETTINGS.support_url} target="_blank" rel="noopener noreferrer">
+            Customer Support Center
           </a>
         </p>
       </div>

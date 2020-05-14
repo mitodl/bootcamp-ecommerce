@@ -11,11 +11,11 @@ import { routes } from "../../lib/urls"
 
 describe("LoginForgotPasswordPage", () => {
   const email = "email@example.com"
-  const supportEmail = "email@localhost"
+  const supportUrl = "https://test.edu/form"
   let helper, renderPage, setSubmittingStub
 
   beforeEach(() => {
-    SETTINGS.support_email = supportEmail
+    SETTINGS.support_url = supportUrl
     helper = new IntegrationTestHelper()
 
     setSubmittingStub = helper.sandbox.stub()
@@ -81,10 +81,7 @@ describe("LoginForgotPasswordPage", () => {
     const { inner } = await renderPage()
     const onSubmit = inner.find("EmailForm").prop("onSubmit")
     await onSubmit({ email }, { setSubmitting: setSubmittingStub })
-    assert.equal(
-      inner.find(".contact-support > a").prop("href"),
-      `mailto:${supportEmail}`
-    )
+    assert.equal(inner.find(".contact-support > a").prop("href"), supportUrl)
   })
 
   it("contains the reset your password link", async () => {

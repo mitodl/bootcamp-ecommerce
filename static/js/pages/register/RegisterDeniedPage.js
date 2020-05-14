@@ -30,9 +30,9 @@ export class RegisterDeniedPage extends React.Component<Props> {
             <p>Sorry, we cannot create an account for you at this time.</p>
             {error ? <p className="error-detail">{error}</p> : null}
             <p>
-              Please contact us at{" "}
-              <a href={`mailto:${SETTINGS.support_email}`}>
-                {SETTINGS.support_email}
+              Please contact us at our{" "}
+              <a href={SETTINGS.support_url} target="_blank" rel="noopener noreferrer">
+                Customer Support Center
               </a>
             </p>
           </div>
