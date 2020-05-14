@@ -89,7 +89,7 @@ def create_user_via_email(
     if not strategy.is_api_enabled():
         return {}
 
-    # if the user has data for all the fields this step
+    # if the user has data for all the fields, skip this step
     if (
         user and
         user.password and
