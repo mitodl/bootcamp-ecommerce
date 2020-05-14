@@ -38,26 +38,6 @@ def mock_email_backend(mocker, backend_settings):
 
 
 @pytest.fixture
-def mock_create_user_strategy(mocker):
-    """Fixture that returns a valid strategy for create_user_via_email"""
-    strategy = mocker.Mock()
-    strategy.request_data.return_value = {
-        "profile": {"name": "Jane Doe"},
-        "password": "password1",
-        "legal_address": {
-            "first_name": "Jane",
-            "last_name": "Doe",
-            "street_address_1": "1 Main st",
-            "city": "Boston",
-            "state_or_territory": "US-MA",
-            "country": "US",
-            "postal_code": "02101",
-        },
-    }
-    return strategy
-
-
-@pytest.fixture
 def mock_create_profile_strategy(mocker):
     """Fixture that returns a valid strategy for create_profile"""
     strategy = mocker.Mock()
@@ -221,14 +201,16 @@ def test_user_password_not_exists(rf):
             flow=SocialAuthState.FLOW_LOGIN,
         )
 
-
+@pytest.mark.django_db
 @pytest.mark.parametrize(
-    "has_user,is_api_enabled", [(False, False), (True, False), (True, True)]
+    "has_user,is_api_enabled,incomplete_address", [(False, False, False), (True, False, False), (True, True, False), (True, False, True)]
 )
-def test_create_user_via_email_exit(mocker, user, has_user, is_api_enabled):
+def test_create_user_via_email_exit(mocker, has_user, is_api_enabled, incomplete_address):
     """
     Tests that create_user_via_email returns if the user exists or the api is disabled
     """
+    user = UserFactory.create(legal_address__incomplete=incomplete_address)
+    user.set_password("123")
     mock_strategy = mocker.Mock()
     mock_strategy.is_api_enabled.return_value = is_api_enabled
     mock_backend = mocker.Mock()
@@ -246,46 +228,50 @@ def test_create_user_via_email_exit(mocker, user, has_user, is_api_enabled):
 
 
 @pytest.mark.django_db
-def test_create_user_via_email(mocker, mock_email_backend, mock_create_user_strategy):
+@pytest.mark.parametrize("is_new", [True, False])
+def test_create_user_via_email(mocker, mock_email_backend, mock_create_user_strategy, is_new):
     """
     Tests that create_user_via_email creates a user via social_core.pipeline.user.create_user_via_email,
     generates a username, and sets a name and password
     """
-    email = "user@example.com"
-    generated_username = "testuser123"
-    fake_user = UserFactory.build(username=generated_username)
+    user = UserFactory.create(legal_address__incomplete=True)
     patched_usernameify = mocker.patch(
-        "authentication.pipeline.user.usernameify", return_value=generated_username
+        "authentication.pipeline.user.usernameify", return_value=user.username
     )
     patched_create_user = mocker.patch(
         "authentication.pipeline.user.create_user_with_generated_username",
-        return_value=fake_user,
+        return_value=user,
     )
 
     response = user_actions.create_user_via_email(
         mock_create_user_strategy,
         mock_email_backend,
-        details=dict(email=email),
+        details=dict(email=user.email),
         pipeline_index=0,
         flow=SocialAuthState.FLOW_REGISTER,
+        user=(None if is_new else user)
     )
     assert response == {
-        "user": fake_user,
-        "username": generated_username,
-        "is_new": True,
+        "user": user,
+        "username": user.username,
+        "is_new": is_new,
     }
     request_data = mock_create_user_strategy.request_data()
-    patched_usernameify.assert_called_once_with(
-        request_data["profile"]["name"], email=email
-    )
-    patched_create_user.assert_called_once()
-    # Confirm that a UserSerializer object was passed to create_user_with_generated_username, and
-    # that it was instantiated with the data we expect.
-    serializer = patched_create_user.call_args_list[0][0][0]
-    assert serializer.initial_data["username"] == generated_username
-    assert serializer.initial_data["email"] == email
-    assert serializer.initial_data["profile"]["name"] == request_data["profile"]["name"]
-    assert serializer.initial_data["password"] == request_data["password"]
+    if is_new:
+        patched_usernameify.assert_called_once_with(
+            request_data["profile"]["name"], email=user.email
+        )
+        patched_create_user.assert_called_once()
+        # Confirm that a UserSerializer object was passed to create_user_with_generated_username, and
+        # that it was instantiated with the data we expect.
+        serializer = patched_create_user.call_args_list[0][0][0]
+        assert serializer.initial_data["username"] == user.username
+        assert serializer.initial_data["email"] == user.email
+        assert serializer.initial_data["profile"]["name"] == request_data["profile"]["name"]
+        assert serializer.initial_data["password"] == request_data["password"]
+    else:
+        patched_create_user.assert_not_called()
+        patched_usernameify.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -472,20 +458,35 @@ def test_send_user_to_hubspot(mocker, settings):
     ],
 )
 def test_activate_user(
-    mocker, user, is_active, is_new, is_enabled, has_inquiry, computed_result, expected
+    settings, mocker, mock_create_user_strategy, user, is_active, is_new, is_enabled, has_inquiry, computed_result, expected
 ):  # pylint: disable=too-many-arguments
     """Test that activate_user takes the correct action"""
+    settings.FEATURES["SOCIAL_AUTH_API"] = True
     user.is_active = is_active
     if has_inquiry:
         ExportsInquiryLogFactory.create(user=user, computed_result=computed_result)
 
-    mocker.patch(
+    mock_compliance_api = mocker.patch(
         "authentication.pipeline.user.compliance_api.is_exports_verification_enabled",
         return_value=is_enabled,
     )
 
-    assert user_actions.activate_user(None, None, user=user, is_new=is_new) == {}
+    assert user_actions.activate_user(mock_create_user_strategy, None, user=user, is_new=is_new) == {}
 
-    if not user.is_active:
+    if not is_active:
         # only if the user is inactive and just registered
         assert user.is_active is expected
+        mock_compliance_api.assert_called_once()
+    else:
+        mock_compliance_api.assert_not_called()
+
+
+def test_activate_user_social_auth_disabled(mocker, user, mock_create_user_strategy):
+    """ Test that activate_user returns {} without checking compliance if social_auth is disabled"""
+    mock_compliance_api = mocker.patch(
+        "authentication.pipeline.user.compliance_api.is_exports_verification_enabled"
+    )
+    mock_create_user_strategy.is_api_enabled = mocker.Mock(return_value=False)
+    user.is_active = False
+    assert user_actions.activate_user(mock_create_user_strategy, None, user=user, is_new=False) == {}
+    mock_compliance_api.assert_not_called()

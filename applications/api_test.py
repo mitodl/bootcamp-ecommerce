@@ -16,7 +16,6 @@ from applications.factories import (
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from klasses.factories import BootcampRunFactory
-from profiles.constants import FEMALE
 from profiles.factories import ProfileFactory, UserFactory
 from main.utils import now_in_utc
 
@@ -38,7 +37,7 @@ def test_derive_application_state():
     )
     assert derive_application_state(app) == AppStates.AWAITING_PROFILE_COMPLETION.value
 
-    ProfileFactory.create(user=app.user, company="MIT", gender=FEMALE, birth_year=2000, job_title="Engineer")
+    ProfileFactory.create(user=app.user)
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.AWAITING_RESUME.value
 

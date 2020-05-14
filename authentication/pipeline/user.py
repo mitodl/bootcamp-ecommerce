@@ -86,7 +86,16 @@ def create_user_via_email(
     Raises:
         RequirePasswordAndPersonalInfoException: if the user hasn't set password or name
     """
-    if user or not strategy.is_api_enabled():
+    if not strategy.is_api_enabled():
+        return {}
+
+    # if the user has data for all the fields, skip this step
+    if (
+        user and
+        user.password and
+        user.profile.name and
+        user.legal_address.is_complete
+    ):
         return {}
 
     if not strategy.is_api_request():
@@ -105,25 +114,33 @@ def create_user_via_email(
         )
 
     data["email"] = kwargs.get("email", kwargs.get("details", {}).get("email"))
-    username = usernameify(data["profile"]["name"], email=data["email"])
-    data["username"] = username
-    serializer = UserSerializer(data=data)
+
+    is_new = user is None
+
+    if is_new:
+        username = usernameify(data["profile"]["name"], email=data["email"])
+        data["username"] = username
+        serializer = UserSerializer(data=data)
+    else:
+        serializer = UserSerializer(user, data=data)
 
     if not serializer.is_valid():
         raise RequirePasswordAndPersonalInfoException(
             backend, current_partial, errors=serializer.errors
         )
 
-    try:
-        created_user = create_user_with_generated_username(serializer, username)
-        if created_user is None:
-            raise IntegrityError(
-                "Failed to create User with generated username ({})".format(username)
-            )
-    except Exception as exc:
-        raise UserCreationFailedException(backend, current_partial) from exc
-
-    return {"is_new": True, "user": created_user, "username": created_user.username}
+    if is_new:
+        try:
+            user = create_user_with_generated_username(serializer, username)
+            if user is None:
+                raise IntegrityError(
+                    "Failed to create User with generated username ({})".format(username)
+                )
+        except Exception as exc:
+            raise UserCreationFailedException(backend, current_partial) from exc
+    else:
+        user = serializer.save()
+    return {"is_new": is_new, "user": user, "username": user.username}
 
 
 @partial
@@ -221,7 +238,7 @@ def activate_user(
         backend (social_core.backends.base.BaseAuth): the backend being used to authenticate
         user (User): the current user
     """
-    if user.is_active:
+    if user.is_active or not strategy.is_api_enabled():
         return {}
 
     export_inquiry = compliance_api.get_latest_exports_inquiry(user)
