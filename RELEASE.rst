@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.41.0
+Version 0.41.0 (Released May 15, 2020)
 --------------
 
 - Fix duplicate color variable (#505)
