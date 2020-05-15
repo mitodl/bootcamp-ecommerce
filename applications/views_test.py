@@ -5,14 +5,20 @@ from django.urls import reverse
 from rest_framework import status
 
 from applications.factories import BootcampApplicationFactory
-from applications.serializers import BootcampApplicationDetailSerializer
+from applications.serializers import BootcampApplicationDetailSerializer, BootcampApplicationListSerializer
 from applications.views import BootcampApplicationViewset
 
 
-def test_view_serializer(mocker):
-    """The bootcamp application view should use the expected serializer"""
-    serializer_cls = BootcampApplicationViewset.get_serializer_class(mocker.Mock(action="retrieve"))
-    assert serializer_cls == BootcampApplicationDetailSerializer
+@pytest.mark.parametrize(
+    "action,expected_serializer", [
+        ["retrieve", BootcampApplicationDetailSerializer],
+        ["list", BootcampApplicationListSerializer],
+    ]
+)
+def test_view_serializer(mocker, action, expected_serializer):
+    """The bootcamp application view should use the expected serializer depending on the action"""
+    serializer_cls = BootcampApplicationViewset.get_serializer_class(mocker.Mock(action=action))
+    assert serializer_cls == expected_serializer
 
 
 @pytest.mark.django_db
@@ -24,6 +30,17 @@ def test_app_detail_view(client):
     resp = client.get(url)
     assert resp.status_code == status.HTTP_200_OK
     assert resp.json()["id"] == application.id
+
+
+@pytest.mark.django_db
+def test_app_list_view(client):
+    """The bootcamp application list view should return a successful response"""
+    application = BootcampApplicationFactory.create()
+    client.force_login(application.user)
+    url = reverse("applications_api-list")
+    resp = client.get(url)
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json()[0]["id"] == application.id
 
 
 @pytest.mark.django_db
