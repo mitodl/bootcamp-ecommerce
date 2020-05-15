@@ -10,12 +10,12 @@ import { isIf, shouldIf } from "../../lib/test_utils"
 
 describe("RegisterDeniedPage", () => {
   const error = "errorTestValue"
-  const email = "email@localhost"
+  const url = "https://test.edu/form"
 
   let helper, renderPage
 
   beforeEach(() => {
-    SETTINGS.support_email = email
+    SETTINGS.support_url = url
 
     helper = new IntegrationTestHelper()
 
@@ -38,7 +38,7 @@ describe("RegisterDeniedPage", () => {
   it("displays a link to email support", async () => {
     const { inner } = await renderPage()
 
-    assert.equal(inner.find("a").prop("href"), `mailto:${email}`)
+    assert.equal(inner.find("a").prop("href"), url)
   })
 
   //

@@ -184,6 +184,11 @@ BOOTCAMP_ECOMMERCE_BASE_URL = get_string(
     required=True,
 )
 SITE_BASE_URL = BOOTCAMP_ECOMMERCE_BASE_URL
+SUPPORT_URL = get_string(
+    "BOOTCAMP_SUPPORT_URL", "https://mitbootcamps.zendesk.com/hc/en-us/requests/new",
+    description="URL for customer support",
+    required=False
+)
 
 EDXORG_BASE_URL = get_string(
     "EDXORG_BASE_URL",

@@ -124,6 +124,10 @@
       "description": "Email address listed for customer support",
       "required": false
     },
+    "BOOTCAMP_SUPPORT_URL": {
+      "description": "URL for customer support",
+      "required": false
+    },
     "BOOTCAMP_USE_S3": {
       "description": "Use S3 for storage backend (required on Heroku)",
       "required": false

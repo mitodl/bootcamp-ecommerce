@@ -10,10 +10,10 @@ describe("RegisterErrorPage", () => {
   const renderPage = () => shallow(<RegisterErrorPage />)
 
   it("displays a link to email support", async () => {
-    const email = "email@localhost"
-    SETTINGS.support_email = email
+    const url = "https://test.edu/form"
+    SETTINGS.support_url = url
     const wrapper = await renderPage()
 
-    assert.equal(wrapper.find("a").prop("href"), `mailto:${email}`)
+    assert.equal(wrapper.find("a").prop("href"), url)
   })
 })

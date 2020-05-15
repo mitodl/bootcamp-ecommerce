@@ -29,6 +29,7 @@ class TestViews(TestCase):
         environment = FuzzyText().fuzz()
         version = '0.0.1'
         recaptcha_key = "abc"
+        support_url = "http://test.edu/form"
         with self.settings(
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
@@ -37,7 +38,8 @@ class TestViews(TestCase):
                 "HELP_WIDGET_ENABLED": False,
                 "HELP_WIDGET_KEY": "fake_key",
             },
-            RECAPTCHA_SITE_KEY=recaptcha_key
+            RECAPTCHA_SITE_KEY=recaptcha_key,
+            SUPPORT_URL=support_url
         ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get('/')
         self.assertContains(
@@ -60,8 +62,8 @@ class TestViews(TestCase):
             'public_path': '/static/bundles/',
             'user': None,
             'zendesk_config': {"help_widget_enabled": False, "help_widget_key": "fake_key"},
-
             "recaptchaKey": recaptcha_key,
+            "support_url": support_url,
         }
 
     def test_index_logged_in(self):
@@ -90,6 +92,7 @@ class TestViews(TestCase):
         environment = FuzzyText().fuzz()
         version = '0.0.1'
         recaptcha_key = "abc"
+        support_url = "http://test.edu/form"
         with self.settings(
             WEBPACK_DEV_SERVER_HOST=host,
             VERSION=version,
@@ -98,7 +101,8 @@ class TestViews(TestCase):
                 "HELP_WIDGET_ENABLED": False,
                 "HELP_WIDGET_KEY": "fake_key",
             },
-            RECAPTCHA_SITE_KEY=recaptcha_key
+            RECAPTCHA_SITE_KEY=recaptcha_key,
+            SUPPORT_URL=support_url
         ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
             resp = self.client.get(reverse('pay'))
 
@@ -122,4 +126,5 @@ class TestViews(TestCase):
             },
             "zendesk_config": {"help_widget_enabled": False, "help_widget_key": "fake_key"},
             "recaptchaKey": recaptcha_key,
+            "support_url": support_url,
         }

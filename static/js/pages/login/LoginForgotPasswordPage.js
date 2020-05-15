@@ -107,8 +107,12 @@ export class LoginForgotPasswordPage extends React.Component<Props, State> {
             </ol>
             <div className="contact-support">
               <b>Still no password reset email? </b>
-              Please contact our
-              <a href={`mailto:${SETTINGS.support_email}`}>
+              Please contact our{" "}
+              <a
+                href={SETTINGS.support_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Customer Support Center.
               </a>
             </div>

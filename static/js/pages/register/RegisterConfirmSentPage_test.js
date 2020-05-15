@@ -11,12 +11,12 @@ import { routes } from "../../lib/urls"
 
 describe("RegisterConfirmSentPage", () => {
   const userEmail = "test@example.com"
-  const supportEmail = "email@localhost"
+  const supportUrl = "https://test.edu/form"
 
   let helper, renderPage
 
   beforeEach(() => {
-    SETTINGS.support_email = supportEmail
+    SETTINGS.support_url = supportUrl
 
     helper = new IntegrationTestHelper()
 
@@ -38,10 +38,7 @@ describe("RegisterConfirmSentPage", () => {
 
   it("displays a link to email support", async () => {
     const { inner } = await renderPage()
-    assert.equal(
-      inner.find(".contact-support > a").prop("href"),
-      `mailto:${supportEmail}`
-    )
+    assert.equal(inner.find(".contact-support > a").prop("href"), supportUrl)
   })
 
   it("displays a link to create account page", async () => {
