@@ -1,5 +1,5 @@
 // @flow
-import { getCookie } from "./api/util"
+import { getCookie } from "./api"
 
 export const DEFAULT_POST_OPTIONS = {
   headers: {
