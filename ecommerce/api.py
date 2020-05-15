@@ -11,13 +11,14 @@ import uuid
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 from django.db.models.aggregates import Sum
 from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
+from applications.constants import AppStates
 from backends.utils import get_social_username
-from klasses.api import payable_bootcamp_run_keys
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from main.utils import remove_html_tags
@@ -393,3 +394,22 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
         "payments": LineSerializer(Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True).data,
         "installments": InstallmentSerializer(bootcamp_run.installment_set.order_by('deadline'), many=True).data,
     }
+
+
+def payable_bootcamp_run_keys(user):
+    """
+    Fetches a list of bootcamp run keys for which the user has applied
+
+    Args:
+        user (User): a user
+
+    Returns:
+        list of int: bootcamp run keys the user has applied for
+
+    """
+    return (
+        BootcampRun.objects.prefetch_related("applications")
+            .filter((Q(applications__user=user) & Q(applications__state=AppStates.AWAITING_PAYMENT.value)) |
+                    Q(personal_prices__user=user))
+            .values_list("run_key", flat=True)
+    )
