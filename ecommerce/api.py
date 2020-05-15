@@ -31,7 +31,6 @@ from ecommerce.models import (
     Line,
     Order,
 )
-from ecommerce.serializers import LineSerializer
 from mail.api import MailgunClient
 
 
@@ -381,6 +380,8 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
     Returns:
         dict: a dictionary describing a bootcamp run and payments for it by the user
     """
+
+    from ecommerce.serializers import LineSerializer
 
     return {
         "run_key": bootcamp_run.run_key,

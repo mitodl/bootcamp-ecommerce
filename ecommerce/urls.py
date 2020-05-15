@@ -2,14 +2,20 @@
 URLs for ecommerce
 """
 from django.conf.urls import url
+from django.urls import include, path
+from rest_framework import routers
 
 from ecommerce.views import (
+    CheckoutDataViewSet,
     OrderFulfillmentView,
     PaymentView,
-    UserBootcampRunList,
     UserBootcampRunDetail,
+    UserBootcampRunList,
     UserBootcampRunStatement,
 )
+
+router = routers.DefaultRouter()
+router.register("checkout", CheckoutDataViewSet, "checkout-data")
 
 
 urlpatterns = [
@@ -21,5 +27,6 @@ urlpatterns = [
         UserBootcampRunDetail.as_view(),
         name='bootcamp-run-detail'
     ),
-    url(r'^statement/(?P<run_key>[0-9]+)/$', UserBootcampRunStatement.as_view(), name='bootcamp-run-statement'),
+    url(r'statement/(?P<run_key>[0-9]+)/$', UserBootcampRunStatement.as_view(), name='bootcamp-run-statement'),
+    path("api/", include(router.urls))
 ]

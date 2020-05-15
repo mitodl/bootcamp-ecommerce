@@ -1,13 +1,22 @@
 """Tests for serializers"""
+from decimal import Decimal
 import pytest
 
 from main.test_utils import serializer_date_format
-from ecommerce.factories import LineFactory
+from ecommerce.api import get_total_paid
+from ecommerce.factories import (
+    LineFactory,
+    BootcampApplicationFactory,
+)
+from ecommerce.models import Order
 from ecommerce.serializers import (
     PaymentSerializer,
     OrderPartialSerializer,
-    LineSerializer, ApplicationOrderSerializer,
+    LineSerializer,
+    ApplicationOrderSerializer,
+    CheckoutDataSerializer,
 )
+from klasses.factories import InstallmentFactory
 
 
 pytestmark = pytest.mark.django_db
@@ -76,3 +85,60 @@ def test_line_serializer(line):
     }
 
     assert LineSerializer(line).data == expected
+
+
+@pytest.mark.parametrize("has_paid", [True, False])
+def test_checkout_data(mocker, has_paid):
+    """
+    Test checkout data serializer
+    """
+    application = BootcampApplicationFactory.create()
+    user = application.user
+    run = application.bootcamp_run
+
+    if has_paid:
+        line = LineFactory.create(
+            order__status=Order.FULFILLED,
+            order__application=application,
+            order__user=user,
+            run_key=run.run_key,
+        )
+
+    InstallmentFactory.create(bootcamp_run=run)
+
+    request_mock = mocker.Mock(user=user)
+    assert CheckoutDataSerializer(instance=application, context={"request": request_mock}).data == {
+        "id": application.id,
+        "bootcamp_run": {
+            "id": run.id,
+            "bootcamp": {
+                "id": run.bootcamp.id,
+                "title": run.bootcamp.title,
+            },
+            "title": run.title,
+            "run_key": run.run_key,
+            "start_date": serializer_date_format(run.start_date),
+            "end_date": serializer_date_format(run.end_date),
+        },
+        "installments": [
+            {
+                "amount": installment.amount,
+                "deadline": serializer_date_format(installment.deadline),
+            } for installment in run.installment_set.all()
+        ],
+        "payments": [
+            {
+                "order": {
+                    "id": line.order.id,
+                    "status": Order.FULFILLED,
+                    "created_on": serializer_date_format(line.order.created_on),
+                    "updated_on": serializer_date_format(line.order.updated_on),
+                },
+                "run_key": line.run_key,
+                "price": line.price,
+                "description": line.description,
+            }
+        ] if has_paid else [],
+        "total_paid": get_total_paid(user=user, run_key=run.run_key, application_id=application.id),
+        "total_price": run.personal_price(user) or Decimal(0),
+    }

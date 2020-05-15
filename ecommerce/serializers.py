@@ -1,7 +1,11 @@
 """Serializers for ecommerce"""
+from decimal import Decimal
 from rest_framework import serializers
 
+from applications.models import BootcampApplication
+from ecommerce.api import get_total_paid
 from ecommerce.models import Order, Line
+from klasses.serializers import BootcampRunSerializer, InstallmentSerializer
 
 
 class PaymentSerializer(serializers.Serializer):
@@ -56,3 +60,49 @@ class LineSerializer(serializers.ModelSerializer):
             'price',
             'description',
         )
+
+
+class CheckoutDataSerializer(serializers.ModelSerializer):
+    """Serializer for ecommerce information for a BootcampApplication"""
+    bootcamp_run = BootcampRunSerializer()
+    total_price = serializers.SerializerMethodField()
+    total_paid = serializers.SerializerMethodField()
+    payments = serializers.SerializerMethodField()
+    installments = serializers.SerializerMethodField()
+
+    def get_total_price(self, application):
+        """The personal price for the user, or the full price for the run"""
+        return application.bootcamp_run.personal_price(self.context["request"].user) or Decimal(0)
+
+    def get_total_paid(self, application):
+        """The total paid by the user for this application so far"""
+        return get_total_paid(
+            user=self.context["request"].user,
+            application_id=application.id,
+            run_key=application.bootcamp_run.run_key,
+        )
+
+    def get_payments(self, application):
+        """Serialized payments made by the user"""
+        return LineSerializer(
+            Line.for_user_bootcamp_run(self.context["request"].user, application.bootcamp_run.run_key),
+            many=True,
+        ).data
+
+    def get_installments(self, application):
+        """Installments with prices and due dates"""
+        return InstallmentSerializer(
+            application.bootcamp_run.installment_set.order_by('deadline'),
+            many=True,
+        ).data
+
+    class Meta:
+        model = BootcampApplication
+        fields = [
+            "id",
+            "bootcamp_run",
+            "total_price",
+            "total_paid",
+            "payments",
+            "installments",
+        ]

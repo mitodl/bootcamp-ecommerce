@@ -22,7 +22,7 @@ from ecommerce.models import (
     OrderAudit,
     Receipt,
 )
-from ecommerce.serializers import PaymentSerializer
+from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRunEnrollment
 from profiles.factories import ProfileFactory, UserFactory
@@ -36,7 +36,7 @@ FAKE = faker.Factory.create()
 pytestmark = pytest.mark.django_db
 
 
-# pylint: disable=unused-argument,too-many-locals,redefined-outer-name,missing-docstring
+# pylint: disable=unused-argument,too-many-locals,redefined-outer-name
 @pytest.fixture(autouse=True)
 def ecommerce_settings(settings):
     """Settings for ecommerce tests"""
@@ -320,6 +320,7 @@ def test_data(mocker):
 
 @pytest.fixture()
 def fulfilled_order(test_data):
+    """Create a fulfilled order for testing"""
     user, _, bootcamp_run = test_data
     order = OrderFactory.create(user=user, status=Order.FULFILLED)
     LineFactory.create(order=order, run_key=bootcamp_run.run_key, price=123.45)
@@ -457,9 +458,32 @@ def test_user_bootcamp_run_statement(test_data, fulfilled_order, client):
 
 
 def test_user_bootcamp_run_statement_without_order(test_data, client):
+    """If there is no order, the bootcamp run statement view should return a 404"""
     user, _, bootcamp_run = test_data
     bootcamp_run_statement_url = reverse('bootcamp-run-statement', kwargs={'run_key': bootcamp_run.run_key})
     client.force_login(user)
 
     response = client.get(bootcamp_run_statement_url)
     assert response.status_code == statuses.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.parametrize("with_application_id", [True, False])
+def test_checkout_data(mocker, client, with_application_id):
+    """The checkout data API should return serialized application data"""
+    app_awaiting_payment = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    user = app_awaiting_payment.user
+    # An application a different state should be filtered out
+    BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value, user=user)
+    mock_request = mocker.Mock(user=user)
+
+    client.force_login(user)
+    url = reverse("checkout-data-list")
+    if with_application_id:
+        url += f"?application={app_awaiting_payment.id}"
+    resp = client.get(url)
+
+    assert resp.json() == CheckoutDataSerializer(
+        instance=[app_awaiting_payment],
+        many=True,
+        context={"request": mock_request}
+    ).data

@@ -14,7 +14,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from applications.constants import AppStates
+from applications.models import BootcampApplication
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import (
     complete_successful_order,
@@ -36,7 +39,7 @@ from ecommerce.models import (
     Receipt,
 )
 from ecommerce.permissions import IsSignedByCyberSource
-from ecommerce.serializers import PaymentSerializer
+from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
 from hubspot.task_helpers import sync_hubspot_deal_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
@@ -202,3 +205,27 @@ class UserBootcampRunList(APIView):
         )
 
         return Response(serialize_user_bootcamp_runs(user=user))
+
+
+class CheckoutDataViewSet(ReadOnlyModelViewSet):
+    """
+    List application ecommerce data for a user, for payable applications
+    """
+    authentication_classes = (
+        SessionAuthentication,
+    )
+    permission_classes = (
+        IsAuthenticated,
+    )
+    serializer_class = CheckoutDataSerializer
+
+    def get_queryset(self):
+        """Filter on logged in user"""
+        application_id = self.request.query_params.get("application")
+        queryset = BootcampApplication.objects.filter(
+            user=self.request.user,
+            state=AppStates.AWAITING_PAYMENT.value,
+        )
+        if application_id is not None:
+            queryset = queryset.filter(id=application_id)
+        return queryset.order_by("id")
