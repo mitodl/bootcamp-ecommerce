@@ -83,18 +83,22 @@ def process_upload_resume(resume_file, bootcamp_application):
     bootcamp_application.save()
 
 
-def submit_review_for_application_submission(review_status, submission):
+def set_submission_review_status(submission, review_status):
     """
     Process review of an application step submission
 
     Args:
-        review_status(str): approved or rejected submission
         submission(ApplicationStepSubmission): The submission that is being reviewed
+        review_status(str): approved or rejected submission
     """
     bootcamp_application = submission.bootcamp_application
     if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
-        raise InvalidApplicationException("The BootcampApplication is not awaiting submission review")
-
+        raise InvalidApplicationException(
+            "The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
+                bootcamp_application.id,
+                bootcamp_application.state
+            )
+        )
     submission.review_status = review_status
     submission.review_status_date = now_in_utc()
     submission.save()

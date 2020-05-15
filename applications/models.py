@@ -149,8 +149,8 @@ class BootcampApplication(TimestampedModel):
         target=RETURN_VALUE(AppStates.AWAITING_SUBMISSION_REVIEW.value, AppStates.AWAITING_PAYMENT.value))
     def approve_submission(self):
         """Approve application submission"""
-        return (AppStates.AWAITING_SUBMISSION_REVIEW.value
-                if self.has_incomplete_submissions() else AppStates.AWAITING_PAYMENT.value)
+        return (AppStates.AWAITING_PAYMENT.value
+                if self.all_submissions_are_reviewed() else AppStates.AWAITING_SUBMISSION_REVIEW.value)
 
     @transition(
         field=state,
@@ -160,9 +160,14 @@ class BootcampApplication(TimestampedModel):
     def reject_submission(self):
         """Reject application submission"""
 
-    def has_incomplete_submissions(self):
-        """Check if the application is waiting for some submissions to be reviewed"""
-        return self.submissions.filter(review_status__isnull=True).exists()
+    def all_submissions_are_reviewed(self):
+        """
+        Check if the application is waiting for some submissions to be reviewed. This is used only if
+        application is awaiting submissions review
+        """
+        if self.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
+            return False
+        return not self.submissions.filter(review_status__isnull=True).exists()
 
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"

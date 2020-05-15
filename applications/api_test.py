@@ -6,7 +6,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from applications.api import get_or_create_bootcamp_application, derive_application_state, process_upload_resume, \
-    InvalidApplicationException, submit_review_for_application_submission
+    InvalidApplicationException, set_submission_review_status
 from applications.constants import (
     AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
 )
@@ -146,9 +146,9 @@ def test_process_upload_resume():
     (REVIEW_STATUS_APPROVED, False, AppStates.AWAITING_PAYMENT.value),
     (REVIEW_STATUS_REJECTED, False, AppStates.REJECTED.value),
 ])
-def test_submit_review_for_application_submission(review, other_submissions, expected):
+def test_set_submission_review_status(review, other_submissions, expected):
     """
-    submit_review_for_application_submission should set submission review and update application state
+    set_submission_review_status should set submission review and update application state
     """
     bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_SUBMISSION_REVIEW.value)
     submission = ApplicationStepSubmissionFactory(
@@ -166,6 +166,6 @@ def test_submit_review_for_application_submission(review, other_submissions, exp
             bootcamp_application=bootcamp_application,
             run_application_step=application_step,
         )
-    submit_review_for_application_submission(review, submission)
+    set_submission_review_status(submission, review)
     assert submission.review_status == review
     assert bootcamp_application.state == expected

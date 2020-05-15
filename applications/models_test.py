@@ -79,7 +79,9 @@ def test_has_incomplete_submissions():
         run_application_step__bootcamp_run=bootcamp_run,
     )
     bootcamp_application = submission.bootcamp_application
-    assert bootcamp_application.has_incomplete_submissions() is False
+    bootcamp_application.state = AppStates.AWAITING_SUBMISSION_REVIEW.value
+    bootcamp_application.save()
+    assert bootcamp_application.all_submissions_are_reviewed() is True
 
     application_step = BootcampRunApplicationStepFactory.create(
         bootcamp_run=bootcamp_run,
@@ -90,7 +92,7 @@ def test_has_incomplete_submissions():
         bootcamp_application=bootcamp_application,
         run_application_step=application_step,
     )
-    assert bootcamp_application.has_incomplete_submissions() is True
+    assert bootcamp_application.all_submissions_are_reviewed() is False
 
 
 @pytest.mark.django_db
