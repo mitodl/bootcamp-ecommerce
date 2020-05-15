@@ -70,7 +70,7 @@ export class ViewProfilePage extends React.Component<Props> {
                       onClick={() => {
                         history.push(routes.profile.update)
                       }}
-                      className="btn btn-primary btn-light-blue"
+                      className="btn btn-danger btn-light-red"
                     >
                       Edit Profile
                     </button>

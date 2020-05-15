@@ -1,4 +1,7 @@
 #home {
+
+  color: white;
+
   @include breakpoint(phone) {
     padding: 40px 0 25px 0;
   }

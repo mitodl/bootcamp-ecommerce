@@ -42,7 +42,7 @@ const EmailForm = ({ onSubmit, children }: EmailFormProps) => (
         <div className="row submit-row no-gutters justify-content-end">
           <button
             type="submit"
-            className="btn btn-primary btn-light-blue"
+            className="btn btn-danger btn-light-red"
             disabled={isSubmitting}
           >
             Submit

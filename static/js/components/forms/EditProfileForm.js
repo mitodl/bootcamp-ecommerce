@@ -52,7 +52,7 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn btn-primary btn-light-blue btn-profile-submit"
+              className="btn btn-danger btn-light-red btn-profile-submit"
             >
               CONTINUE
             </button>
