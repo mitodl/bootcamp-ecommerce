@@ -432,16 +432,6 @@ def test_data(mocker):
     return profile.user, run_paid, run_not_paid
 
 
-def test_serialize_user_bootcamp_run(test_data):
-    """
-    Test for serialize_user_bootcamp_run to verify that passing or not passing the bootcamp client is equivalent.
-    """
-    user, run_paid, _ = test_data
-
-    assert serialize_user_bootcamp_run(user, run_paid) == serialize_user_bootcamp_run(
-        user, run_paid)
-
-
 def test_serialize_user_run_paid(test_data):
     """
     Test for serialize_user_bootcamp_run for a paid bootcamp run
