@@ -26,6 +26,7 @@ const getInitialValues = (user: User) => ({
     birth_year:        pathOr("", ["birth_year"], user.profile),
     job_function:      pathOr("", ["job_function"], user.profile),
     company_size:      pathOr("", ["company_size"], user.profile),
+    industry:          pathOr("", ["industry"], user.profile),
     years_experience:  pathOr("", ["years_experience"], user.profile),
     highest_education: pathOr("", ["highest_education"], user.profile)
   }

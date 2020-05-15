@@ -102,7 +102,25 @@ describe("EditProfileForm", () => {
     ["profile.gender", "", "Gender is a required field"],
     ["profile.gender", "f", ""],
     ["profile.birth_year", "", "Birth Year is a required field"],
-    ["profile.birth_year", "2000", ""]
+    ["profile.birth_year", "2000", ""],
+    ["profile.industry", "Education", ""],
+    ["profile.industry", "", "Industry is a required field"],
+    ["profile.company_size", "9999", ""],
+    ["profile.company_size", "", "Company Size is a required field"],
+    ["profile.job_function", "Administrative", ""],
+    ["profile.job_function", "", "Job Function is a required field"],
+    ["profile.years_experience", "Administrative", ""],
+    [
+      "profile.years_experience",
+      "",
+      "Years of Work Experience is a required field"
+    ],
+    ["profile.highest_education", "Masters Degree", ""],
+    [
+      "profile.highest_education",
+      "",
+      "Highest Level of Education is a required field"
+    ]
   ].forEach(([name, value, errorMessage]) => {
     it(`validates the field name=${name}, value=${JSON.stringify(
       value
@@ -130,6 +148,7 @@ describe("EditProfileForm", () => {
         "job_function",
         "company_size",
         "years_experience",
+        "industry",
         "highest_education"
       ]
       for (const key of keys) {
