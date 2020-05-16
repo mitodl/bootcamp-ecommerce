@@ -74,6 +74,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
         model = models.BootcampApplication
         fields = [
             "id",
+            "bootcamp_run_id",
             "state",
             "resume_filename",
             "resume_upload_date",
@@ -85,9 +86,9 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class BootcampApplicationListSerializer(serializers.ModelSerializer):
+class BootcampApplicationSerializer(serializers.ModelSerializer):
     """BootcampApplication serializer"""
-    bootcamp_run = BootcampRunSerializer(read_only=True)
+    bootcamp_run = BootcampRunSerializer()
 
     class Meta:
         model = models.BootcampApplication

@@ -8,31 +8,32 @@ from ecommerce.api import is_paid_in_full
 
 
 @transaction.atomic
-def get_or_create_bootcamp_application(user, bootcamp_run):
+def get_or_create_bootcamp_application(user, bootcamp_run_id):
     """
     Fetches a bootcamp application for a user if it exists. Otherwise, an application is created with the correct
     state.
 
     Args:
         user (User): The user applying for the bootcamp run
-        bootcamp_run (klasses.models.BootcampRun): The bootcamp run to which the user is applying
+        bootcamp_run_id (int): The id of the bootcamp run to which the user is applying
 
     Returns:
-        BootcampApplication: The bootcamp application
+        Tuple[BootcampApplication, bool]: The bootcamp application paired with a boolean indicating whether
+            or not a new application was created
     """
     bootcamp_app, created = (
         BootcampApplication.objects
         .select_for_update()
         .get_or_create(
             user=user,
-            bootcamp_run=bootcamp_run,
+            bootcamp_run_id=bootcamp_run_id,
         )
     )
     if created:
         derived_state = derive_application_state(bootcamp_app)
         bootcamp_app.state = derived_state
         bootcamp_app.save()
-    return bootcamp_app
+    return bootcamp_app, created
 
 
 def derive_application_state(bootcamp_application):  # pylint: disable=too-many-return-statements

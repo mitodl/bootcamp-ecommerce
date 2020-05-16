@@ -113,18 +113,20 @@ def test_get_or_create_bootcamp_application(mocker):
     )
     users = UserFactory.create_batch(2)
     bootcamp_runs = BootcampRunFactory.create_batch(2)
-    bootcamp_app = get_or_create_bootcamp_application(bootcamp_run=bootcamp_runs[0], user=users[0])
+    bootcamp_app, created = get_or_create_bootcamp_application(bootcamp_run_id=bootcamp_runs[0].id, user=users[0])
     patched_derive_state.assert_called_once_with(bootcamp_app)
     assert bootcamp_app.bootcamp_run == bootcamp_runs[0]
     assert bootcamp_app.user == users[0]
     assert bootcamp_app.state == patched_derive_state.return_value
+    assert created is True
     # The function should just return the existing application if one exists already
     existing_app = BootcampApplicationFactory.create(
         user=users[1],
         bootcamp_run=bootcamp_runs[1]
     )
-    bootcamp_app = get_or_create_bootcamp_application(bootcamp_run=bootcamp_runs[1], user=users[1])
+    bootcamp_app, created = get_or_create_bootcamp_application(bootcamp_run_id=bootcamp_runs[1].id, user=users[1])
     assert bootcamp_app == existing_app
+    assert created is False
 
 
 @pytest.mark.django_db
