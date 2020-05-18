@@ -1,0 +1,28 @@
+.brand-logo-svg {
+  display: inline-block;
+  height: 27px;
+  width: 51px;
+  overflow: hidden;
+
+  background: black;
+  mask-size: cover;
+  mask: url(/static/images/mit_logo.svg);
+
+  margin-right: 5px;
+}
+
+.bootcamp-link {
+  display: inline;
+  padding-left: 5px;
+
+  a {
+    color: black;
+    font-weight: 600;
+  }
+}
+
+.nav-item > a {
+  color: black !important;
+  font-weight: 300;
+  text-transform: uppercase;
+}
