@@ -29,7 +29,7 @@ class BootcampApplicationViewset(
         if self.action == "retrieve":
             return BootcampApplication.objects.prefetch_state_data()
         else:
-            return BootcampApplication.objects.all()
+            return BootcampApplication.objects.filter(user=self.request.user).all()
 
     def get_serializer_class(self):
         if self.action == "retrieve":
