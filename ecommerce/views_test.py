@@ -467,8 +467,7 @@ def test_user_bootcamp_run_statement_without_order(test_data, client):
     assert response.status_code == statuses.HTTP_404_NOT_FOUND
 
 
-@pytest.mark.parametrize("with_application_id", [True, False])
-def test_checkout_data(mocker, client, with_application_id):
+def test_checkout_data(mocker, client):
     """The checkout data API should return serialized application data"""
     app_awaiting_payment = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
     user = app_awaiting_payment.user
@@ -477,9 +476,7 @@ def test_checkout_data(mocker, client, with_application_id):
     mock_request = mocker.Mock(user=user)
 
     client.force_login(user)
-    url = reverse("checkout-data-list")
-    if with_application_id:
-        url += f"?application={app_awaiting_payment.id}"
+    url = f'{reverse("checkout-data-list")}?application={app_awaiting_payment.id}'
     resp = client.get(url)
 
     assert resp.json() == CheckoutDataSerializer(
@@ -487,3 +484,16 @@ def test_checkout_data(mocker, client, with_application_id):
         many=True,
         context={"request": mock_request}
     ).data
+
+
+def test_checkout_data_no_application_id(client, user):
+    """check that the application query parameter is required"""
+    client.force_login(user)
+    resp = client.get(reverse("checkout-data-list"))
+    assert resp.status_code == statuses.HTTP_404_NOT_FOUND
+
+
+def test_checkout_data_anonymous(client):
+    """anonymous users cannot query the checkout data API"""
+    resp = client.get(reverse("checkout-data-list"))
+    assert resp.status_code == statuses.HTTP_403_FORBIDDEN

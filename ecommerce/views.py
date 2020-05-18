@@ -222,10 +222,11 @@ class CheckoutDataViewSet(ReadOnlyModelViewSet):
     def get_queryset(self):
         """Filter on logged in user"""
         application_id = self.request.query_params.get("application")
-        queryset = BootcampApplication.objects.filter(
+        if not application_id:
+            raise Http404
+
+        return BootcampApplication.objects.filter(
             user=self.request.user,
             state=AppStates.AWAITING_PAYMENT.value,
-        )
-        if application_id is not None:
-            queryset = queryset.filter(id=application_id)
-        return queryset.order_by("id")
+            id=application_id,
+        ).order_by("id")
