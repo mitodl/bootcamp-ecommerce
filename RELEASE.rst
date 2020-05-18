@@ -1,6 +1,19 @@
 Release Notes
 =============
 
+Version 0.42.0
+--------------
+
+- Minimal site topnav - #436
+- Added endpoint to create a bootcamp application
+- Remove duplicate function (#530)
+- Move ecommerce-related views into ecommerce app (#525)
+- Fix registration profile form (#517)
+- Fix support links (#515)
+- Added endpoint for fetching list of user applications
+- Added endpoint for fetching detailed user application data
+- Remove smapply and fluidreview apps (#500)
+
 Version 0.41.0 (Released May 15, 2020)
 --------------
 
