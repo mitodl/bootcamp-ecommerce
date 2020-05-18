@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.42.0
+Version 0.42.0 (Released May 18, 2020)
 --------------
 
 - Minimal site topnav - #436
