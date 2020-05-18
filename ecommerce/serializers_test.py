@@ -88,7 +88,7 @@ def test_line_serializer(line):
 
 
 @pytest.mark.parametrize("has_paid", [True, False])
-def test_checkout_data(mocker, has_paid):
+def test_checkout_data(has_paid):
     """
     Test checkout data serializer
     """
@@ -106,8 +106,7 @@ def test_checkout_data(mocker, has_paid):
 
     InstallmentFactory.create(bootcamp_run=run)
 
-    request_mock = mocker.Mock(user=user)
-    assert CheckoutDataSerializer(instance=application, context={"request": request_mock}).data == {
+    assert CheckoutDataSerializer(instance=application).data == {
         "id": application.id,
         "bootcamp_run": {
             "id": run.id,

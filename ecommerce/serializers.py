@@ -72,12 +72,12 @@ class CheckoutDataSerializer(serializers.ModelSerializer):
 
     def get_total_price(self, application):
         """The personal price for the user, or the full price for the run"""
-        return application.bootcamp_run.personal_price(self.context["request"].user) or Decimal(0)
+        return application.bootcamp_run.personal_price(application.user) or Decimal(0)
 
     def get_total_paid(self, application):
         """The total paid by the user for this application so far"""
         return get_total_paid(
-            user=self.context["request"].user,
+            user=application.user,
             application_id=application.id,
             run_key=application.bootcamp_run.run_key,
         )
@@ -85,7 +85,7 @@ class CheckoutDataSerializer(serializers.ModelSerializer):
     def get_payments(self, application):
         """Serialized payments made by the user"""
         return LineSerializer(
-            Line.for_user_bootcamp_run(self.context["request"].user, application.bootcamp_run.run_key),
+            Line.objects.filter(order__application=application, order__status=Order.FULFILLED),
             many=True,
         ).data
 
