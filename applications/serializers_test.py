@@ -9,7 +9,7 @@ import factory
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampRunStepSerializer,
-    SubmissionSerializer, BootcampApplicationListSerializer,
+    SubmissionSerializer, BootcampApplicationSerializer,
 )
 from applications.factories import (
     BootcampApplicationFactory,
@@ -48,6 +48,7 @@ def test_application_detail_serializer(app_data):
     data = BootcampApplicationDetailSerializer(instance=application).data
     assert data == {
         "id": application.id,
+        "bootcamp_run_id": application.bootcamp_run_id,
         "state": application.state,
         "resume_filename": None,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
@@ -106,7 +107,7 @@ def test_application_list_serializer(app_data):
     """
     other_app = BootcampApplicationFactory.create(user=app_data.application.user)
     user_applications = [app_data.application, other_app]
-    data = BootcampApplicationListSerializer(instance=user_applications, many=True).data
+    data = BootcampApplicationSerializer(instance=user_applications, many=True).data
     assert data == [
         {
             "id": application.id,
