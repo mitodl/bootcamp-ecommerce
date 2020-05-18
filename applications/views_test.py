@@ -15,6 +15,7 @@ from profiles.factories import UserFactory
     "action,expected_serializer", [
         ["retrieve", BootcampApplicationDetailSerializer],
         ["list", BootcampApplicationSerializer],
+        ["create", BootcampApplicationSerializer],
     ]
 )
 def test_view_serializer(mocker, action, expected_serializer):
@@ -36,13 +37,18 @@ def test_app_detail_view(client):
 
 @pytest.mark.django_db
 def test_app_list_view(client):
-    """The bootcamp application list view should return a successful response"""
-    application = BootcampApplicationFactory.create()
-    client.force_login(application.user)
+    """
+    The bootcamp application list view should return a successful response, and should not include
+    other user's applications in the response data
+    """
+    applications = BootcampApplicationFactory.create_batch(2)
+    client.force_login(applications[0].user)
     url = reverse("applications_api-list")
     resp = client.get(url)
     assert resp.status_code == status.HTTP_200_OK
-    assert resp.json()[0]["id"] == application.id
+    resp_json = resp.json()
+    assert len(resp_json) == 1
+    assert resp_json[0]["id"] == applications[0].id
 
 
 @pytest.mark.django_db
