@@ -229,4 +229,8 @@ class CheckoutDataViewSet(ReadOnlyModelViewSet):
             user=self.request.user,
             state=AppStates.AWAITING_PAYMENT.value,
             id=application_id,
+        ).select_related("bootcamp_run").prefetch_related(
+            "bootcamp_run__personal_prices",
+            "bootcamp_run__installment_set",
+            "orders",
         ).order_by("id")

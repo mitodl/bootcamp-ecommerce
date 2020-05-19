@@ -1,9 +1,7 @@
 """Serializers for ecommerce"""
-from decimal import Decimal
 from rest_framework import serializers
 
 from applications.models import BootcampApplication
-from ecommerce.api import get_total_paid
 from ecommerce.models import Order, Line
 from klasses.serializers import BootcampRunSerializer, InstallmentSerializer
 
@@ -65,27 +63,15 @@ class LineSerializer(serializers.ModelSerializer):
 class CheckoutDataSerializer(serializers.ModelSerializer):
     """Serializer for ecommerce information for a BootcampApplication"""
     bootcamp_run = BootcampRunSerializer()
-    total_price = serializers.SerializerMethodField()
-    total_paid = serializers.SerializerMethodField()
+    total_price = serializers.DecimalField(max_digits=20, decimal_places=2, read_only=True, source="price")
+    total_paid = serializers.DecimalField(max_digits=20, decimal_places=2, read_only=True)
     payments = serializers.SerializerMethodField()
     installments = serializers.SerializerMethodField()
-
-    def get_total_price(self, application):
-        """The personal price for the user, or the full price for the run"""
-        return application.bootcamp_run.personal_price(application.user) or Decimal(0)
-
-    def get_total_paid(self, application):
-        """The total paid by the user for this application so far"""
-        return get_total_paid(
-            user=application.user,
-            application_id=application.id,
-            run_key=application.bootcamp_run.run_key,
-        )
 
     def get_payments(self, application):
         """Serialized payments made by the user"""
         return LineSerializer(
-            Line.objects.filter(order__application=application, order__status=Order.FULFILLED),
+            (order.line_set.first() for order in application.orders.filter(status=Order.FULFILLED)),
             many=True,
         ).data
 

@@ -1,9 +1,7 @@
 """Tests for serializers"""
-from decimal import Decimal
 import pytest
 
 from main.test_utils import serializer_date_format
-from ecommerce.api import get_total_paid
 from ecommerce.factories import (
     LineFactory,
     BootcampApplicationFactory,
@@ -138,6 +136,6 @@ def test_checkout_data(has_paid):
                 "description": line.description,
             }
         ] if has_paid else [],
-        "total_paid": get_total_paid(user=user, run_key=run.run_key, application_id=application.id),
-        "total_price": run.personal_price(user) or Decimal(0),
+        "total_paid": application.total_paid,
+        "total_price": application.price,
     }

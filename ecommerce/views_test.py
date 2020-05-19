@@ -1,4 +1,6 @@
 """Tests for ecommerce views"""
+from unittest.mock import PropertyMock
+
 from django.urls import (
     resolve,
     reverse,
@@ -11,10 +13,6 @@ from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import make_reference_id
-from ecommerce.api_test import (
-    create_purchasable_bootcamp_run,
-    create_test_order,
-)
 from ecommerce.exceptions import EcommerceException
 from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import (
@@ -23,9 +21,14 @@ from ecommerce.models import (
     Receipt,
 )
 from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
+from ecommerce.test_utils import (
+    create_test_application,
+    create_test_order,
+)
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRunEnrollment
 from profiles.factories import ProfileFactory, UserFactory
+
 
 CYBERSOURCE_SECURITY_KEY = '🔑'
 CYBERSOURCE_SECURE_ACCEPTANCE_URL = 'http://fake'
@@ -44,6 +47,26 @@ def ecommerce_settings(settings):
     settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL = CYBERSOURCE_SECURE_ACCEPTANCE_URL
     settings.CYBERSOURCE_REFERENCE_PREFIX = CYBERSOURCE_REFERENCE_PREFIX
     settings.ECOMMERCE_EMAIL = 'ecommerce@example.com'
+
+
+@pytest.fixture
+def application():
+    """An application for testing"""
+    yield create_test_application()
+
+
+@pytest.fixture
+def user(application):
+    """A user with social auth"""
+    yield application.user
+
+
+@pytest.fixture
+def bootcamp_run(application):
+    """
+    Creates a purchasable bootcamp run. Bootcamp run price is at least $200, in two installments
+    """
+    yield application.bootcamp_run
 
 
 def test_using_serializer_validation(client):
@@ -72,11 +95,10 @@ def test_login_required(client):
     assert resp.status_code == statuses.HTTP_403_FORBIDDEN
 
 
-def test_payment(mocker, client):
+def test_payment(mocker, client, user, bootcamp_run):
     """
     If a user POSTs to the payment API an unfulfilled order should be created
     """
-    bootcamp_run, user = create_purchasable_bootcamp_run()
     client.force_login(user)
     fake_payload = "fake_payload"
     fake_order = 'fake_order'
@@ -101,18 +123,16 @@ def test_payment(mocker, client):
     create_unfulfilled_order_mock.assert_any_call(user, bootcamp_run.run_key, bootcamp_run.price)
 
 
-@pytest.mark.parametrize("has_application", [True, False])
+# pylint: disable=too-many-arguments
 @pytest.mark.parametrize("has_paid", [True, False])
-def test_order_fulfilled(client, mocker, has_application, has_paid):
+def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_paid):
     """
     Test the happy case
     """
-    bootcamp_run, user = create_purchasable_bootcamp_run()
     payment = 123
-    order = create_test_order(user, bootcamp_run.run_key, payment)
-    if has_application:
-        order.application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
-        order.save()
+    order = create_test_order(application, payment, fulfilled=False)
+    order.application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    order.save()
     data_before = order.to_dict()
 
     data = {}
@@ -125,7 +145,11 @@ def test_order_fulfilled(client, mocker, has_application, has_paid):
     send_email = mocker.patch(
         'ecommerce.api.MailgunClient.send_individual_email',
     )
-    paid_in_full_mock = mocker.patch('ecommerce.api.is_paid_in_full', return_value=has_paid)
+    paid_in_full_mock = mocker.patch(
+        'applications.models.BootcampApplication.is_paid_in_full',
+        new_callable=PropertyMock,
+    )
+    paid_in_full_mock.return_value = has_paid
 
     resp = client.post(reverse('order-fulfillment'), data=data)
 
@@ -142,13 +166,11 @@ def test_order_fulfilled(client, mocker, has_application, has_paid):
     assert order_audit.order == order
     assert order_audit.data_before == data_before
     assert order_audit.data_after == order.to_dict()
-    paid_in_full_mock.assert_called_once_with(user=user, bootcamp_run=bootcamp_run)
 
-    if has_application:
-        order.application.refresh_from_db()
-        assert order.application.state == (
-            AppStates.COMPLETE.value if has_paid else AppStates.AWAITING_PAYMENT.value
-        )
+    order.application.refresh_from_db()
+    assert order.application.state == (
+        AppStates.COMPLETE.value if has_paid else AppStates.AWAITING_PAYMENT.value
+    )
 
     assert BootcampRunEnrollment.objects.filter(bootcamp_run=bootcamp_run, user=user).count() == (
         1 if has_paid else 0
@@ -182,12 +204,11 @@ def test_missing_fields(client, mocker):
     ('CANCEL', False),
     ('something else', True),
 ])
-def test_not_accept(mocker, client, decision, should_send_email):
+def test_not_accept(mocker, client, application, decision, should_send_email):
     """
     If the decision is not ACCEPT then the order should be marked as failed
     """
-    bootcamp_run, user = create_purchasable_bootcamp_run()
-    order = create_test_order(user, bootcamp_run.run_key, 123)
+    order = create_test_order(application, 123, fulfilled=False)
 
     data = {
         'req_reference_number': make_reference_id(order),
@@ -218,12 +239,11 @@ def test_not_accept(mocker, client, decision, should_send_email):
         assert send_email.call_count == 0
 
 
-def test_ignore_duplicate_cancel(client, mocker):
+def test_ignore_duplicate_cancel(client, mocker, application):
     """
     If the decision is CANCEL and we already have a duplicate failed order, don't change anything.
     """
-    bootcamp_run, user = create_purchasable_bootcamp_run()
-    order = create_test_order(user, bootcamp_run.run_key, 123)
+    order = create_test_order(application, 123, fulfilled=False)
     order.status = Order.FAILED
     order.save()
 
@@ -247,10 +267,9 @@ def test_ignore_duplicate_cancel(client, mocker):
     (Order.FULFILLED, 'ERROR'),
     (Order.FULFILLED, 'SUCCESS'),
 ])
-def test_error_on_duplicate_order(mocker, client, order_status, decision):
+def test_error_on_duplicate_order(mocker, client, application, order_status, decision):
     """If there is a duplicate message (except for CANCEL), raise an exception"""
-    bootcamp_run, user = create_purchasable_bootcamp_run()
-    order = create_test_order(user, bootcamp_run.run_key, 123)
+    order = create_test_order(application, 123, fulfilled=False)
     order.status = order_status
     order.save()
 
@@ -297,7 +316,7 @@ BOOTCAMP_RUN_FIELDS = [
 
 
 @pytest.fixture()
-def test_data(mocker):
+def test_data():
     """
     Sets up the data for all the tests in this module
     """

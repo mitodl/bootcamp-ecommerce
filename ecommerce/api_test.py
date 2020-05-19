@@ -10,19 +10,15 @@ from unittest.mock import patch
 
 import pytest
 import pytz
-import factory
 from rest_framework.exceptions import ValidationError
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
-from backends.pipeline_api import EdxOrgOAuth2
 from ecommerce.api import (
     create_unfulfilled_order,
     generate_cybersource_sa_payload,
     generate_cybersource_sa_signature,
     get_new_order_by_reference_number,
-    get_total_paid,
-    is_paid_in_full,
     ISO_8601_FORMAT,
     make_reference_id,
     serialize_user_bootcamp_run,
@@ -36,106 +32,47 @@ from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import (
     Line,
     Order,
-    OrderAudit,
 )
 from ecommerce.serializers import LineSerializer
+from ecommerce.test_utils import create_test_application, create_test_order
 from klasses.factories import BootcampRunFactory, InstallmentFactory
-from klasses.models import Installment, PersonalPrice
 from klasses.serializers import InstallmentSerializer
-from profiles.factories import UserFactory, ProfileFactory
+from profiles.factories import ProfileFactory
 
 
 pytestmark = pytest.mark.django_db
 
 
 # pylint: disable=redefined-outer-name, unused-argument
-def create_purchasable_bootcamp_run():
-    """Create a purchasable bootcamp run, and a user to be associated with it"""
-    profile = ProfileFactory.create()
-    user = profile.user
-    user.social_auth.create(
-        provider=EdxOrgOAuth2.name,
-        uid="{}_edx".format(user.username),
-    )
-    installment_1 = InstallmentFactory.create(amount=200)
-    InstallmentFactory.create(bootcamp_run=installment_1.bootcamp_run)
-    return installment_1.bootcamp_run, user
+@pytest.fixture
+def application():
+    """An application for testing"""
+    yield create_test_application()
 
 
 @pytest.fixture
-def bootcamp_run_and_user():
-    """A pair of (bootcamp run, user)"""
-    yield create_purchasable_bootcamp_run()
-
-
-@pytest.fixture
-def user(bootcamp_run_and_user):
+def user(application):
     """A user with social auth"""
-    _, user = bootcamp_run_and_user
-    yield user
+    yield application.user
 
 
 @pytest.fixture
-def bootcamp_run(bootcamp_run_and_user):
+def bootcamp_run(application):
     """
     Creates a purchasable bootcamp run. Bootcamp run price is at least $200, in two installments
     """
-    bootcamp_run, _ = bootcamp_run_and_user
-    yield bootcamp_run
-
-
-def create_test_order(user, run_key, payment_amount):
-    """
-    Pass through arguments to create_unfulfilled_order and mock payable_bootcamp_run_keys
-    """
-    with patch(
-        'ecommerce.api.payable_bootcamp_run_keys',
-        return_value=[run_key],
-    ):
-        return create_unfulfilled_order(user, run_key, payment_amount)
+    yield application.bootcamp_run
 
 
 @pytest.mark.parametrize("payment_amount", [0, -1.23])
-def test_less_or_equal_to_zero(user, bootcamp_run, payment_amount):
+def test_less_or_equal_to_zero(application, payment_amount):
     """
     An order may not have a negative or zero price
     """
     with pytest.raises(ValidationError) as ex:
-        create_test_order(user, bootcamp_run.run_key, payment_amount)
+        create_test_order(application, payment_amount, fulfilled=False)
 
     assert ex.value.args[0] == 'Payment is less than or equal to zero'
-
-
-def test_create_order(user, bootcamp_run):
-    """
-    Create Order from a purchasable bootcamp run
-    """
-    payment = 123
-    order = create_test_order(user, bootcamp_run.run_key, payment)
-
-    assert Order.objects.count() == 1
-    assert order.status == Order.CREATED
-    assert order.total_price_paid == payment
-    assert order.user == user
-
-    assert order.line_set.count() == 1
-    line = order.line_set.first()
-    assert line.run_key == bootcamp_run.run_key
-    assert line.description == 'Installment for {}'.format(bootcamp_run.title)
-    assert line.price == payment
-
-    assert OrderAudit.objects.count() == 1
-    order_audit = OrderAudit.objects.first()
-    assert order_audit.order == order
-    assert order_audit.data_after == order.to_dict()
-
-    # data_before only has modified_at different, since we only call save_and_log
-    # after Order is already created
-    data_before = order_audit.data_before
-    dict_before = order.to_dict()
-    del data_before['updated_on']
-    del dict_before['updated_on']
-    assert data_before == dict_before
 
 
 def test_not_eligible_to_pay(user, bootcamp_run):
@@ -148,73 +85,6 @@ def test_not_eligible_to_pay(user, bootcamp_run):
     ), pytest.raises(ValidationError) as ex:
         create_unfulfilled_order(user, bootcamp_run.run_key, 123)
     assert ex.value.args[0] == "User is unable to pay for bootcamp run {}".format(bootcamp_run.run_key)
-
-
-PAYMENT = 123
-
-
-@pytest.fixture
-def fulfilled_order(bootcamp_run, user):
-    """Make a fulfilled order"""
-    order = create_test_order(user, bootcamp_run.run_key, PAYMENT)
-    order.status = Order.FULFILLED
-    order.save()
-    yield order
-
-
-def test_get_total_paid(fulfilled_order, user, bootcamp_run):
-    """
-    get_total_paid should look through all fulfilled orders for the payment for a particular user
-    """
-    # Multiple payments should be added together
-    next_payment = 50
-    order = create_test_order(user, bootcamp_run.run_key, next_payment)
-    order.status = Order.FULFILLED
-    order.save()
-    assert get_total_paid(user, bootcamp_run.run_key) == PAYMENT + next_payment
-
-
-def test_get_total_paid_other_user(fulfilled_order, user, bootcamp_run):
-    """other_user's payments shouldn't affect user"""
-    other_user = UserFactory.create()
-    assert get_total_paid(other_user, bootcamp_run.run_key) == 0
-
-
-def test_get_total_paid_unfulfilled(fulfilled_order, user, bootcamp_run):
-    """Unfulfilled orders should be ignored"""
-    create_test_order(user, bootcamp_run.run_key, 45)
-    assert get_total_paid(user, bootcamp_run.run_key) == PAYMENT
-
-
-def test_get_total_paid_other_run(fulfilled_order, user, bootcamp_run):
-    """Orders for other bootcamp runs should be ignored"""
-    other_bootcamp_run, other_user = create_purchasable_bootcamp_run()
-    other_order = create_test_order(other_user, other_bootcamp_run.run_key, 50)
-    other_order.status = Order.FULFILLED
-    other_order.save()
-
-    assert get_total_paid(user, bootcamp_run.run_key) == PAYMENT
-
-
-def test_get_total_paid_no_payments(fulfilled_order, user, bootcamp_run):
-    """If there are no payments get_total_paid should return 0"""
-    Order.objects.all().update(status=Order.REFUNDED)
-    assert get_total_paid(user, bootcamp_run.run_key) == 0
-
-
-def test_get_total_paid_app_limit(user, bootcamp_run):
-    """get_total_paid should limit the Lines it counts toward the total paid if an application id is specified"""
-    lines = LineFactory.create_batch(
-        2,
-        order__status=Order.FULFILLED,
-        order__user=user,
-        run_key=bootcamp_run.run_key,
-        price=factory.Iterator([10, 20]),
-    )
-    application_ids = [line.order.application_id for line in lines]
-    assert all(application_ids)
-    assert get_total_paid(user, bootcamp_run.run_key, application_id=application_ids[0]) == 10
-    assert get_total_paid(user, bootcamp_run.run_key, application_id=application_ids[1]) == 20
 
 
 CYBERSOURCE_ACCESS_KEY = 'access'
@@ -257,12 +127,12 @@ def test_valid_signature():
     assert b64encode(digest).decode('utf-8') == signature
 
 
-def test_signed_payload(mocker, bootcamp_run, user):
+def test_signed_payload(mocker, application, bootcamp_run):
     """
     A valid payload should be signed appropriately
     """
     payment = 123.45
-    order = create_test_order(user, bootcamp_run.run_key, payment)
+    order = create_test_order(application, payment, fulfilled=False)
     username = 'username'
     transaction_uuid = 'hex'
 
@@ -315,11 +185,11 @@ def test_signed_payload(mocker, bootcamp_run, user):
 
 
 @pytest.mark.parametrize("invalid_title", ["", "<h1></h1>"])
-def test_with_empty_or_html_run_title(bootcamp_run, user, invalid_title):
+def test_with_empty_or_html_run_title(application, bootcamp_run, invalid_title):
     """ Verify that Validation error raises if title of bootcamp run has only HTML or empty."""
     bootcamp_run.title = invalid_title
     bootcamp_run.save()
-    order = create_test_order(user, bootcamp_run.run_key, '123.45')
+    order = create_test_order(application, '123.45', fulfilled=False)
     with pytest.raises(ValidationError) as ex:
         generate_cybersource_sa_payload(order, 'dashboard_url')
 
@@ -329,11 +199,11 @@ def test_with_empty_or_html_run_title(bootcamp_run, user, invalid_title):
 
 
 @pytest.mark.parametrize("invalid_title", ["", "<h1></h1>"])
-def test_with_empty_or_html_bootcamp_title(bootcamp_run, user, invalid_title):
+def test_with_empty_or_html_bootcamp_title(application, bootcamp_run, invalid_title):
     """ Verify that Validation error raises if title of bootcamp has only HTML or empty."""
     bootcamp_run.bootcamp.title = invalid_title
     bootcamp_run.bootcamp.save()
-    order = create_test_order(user, bootcamp_run.run_key, '123.45')
+    order = create_test_order(application, '123.45', fulfilled=False)
     with pytest.raises(ValidationError) as ex:
         generate_cybersource_sa_payload(order, 'dashboard_url')
 
@@ -342,19 +212,19 @@ def test_with_empty_or_html_bootcamp_title(bootcamp_run, user, invalid_title):
     )
 
 
-def test_make_reference_id(bootcamp_run, user):
+def test_make_reference_id(application):
     """
     make_reference_id should concatenate the reference prefix and the order id
     """
-    order = create_test_order(user, bootcamp_run.run_key, 123)
+    order = create_test_order(application, 123, fulfilled=False)
     assert "BOOTCAMP-{}-{}".format(CYBERSOURCE_REFERENCE_PREFIX, order.id) == make_reference_id(order)
 
 
-def test_get_new_order_by_reference_number(bootcamp_run, user):
+def test_get_new_order_by_reference_number(application):
     """
     get_new_order_by_reference_number returns an Order with status created
     """
-    order = create_test_order(user, bootcamp_run.run_key, 123)
+    order = create_test_order(application, 123, fulfilled=False)
     same_order = get_new_order_by_reference_number(make_reference_id(order))
     assert same_order.id == order.id
 
@@ -374,11 +244,11 @@ def test_parse(reference_number, exception_message):
     assert ex.value.args[0] == exception_message
 
 
-def test_status(bootcamp_run, user):
+def test_status(application):
     """
     get_order_by_reference_number should only get orders with status=CREATED
     """
-    order = create_test_order(user, bootcamp_run.run_key, 123)
+    order = create_test_order(application, 123, fulfilled=False)
     order.status = Order.FAILED
     order.save()
 
@@ -390,30 +260,8 @@ def test_status(bootcamp_run, user):
     assert ex.value.args[0] == "Unable to find order {}".format(order.id)
 
 
-@pytest.mark.parametrize("run_price,personal_price,total_paid,expected", [
-    [10, None, 5, False],
-    [10, None, 10, True],
-    [10, 5, 3, False],
-    [10, 5, 5, True],
-])  # pylint: disable=too-many-arguments
-def test_is_paid_in_full(mocker, bootcamp_run, user, run_price, personal_price, total_paid, expected):
-    """
-    is_paid_in_full should return true if the payments match or exceed the price of the run
-    """
-    Installment.objects.all().delete()
-    for _ in range(2):
-        InstallmentFactory.create(amount=run_price/2, bootcamp_run=bootcamp_run)
-
-    if personal_price is not None:
-        PersonalPrice.objects.create(bootcamp_run=bootcamp_run, user=user, price=personal_price)
-
-    get_total_paid_mock = mocker.patch('ecommerce.api.get_total_paid', return_value=total_paid)
-    assert is_paid_in_full(bootcamp_run=bootcamp_run, user=user) is expected
-    get_total_paid_mock.assert_called_once_with(run_key=bootcamp_run.run_key, user=user)
-
-
 @pytest.fixture()
-def test_data(mocker):
+def test_data():
     """
     Sets up the data for all the tests in this module
     """

@@ -12,7 +12,6 @@ import uuid
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
-from django.db.models.aggregates import Sum
 from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
@@ -37,51 +36,6 @@ from mail.api import MailgunClient
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 log = logging.getLogger(__name__)
 _REFERENCE_NUMBER_PREFIX = 'BOOTCAMP-'
-
-
-def get_total_paid(user, run_key, application_id=None):
-    """
-    Get total paid for a bootcamp run for a user
-    Args:
-        user (User):
-            The purchaser of the bootcamp run
-        run_key (int):
-            A bootcamp run key
-        application_id (Optional[int]):
-            The id of a BootcampApplication (if the payments should only be counted if they
-            were part of the given application)
-
-    Returns:
-        Decimal: The total amount paid by a user for a bootcamp run
-    """
-    line_qset = Line.objects.filter(
-        order__status=Order.FULFILLED,
-        order__user=user,
-        run_key=run_key,
-    )
-    if application_id is not None:
-        line_qset = line_qset.filter(order__application_id=application_id)
-    return line_qset.aggregate(price=Sum('price'))['price'] or Decimal(0)
-
-
-def is_paid_in_full(*, user, bootcamp_run):
-    """
-    Is the bootcamp run paid for in full for the user?
-
-    Args:
-        user (User):
-            The purchaser of the bootcamp run
-        bootcamp_run (BootcampRun):
-            A bootcamp run
-
-    Returns:
-        bool: Whether the run is fully paid for
-    """
-    total_paid = get_total_paid(user=user, run_key=bootcamp_run.run_key)
-    price = bootcamp_run.personal_prices.values_list("price", flat=True).first()
-    if price is None:
-        price = bootcamp_run.price
-    return total_paid >= price
 
 
 @transaction.atomic
@@ -287,23 +241,22 @@ def complete_successful_order(order):
     order.save_and_log(None)
 
     run = order.get_bootcamp_run()
-    if is_paid_in_full(user=order.user, bootcamp_run=run):
+    application = order.application
+    if application.is_paid_in_full:
         BootcampRunEnrollment.objects.get_or_create(
             user=order.user,
             bootcamp_run=run,
         )
 
-        application = order.application
-        if application is not None:
-            try:
-                application.complete()
-                application.save()
-            except TransitionNotAllowed:
-                log.exception(
-                    "Application received full payment but state cannot transition to COMPLETE from %s for order %d",
-                    application.state,
-                    order.id,
-                )
+        try:
+            application.complete()
+            application.save()
+        except TransitionNotAllowed:
+            log.exception(
+                "Application received full payment but state cannot transition to COMPLETE from %s for order %d",
+                application.state,
+                order.id,
+            )
 
 
 def handle_rejected_order(*, order, decision):
