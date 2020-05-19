@@ -1,5 +1,4 @@
 """views for bootcamps"""
-from django.db.models import Q
 from django.db.models.functions import Now
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
