@@ -71,7 +71,7 @@ class CheckoutDataSerializer(serializers.ModelSerializer):
     def get_payments(self, application):
         """Serialized payments made by the user"""
         return LineSerializer(
-            (order.line_set.first() for order in application.orders.filter(status=Order.FULFILLED)),
+            (order.line_set.first() for order in application.orders.all() if order.status == Order.FULFILLED),
             many=True,
         ).data
 

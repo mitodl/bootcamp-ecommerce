@@ -233,4 +233,5 @@ class CheckoutDataViewSet(ReadOnlyModelViewSet):
             "bootcamp_run__personal_prices",
             "bootcamp_run__installment_set",
             "orders",
+            "orders__line_set",
         ).order_by("id")
