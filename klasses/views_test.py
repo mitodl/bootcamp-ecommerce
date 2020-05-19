@@ -28,6 +28,8 @@ def runs(user):
     unavailable_run = BootcampRunFactory.create(start_date=now_in_utc()+timedelta(days=1))
     submitted_application_run = BootcampRunFactory.create()
     BootcampApplicationFactory.create(user=user, bootcamp_run=submitted_application_run)
+    # Applications by other users should not affect whether the run is available
+    BootcampApplicationFactory.create(bootcamp_run=run)
 
     yield RunInfo(run=run, unavailable_run=unavailable_run, submitted_application_run=submitted_application_run)
 
