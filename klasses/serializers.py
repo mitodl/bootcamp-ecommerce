@@ -24,6 +24,7 @@ class BootcampRunSerializer(serializers.ModelSerializer):
         model = BootcampRun
         fields = [
             "id",
+            "display_title",
             "bootcamp",
             "title",
             "run_key",

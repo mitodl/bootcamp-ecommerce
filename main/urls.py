@@ -36,6 +36,7 @@ urlpatterns = [
     url('', include('social_django.urls', namespace='social')),
     path("", include("authentication.urls")),
     path("", include("profiles.urls")),
+    path("", include("klasses.urls")),
     url('', include('jobma.urls')),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^background-images\.css$', BackgroundImagesCSSView.as_view(), name='background-images-css'),
