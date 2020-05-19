@@ -1,4 +1,5 @@
 """views for bootcamps"""
+from django.db.models import Q
 from django.db.models.functions import Now
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
@@ -17,5 +18,5 @@ class BootcampViewSet(ListModelMixin, GenericViewSet):
         """Make a queryset which optionally shows what runs are available for enrollment"""
         queryset = BootcampRun.objects.all().select_related("bootcamp")
         if self.request.query_params.get("available") == "true":
-            queryset = queryset.filter(start_date__lt=Now()).exclude(enrollments__user=self.request.user)
+            queryset = queryset.filter(start_date__lt=Now()).exclude(applications__user=self.request.user)
         return queryset.order_by("id")
