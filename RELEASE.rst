@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.42.1
+Version 0.42.1 (Released May 19, 2020)
 --------------
 
 - Added newrelic to worker processes
