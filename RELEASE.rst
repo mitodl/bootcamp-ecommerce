@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.42.1
+--------------
+
+- Added newrelic to worker processes
+- Modified application list view to only return applications that belong to the logged-in user
+
 Version 0.42.0 (Released May 18, 2020)
 --------------
 
