@@ -69,9 +69,9 @@ def test_bootcamp_application_resume_file_validation(file_name, expected):
 
 
 @pytest.mark.django_db
-def test_has_incomplete_submissions():
+def test_all_submissions_are_reviewed():
     """
-    has_incomplete_submissions should return true if there are other submissions that are waiting for review
+    all_submissions_are_reviewed should return true if all submissions have been reviewed
     """
     bootcamp_run = BootcampRunFactory()
     submission = ApplicationStepSubmissionFactory.create(

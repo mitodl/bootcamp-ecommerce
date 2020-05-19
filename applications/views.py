@@ -2,12 +2,13 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import UpdateAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
-from applications.models import BootcampApplication
 from applications.serializers import BootcampApplicationDetailSerializer, BootcampApplicationSerializer
-from applications.api import get_or_create_bootcamp_application
+from applications.api import get_or_create_bootcamp_application, set_submission_review_status
+from applications.models import BootcampApplication, ApplicationStepSubmission
 from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission
 
@@ -56,3 +57,23 @@ class BootcampApplicationViewset(
             data=serializer_cls(instance=application).data,
             status=(status.HTTP_201_CREATED if created else status.HTTP_200_OK)
         )
+
+
+class ReviewSubmissionView(UpdateAPIView):
+    """
+    Admin view for setting review status on application submission
+    """
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
+    lookup_field = "pk"
+    queryset = ApplicationStepSubmission.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Update review status for application submission
+        """
+        submission = self.get_object()
+        review_status = request.data["review_status"]
+        set_submission_review_status(submission, review_status)
+
+        return Response(status=status.HTTP_200_OK)

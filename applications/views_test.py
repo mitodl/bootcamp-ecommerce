@@ -4,7 +4,8 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
-from applications.factories import BootcampApplicationFactory
+from applications.constants import AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
+from applications.factories import BootcampApplicationFactory, ApplicationStepSubmissionFactory
 from applications.serializers import BootcampApplicationDetailSerializer, BootcampApplicationSerializer
 from applications.views import BootcampApplicationViewset
 from klasses.factories import BootcampRunFactory
@@ -89,3 +90,27 @@ def test_app_detail_view_permissions(client):
     url = reverse("applications_api-detail", kwargs={"pk": other_user_application.id})
     resp = client.get(url)
     assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.parametrize(
+    "review_status", [REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED]
+)
+@pytest.mark.django_db
+def test_review_submission_update(client, mocker, review_status):
+    """
+    The review submission view should return successful response, and update review_status
+    """
+    mocker.patch('applications.views.IsAdminUser.has_permission', return_value=True)
+    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_SUBMISSION_REVIEW.value)
+    submission = ApplicationStepSubmissionFactory(
+        review_status=None,
+        bootcamp_application=bootcamp_application,
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run
+    )
+    url = reverse("submit-review", kwargs={"pk": submission.id})
+    resp = client.patch(url, content_type='application/json', data={
+        "review_status": review_status,
+        })
+    assert resp.status_code == status.HTTP_200_OK
+    submission.refresh_from_db()
+    assert submission.review_status == review_status
