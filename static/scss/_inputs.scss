@@ -36,11 +36,17 @@ button.btn.large-cta {
   line-height: 53px;
 }
 
+label {
+  letter-spacing: 1.04px;
+  font-size: 18px;
+}
+
 input {
-  padding: 15px;
+  padding: 8px;
   color: $input-color;
   font-size: $input-font-size;
-  border: none;
+  border: 1px solid $light-gray;
+  border-radius: 5px;
 }
 
 ::placeholder {
