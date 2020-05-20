@@ -15,7 +15,7 @@ from applications.constants import (
     AppStates,
     VALID_APP_STATE_CHOICES,
     VALID_REVIEW_STATUS_CHOICES,
-    REVIEW_STATUS_REJECTED)
+    REVIEW_STATUS_APPROVED)
 from applications.utils import validate_file_extension
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
@@ -171,8 +171,7 @@ class BootcampApplication(TimestampedModel):
         Make sure all steps are submitted, reviewed and approved
         """
         if self.all_application_steps_submitted():
-            return not self.submissions.filter(
-                models.Q(review_status=REVIEW_STATUS_REJECTED) | models.Q(review_status__isnull=True)).exists()
+            return not self.submissions.exclude(review_status=REVIEW_STATUS_APPROVED).exists()
         return False
 
     def __str__(self):
