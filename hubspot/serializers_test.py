@@ -1,4 +1,5 @@
 """Test for hubspot serializers"""
+from decimal import Decimal
 
 import pytest
 
@@ -13,6 +14,8 @@ from applications.factories import (
     ApplicationStepSubmissionFactory,
     ApplicationStepFactory,
 )
+from ecommerce.factories import OrderFactory, LineFactory
+from ecommerce.models import Order
 from hubspot.api import format_hubspot_id
 from hubspot.serializers import (
     HubspotProductSerializer,
@@ -33,21 +36,39 @@ def test_product_serializer():
     assert data == serialized_data
 
 
-def test_deal_serializer_with_personal_price():
+@pytest.mark.parametrize(
+    "pay_amount,status",
+    [
+        ["0.00", "checkout_completed"],
+        ["50.00", "shipped"],
+        ["1.00", "processed"],
+        [None, "checkout_pending"],
+    ],
+)
+def test_deal_serializer_with_personal_price(pay_amount, status):
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/personal price"""
     application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT)
     personal_price = PersonalPriceFactory.create(
-        bootcamp_run=application.bootcamp_run, user=application.user
+        bootcamp_run=application.bootcamp_run, user=application.user, price=Decimal("50.00")
     )
-
     serialized_data = {
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.bootcamp.title,
         "price": personal_price.price.to_eng_string(),
         "purchaser": format_hubspot_id(application.user.profile.id),
         "name": f"Bootcamp-application-order-{application.id}",
-        "status": "checkout_pending",
+        "status": status
     }
+    if pay_amount is not None:
+        order = OrderFactory.create(
+            application=application,
+            total_price_paid=pay_amount,
+            user=application.user,
+            status=Order.FULFILLED
+        )
+        LineFactory.create(order=order, run_key=application.bootcamp_run.run_key)
+        serialized_data["total_price_paid"] = pay_amount
+
     data = HubspotDealSerializer(instance=application).data
     assert data == serialized_data
 
