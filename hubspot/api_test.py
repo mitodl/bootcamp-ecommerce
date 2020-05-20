@@ -161,7 +161,7 @@ def test_make_contact_sync_message():
 
 @pytest.mark.django_db
 def test_make_deal_sync_message():
-    """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
+    """Test make_deal_sync_message serializes a deal and returns a properly formatted sync message"""
     application = OrderFactory.create().application
     InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
     serialized_app = HubspotDealSerializer(application).data
@@ -177,7 +177,7 @@ def test_make_deal_sync_message():
 
 @pytest.mark.django_db
 def test_make_line_sync_message():
-    """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
+    """Test make_line_sync_message serializes a line and returns a properly formatted sync message"""
     application = OrderFactory.create().application
     InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
     serialized_line = HubspotLineSerializer(application).data
