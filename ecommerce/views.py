@@ -14,7 +14,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from applications.constants import AppStates
 from applications.models import BootcampApplication
@@ -207,7 +206,7 @@ class UserBootcampRunList(APIView):
         return Response(serialize_user_bootcamp_runs(user=user))
 
 
-class CheckoutDataViewSet(ReadOnlyModelViewSet):
+class CheckoutDataView(RetrieveAPIView):
     """
     List application ecommerce data for a user, for payable applications
     """
@@ -220,18 +219,18 @@ class CheckoutDataViewSet(ReadOnlyModelViewSet):
     serializer_class = CheckoutDataSerializer
 
     def get_queryset(self):
-        """Filter on logged in user"""
-        application_id = self.request.query_params.get("application")
-        if not application_id:
-            raise Http404
-
+        """Filter on valid applications for the user"""
         return BootcampApplication.objects.filter(
             user=self.request.user,
             state=AppStates.AWAITING_PAYMENT.value,
-            id=application_id,
         ).select_related("bootcamp_run").prefetch_related(
             "bootcamp_run__personal_prices",
             "bootcamp_run__installment_set",
             "orders",
             "orders__line_set",
         ).order_by("id")
+
+    def get_object(self):
+        """Get the application given the query parameter"""
+        application_id = self.request.query_params.get("application")
+        return get_object_or_404(self.get_queryset(), id=application_id)
