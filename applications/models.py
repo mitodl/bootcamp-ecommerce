@@ -14,8 +14,8 @@ from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
     AppStates,
     VALID_APP_STATE_CHOICES,
-    VALID_REVIEW_STATUS_CHOICES
-)
+    VALID_REVIEW_STATUS_CHOICES,
+    REVIEW_STATUS_REJECTED)
 from applications.utils import validate_file_extension
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
@@ -146,11 +146,11 @@ class BootcampApplication(TimestampedModel):
     @transition(
         field=state,
         source=AppStates.AWAITING_SUBMISSION_REVIEW.value,
-        target=RETURN_VALUE(AppStates.AWAITING_SUBMISSION_REVIEW.value, AppStates.AWAITING_PAYMENT.value))
+        target=RETURN_VALUE(AppStates.AWAITING_USER_SUBMISSIONS.value, AppStates.AWAITING_PAYMENT.value))
     def approve_submission(self):
         """Approve application submission"""
         return (AppStates.AWAITING_PAYMENT.value
-                if self.all_submissions_are_reviewed() else AppStates.AWAITING_SUBMISSION_REVIEW.value)
+                if self.is_ready_for_payment() else AppStates.AWAITING_USER_SUBMISSIONS.value)
 
     @transition(
         field=state,
@@ -160,14 +160,20 @@ class BootcampApplication(TimestampedModel):
     def reject_submission(self):
         """Reject application submission"""
 
-    def all_submissions_are_reviewed(self):
+    def all_application_steps_submitted(self):
         """
-        Check if the application is waiting for some submissions to be reviewed. This is used only if
-        application is awaiting submissions review
+        Check if the user has submissions for all application steps.
         """
-        if self.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
-            return False
-        return not self.submissions.filter(review_status__isnull=True).exists()
+        return self.submissions.count() == self.bootcamp_run.application_steps.count()
+
+    def is_ready_for_payment(self):
+        """
+        Make sure all steps are submitted, reviewed and approved
+        """
+        if self.all_application_steps_submitted():
+            return not self.submissions.filter(
+                models.Q(review_status=REVIEW_STATUS_REJECTED) | models.Q(review_status__isnull=True)).exists()
+        return False
 
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"

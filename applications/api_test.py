@@ -141,12 +141,13 @@ def test_process_upload_resume():
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("review,other_submissions,expected", [
-    (REVIEW_STATUS_APPROVED, True, AppStates.AWAITING_SUBMISSION_REVIEW.value),
-    (REVIEW_STATUS_APPROVED, False, AppStates.AWAITING_PAYMENT.value),
-    (REVIEW_STATUS_REJECTED, False, AppStates.REJECTED.value),
+@pytest.mark.parametrize("review,other_submissions,other_steps,expected", [
+    (REVIEW_STATUS_APPROVED, True, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
+    (REVIEW_STATUS_APPROVED, False, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
+    (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
+    (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
 ])
-def test_set_submission_review_status(review, other_submissions, expected):
+def test_set_submission_review_status(review, other_submissions, other_steps, expected):
     """
     set_submission_review_status should set submission review and update application state
     """
@@ -166,6 +167,9 @@ def test_set_submission_review_status(review, other_submissions, expected):
             bootcamp_application=bootcamp_application,
             run_application_step=application_step,
         )
+    if other_steps:
+        BootcampRunApplicationStepFactory.create(bootcamp_run=bootcamp_application.bootcamp_run)
+
     set_submission_review_status(submission, review)
     assert submission.review_status == review
     assert bootcamp_application.state == expected

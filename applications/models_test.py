@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
 
-from applications.constants import VALID_SUBMISSION_TYPE_CHOICES
+from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
 from applications.models import (
     ApplicationStepSubmission,
     APP_SUBMISSION_MODELS,
@@ -69,30 +69,36 @@ def test_bootcamp_application_resume_file_validation(file_name, expected):
 
 
 @pytest.mark.django_db
-def test_all_submissions_are_reviewed():
+def test_is_ready_for_payment():
     """
-    all_submissions_are_reviewed should return true if all submissions have been reviewed
+    is_ready_for_payment should return true if all application steps are submitted
+    and reviewed
     """
     bootcamp_run = BootcampRunFactory()
     submission = ApplicationStepSubmissionFactory.create(
         bootcamp_application__bootcamp_run=bootcamp_run,
         run_application_step__bootcamp_run=bootcamp_run,
+        review_status=REVIEW_STATUS_APPROVED
     )
     bootcamp_application = submission.bootcamp_application
-    bootcamp_application.state = AppStates.AWAITING_SUBMISSION_REVIEW.value
-    bootcamp_application.save()
-    assert bootcamp_application.all_submissions_are_reviewed() is True
+
+    assert bootcamp_application.is_ready_for_payment() is True
 
     application_step = BootcampRunApplicationStepFactory.create(
         bootcamp_run=bootcamp_run,
         application_step__bootcamp=bootcamp_run.bootcamp
     )
-    ApplicationStepSubmissionFactory.create(
+    submission_not_approved = ApplicationStepSubmissionFactory.create(
         review_status=None,
         bootcamp_application=bootcamp_application,
         run_application_step=application_step,
     )
-    assert bootcamp_application.all_submissions_are_reviewed() is False
+    assert bootcamp_application.is_ready_for_payment() is False
+
+    submission_not_approved.review_status = REVIEW_STATUS_REJECTED
+    submission_not_approved.save()
+
+    assert bootcamp_application.is_ready_for_payment() is False
 
 
 @pytest.mark.django_db
