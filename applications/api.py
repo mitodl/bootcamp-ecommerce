@@ -4,7 +4,6 @@ from django.db import transaction
 from applications.constants import AppStates, REVIEW_STATUS_REJECTED, REVIEW_STATUS_APPROVED
 from applications.exceptions import InvalidApplicationException
 from applications.models import BootcampApplication
-from ecommerce.api import is_paid_in_full
 from main.utils import now_in_utc
 
 
@@ -59,10 +58,7 @@ def derive_application_state(bootcamp_application):  # pylint: disable=too-many-
         return AppStates.AWAITING_SUBMISSION_REVIEW.value
     elif len(submissions) < bootcamp_application.bootcamp_run.application_steps.count():
         return AppStates.AWAITING_USER_SUBMISSIONS.value
-    if not is_paid_in_full(
-        user=bootcamp_application.user,
-        bootcamp_run=bootcamp_application.bootcamp_run
-    ):
+    elif not bootcamp_application.is_paid_in_full:
         return AppStates.AWAITING_PAYMENT.value
     return AppStates.COMPLETE.value
 

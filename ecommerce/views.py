@@ -15,6 +15,8 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from applications.constants import AppStates
+from applications.models import BootcampApplication
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import (
     complete_successful_order,
@@ -36,7 +38,7 @@ from ecommerce.models import (
     Receipt,
 )
 from ecommerce.permissions import IsSignedByCyberSource
-from ecommerce.serializers import PaymentSerializer
+from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
 from hubspot.task_helpers import sync_hubspot_deal_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
@@ -202,3 +204,33 @@ class UserBootcampRunList(APIView):
         )
 
         return Response(serialize_user_bootcamp_runs(user=user))
+
+
+class CheckoutDataView(RetrieveAPIView):
+    """
+    List application ecommerce data for a user, for payable applications
+    """
+    authentication_classes = (
+        SessionAuthentication,
+    )
+    permission_classes = (
+        IsAuthenticated,
+    )
+    serializer_class = CheckoutDataSerializer
+
+    def get_queryset(self):
+        """Filter on valid applications for the user"""
+        return BootcampApplication.objects.filter(
+            user=self.request.user,
+            state=AppStates.AWAITING_PAYMENT.value,
+        ).select_related("bootcamp_run").prefetch_related(
+            "bootcamp_run__personal_prices",
+            "bootcamp_run__installment_set",
+            "orders",
+            "orders__line_set",
+        ).order_by("id")
+
+    def get_object(self):
+        """Get the application given the query parameter"""
+        application_id = self.request.query_params.get("application")
+        return get_object_or_404(self.get_queryset(), id=application_id)

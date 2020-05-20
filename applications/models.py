@@ -1,4 +1,5 @@
 """Models for bootcamp applications"""
+from decimal import Decimal
 from uuid import uuid4
 from functools import reduce
 from operator import or_
@@ -17,6 +18,7 @@ from applications.constants import (
     VALID_REVIEW_STATUS_CHOICES,
     REVIEW_STATUS_APPROVED)
 from applications.utils import validate_file_extension
+from ecommerce.models import Order
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
 
@@ -126,6 +128,27 @@ class BootcampApplication(TimestampedModel):
     resume_file = models.FileField(upload_to=_get_resume_upload_path, null=True, blank=True)
     resume_upload_date = models.DateTimeField(null=True, blank=True)
     state = FSMField(default=AppStates.AWAITING_PROFILE_COMPLETION.value, choices=VALID_APP_STATE_CHOICES)
+
+    @property
+    def total_paid(self):
+        """Calculate the total paid of all fulfilled orders for this application"""
+        return sum(order.total_price_paid for order in self.orders.all() if order.status == Order.FULFILLED)
+
+    @property
+    def price(self):
+        """Calculate the price for the user, possibly their personal price or else the full price"""
+        bootcamp_run = self.bootcamp_run
+        price_obj = bootcamp_run.personal_prices.first()
+        if price_obj is None:
+            price = bootcamp_run.price
+        else:
+            price = price_obj.price
+        return price or Decimal(0)
+
+    @property
+    def is_paid_in_full(self):
+        """Calculate if the user has fully paid for their application"""
+        return self.total_paid >= self.price
 
     @transition(field=state, source=AppStates.AWAITING_PAYMENT.value, target=AppStates.COMPLETE.value)
     def complete(self):

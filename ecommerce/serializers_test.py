@@ -2,11 +2,22 @@
 import pytest
 
 from main.test_utils import serializer_date_format
-from ecommerce.factories import LineFactory
+from ecommerce.factories import (
+    LineFactory,
+    BootcampApplicationFactory,
+)
+from ecommerce.models import Order
 from ecommerce.serializers import (
     PaymentSerializer,
     OrderPartialSerializer,
-    LineSerializer, ApplicationOrderSerializer,
+    LineSerializer,
+    ApplicationOrderSerializer,
+    CheckoutDataSerializer,
+)
+from klasses.factories import InstallmentFactory
+from klasses.serializers import (
+    BootcampRunSerializer,
+    InstallmentSerializer,
 )
 
 
@@ -76,3 +87,34 @@ def test_line_serializer(line):
     }
 
     assert LineSerializer(line).data == expected
+
+
+@pytest.mark.parametrize("has_paid", [True, False])
+def test_checkout_data(has_paid):
+    """
+    Test checkout data serializer
+    """
+    application = BootcampApplicationFactory.create()
+    user = application.user
+    run = application.bootcamp_run
+
+    if has_paid:
+        line = LineFactory.create(
+            order__status=Order.FULFILLED,
+            order__application=application,
+            order__user=user,
+            run_key=run.run_key,
+        )
+
+    InstallmentFactory.create(bootcamp_run=run)
+
+    assert CheckoutDataSerializer(instance=application).data == {
+        "id": application.id,
+        "bootcamp_run": BootcampRunSerializer(application.bootcamp_run).data,
+        "installments": [
+            InstallmentSerializer(installment).data for installment in run.installment_set.all()
+        ],
+        "payments": [LineSerializer(line).data] if has_paid else [],
+        "total_paid": application.total_paid,
+        "total_price": application.price,
+    }

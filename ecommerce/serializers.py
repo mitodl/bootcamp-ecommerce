@@ -1,7 +1,9 @@
 """Serializers for ecommerce"""
 from rest_framework import serializers
 
+from applications.models import BootcampApplication
 from ecommerce.models import Order, Line
+from klasses.serializers import BootcampRunSerializer, InstallmentSerializer
 
 
 class PaymentSerializer(serializers.Serializer):
@@ -56,3 +58,37 @@ class LineSerializer(serializers.ModelSerializer):
             'price',
             'description',
         )
+
+
+class CheckoutDataSerializer(serializers.ModelSerializer):
+    """Serializer for ecommerce information for a BootcampApplication"""
+    bootcamp_run = BootcampRunSerializer()
+    total_price = serializers.DecimalField(max_digits=20, decimal_places=2, read_only=True, source="price")
+    total_paid = serializers.DecimalField(max_digits=20, decimal_places=2, read_only=True)
+    payments = serializers.SerializerMethodField()
+    installments = serializers.SerializerMethodField()
+
+    def get_payments(self, application):
+        """Serialized payments made by the user"""
+        return LineSerializer(
+            (order.line_set.first() for order in application.orders.all() if order.status == Order.FULFILLED),
+            many=True,
+        ).data
+
+    def get_installments(self, application):
+        """Installments with prices and due dates"""
+        return InstallmentSerializer(
+            application.bootcamp_run.installment_set.order_by('deadline'),
+            many=True,
+        ).data
+
+    class Meta:
+        model = BootcampApplication
+        fields = [
+            "id",
+            "bootcamp_run",
+            "total_price",
+            "total_paid",
+            "payments",
+            "installments",
+        ]
