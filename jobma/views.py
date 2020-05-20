@@ -25,4 +25,10 @@ class JobmaWebhookView(GenericAPIView):
         interview.status = status
         interview.save_and_log(None)
 
+        if status in [Interview.COMPLETED, Interview.REJECTED, Interview.EXPIRED]:
+            for videointerview in interview.videointerviews.all():
+                for submission in videointerview.app_step_submissions.all():
+                    submission.bootcamp_application.complete_interview()
+                    submission.bootcamp_application.save()
+
         return Response(status=200)

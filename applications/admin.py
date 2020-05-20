@@ -181,7 +181,7 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     model = models.VideoInterviewSubmission
 
     def get_list_display(self, request):
-        return tuple(super().get_list_display(request) or ()) + ("video_file",)
+        return tuple(super().get_list_display(request) or ())
 
 
 class QuizSubmissionAdmin(SubmissionTypeAdmin):

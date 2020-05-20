@@ -3,24 +3,40 @@ from django.urls import reverse
 import pytest
 from rest_framework import status
 
-from jobma.factories import InterviewFactory
+from applications.constants import AppStates
+from applications.factories import ApplicationStepSubmissionFactory
+from jobma.models import Interview
 
 
 pytestmark = pytest.mark.django_db
 
 
-def test_jobma_webhook(client, mocker):
+@pytest.mark.parametrize("jobma_status,expected_state_change", [
+    (Interview.COMPLETED, True),
+    (Interview.EXPIRED, True),
+    (Interview.REJECTED, True),
+    (Interview.PENDING, False),
+])
+def test_jobma_webhook(client, mocker, jobma_status, expected_state_change):
     """The jobma webhook view should check the access token, then update the interview status"""
-    interview = InterviewFactory.create()
-    new_interview_status = "completed"
+    submission = ApplicationStepSubmissionFactory.create(
+        bootcamp_application__state=AppStates.AWAITING_USER_SUBMISSIONS.value
+    )
+    interview = submission.content_object.interview
+    application = submission.bootcamp_application
 
     mocker.patch('jobma.permissions.JobmaWebhookPermission.has_permission', return_value=True)
     response = client.put(
         reverse('jobma-webhook', kwargs={"pk": interview.id}), content_type='application/json', data={
-            "status": new_interview_status,
+            "status": jobma_status,
             "results_url": "http://path/to/a/url"
         }
     )
     assert response.status_code == status.HTTP_200_OK
     interview.refresh_from_db()
-    assert interview.status == new_interview_status
+    assert interview.status == jobma_status
+
+    application.refresh_from_db()
+    assert application.state == (
+        AppStates.AWAITING_SUBMISSION_REVIEW.value if expected_state_change else AppStates.AWAITING_USER_SUBMISSIONS.value
+    )

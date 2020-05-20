@@ -14,6 +14,7 @@ import pytz
 
 from applications import models
 from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, VALID_APP_STATE_CHOICES, ALL_REVIEW_STATUSES
+from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
 from main.utils import now_in_utc
 from profiles.factories import UserFactory
@@ -57,7 +58,7 @@ class BootcampApplicationFactory(DjangoModelFactory):
 
 class VideoInterviewSubmissionFactory(DjangoModelFactory):
     """Factory for VideoInterviewSubmission"""
-    video_file = None
+    interview = SubFactory(InterviewFactory)
 
     class Meta:
         model = models.VideoInterviewSubmission
