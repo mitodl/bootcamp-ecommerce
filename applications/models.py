@@ -197,6 +197,16 @@ class BootcampApplication(TimestampedModel):
             return not self.submissions.exclude(review_status=REVIEW_STATUS_APPROVED).exists()
         return False
 
+    @property
+    def integration_id(self):
+        """
+        Return an integration id to be used by Hubspot
+
+        Returns:
+            str: the integration id
+        """
+        return f"BootcampApplication-{self.id}"
+
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"
 

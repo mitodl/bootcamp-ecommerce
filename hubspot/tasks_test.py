@@ -9,6 +9,7 @@ import pytest
 from faker import Faker
 from requests import HTTPError
 
+from applications.factories import BootcampApplicationFactory
 from hubspot.api import (
     make_contact_sync_message,
     make_product_sync_message, make_deal_sync_message, make_line_sync_message)
@@ -20,7 +21,7 @@ from hubspot.tasks import (
     HUBSPOT_SYNC_URL,
     check_hubspot_api_errors,
     sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot, sync_bulk_with_hubspot)
-from klasses.factories import BootcampFactory, PersonalPriceFactory
+from klasses.factories import BootcampFactory, PersonalPriceFactory, InstallmentFactory
 from profiles.factories import ProfileFactory, UserFactory
 
 pytestmark = [pytest.mark.django_db]
@@ -64,10 +65,11 @@ def test_sync_product_with_hubspot(mock_hubspot_request):
 
 def test_sync_deal_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a DEAL sync"""
-    personal_price = PersonalPriceFactory.create()
+    application = BootcampApplicationFactory.create()
+    InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
 
-    sync_deal_with_hubspot(personal_price.id)
-    body = make_deal_sync_message(personal_price.id)
+    sync_deal_with_hubspot(application.id)
+    body = make_deal_sync_message(application.id)
     body[0]["changeOccurredTimestamp"] = ANY
     mock_hubspot_request.assert_called_once_with(
         "DEAL", HUBSPOT_SYNC_URL, "PUT", body=body
@@ -76,10 +78,11 @@ def test_sync_deal_with_hubspot(mock_hubspot_request):
 
 def test_sync_line_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a LINE sync"""
-    personal_price = PersonalPriceFactory.create()
+    application = BootcampApplicationFactory.create()
+    PersonalPriceFactory.create(bootcamp_run=application.bootcamp_run, user=application.user)
 
-    sync_line_with_hubspot(personal_price.id)
-    body = make_line_sync_message(personal_price.id)
+    sync_line_with_hubspot(application.id)
+    body = make_line_sync_message(application.id)
     body[0]["changeOccurredTimestamp"] = ANY
     mock_hubspot_request.assert_called_once_with(
         "LINE_ITEM", HUBSPOT_SYNC_URL, "PUT", body=body

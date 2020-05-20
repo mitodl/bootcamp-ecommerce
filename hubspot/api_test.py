@@ -12,7 +12,10 @@ from django.conf import settings
 from faker import Faker
 from requests import HTTPError
 
+from ecommerce.factories import OrderFactory
 from hubspot import api
+from hubspot.serializers import HubspotDealSerializer, HubspotLineSerializer
+from klasses.factories import InstallmentFactory
 
 from profiles.factories import ProfileFactory, UserFactory
 from profiles.serializers import UserSerializer
@@ -152,6 +155,40 @@ def test_make_contact_sync_message():
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
             "propertyNameToValues": api.sanitize_properties(serialized_user),
+        }
+    ]
+
+
+@pytest.mark.django_db
+def test_make_deal_sync_message():
+    """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
+    application = OrderFactory.create().application
+    InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
+    serialized_app = HubspotDealSerializer(application).data
+    deal_sync_message = api.make_deal_sync_message(application.id)
+    assert deal_sync_message == [
+        {
+            "integratorObjectId": "{}-BootcampApplication-{}".format(settings.HUBSPOT_ID_PREFIX, application.id),
+            "action": "UPSERT",
+            "changeOccurredTimestamp": any_instance_of(int),
+            "propertyNameToValues": api.sanitize_properties(serialized_app),
+        }
+    ]
+
+@pytest.mark.django_db
+def test_make_line_sync_message():
+    """Test make_contact_sync_message serializes a profile and returns a properly formatted sync message"""
+    application = OrderFactory.create().application
+    InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
+    serialized_line = HubspotLineSerializer(application).data
+    serialized_line["quantity"] = 1
+    line_sync_message = api.make_line_sync_message(application.id)
+    assert line_sync_message == [
+        {
+            "integratorObjectId": "{}-BootcampApplication-{}".format(settings.HUBSPOT_ID_PREFIX, application.id),
+            "action": "UPSERT",
+            "changeOccurredTimestamp": any_instance_of(int),
+            "propertyNameToValues": api.sanitize_properties(serialized_line),
         }
     ]
 

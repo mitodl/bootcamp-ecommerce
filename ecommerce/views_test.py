@@ -101,7 +101,9 @@ def test_payment(mocker, client, user, bootcamp_run):
     """
     client.force_login(user)
     fake_payload = "fake_payload"
-    fake_order = 'fake_order'
+    fake_order = OrderFactory.create(
+        application=BootcampApplicationFactory.create(bootcamp_run=bootcamp_run, user=user)
+    )
     generate_cybersource_sa_payload_mock = mocker.patch(
         'ecommerce.views.generate_cybersource_sa_payload', autospec=True, return_value=fake_payload
     )

@@ -6,8 +6,9 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from applications.models import BootcampApplication
 from ecommerce.models import Order
-from klasses.models import Bootcamp, PersonalPrice
+from klasses.models import Bootcamp
 
 log = logging.getLogger(__name__)
 
@@ -23,16 +24,17 @@ class HubspotProductSerializer(serializers.ModelSerializer):
 
 class HubspotDealSerializer(serializers.ModelSerializer):
     """
-    Serializer for turning a PersonalPrice into a hubspot deal
+    Serializer for turning a BootcampApplication into a hubspot deal.
     """
     name = serializers.SerializerMethodField()
     purchaser = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     bootcamp_name = serializers.SerializerMethodField()
+    application_stage = serializers.CharField(source="state")
 
     def get_name(self, instance):
         """Get a formatted name for the deal"""
-        return f"Bootcamp-application-{instance.id}"
+        return f"Bootcamp-application-order-{instance.id}"
 
     def get_purchaser(self, instance):
         """Get the id of the associated user"""
@@ -41,7 +43,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
 
     def get_price(self, instance):
         """Get a string of the price"""
-        return instance.price.to_eng_string()
+        return instance.bootcamp_run.personal_price(instance.user).to_eng_string()
 
     def get_bootcamp_name(self, instance):
         """Get the name of the bootcamp"""
@@ -50,7 +52,6 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Populate order data
         data = super().to_representation(instance)
-
         orders = Order.objects.filter(user=instance.user, line__run_key=instance.bootcamp_run.run_key)
         if orders.exists():
             amount_paid = Decimal(0)
@@ -59,7 +60,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
                     amount_paid += order.total_price_paid
 
             data['total_price_paid'] = amount_paid.to_eng_string()
-            if amount_paid >= instance.price:
+            if amount_paid >= instance.bootcamp_run.personal_price(instance.user):
                 data['status'] = 'shipped'
             elif amount_paid > 0:
                 data['status'] = 'processed'
@@ -71,13 +72,13 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         return data
 
     class Meta:
-        model = PersonalPrice
-        fields = ['name', 'application_stage', 'price', 'purchaser', 'bootcamp_name']
+        model = BootcampApplication
+        fields = ['name', 'price', 'application_stage', 'purchaser', 'bootcamp_name']
 
 
 class HubspotLineSerializer(serializers.ModelSerializer):
     """
-    Serializer for turning a PersonalPrice into a hubspot line item
+    Serializer for turning a BootcampApplication into a hubspot line item
     """
     order = serializers.SerializerMethodField()
     product = serializers.SerializerMethodField()
@@ -85,7 +86,7 @@ class HubspotLineSerializer(serializers.ModelSerializer):
     def get_order(self, instance):
         """Get the id of the associated deal"""
         from hubspot.api import format_hubspot_id
-        return format_hubspot_id(instance.id)
+        return format_hubspot_id(instance.integration_id)
 
     def get_product(self, instance):
         """Get the id of the associated Bootcamp"""
@@ -93,5 +94,5 @@ class HubspotLineSerializer(serializers.ModelSerializer):
         return format_hubspot_id(instance.bootcamp_run.bootcamp.id)
 
     class Meta:
-        model = PersonalPrice
+        model = BootcampApplication
         fields = ['order', 'product']
