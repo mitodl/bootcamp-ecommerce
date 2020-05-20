@@ -200,7 +200,11 @@ class BootcampApplication(TimestampedModel):
     @property
     def integration_id(self):
         """
-        Return an integration id to be used by Hubspot
+        Return an integration id to be used by Hubspot as the unique deal id.
+        This is necessary because the integration id used to be based on PersonalPrice.id,
+        and going forward, not all applicants will have a PersonalPrice.  So hubspot deals
+        will be based on BootcampApplication instead and this requires that there be no
+        overlap in integration ids between new and old deals.
 
         Returns:
             str: the integration id
