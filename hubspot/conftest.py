@@ -7,7 +7,11 @@ from types import SimpleNamespace
 import pytz
 from django.conf import settings
 import pytest
+
+from applications.factories import BootcampRunApplicationStepFactory, BootcampApplicationFactory, \
+    ApplicationStepSubmissionFactory
 from hubspot.api import hubspot_timestamp
+from klasses.factories import BootcampRunFactory
 
 TIMESTAMPS = [
     datetime(2017, 1, 1, tzinfo=pytz.utc),
@@ -130,3 +134,19 @@ def mock_hubspot_request(mocker):
 def mock_hubspot_api_request(mocker):
     """Mock the send hubspot request method"""
     yield mocker.patch("hubspot.api.send_hubspot_request")
+
+
+@pytest.fixture
+def application_data():
+    """Fixture for a bootcamp application and related data"""
+    bootcamp_run = BootcampRunFactory.create()
+    run_steps = BootcampRunApplicationStepFactory.create_batch(3, bootcamp_run=bootcamp_run)
+    application = BootcampApplicationFactory(
+        bootcamp_run=bootcamp_run
+    )
+    submission = ApplicationStepSubmissionFactory(bootcamp_application=application, run_application_step=run_steps[0])
+    return SimpleNamespace(
+        application=application,
+        run_steps=run_steps,
+        submission=submission
+    )

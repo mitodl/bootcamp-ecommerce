@@ -3,7 +3,6 @@ import logging
 
 from django.conf import settings
 
-from applications.models import BootcampApplication
 from hubspot import tasks
 
 
@@ -42,7 +41,7 @@ def sync_hubspot_deal_from_order(order):
     """
     try:
         sync_hubspot_deal(order.application)
-    except BootcampApplication.DoesNotExist:
+    except AttributeError:
         log.error("No matching BootcampApplication found for order %s", order.id)
 
 

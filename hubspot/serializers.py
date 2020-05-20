@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from applications.constants import AppStates, SUBMISSION_TYPE_STATE
 from applications.models import BootcampApplication
 from ecommerce.models import Order
 from klasses.models import Bootcamp
@@ -30,7 +31,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     purchaser = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     bootcamp_name = serializers.SerializerMethodField()
-    application_stage = serializers.CharField(source="state")
+    application_stage = serializers.SerializerMethodField()
 
     def get_name(self, instance):
         """Get a formatted name for the deal"""
@@ -48,6 +49,22 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def get_bootcamp_name(self, instance):
         """Get the name of the bootcamp"""
         return instance.bootcamp_run.bootcamp.title
+
+    def get_application_stage(self, instance):
+        """Get the application stage"""
+        state = instance.state
+        if state == AppStates.AWAITING_USER_SUBMISSIONS:
+            submission_subquery = instance.submissions.all()
+            next_step = (
+                instance.bootcamp_run.application_steps
+                    .exclude(id__in=submission_subquery.values_list('run_application_step', flat=True))
+                    .order_by("application_step__step_order")
+                    .values_list("application_step__submission_type", flat=True)
+                    .first()
+            )
+            if next_step:
+                state = SUBMISSION_TYPE_STATE.get(next_step, state)
+        return state
 
     def to_representation(self, instance):
         # Populate order data

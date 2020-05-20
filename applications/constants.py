@@ -3,10 +3,18 @@
 from enum import Enum
 
 
+SUBMISSION_VIDEO = "videointerviewsubmission"
+SUBMISSION_QUIZ = "quizsubmission"
+
 VALID_SUBMISSION_TYPE_CHOICES = [
-    ("videointerviewsubmission", "Video Interview"),
-    ("quizsubmission", "Quiz"),
+    (SUBMISSION_VIDEO, "Video Interview"),
+    (SUBMISSION_QUIZ, "Quiz"),
 ]
+
+SUBMISSION_TYPE_STATE = {
+    SUBMISSION_VIDEO: "AWAITING_VIDEO_INTERVIEW",
+    SUBMISSION_QUIZ: "AWAITING_QUIZ_SUBMISSION",
+}
 
 
 class AppStates(Enum):
