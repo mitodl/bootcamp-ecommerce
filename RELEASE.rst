@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.42.2
+Version 0.42.2 (Released May 20, 2020)
 --------------
 
 - Add API for available bootcamp runs (#534)
