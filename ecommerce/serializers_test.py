@@ -15,6 +15,10 @@ from ecommerce.serializers import (
     CheckoutDataSerializer,
 )
 from klasses.factories import InstallmentFactory
+from klasses.serializers import (
+    BootcampRunSerializer,
+    InstallmentSerializer,
+)
 
 
 pytestmark = pytest.mark.django_db
@@ -106,36 +110,11 @@ def test_checkout_data(has_paid):
 
     assert CheckoutDataSerializer(instance=application).data == {
         "id": application.id,
-        "bootcamp_run": {
-            "id": run.id,
-            "bootcamp": {
-                "id": run.bootcamp.id,
-                "title": run.bootcamp.title,
-            },
-            "title": run.title,
-            "run_key": run.run_key,
-            "start_date": serializer_date_format(run.start_date),
-            "end_date": serializer_date_format(run.end_date),
-        },
+        "bootcamp_run": BootcampRunSerializer(application.bootcamp_run).data,
         "installments": [
-            {
-                "amount": installment.amount,
-                "deadline": serializer_date_format(installment.deadline),
-            } for installment in run.installment_set.all()
+            InstallmentSerializer(installment).data for installment in run.installment_set.all()
         ],
-        "payments": [
-            {
-                "order": {
-                    "id": line.order.id,
-                    "status": Order.FULFILLED,
-                    "created_on": serializer_date_format(line.order.created_on),
-                    "updated_on": serializer_date_format(line.order.updated_on),
-                },
-                "run_key": line.run_key,
-                "price": line.price,
-                "description": line.description,
-            }
-        ] if has_paid else [],
+        "payments": [LineSerializer(line).data] if has_paid else [],
         "total_paid": application.total_paid,
         "total_price": application.price,
     }
