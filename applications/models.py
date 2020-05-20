@@ -239,7 +239,7 @@ class VideoInterviewSubmission(SubmissionTypeModel):
         "applications.ApplicationStepSubmission",
         related_query_name="videointerviews"
     )
-    interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name="videointerviews")
+    interview = models.OneToOneField(Interview, on_delete=models.CASCADE)
 
 
 class QuizSubmission(SubmissionTypeModel):
