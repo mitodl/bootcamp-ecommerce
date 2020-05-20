@@ -1,5 +1,4 @@
 """Signals for application models"""
-import logging
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -7,8 +6,6 @@ from applications.models import BootcampApplication, ApplicationStepSubmission
 from hubspot.task_helpers import sync_hubspot_deal
 
 # pylint:disable=unused-argument
-
-log = logging.getLogger()
 
 
 @receiver(
