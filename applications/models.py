@@ -8,14 +8,14 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from django_fsm import FSMField, transition
+from django_fsm import FSMField, transition, RETURN_VALUE
 
 from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
     AppStates,
     VALID_APP_STATE_CHOICES,
-    VALID_REVIEW_STATUS_CHOICES
-)
+    VALID_REVIEW_STATUS_CHOICES,
+    REVIEW_STATUS_APPROVED)
 from applications.utils import validate_file_extension
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
@@ -142,6 +142,37 @@ class BootcampApplication(TimestampedModel):
         self.resume_file = resume_file
         self.resume_upload_date = now_in_utc()
         self.save()
+
+    @transition(
+        field=state,
+        source=AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        target=RETURN_VALUE(AppStates.AWAITING_USER_SUBMISSIONS.value, AppStates.AWAITING_PAYMENT.value))
+    def approve_submission(self):
+        """Approve application submission"""
+        return (AppStates.AWAITING_PAYMENT.value
+                if self.is_ready_for_payment() else AppStates.AWAITING_USER_SUBMISSIONS.value)
+
+    @transition(
+        field=state,
+        source=AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        target=AppStates.REJECTED.value
+    )
+    def reject_submission(self):
+        """Reject application submission"""
+
+    def all_application_steps_submitted(self):
+        """
+        Check if the user has submissions for all application steps.
+        """
+        return self.submissions.count() == self.bootcamp_run.application_steps.count()
+
+    def is_ready_for_payment(self):
+        """
+        Make sure all steps are submitted, reviewed and approved
+        """
+        if self.all_application_steps_submitted():
+            return not self.submissions.exclude(review_status=REVIEW_STATUS_APPROVED).exists()
+        return False
 
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"

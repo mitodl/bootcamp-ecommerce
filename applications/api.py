@@ -1,10 +1,11 @@
 """API for bootcamp applications app"""
 from django.db import transaction
 
-from applications.constants import AppStates, REVIEW_STATUS_REJECTED
+from applications.constants import AppStates, REVIEW_STATUS_REJECTED, REVIEW_STATUS_APPROVED
 from applications.exceptions import InvalidApplicationException
 from applications.models import BootcampApplication
 from ecommerce.api import is_paid_in_full
+from main.utils import now_in_utc
 
 
 @transaction.atomic
@@ -79,4 +80,30 @@ def process_upload_resume(resume_file, bootcamp_application):
         raise InvalidApplicationException("The BootcampApplication is still awaiting profile completion")
     bootcamp_application.upload_resume(resume_file)
     # when state transition happens need to save manually
+    bootcamp_application.save()
+
+
+def set_submission_review_status(submission, review_status):
+    """
+    Process review of an application step submission
+
+    Args:
+        submission(ApplicationStepSubmission): The submission that is being reviewed
+        review_status(str): approved or rejected submission
+    """
+    bootcamp_application = submission.bootcamp_application
+    if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
+        raise InvalidApplicationException(
+            "The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
+                bootcamp_application.id,
+                bootcamp_application.state
+            )
+        )
+    submission.review_status = review_status
+    submission.review_status_date = now_in_utc()
+    submission.save()
+    if review_status == REVIEW_STATUS_APPROVED:
+        bootcamp_application.approve_submission()
+    else:
+        bootcamp_application.reject_submission()
     bootcamp_application.save()

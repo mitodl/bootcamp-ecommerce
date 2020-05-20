@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
 
-from applications.constants import VALID_SUBMISSION_TYPE_CHOICES
+from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
 from applications.models import (
     ApplicationStepSubmission,
     APP_SUBMISSION_MODELS,
@@ -66,6 +66,39 @@ def test_bootcamp_application_resume_file_validation(file_name, expected):
         with pytest.raises(ValidationError):
             bootcamp_application.upload_resume(resume_file)
         assert bootcamp_application.state == AppStates.AWAITING_RESUME.value
+
+
+@pytest.mark.django_db
+def test_is_ready_for_payment():
+    """
+    is_ready_for_payment should return true if all application steps are submitted
+    and reviewed
+    """
+    bootcamp_run = BootcampRunFactory()
+    submission = ApplicationStepSubmissionFactory.create(
+        bootcamp_application__bootcamp_run=bootcamp_run,
+        run_application_step__bootcamp_run=bootcamp_run,
+        review_status=REVIEW_STATUS_APPROVED
+    )
+    bootcamp_application = submission.bootcamp_application
+
+    assert bootcamp_application.is_ready_for_payment() is True
+
+    application_step = BootcampRunApplicationStepFactory.create(
+        bootcamp_run=bootcamp_run,
+        application_step__bootcamp=bootcamp_run.bootcamp
+    )
+    submission_not_approved = ApplicationStepSubmissionFactory.create(
+        review_status=None,
+        bootcamp_application=bootcamp_application,
+        run_application_step=application_step,
+    )
+    assert bootcamp_application.is_ready_for_payment() is False
+
+    submission_not_approved.review_status = REVIEW_STATUS_REJECTED
+    submission_not_approved.save()
+
+    assert bootcamp_application.is_ready_for_payment() is False
 
 
 @pytest.mark.django_db
