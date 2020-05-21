@@ -53,7 +53,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def get_application_stage(self, instance):
         """Get the application stage"""
         state = instance.state
-        if state == AppStates.AWAITING_USER_SUBMISSIONS:
+        if state == AppStates.AWAITING_USER_SUBMISSIONS.value:
             submission_subquery = instance.submissions.all()
             next_step = (
                 instance.bootcamp_run.application_steps.exclude(

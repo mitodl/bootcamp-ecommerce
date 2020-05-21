@@ -47,7 +47,7 @@ def test_product_serializer():
 )
 def test_deal_serializer_with_personal_price(pay_amount, status):
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/personal price"""
-    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT)
+    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
     personal_price = PersonalPriceFactory.create(
         bootcamp_run=application.bootcamp_run, user=application.user, price=Decimal("50.00")
     )
@@ -75,7 +75,7 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
 
 def test_deal_serializer_with_installment_price():
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/installment price"""
-    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME)
+    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value)
     installment = InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
 
     serialized_data = {
@@ -93,7 +93,7 @@ def test_deal_serializer_with_installment_price():
 def test_deal_serializer_awaiting_submissions():
     """Test that the HubspotDealSerializer correctly returns the correct application stage"""
     application = BootcampApplicationFactory.create(
-        state=AppStates.AWAITING_USER_SUBMISSIONS
+        state=AppStates.AWAITING_USER_SUBMISSIONS.value
     )
     installment = InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
     app_steps = [
