@@ -108,6 +108,7 @@ def home_page(wagtail_site):
 
 @pytest.fixture()
 def awaiting_submission_app():
+    """Fixture for testing application submission types"""
     application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_USER_SUBMISSIONS.value
     )
