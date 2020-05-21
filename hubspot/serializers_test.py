@@ -3,13 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from applications.constants import (
-    AppStates,
-    SUBMISSION_TYPE_STATE,
-)
-from applications.factories import (
-    BootcampApplicationFactory
-)
+from applications.constants import AppStates, SUBMISSION_TYPE_STATE
+from applications.factories import BootcampApplicationFactory
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
 from hubspot.api import format_hubspot_id
@@ -43,9 +38,13 @@ def test_product_serializer():
 )
 def test_deal_serializer_with_personal_price(pay_amount, status):
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/personal price"""
-    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_PAYMENT.value
+    )
     personal_price = PersonalPriceFactory.create(
-        bootcamp_run=application.bootcamp_run, user=application.user, price=Decimal("50.00")
+        bootcamp_run=application.bootcamp_run,
+        user=application.user,
+        price=Decimal("50.00"),
     )
     serialized_data = {
         "application_stage": application.state,
@@ -53,14 +52,14 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
         "price": personal_price.price.to_eng_string(),
         "purchaser": format_hubspot_id(application.user.profile.id),
         "name": f"Bootcamp-application-order-{application.id}",
-        "status": status
+        "status": status,
     }
     if pay_amount is not None:
         order = OrderFactory.create(
             application=application,
             total_price_paid=pay_amount,
             user=application.user,
-            status=Order.FULFILLED
+            status=Order.FULFILLED,
         )
         LineFactory.create(order=order, run_key=application.bootcamp_run.run_key)
         serialized_data["total_price_paid"] = pay_amount
@@ -71,7 +70,9 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
 
 def test_deal_serializer_with_installment_price():
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/installment price"""
-    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value)
+    application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_RESUME.value
+    )
     installment = InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
 
     serialized_data = {
@@ -88,7 +89,9 @@ def test_deal_serializer_with_installment_price():
 
 def test_deal_serializer_with_no_price():
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/no price"""
-    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value)
+    application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_RESUME.value
+    )
 
     serialized_data = {
         "application_stage": application.state,
@@ -110,7 +113,9 @@ def test_deal_serializer_awaiting_submissions(awaiting_submission_app):
         ),
         "bootcamp_name": awaiting_submission_app.application.bootcamp_run.bootcamp.title,
         "price": awaiting_submission_app.installment.amount.to_eng_string(),
-        "purchaser": format_hubspot_id(awaiting_submission_app.application.user.profile.id),
+        "purchaser": format_hubspot_id(
+            awaiting_submission_app.application.user.profile.id
+        ),
         "name": f"Bootcamp-application-order-{awaiting_submission_app.application.id}",
         "status": "checkout_pending",
     }

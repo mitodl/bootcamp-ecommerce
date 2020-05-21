@@ -65,7 +65,7 @@ def derive_application_state(bootcamp_application):  # pylint: disable=too-many-
 
 def get_required_submission_type(application):
     """
-    Get the submission type of the first unsubmitted application step for an application
+    Get the submission type of the first unsubmitted step for an application
 
     Args:
         application (BootcampApplication): The application to query

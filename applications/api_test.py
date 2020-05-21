@@ -5,11 +5,20 @@ import pytest
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from applications.api import get_or_create_bootcamp_application, derive_application_state, process_upload_resume, \
-    InvalidApplicationException, set_submission_review_status, get_required_submission_type
+from applications.api import (
+    get_or_create_bootcamp_application,
+    derive_application_state,
+    process_upload_resume,
+    InvalidApplicationException,
+    set_submission_review_status,
+    get_required_submission_type,
+)
 from applications.constants import (
-    AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED,
-    SUBMISSION_QUIZ)
+    AppStates,
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_REJECTED,
+    SUBMISSION_QUIZ,
+)
 from applications.factories import (
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
@@ -142,10 +151,10 @@ def test_process_upload_resume():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("review,other_submissions,other_steps,expected", [
-    (REVIEW_STATUS_APPROVED, True, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
+        (REVIEW_STATUS_APPROVED, True, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
     (REVIEW_STATUS_APPROVED, False, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
-    (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
-    (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
+        (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
+        (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
 ])
 def test_set_submission_review_status(review, other_submissions, other_steps, expected):
     """
@@ -184,13 +193,14 @@ def test_get_required_submission_type(awaiting_submission_app):
     assert get_required_submission_type(stepless_app) is None
 
     # The fixture has 2 steps (Video, Quiz) and first step has been submitted
-    assert get_required_submission_type(awaiting_submission_app.application) == SUBMISSION_QUIZ
+    assert (
+        get_required_submission_type(awaiting_submission_app.application)
+        == SUBMISSION_QUIZ
+    )
 
     # After submitting all required steps, no type should be returned
     ApplicationStepSubmissionFactory.create(
         bootcamp_application=awaiting_submission_app.application,
-        run_application_step=awaiting_submission_app.run_steps[1]
+        run_application_step=awaiting_submission_app.run_steps[1],
     )
     assert get_required_submission_type(awaiting_submission_app.application) is None
-
-    #
