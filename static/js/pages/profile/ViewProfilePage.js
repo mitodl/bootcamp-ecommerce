@@ -21,6 +21,7 @@ import { formatTitle } from "../../util/util"
 
 import type { RouterHistory } from "react-router"
 import type { Country, CurrentUser } from "../../flow/authTypes"
+import { Form } from "formik"
 
 type StateProps = {|
   currentUser: ?CurrentUser,
@@ -53,25 +54,11 @@ export class ViewProfilePage extends React.Component<Props> {
               {currentUser.is_authenticated ? (
                 <div className="col-12 auth-form">
                   <div className="row">
-                    <div className="col-2 profile" />
-                    <div className="col-10 d-flex align-items-center">
-                      <h3 className="align-middle">
-                        {currentUser.legal_address.first_name ?
-                          `${currentUser.legal_address.first_name} ${currentUser.legal_address.last_name}` :
-                          currentUser.profile.name}
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="row submit-row no-gutters justify-content-end">
-                    <button
-                      type="submit"
-                      onClick={() => {
-                        history.push(routes.profile.update)
-                      }}
-                      className="btn btn-outline-danger large-font"
-                    >
-                      Edit Profile
-                    </button>
+                    <h3 className="col-12">
+                      {currentUser.legal_address.first_name ?
+                        `${currentUser.legal_address.first_name} ${currentUser.legal_address.last_name}` :
+                        currentUser.profile.name}
+                    </h3>
                   </div>
                   <div className="row">
                     <div className="col">Gender</div>
