@@ -3,10 +3,6 @@
   padding-top: 15px;
   padding-bottom: 35px;
 
-  &.registration-page {
-    max-width: 800px;
-  }
-
   h1 {
     @include media-breakpoint-down(xs) {
       font-size: 28px;
