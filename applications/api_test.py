@@ -6,10 +6,10 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from applications.api import get_or_create_bootcamp_application, derive_application_state, process_upload_resume, \
-    InvalidApplicationException, set_submission_review_status
+    InvalidApplicationException, set_submission_review_status, get_required_submission_type
 from applications.constants import (
-    AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
-)
+    AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED,
+    SUBMISSION_QUIZ)
 from applications.factories import (
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
@@ -173,3 +173,24 @@ def test_set_submission_review_status(review, other_submissions, other_steps, ex
     set_submission_review_status(submission, review)
     assert submission.review_status == review
     assert bootcamp_application.state == expected
+
+
+@pytest.mark.django_db
+def test_get_required_submission_type(awaiting_submission_app):
+    """ Test that get_required_submission_type returns the correct submission type"""
+
+    # New application for a bootcamp with no steps at all
+    stepless_app = BootcampApplicationFactory.create()
+    assert get_required_submission_type(stepless_app) is None
+
+    # The fixture has 2 steps (Video, Quiz) and first step has been submitted
+    assert get_required_submission_type(awaiting_submission_app.application) == SUBMISSION_QUIZ
+
+    # After submitting all required steps, no type should be returned
+    ApplicationStepSubmissionFactory.create(
+        bootcamp_application=awaiting_submission_app.application,
+        run_application_step=awaiting_submission_app.run_steps[1]
+    )
+    assert get_required_submission_type(awaiting_submission_app.application) is None
+
+    #

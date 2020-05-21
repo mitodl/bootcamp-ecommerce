@@ -5,14 +5,10 @@ import pytest
 
 from applications.constants import (
     AppStates,
-    VALID_SUBMISSION_TYPE_CHOICES,
     SUBMISSION_TYPE_STATE,
 )
 from applications.factories import (
-    BootcampApplicationFactory,
-    BootcampRunApplicationStepFactory,
-    ApplicationStepSubmissionFactory,
-    ApplicationStepFactory,
+    BootcampApplicationFactory
 )
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
@@ -90,43 +86,35 @@ def test_deal_serializer_with_installment_price():
     assert data == serialized_data
 
 
-def test_deal_serializer_awaiting_submissions():
-    """Test that the HubspotDealSerializer correctly returns the correct application stage"""
-    application = BootcampApplicationFactory.create(
-        state=AppStates.AWAITING_USER_SUBMISSIONS.value
-    )
-    installment = InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
-    app_steps = [
-        ApplicationStepFactory.create(
-            submission_type=VALID_SUBMISSION_TYPE_CHOICES[0][0]
-        ),
-        ApplicationStepFactory.create(
-            submission_type=VALID_SUBMISSION_TYPE_CHOICES[1][0]
-        ),
-    ]
-    run_steps = [
-        BootcampRunApplicationStepFactory.create(
-            bootcamp_run=application.bootcamp_run, application_step=app_steps[0]
-        ),
-        BootcampRunApplicationStepFactory.create(
-            bootcamp_run=application.bootcamp_run, application_step=app_steps[1]
-        ),
-    ]
-    ApplicationStepSubmissionFactory(
-        bootcamp_application=application, run_application_step=run_steps[0]
-    )
+def test_deal_serializer_with_no_price():
+    """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/no price"""
+    application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value)
 
     serialized_data = {
-        "application_stage": SUBMISSION_TYPE_STATE.get(
-            run_steps[1].application_step.submission_type
-        ),
+        "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.bootcamp.title,
-        "price": installment.amount.to_eng_string(),
+        "price": "0.00",
         "purchaser": format_hubspot_id(application.user.profile.id),
         "name": f"Bootcamp-application-order-{application.id}",
         "status": "checkout_pending",
     }
     data = HubspotDealSerializer(instance=application).data
+    assert data == serialized_data
+
+
+def test_deal_serializer_awaiting_submissions(awaiting_submission_app):
+    """Test that the HubspotDealSerializer correctly returns the correct application stage"""
+    serialized_data = {
+        "application_stage": SUBMISSION_TYPE_STATE.get(
+            awaiting_submission_app.run_steps[1].application_step.submission_type
+        ),
+        "bootcamp_name": awaiting_submission_app.application.bootcamp_run.bootcamp.title,
+        "price": awaiting_submission_app.installment.amount.to_eng_string(),
+        "purchaser": format_hubspot_id(awaiting_submission_app.application.user.profile.id),
+        "name": f"Bootcamp-application-order-{awaiting_submission_app.application.id}",
+        "status": "checkout_pending",
+    }
+    data = HubspotDealSerializer(instance=awaiting_submission_app.application).data
     assert data == serialized_data
 
 

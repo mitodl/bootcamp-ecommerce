@@ -63,6 +63,30 @@ def derive_application_state(bootcamp_application):  # pylint: disable=too-many-
     return AppStates.COMPLETE.value
 
 
+def get_required_submission_type(application):
+    """
+    Get the submission type of the first unsubmitted application step for an application
+
+    Args:
+        application (BootcampApplication): The application to query
+
+    Returns:
+        str: The submission type
+
+    """
+    submission_subquery = application.submissions.all()
+    return (
+        application.bootcamp_run.application_steps.exclude(
+            id__in=submission_subquery.values_list(
+                "run_application_step", flat=True
+            )
+        )
+        .order_by("application_step__step_order")
+        .values_list("application_step__submission_type", flat=True)
+        .first()
+    )
+
+
 def process_upload_resume(resume_file, bootcamp_application):
     """
     Process the resume file and save it to BootcampApplication

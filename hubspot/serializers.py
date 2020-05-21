@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from applications.api import get_required_submission_type
 from applications.constants import AppStates, SUBMISSION_TYPE_STATE
 from applications.models import BootcampApplication
 from ecommerce.models import Order
@@ -44,7 +45,10 @@ class HubspotDealSerializer(serializers.ModelSerializer):
 
     def get_price(self, instance):
         """Get a string of the price"""
-        return instance.bootcamp_run.personal_price(instance.user).to_eng_string()
+        price = instance.bootcamp_run.personal_price(instance.user)
+        if price:
+            return price.to_eng_string()
+        return "0.00"
 
     def get_bootcamp_name(self, instance):
         """Get the name of the bootcamp"""
@@ -54,17 +58,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         """Get the application stage"""
         state = instance.state
         if state == AppStates.AWAITING_USER_SUBMISSIONS.value:
-            submission_subquery = instance.submissions.all()
-            next_step = (
-                instance.bootcamp_run.application_steps.exclude(
-                    id__in=submission_subquery.values_list(
-                        "run_application_step", flat=True
-                    )
-                )
-                .order_by("application_step__step_order")
-                .values_list("application_step__submission_type", flat=True)
-                .first()
-            )
+            next_step = get_required_submission_type(instance)
             if next_step:
                 state = SUBMISSION_TYPE_STATE.get(next_step, state)
         return state
