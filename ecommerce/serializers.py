@@ -11,7 +11,7 @@ class PaymentSerializer(serializers.Serializer):
     Serializer for payment API, used to do basic validation.
     """
     payment_amount = serializers.DecimalField(max_digits=20, decimal_places=2, min_value=0.01)
-    run_key = serializers.IntegerField()
+    application_id = serializers.IntegerField()
 
 
 class OrderPartialSerializer(serializers.ModelSerializer):

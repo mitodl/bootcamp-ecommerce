@@ -13,6 +13,7 @@ from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIVi
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.validators import ValidationError
 from rest_framework.views import APIView
 
 from applications.constants import AppStates
@@ -64,9 +65,23 @@ class PaymentView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payment_amount = Decimal(serializer.data['payment_amount'])
-        run_key = serializer.data['run_key']
+        application_id = serializer.data['application_id']
 
-        order = create_unfulfilled_order(self.request.user, run_key, payment_amount)
+        application = get_object_or_404(
+            BootcampApplication,
+            id=application_id,
+            user=self.request.user,
+        )
+        if application.state != AppStates.AWAITING_PAYMENT.value:
+            log.error(
+                "User attempted to pay for application %d with invalid state %s", application.id, application.state,
+            )
+            raise ValidationError("Invalid application state")
+
+        order = create_unfulfilled_order(
+            application=application,
+            payment_amount=payment_amount,
+        )
 
         # Sync order data with hubspot
         sync_hubspot_deal_from_order(order)

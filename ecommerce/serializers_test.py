@@ -25,10 +25,10 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize("payload, is_valid", [
-    [{"payment_amount": "345", "run_key": 3}, True],
-    [{"payment_amount": "-3", "run_key": 3}, False],
+    [{"payment_amount": "345", "application_id": 3}, True],
+    [{"payment_amount": "-3", "application_id": 3}, False],
     [{"payment_amount": "345"}, False],
-    [{"run_key": "345"}, False],
+    [{"application_id": "345"}, False],
 ])
 def test_validation(payload, is_valid):
     """
