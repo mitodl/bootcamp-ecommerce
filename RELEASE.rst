@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.42.3
+--------------
+
+- Add checkout data API (#528)
+- Add API for submitting review for application submissions (#526)
+
 Version 0.42.2 (Released May 20, 2020)
 --------------
 
