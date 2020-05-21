@@ -21,7 +21,6 @@ import { formatTitle } from "../../util/util"
 
 import type { RouterHistory } from "react-router"
 import type { Country, CurrentUser } from "../../flow/authTypes"
-import { Form } from "formik"
 
 type StateProps = {|
   currentUser: ?CurrentUser,
