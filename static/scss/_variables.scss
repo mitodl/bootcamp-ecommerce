@@ -1,4 +1,14 @@
 $static-path: "/static";
+
+$toolbar-height: 36px;
+
+$default-background-color: #ffffff;
+$default-text-color: #000000;
+$default-subtext-color: rgba(255, 255, 255, 0.9);
+$input-color: #333;
+$placeholder-color: #bbb;
+$input-font-size: 16px;
+
 $primary: #a31f34;
 $medium-soft-light-gray: #e6e6e6;
 $med-gray: #b1b1b1;
@@ -9,20 +19,13 @@ $red-hover: #e01c3c;
 $mit-brand: #a31f34;
 $black-transparent: rgba(0, 0, 0, 0.9);
 
-$light-gray: #8a8b8c;
-$very-light-gray: #f5f5f5;
+$light-gray: #c2c0bf;
 $soft-light-gray: #d8d8d8;
 $white-smoke: #f1f1f1;
 $link-blue: #126f9a;
 $light-blue: #15729b;
 $cornflower-blue: #579cf9;
 $tab-color: #c2c0bf;
-
-$default-text-color: #fff;
-$default-subtext-color: rgba(255, 255, 255, 0.9);
-$input-color: #333;
-$placeholder-color: #bbb;
-$input-font-size: 16px;
 
 $artsy-font: PT Serif, "Times New Roman", Helvetica, Arial, sans-serif;
 $sans-serif-font: Lato, sans-serif;

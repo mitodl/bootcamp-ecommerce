@@ -1,0 +1,25 @@
+.photo-bg {
+  /* background-image from background-images.css */
+  min-height: 500px;
+
+  &.top-content-container {
+    padding: 17vh 0 25px 0;
+  }
+
+  p {
+    max-width: 725px;
+    margin: 0 auto 60px auto;
+    color: $default-subtext-color;
+  }
+
+  a:link,
+  a:hover,
+  a:visited {
+    color: $default-subtext-color;
+  }
+
+  @include breakpoint(phone) {
+    height: 500px;
+    min-height: none;
+  }
+}

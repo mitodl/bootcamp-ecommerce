@@ -6,6 +6,7 @@
 @import "inputs";
 @import "shared";
 @import "footer";
+@import "landing";
 @import "login";
 @import "payment";
 @import "toast";
@@ -24,10 +25,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
 
   .standard-layout {
-    background-color: $dark-gray;
+    background-color: $default-background-color;
     color: $default-text-color;
     text-align: center;
   }
@@ -37,55 +38,19 @@ body {
   padding: 20px 30px 0 30px;
 }
 
-.photo-bg {
-  /* background-image from background-images.css */
-  min-height: 500px;
-
-  &.top-content-container {
-    padding: 17vh 0 25px 0;
-  }
-
-  p {
-    max-width: 725px;
-    margin: 0 auto 60px auto;
-    color: $default-subtext-color;
-  }
-
-  a:link,
-  a:hover,
-  a:visited {
-    color: $default-subtext-color;
-  }
-
-  @include breakpoint(phone) {
-    height: 500px;
-    min-height: none;
-  }
-}
-
-h1 {
-  font-size: 2.5em;
-  font-weight: 400;
-  letter-spacing: 1px;
-
-  @include breakpoint(phone) {
-    font-size: 2em;
-  }
-}
-
 .body-rows {
   min-height: calc(100vh - 251px);
 }
 
 .navbar {
-  background-color: $mit-brand;
+  background-color: $white;
   border-radius: 0;
-  height: auto;
-  min-height: 45px;
-  padding: 10px 27px 8px 33px;
+  border-bottom: 1px solid $black;
+  min-height: $toolbar-height;
+  padding: 3px 27px 3px 33px;
 
   @include breakpoint(phone) {
-    padding: 10px 18px;
+    padding: 3px 18px;
   }
 }
 
@@ -97,9 +62,12 @@ h1 {
   width: 100%;
   padding: 0;
 
+  .pull-left, .pull-right {
+    line-height: $toolbar-height;
+  }
+
   .pull-left {
     position: relative;
-    top: 2px;
     float: left;
 
     @include breakpoint(phone) {
@@ -126,8 +94,8 @@ h1 {
     .divider-large {
       width: 1px;
       height: 32px;
-      margin: 3px 18px 0 0;
-      border-left: 1px solid rgba(255, 255, 255, 0.5);
+      margin: 3px 10px 0 0;
+      border-left: 1px solid $default-text-color;
       float: left;
 
       @include breakpoint(phone) {
@@ -135,16 +103,12 @@ h1 {
       }
     }
 
-    .bootcamp-logo {
-      height: 46px;
-      width: 250px;
-      top: 0;
-      float: left;
-      background-repeat: no-repeat;
-      background-size: 166px;
-      overflow: visible;
-      position: relative;
-      background-image: url(/static/images/bootcamp-logo.png);
+    .bootcamp-link {
+      color: $default-text-color;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      line-height: 36px;
     }
   }
 
@@ -154,10 +118,9 @@ h1 {
     a.header-dashboard-link {
       display: inline-block;
       margin: 0 25px 0 0;
-      padding: 12px 0;
+      color: $default-text-color;
       font-weight: 400;
       font-size: 16px;
-      color: #fff;
       text-decoration: none;
       position: relative;
 
