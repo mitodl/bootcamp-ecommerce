@@ -638,7 +638,7 @@ if BOOTCAMP_ECOMMERCE_USE_S3 and (
         "AWS_STORAGE_BUCKET_NAME"
     )
 if BOOTCAMP_ECOMMERCE_USE_S3:
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Celery
 REDISCLOUD_URL = get_string(
