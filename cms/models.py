@@ -13,6 +13,7 @@ from wagtail.core.utils import WAGTAIL_APPEND_SLASH
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
 from wagtail.core.blocks import StreamBlock
+from wagtail.snippets.models import register_snippet
 
 from cms.blocks import ResourceBlock, InstructorSectionBlock, ThreeColumnImageTextBlock
 from main.views import _serialize_js_settings
@@ -122,6 +123,7 @@ class BootcampRunPage(BootcampPage):
         self.slug = slugify("bootcamp-{}".format(self.bootcamp_run.run_key))
         super().save(*args, **kwargs)
 
+
 class BootcampRunChildPage(Page):
     """
     Abstract page representing a child of BootcampRun Page
@@ -179,6 +181,7 @@ class BootcampRunChildPage(Page):
         """
         raise Http404
 
+
 class ThreeColumnImageTextPage(BootcampRunChildPage):
     """
     Represents a three column section along with images on the top (in each column) and text fields.
@@ -186,7 +189,8 @@ class ThreeColumnImageTextPage(BootcampRunChildPage):
     """
 
     column_image_text_section = StreamField(
-        StreamBlock([("column_image_text_section", ThreeColumnImageTextBlock())], min_num=3, max_num=3),
+        StreamBlock([("column_image_text_section",
+                      ThreeColumnImageTextBlock())], min_num=3, max_num=3),
         blank=False,
         null=True,
         help_text="Enter detail about area upto max 3 blocks.",
@@ -207,6 +211,7 @@ class InstructorsPage(BootcampRunChildPage):
     content_panels = [
         StreamFieldPanel("sections"),
     ]
+
 
 class ResourcePage(Page):
     """
@@ -237,3 +242,17 @@ class ResourcePage(Page):
         context = super().get_context(request)
 
         return context
+
+
+@register_snippet
+class SiteNotification(models.Model):
+    """ Snippet model for showing site notifications. """
+
+    message = RichTextField(
+        max_length=255, features=["bold", "italic", "link", "document-link"]
+    )
+
+    panels = [FieldPanel("message")]
+
+    def __str__(self):
+        return self.message
