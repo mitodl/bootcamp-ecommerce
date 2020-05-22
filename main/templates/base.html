@@ -16,6 +16,7 @@
     var SETTINGS = {{ js_settings_json|safe }};
     </script>
     {% load render_bundle %}
+    {% load wagtailcore_tags latest_notification %}
     {% render_bundle 'sentry_client' %}
     {% render_bundle 'style' %}
     {% render_bundle 'third_party' %}
@@ -31,6 +32,7 @@
   <body>
     {% hijack_notification %}
     {% include "gtm_body.html" %}
+    {% latest_notification %}
     {% block content %}
     {% endblock %}
     {% if zendesk_config.help_widget_enabled %}
