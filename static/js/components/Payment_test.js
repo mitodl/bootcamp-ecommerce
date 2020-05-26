@@ -12,6 +12,7 @@ import {
   formatReadableDate,
   formatReadableDateFromStr
 } from "../util/util"
+import { makeUser } from "../factories/user"
 
 describe("Payment", () => {
   const paymentSectionSelector = ".payment-section"
@@ -19,6 +20,7 @@ describe("Payment", () => {
   const runDropdownSelector = "select.klass-select"
   const welcomeMsgSelector = "h1.greeting"
   const runTitleSelector = ".klass-display-section .desc"
+  const user = makeUser()
 
   const defaultProps = {
     ui:                        {},
@@ -28,7 +30,8 @@ describe("Payment", () => {
     now:                       moment(),
     sendPayment:               () => {},
     setPaymentAmount:          () => {},
-    setSelectedBootcampRunKey: () => {}
+    setSelectedBootcampRunKey: () => {},
+    currentUser:               user
   }
 
   const renderPayment = (props = {}) => {
@@ -44,11 +47,11 @@ describe("Payment", () => {
     const fakeRuns = generateFakeRuns()
     const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
     const welcomeMsg = wrapper.find(welcomeMsgSelector)
-    assert.include(welcomeMsg.text(), SETTINGS.user.full_name)
+    assert.include(welcomeMsg.text(), user.profile.name)
   })
 
   it("does not show the welcome message if the name of the user is blank", () => {
-    SETTINGS.user.full_name = ""
+    user.profile.name = ""
     const fakeRuns = generateFakeRuns()
     const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
     assert.isFalse(wrapper.find(welcomeMsgSelector).exists())

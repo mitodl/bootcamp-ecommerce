@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from main.templatetags.render_bundle import public_path
-from main.serializers import serialize_maybe_user
 
 
 def _serialize_js_settings(request):  # pylint: disable=missing-docstring
@@ -18,7 +17,6 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
         "environment": settings.ENVIRONMENT,
         "sentry_dsn": settings.SENTRY_DSN,
         "public_path": public_path(request),
-        "user": serialize_maybe_user(request.user),
         "zendesk_config": {
             "help_widget_enabled": settings.ZENDESK_CONFIG.get("HELP_WIDGET_ENABLED"),
             "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),

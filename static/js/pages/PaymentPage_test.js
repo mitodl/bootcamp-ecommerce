@@ -8,22 +8,23 @@ import PaymentPage, { PaymentPage as InnerPaymentPage } from "./PaymentPage"
 import { PAYMENT_CONFIRMATION_DIALOG } from "../components/Payment"
 import * as util from "../util/util"
 import { generateFakeRuns } from "../factories"
+import { makeUser } from "../factories/user"
 import IntegrationTestHelper from "../util/integration_test_helper"
 
 describe("PaymentPage", () => {
   const paymentInputSelector = 'input[id="payment-amount"]'
   const paymentBtnSelector = "button.large-cta"
 
-  let helper, bootcampRunsUrl, fakeRuns, renderPage
+  let helper, bootcampRunsUrl, fakeRuns, renderPage, user
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
+    user = makeUser("user1")
+    helper.handleRequestStub
+      .withArgs("/api/v0/me/")
+      .returns({ status: 200, body: user })
 
-    SETTINGS.user = {
-      full_name: "john doe",
-      username:  "johndoe"
-    }
-    bootcampRunsUrl = `/api/v0/bootcamps/${SETTINGS.user.username}/`
+    bootcampRunsUrl = `/api/v0/bootcamps/${user.username}/`
     fakeRuns = generateFakeRuns(3, {
       hasInstallment: true,
       hasPayment:     true
@@ -35,7 +36,8 @@ describe("PaymentPage", () => {
       {
         entities: {
           bootcampRuns: fakeRuns,
-          payment:      null
+          payment:      null,
+          currentUser:  user
         },
         queries: {
           bootcampRuns: {
@@ -304,7 +306,7 @@ describe("PaymentPage", () => {
           helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
           1
         )
-        clock.tick(3501)
+        clock.tick(90000)
         assert.equal(
           helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
           2
