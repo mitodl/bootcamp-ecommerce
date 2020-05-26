@@ -1,9 +1,12 @@
 """ Task helper functions for ecommerce """
+import logging
+
 from django.conf import settings
 
-from ecommerce.models import Order
 from hubspot import tasks
-from klasses.models import PersonalPrice
+
+
+log = logging.getLogger(__name__)
 
 
 def sync_hubspot_user(user):
@@ -17,16 +20,16 @@ def sync_hubspot_user(user):
         tasks.sync_contact_with_hubspot.delay(user.id)
 
 
-def sync_hubspot_deal(personal_price):
+def sync_hubspot_deal(application):
     """
     Trigger celery task to sync a deal to Hubspot
 
     Args:
-        personal_price (PersonalPrice): The PersonalPrice to sync
+        application (BootcampApplication): The BootcampApplication to sync
     """
     if settings.HUBSPOT_API_KEY:
-        tasks.sync_deal_with_hubspot.delay(personal_price.id)
-        tasks.sync_line_with_hubspot.delay(personal_price.id)
+        tasks.sync_deal_with_hubspot.delay(application.id)
+        tasks.sync_line_with_hubspot.delay(application.id)
 
 
 def sync_hubspot_deal_from_order(order):
@@ -36,19 +39,10 @@ def sync_hubspot_deal_from_order(order):
     Args:
         order (Order): The order to sync
     """
-
-    if not isinstance(order, Order):
-        # Some tests cause order to be a string.
-        return
-
     try:
-        personal_price = PersonalPrice.objects.get(
-            user=order.user,
-            bootcamp_run=order.get_bootcamp_run()  # Under tha assumption that its one klass per order
-        )
-        sync_hubspot_deal(personal_price)
-    except PersonalPrice.DoesNotExist:
-        pass
+        sync_hubspot_deal(order.application)
+    except AttributeError:
+        log.error("No matching BootcampApplication found for order %s", order.id)
 
 
 def sync_hubspot_product(bootcamp):

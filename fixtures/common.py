@@ -1,13 +1,19 @@
 """Common fixtures"""
 # pylint: disable=unused-argument, redefined-outer-name
+from types import SimpleNamespace
 
 import pytest
 import responses
+
 from django.test.client import Client
 from rest_framework.test import APIClient
 from wagtail.core.models import Site
 
+from applications.constants import AppStates, VALID_SUBMISSION_TYPE_CHOICES
+from applications.factories import BootcampApplicationFactory, ApplicationStepFactory, \
+    BootcampRunApplicationStepFactory, ApplicationStepSubmissionFactory
 from backends.edxorg import EdxOrgOAuth2
+from klasses.factories import InstallmentFactory
 from profiles.factories import UserFactory
 
 
@@ -98,3 +104,37 @@ def wagtail_site():
 def home_page(wagtail_site):
     """Fixture for the home page"""
     return wagtail_site.root_page
+
+
+@pytest.fixture()
+def awaiting_submission_app():
+    """Fixture for testing application submission types"""
+    application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_USER_SUBMISSIONS.value
+    )
+    installment = InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
+    app_steps = [
+        ApplicationStepFactory.create(
+            submission_type=VALID_SUBMISSION_TYPE_CHOICES[0][0]
+        ),
+        ApplicationStepFactory.create(
+            submission_type=VALID_SUBMISSION_TYPE_CHOICES[1][0]
+        ),
+    ]
+    run_steps = [
+        BootcampRunApplicationStepFactory.create(
+            bootcamp_run=application.bootcamp_run, application_step=app_steps[0]
+        ),
+        BootcampRunApplicationStepFactory.create(
+            bootcamp_run=application.bootcamp_run, application_step=app_steps[1]
+        ),
+    ]
+    ApplicationStepSubmissionFactory.create(
+        bootcamp_application=application, run_application_step=run_steps[0]
+    )
+
+    return SimpleNamespace(
+        application=application,
+        run_steps=run_steps,
+        installment=installment
+    )

@@ -13,10 +13,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from applications.models import BootcampApplication
 from hubspot.decorators import try_again
 from hubspot.serializers import HubspotProductSerializer, \
     HubspotDealSerializer, HubspotLineSerializer
-from klasses.models import Bootcamp, PersonalPrice
+from klasses.models import Bootcamp
 
 
 HUBSPOT_API_BASE_URL = "https://api.hubapi.com"
@@ -257,35 +258,35 @@ def make_product_sync_message(bootcamp_id):
     return [make_sync_message(bootcamp.id, properties)]
 
 
-def make_deal_sync_message(personal_price_id):
+def make_deal_sync_message(application_id):
     """
     Create the body of a sync message for a deal.
 
     Args:
-        personal_price_id (int): Personal Price id
+        application_id (int): BootcampApplication id
 
     Returns:
         list: dict containing serializable sync-message data
     """
-    personal_price = PersonalPrice.objects.get(id=personal_price_id)
-    properties = HubspotDealSerializer(instance=personal_price).data
-    return [make_sync_message(personal_price.id, properties)]
+    application = BootcampApplication.objects.get(id=application_id)
+    properties = HubspotDealSerializer(instance=application).data
+    return [make_sync_message(application.integration_id, properties)]
 
 
-def make_line_sync_message(personal_price_id):
+def make_line_sync_message(application_id):
     """
     Create the body of a sync message for a Line Item.
 
     Args:
-        personal_price_id (int): Personal Price id
+        application_id (int):BootcampApplication id
 
     Returns:
         list: dict containing serializable sync-message data
     """
-    personal_price = PersonalPrice.objects.get(id=personal_price_id)
-    properties = HubspotLineSerializer(instance=personal_price).data
+    application = BootcampApplication.objects.get(id=application_id)
+    properties = HubspotLineSerializer(instance=application).data
     properties['quantity'] = 1
-    return [make_sync_message(personal_price.id, properties)]
+    return [make_sync_message(application.integration_id, properties)]
 
 
 def sync_object_property(object_type, property_dict):

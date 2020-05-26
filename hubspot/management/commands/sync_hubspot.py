@@ -5,13 +5,14 @@ and Line Items
 from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 
+from applications.models import BootcampApplication
 from hubspot.api import (
     make_contact_sync_message,
     make_product_sync_message,
     make_deal_sync_message,
     make_line_sync_message)
 from hubspot.tasks import sync_bulk_with_hubspot
-from klasses.models import PersonalPrice, Bootcamp
+from klasses.models import Bootcamp
 
 
 class Command(BaseCommand):
@@ -66,8 +67,8 @@ class Command(BaseCommand):
         and the ecommerce Order
         """
         print("  Syncing orders with hubspot deals...")
-        self.bulk_sync_model(PersonalPrice.objects.all(), make_deal_sync_message, "DEAL")
-        self.bulk_sync_model(PersonalPrice.objects.all(), make_line_sync_message, "LINE_ITEM")
+        self.bulk_sync_model(BootcampApplication.objects.all(), make_deal_sync_message, "DEAL")
+        self.bulk_sync_model(BootcampApplication.objects.all(), make_line_sync_message, "LINE_ITEM")
         print("  Finished")
 
     def sync_all(self):

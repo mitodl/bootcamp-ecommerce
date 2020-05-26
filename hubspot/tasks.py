@@ -47,9 +47,9 @@ def sync_product_with_hubspot(bootcamp_id):
 
 
 @app.task
-def sync_deal_with_hubspot(personal_price_id):
+def sync_deal_with_hubspot(application_id):
     """Send a sync-message to sync a personal price with a hubspot deal"""
-    body = make_deal_sync_message(personal_price_id)
+    body = make_deal_sync_message(application_id)
     response = send_hubspot_request("DEAL", HUBSPOT_SYNC_URL, "PUT", body=body)
     response.raise_for_status()
 

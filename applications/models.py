@@ -197,6 +197,20 @@ class BootcampApplication(TimestampedModel):
             return not self.submissions.exclude(review_status=REVIEW_STATUS_APPROVED).exists()
         return False
 
+    @property
+    def integration_id(self):
+        """
+        Return an integration id to be used by Hubspot as the unique deal id.
+        This is necessary because the integration id used to be based on PersonalPrice.id,
+        and going forward, not all applicants will have a PersonalPrice.  So hubspot deals
+        will be based on BootcampApplication instead and this requires that there be no
+        overlap in integration ids between new and old deals.
+
+        Returns:
+            str: the integration id
+        """
+        return f"BootcampApplication-{self.id}"
+
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"
 
