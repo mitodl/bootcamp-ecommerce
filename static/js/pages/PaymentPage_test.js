@@ -306,7 +306,7 @@ describe("PaymentPage", () => {
           helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
           1
         )
-        clock.tick(90000)
+        clock.tick(3501)
         assert.equal(
           helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
           2

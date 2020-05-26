@@ -66,9 +66,7 @@ export class PaymentPage extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
     // This is meant to be an identity check, not a deep equality check. This shows whether we received an update
     // for enrollments based on the forceReload
-    if (
-      prevProps.bootcampRuns !== this.props.bootcampRuns
-    ) {
+    if (prevProps.bootcampRuns !== this.props.bootcampRuns) {
       this.handleOrderStatus()
     }
   }
