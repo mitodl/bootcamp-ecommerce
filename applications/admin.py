@@ -181,7 +181,7 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     model = models.VideoInterviewSubmission
 
     def get_list_display(self, request):
-        return tuple(super().get_list_display(request) or ())
+        return tuple(super().get_list_display(request) or ()) + ('interview',)
 
 
 class QuizSubmissionAdmin(SubmissionTypeAdmin):
