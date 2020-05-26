@@ -5,17 +5,22 @@ from rest_framework import status
 
 from applications.constants import AppStates
 from applications.factories import ApplicationStepSubmissionFactory
-from jobma.models import Interview
+from jobma.constants import (
+    COMPLETED,
+    EXPIRED,
+    PENDING,
+    REJECTED,
+)
 
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize("jobma_status,expected_state_change", [
-    (Interview.COMPLETED, True),
-    (Interview.EXPIRED, True),
-    (Interview.REJECTED, True),
-    (Interview.PENDING, False),
+    (COMPLETED, True),
+    (EXPIRED, True),
+    (REJECTED, True),
+    (PENDING, False),
 ])
 def test_jobma_webhook(client, mocker, jobma_status, expected_state_change):
     """The jobma webhook view should check the access token, then update the interview status"""
