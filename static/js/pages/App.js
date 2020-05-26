@@ -51,14 +51,6 @@ export default function App(props: Props) {
           component={RegisterPages}
         />
         <Route
-          path={urljoin(match.url, String(routes.login))}
-          component={LoginPages}
-        />
-        <Route
-          path={urljoin(match.url, String(routes.register))}
-          component={RegisterPages}
-        />
-        <Route
           path={urljoin(match.url, String(routes.account.confirmEmail))}
           component={EmailConfirmPage}
         />
