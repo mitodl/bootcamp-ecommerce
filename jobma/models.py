@@ -1,6 +1,10 @@
 """jobma models"""
 from django.db import models
 
+from jobma.constants import (
+    JOBMA_INTERVIEW_STATUSES,
+    PENDING,
+)
 from klasses.models import BootcampRun
 from main.models import AuditableModel, AuditModel
 from main.utils import serialize_model_object
@@ -37,12 +41,6 @@ class JobAudit(AuditModel):
 
 class Interview(AuditableModel):
     """An interview for a job which has been created on Jobma"""
-    PENDING = "pending"
-    COMPLETED = "completed"
-    REJECTED = "rejected"
-    EXPIRED = "expired"
-    STATUSES = [PENDING, COMPLETED, REJECTED, EXPIRED]
-
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
     interview_url = models.TextField(blank=True, null=True)  # this will be null until published on Jobma
@@ -50,7 +48,7 @@ class Interview(AuditableModel):
     candidate_last_name = models.TextField()
     candidate_phone = models.TextField()
     candidate_email = models.TextField()
-    status = models.TextField(default=PENDING, choices=[(status, status) for status in STATUSES])
+    status = models.TextField(default=PENDING, choices=[(status, status) for status in JOBMA_INTERVIEW_STATUSES])
 
     @classmethod
     def get_audit_class(cls):
