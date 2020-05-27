@@ -8,7 +8,7 @@ from wagtail.core.rich_text import RichText
 import wagtail_factories
 
 from cms import models
-from cms.blocks import TitleLinksBlock
+from cms.blocks import TitleLinksBlock, TitleDescriptionBlock
 from klasses.factories import BootcampRunFactory
 
 
@@ -65,3 +65,28 @@ class LearningResourcePageFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.LearningResourcePage
+
+
+class TitleDescriptionBlockFactory(wagtail_factories.StructBlockFactory):
+    """TitleDescriptionBlock factory class"""
+
+    title = factory.fuzzy.FuzzyText(prefix="Title ")
+    description = factory.fuzzy.FuzzyText(prefix="Description ")
+
+    class Meta:
+        model = TitleDescriptionBlock
+
+
+class ProgramDescriptionPageFactory(wagtail_factories.PageFactory):
+    """ProgramDescriptionPage factory class"""
+
+    statement = factory.fuzzy.FuzzyText(prefix="statement ")
+    heading = factory.fuzzy.FuzzyText(prefix="heading ")
+    body = factory.fuzzy.FuzzyText(prefix="body ")
+    image = factory.SubFactory(wagtail_factories.ImageFactory)
+    steps = wagtail_factories.StreamFieldFactory(
+        {"steps": TitleDescriptionBlockFactory}
+    )
+
+    class Meta:
+        model = models.ProgramDescriptionPage

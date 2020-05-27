@@ -1,0 +1,33 @@
+{% load image_version_url %}
+<section class="program-block">
+  <div class="container">
+    <div class="gray-box d-none d-sm-block">
+      <h2>{{ page.statement | safe }} </h2>
+    </div>
+    <div class="program-intro">
+      <h2><div class="description">{{ page.heading }}</div></h2>
+      <div class="info">
+        {{ page.body | safe }}
+      </div>
+    </div>
+    <div class="row program-content">
+      <div class="col-sm-6">
+        <div class="img-holder">
+          <img src="{% image_version_url page.image 'fill-1000x1000' %}" alt="Program Description Image" />
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <ul class="accordion" id="accordionSteps">
+          {% for step in page.steps %}
+          <li class="panel-title">
+            <a data-toggle="collapse" data-target="#collapse-{{forloop.counter}}" aria-expanded="{% if forloop.counter == 1 %}true{% else %} false {%endif%}" aria-controls="collapse-{{forloop.counter}}" href="#" class="opener"><span>{{forloop.counter}}. </span> {{ step.value.title }} </a>
+            <div id="collapse-{{forloop.counter}}" class="collapse {% if forloop.counter == 1 %} show {%endif%}" aria-labelledby="heading-{{forloop.counter}}" data-parent="#accordionSteps" class="slide">
+              <p> {{ step.value.description }} </p>
+            </div>
+          </li>
+          {% endfor %}  
+        </ul>
+      </div>
+    </div>
+  </div>  
+</section>

@@ -21,7 +21,9 @@ from cms.blocks import (
     ThreeColumnImageTextBlock,
     AlumniBlock,
     TitleLinksBlock,
+    TitleDescriptionBlock,
 )
+
 from main.views import _serialize_js_settings
 
 
@@ -76,6 +78,7 @@ class BootcampPage(Page):
             "title": self.title,
             # The context variables below are added to avoid duplicate queries within the templates
             "three_column_image_text_section": self.three_column_image_text_section,
+            "program_description_section": self.program_description_section,
         }
 
     def _get_child_page_of_type(self, cls):
@@ -94,6 +97,11 @@ class BootcampPage(Page):
         return self._get_child_page_of_type(ThreeColumnImageTextPage)
 
     @property
+    def program_description_section(self):
+        """Gets the program description page"""
+        return self._get_child_page_of_type(ProgramDescriptionPage)
+
+    @property
     def alumni(self):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(AlumniPage)
@@ -105,6 +113,7 @@ class BootcampPage(Page):
 
     subpage_types = [
         "ThreeColumnImageTextPage",
+        "ProgramDescriptionPage",
         "InstructorsPage",
         "AlumniPage",
         "LearningResourcePage",
@@ -218,6 +227,47 @@ class ThreeColumnImageTextPage(BootcampRunChildPage):
     )
 
     content_panels = [StreamFieldPanel("column_image_text_section")]
+
+
+class ProgramDescriptionPage(BootcampRunChildPage):
+    """
+    Describe the bootcamp program.
+    """
+
+    statement = RichTextField(
+        blank=True, help_text="The bold statement for the bootcamp program."
+    )
+    heading = models.CharField(
+        max_length=255,
+        default="Program Description",
+        help_text="The heading to display in the header section on the page.",
+    )
+    body = RichTextField(
+        help_text="The body text to display in the header section on the page."
+    )
+    image = models.ForeignKey(
+        Image,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Upload an image that will render in the program description section.",
+    )
+
+    steps = StreamField(
+        StreamBlock([("steps", TitleDescriptionBlock())], min_num=1, max_num=7),
+        blank=False,
+        null=True,
+        help_text="Enter detail about steps upto max 7 steps.",
+    )
+
+    content_panels = [
+        FieldPanel("statement", classname="full"),
+        FieldPanel("heading", classname="full"),
+        FieldPanel("body", classname="full"),
+        ImageChooserPanel("image"),
+        StreamFieldPanel("steps"),
+    ]
 
 
 class InstructorsPage(BootcampRunChildPage):

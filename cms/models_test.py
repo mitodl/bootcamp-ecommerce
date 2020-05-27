@@ -7,6 +7,7 @@ from cms.factories import (
     SiteNotificationFactory,
     BootcampRunPageFactory,
     LearningResourcePageFactory,
+    ProgramDescriptionPageFactory,
 )
 from cms.models import LearningResourcePage
 
@@ -43,3 +44,34 @@ def test_bootcamp_run_learning_resources():
     for item in learning_resources_page.items:  # pylint: disable=not-an-iterable
         assert item.value.get("title") == "title"
         assert item.value.get("links") == "<p>links</p>"
+
+
+def test_program_description_page():
+    """
+    Verify user can create program description page.
+    """
+    page = ProgramDescriptionPageFactory.create(
+        statement="statement of the page",
+        heading="heading of the page",
+        body="body of the page",
+        image__title="program-description-image",
+        steps=json.dumps(
+            [
+                {
+                    "type": "steps",
+                    "value": {
+                        "title": "Introduction",
+                        "description": "description of title",
+                    },
+                }
+            ]
+        ),
+    )
+    assert page.statement == "statement of the page"
+    assert page.heading == "heading of the page"
+    assert page.body == "body of the page"
+
+    for block in page.steps:  # pylint: disable=not-an-iterable
+        assert block.block_type == "steps"
+        assert block.value["title"] == "Introduction"
+        assert block.value["description"].source == "description of title"
