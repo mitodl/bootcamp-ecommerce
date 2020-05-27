@@ -74,7 +74,7 @@ requests==2.20.1          # via -r requirements.in, django-anymail, edx-api-clie
 s3transfer==0.3.3         # via boto3
 sentry-sdk==0.14.3        # via -r requirements.in
 simplegeneric==0.8.1      # via ipython
-six==1.11.0               # via django-anymail, django-compat, django-server-status, edx-api-client, html5lib, isodate, l18n, prompt-toolkit, pynacl, python-dateutil, social-auth-app-django, social-auth-core, traitlets, zeep
+six==1.15.0               # via django-anymail, django-compat, django-server-status, edx-api-client, html5lib, isodate, l18n, prompt-toolkit, pynacl, python-dateutil, social-auth-app-django, social-auth-core, traitlets, zeep
 social-auth-app-django==2.1.0  # via -r requirements.in
 social-auth-core==1.4.0   # via social-auth-app-django
 sqlparse==0.3.1           # via django
