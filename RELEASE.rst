@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.42.3
+Version 0.42.3 (Released May 27, 2020)
 --------------
 
 - Add checkout data API (#528)
