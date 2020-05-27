@@ -321,7 +321,6 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
         "start_date": bootcamp_run.start_date,
         "end_date": bootcamp_run.end_date,
         "price": bootcamp_run.personal_price(user),
-        "is_user_eligible_to_pay": True,
         "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run.run_key).get('total') or Decimal('0.00'),
         "payments": LineSerializer(Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True).data,
         "installments": InstallmentSerializer(bootcamp_run.installment_set.order_by('deadline'), many=True).data,

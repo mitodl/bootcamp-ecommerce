@@ -331,7 +331,6 @@ BOOTCAMP_RUN_FIELDS = [
     'payments',
     'bootcamp_run_name',
     'display_title',
-    'is_user_eligible_to_pay',
     'price',
 ]
 

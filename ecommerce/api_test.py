@@ -279,7 +279,6 @@ def test_serialize_user_run_paid(test_data):
         "start_date": run_paid.start_date,
         "end_date": run_paid.end_date,
         "price": run_paid.personal_price(user),
-        "is_user_eligible_to_pay": True,
         "total_paid": Decimal('627.34'),
         "payments": LineSerializer(Line.for_user_bootcamp_run(user, run_paid.run_key), many=True).data,
         "installments": InstallmentSerializer(
@@ -301,7 +300,6 @@ def test_serialize_user_run_not_paid(test_data):
         "start_date": run_not_paid.start_date,
         "end_date": run_not_paid.end_date,
         "price": run_not_paid.personal_price(user),
-        "is_user_eligible_to_pay": True,
         "total_paid": Decimal('0.00'),
         "payments": [],
         "installments": InstallmentSerializer(
@@ -323,7 +321,6 @@ def test_serialize_user_bootcamp_runs(test_data):
             "start_date": run_paid.start_date,
             "end_date": run_paid.end_date,
             "price": run_paid.price,
-            "is_user_eligible_to_pay": True,
             "total_paid": Decimal('627.34'),
             "payments": LineSerializer(Line.for_user_bootcamp_run(user, run_paid.run_key), many=True).data,
             "installments": InstallmentSerializer(
@@ -336,7 +333,6 @@ def test_serialize_user_bootcamp_runs(test_data):
             "start_date": run_not_paid.start_date,
             "end_date": run_not_paid.end_date,
             "price": run_not_paid.price,
-            "is_user_eligible_to_pay": True,
             "total_paid": Decimal('0.00'),
             "payments": [],
             "installments": InstallmentSerializer(

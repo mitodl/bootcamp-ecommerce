@@ -8,15 +8,14 @@ export const generateFakeRuns = (
   return _.times(numRuns, i => {
     const runKey = i + 1
     return {
-      bootcamp_run_name:       `Bootcamp Run ${i}`,
-      display_title:           `Bootcamp Run ${i}`,
-      run_key:                 runKey,
-      payment_deadline:        moment(),
-      total_paid:              hasPayment ? 100 : 0,
-      price:                   1000,
-      is_user_eligible_to_pay: true,
-      payments:                hasPayment ? [generateFakePayment({ runKey: runKey })] : [],
-      installments:            hasInstallment ? [generateFakeInstallment()] : []
+      bootcamp_run_name: `Bootcamp Run ${i}`,
+      display_title:     `Bootcamp Run ${i}`,
+      run_key:           runKey,
+      payment_deadline:  moment(),
+      total_paid:        hasPayment ? 100 : 0,
+      price:             1000,
+      payments:          hasPayment ? [generateFakePayment({ runKey: runKey })] : [],
+      installments:      hasInstallment ? [generateFakeInstallment()] : []
     }
   })
 }

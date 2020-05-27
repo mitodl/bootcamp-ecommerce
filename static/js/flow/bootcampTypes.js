@@ -23,7 +23,6 @@ export type BootcampRun = {
   start_date: string,
   end_date: string,
   price: number,
-  is_user_eligible_to_pay: boolean,
   total_paid: number,
   payments: Array<Payment>,
   installments: Array<Installment>
