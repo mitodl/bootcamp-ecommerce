@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+Version 0.43.0
+--------------
+
+- Update application state after Jobma webhook (#552)
+- Change PaymentView to accept an application id instead of a run key (#561)
+- Remove ADMISSION_* settings that are not used
+- Remove redundant routes (#568)
+- Refactor hubspot deal/line syncing (#546)
+- add site-wide notification
+- Fix DEFAULT_FILE_STORAGE value for S3 backend
+- Updated overall site styling
+
 Version 0.42.3 (Released May 27, 2020)
 --------------
 
