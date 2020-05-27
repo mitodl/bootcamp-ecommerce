@@ -4,6 +4,7 @@ import logging
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+from jobma.constants import JOBMA_COMPLETED_INTERVIEW_STATUSES
 from jobma.models import Interview
 from jobma.permissions import JobmaWebhookPermission
 
@@ -24,5 +25,10 @@ class JobmaWebhookView(GenericAPIView):
         interview = self.get_object()
         interview.status = status
         interview.save_and_log(None)
+
+        if status in JOBMA_COMPLETED_INTERVIEW_STATUSES:
+            for submission in interview.videointerviewsubmission.app_step_submissions.all():
+                submission.bootcamp_application.complete_interview()
+                submission.bootcamp_application.save()
 
         return Response(status=200)

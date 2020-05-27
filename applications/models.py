@@ -19,6 +19,7 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED)
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
+from jobma.models import Interview
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
 
@@ -177,6 +178,14 @@ class BootcampApplication(TimestampedModel):
 
     @transition(
         field=state,
+        source=AppStates.AWAITING_USER_SUBMISSIONS.value,
+        target=AppStates.AWAITING_SUBMISSION_REVIEW.value,
+    )
+    def complete_interview(self):
+        """When the interview is completed, mark that it is ready for review"""
+
+    @transition(
+        field=state,
         source=AppStates.AWAITING_SUBMISSION_REVIEW.value,
         target=AppStates.REJECTED.value
     )
@@ -223,16 +232,6 @@ class SubmissionTypeModel(TimestampedModel):
         abstract = True
 
 
-def _get_video_file_path(instance, filename):  # pylint: disable=unused-argument
-    """
-    Produces the file path for an uploaded video interview
-
-    Return:
-         str: The file path
-    """
-    return f"video_interviews/{uuid4()}_{filename}"
-
-
 class VideoInterviewSubmission(SubmissionTypeModel):
     """A video interview that was submitted for review in a bootcamp application"""
     submission_step_title = "Video Interview"
@@ -240,8 +239,7 @@ class VideoInterviewSubmission(SubmissionTypeModel):
         "applications.ApplicationStepSubmission",
         related_query_name="videointerviews"
     )
-
-    video_file = models.FileField(upload_to=_get_video_file_path, null=True, blank=True)
+    interview = models.OneToOneField(Interview, on_delete=models.CASCADE)
 
 
 class QuizSubmission(SubmissionTypeModel):
