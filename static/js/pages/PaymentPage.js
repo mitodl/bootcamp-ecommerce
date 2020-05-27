@@ -298,14 +298,10 @@ export class PaymentPage extends React.Component<Props> {
   }
 }
 
-const withPayableBootcampRuns = state => {
-  return {
-    ...state,
-    payableBootcampRunsData: R.filter(
-      R.propEq("is_user_eligible_to_pay", true)
-    )(state.bootcampRuns || [])
-  }
-}
+const withPayableBootcampRuns = state => ({
+  ...state,
+  payableBootcampRunsData: state.bootcampRuns || []
+})
 
 const withDerivedSelectedRun = state => {
   const {

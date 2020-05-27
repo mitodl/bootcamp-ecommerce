@@ -11,12 +11,10 @@ import uuid
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Q
 from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
-from applications.constants import AppStates
 from backends.utils import get_social_username
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
@@ -39,28 +37,20 @@ _REFERENCE_NUMBER_PREFIX = 'BOOTCAMP-'
 
 
 @transaction.atomic
-def create_unfulfilled_order(user, run_key, payment_amount):
+def create_unfulfilled_order(*, application, payment_amount):
     """
     Create a new Order which is not fulfilled for a bootcamp run.
 
     Args:
-        user (User):
-            The purchaser of the bootcamp run
-        run_key (int):
-            A bootcamp run key, a class within a bootcamp
+        application (BootcampApplication):
+            A bootcamp application
         payment_amount (Decimal): The payment of the user
     Returns:
         Order: A newly created Order for the bootcamp run
     """
     payment_amount = Decimal(payment_amount)
-    try:
-        bootcamp_run = BootcampRun.objects.get(run_key=run_key)
-    except BootcampRun.DoesNotExist:
-        # In the near future we should do other checking here based on information from Bootcamp REST API
-        raise ValidationError("Incorrect bootcamp run key {}".format(run_key))
-
-    if not bootcamp_run.run_key in payable_bootcamp_run_keys(user):
-        raise ValidationError("User is unable to pay for bootcamp run {}".format(run_key))
+    bootcamp_run = application.bootcamp_run
+    run_key = bootcamp_run.run_key
 
     if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
@@ -68,7 +58,8 @@ def create_unfulfilled_order(user, run_key, payment_amount):
     order = Order.objects.create(
         status=Order.CREATED,
         total_price_paid=payment_amount,
-        user=user,
+        user=application.user,
+        application=application,
     )
     Line.objects.create(
         order=order,
@@ -76,7 +67,7 @@ def create_unfulfilled_order(user, run_key, payment_amount):
         description='Installment for {}'.format(bootcamp_run.title),
         price=payment_amount,
     )
-    order.save_and_log(user)
+    order.save_and_log(application.user)
     return order
 
 
@@ -296,12 +287,6 @@ def handle_rejected_order(*, order, decision):
 def serialize_user_bootcamp_runs(user):
     """
     Returns serialized bootcamp run and payment details for a user.
-    Note, this function will combine the bootcamp runs for orders already placed and
-    the bootcamp runs from the remote authorization system.
-
-    This is to prevent that a failure of the remote system will prevent the user to
-    see the payments already done. In this case, though, the user will not be authorized to make additional
-    payments but just to see the ones already made.
 
     Args:
         user (User): a user
@@ -309,17 +294,10 @@ def serialize_user_bootcamp_runs(user):
     Returns:
         list: list of dictionaries describing a bootcamp run and payments for it by the user
     """
-    # extract the payments already done.
-    run_keys_in_lines = list(Line.fulfilled_for_user(user).values_list(
-        'run_key', flat=True).distinct())
-
-    all_bootcamp_run_keys = list(set(run_keys_in_lines).union(set(payable_bootcamp_run_keys(user))))
-    bootcamp_runs_qset = (
-        BootcampRun.objects.filter(run_key__in=all_bootcamp_run_keys)
-        .select_related('bootcamp').order_by('run_key')
-    )
-
-    return [serialize_user_bootcamp_run(user, bootcamp_run) for bootcamp_run in bootcamp_runs_qset]
+    return [
+        serialize_user_bootcamp_run(user, bootcamp_run) for bootcamp_run in
+        BootcampRun.objects.filter(applications__user=user).select_related('bootcamp').order_by('run_key')
+    ]
 
 
 def serialize_user_bootcamp_run(user, bootcamp_run):
@@ -343,27 +321,7 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
         "start_date": bootcamp_run.start_date,
         "end_date": bootcamp_run.end_date,
         "price": bootcamp_run.personal_price(user),
-        "is_user_eligible_to_pay": bootcamp_run.run_key in payable_bootcamp_run_keys(user),
         "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run.run_key).get('total') or Decimal('0.00'),
         "payments": LineSerializer(Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True).data,
         "installments": InstallmentSerializer(bootcamp_run.installment_set.order_by('deadline'), many=True).data,
     }
-
-
-def payable_bootcamp_run_keys(user):
-    """
-    Fetches a list of bootcamp run keys for which the user has applied
-
-    Args:
-        user (User): a user
-
-    Returns:
-        list of int: bootcamp run keys the user has applied for
-
-    """
-    return (
-        BootcampRun.objects.prefetch_related("applications")
-            .filter((Q(applications__user=user) & Q(applications__state=AppStates.AWAITING_PAYMENT.value)) |
-                    Q(personal_prices__user=user))
-            .values_list("run_key", flat=True)
-    )

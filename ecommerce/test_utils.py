@@ -1,6 +1,4 @@
 """Functions for testing ecommerce"""
-from unittest.mock import patch
-
 from applications.constants import AppStates
 from backends.pipeline_api import EdxOrgOAuth2
 from ecommerce.api import create_unfulfilled_order
@@ -37,15 +35,9 @@ def create_purchasable_bootcamp_run():
 
 def create_test_order(application, payment, *, fulfilled):
     """
-    Pass through arguments to create_unfulfilled_order and mock payable_bootcamp_run_keys
+    Pass through arguments to create_unfulfilled_order
     """
-    run_key = application.bootcamp_run.run_key
-    user = application.user
-    with patch(
-        'ecommerce.api.payable_bootcamp_run_keys',
-        return_value=[run_key],
-    ):
-        order = create_unfulfilled_order(user, run_key, payment)
+    order = create_unfulfilled_order(application=application, payment_amount=payment)
     order.application = application
     if fulfilled:
         order.status = Order.FULFILLED

@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 import hashlib
 import hmac
-from unittest.mock import patch
 
 import pytest
 import pytz
@@ -15,7 +14,6 @@ from rest_framework.exceptions import ValidationError
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from ecommerce.api import (
-    create_unfulfilled_order,
     generate_cybersource_sa_payload,
     generate_cybersource_sa_signature,
     get_new_order_by_reference_number,
@@ -73,18 +71,6 @@ def test_less_or_equal_to_zero(application, payment_amount):
         create_test_order(application, payment_amount, fulfilled=False)
 
     assert ex.value.args[0] == 'Payment is less than or equal to zero'
-
-
-def test_not_eligible_to_pay(user, bootcamp_run):
-    """
-    A validation error should be thrown if the user is not eligible to pay
-    """
-    with patch(
-        'ecommerce.api.payable_bootcamp_run_keys',
-        return_value=[],
-    ), pytest.raises(ValidationError) as ex:
-        create_unfulfilled_order(user, bootcamp_run.run_key, 123)
-    assert ex.value.args[0] == "User is unable to pay for bootcamp run {}".format(bootcamp_run.run_key)
 
 
 CYBERSOURCE_ACCESS_KEY = 'access'
@@ -293,7 +279,6 @@ def test_serialize_user_run_paid(test_data):
         "start_date": run_paid.start_date,
         "end_date": run_paid.end_date,
         "price": run_paid.personal_price(user),
-        "is_user_eligible_to_pay": True,
         "total_paid": Decimal('627.34'),
         "payments": LineSerializer(Line.for_user_bootcamp_run(user, run_paid.run_key), many=True).data,
         "installments": InstallmentSerializer(
@@ -315,7 +300,6 @@ def test_serialize_user_run_not_paid(test_data):
         "start_date": run_not_paid.start_date,
         "end_date": run_not_paid.end_date,
         "price": run_not_paid.personal_price(user),
-        "is_user_eligible_to_pay": True,
         "total_paid": Decimal('0.00'),
         "payments": [],
         "installments": InstallmentSerializer(
@@ -337,7 +321,6 @@ def test_serialize_user_bootcamp_runs(test_data):
             "start_date": run_paid.start_date,
             "end_date": run_paid.end_date,
             "price": run_paid.price,
-            "is_user_eligible_to_pay": True,
             "total_paid": Decimal('627.34'),
             "payments": LineSerializer(Line.for_user_bootcamp_run(user, run_paid.run_key), many=True).data,
             "installments": InstallmentSerializer(
@@ -350,7 +333,6 @@ def test_serialize_user_bootcamp_runs(test_data):
             "start_date": run_not_paid.start_date,
             "end_date": run_not_paid.end_date,
             "price": run_not_paid.price,
-            "is_user_eligible_to_pay": True,
             "total_paid": Decimal('0.00'),
             "payments": [],
             "installments": InstallmentSerializer(
@@ -358,21 +340,3 @@ def test_serialize_user_bootcamp_runs(test_data):
         }
     ]
     assert sorted(expected_ret, key=lambda x: x['run_key']) == serialize_user_bootcamp_runs(user)
-
-
-def test_serialize_user_bootcamp_runs_paid_not_payable(test_data, mocker):
-    """
-    Test for serialize_user_bootcamp_runs in case the user is not eligible to pay but she has already paid for the
-    bootcamp run
-    """
-    user, run_paid, run_not_paid = test_data
-    mocker.patch(
-        'ecommerce.api.payable_bootcamp_run_keys',
-        return_value=[run_not_paid.run_key],
-    )
-    res = serialize_user_bootcamp_runs(user)
-    assert run_paid.run_key in [bootcamp_run['run_key'] for bootcamp_run in res]
-    for bootcamp_run in res:
-        if bootcamp_run['run_key'] == run_paid.run_key:
-            break
-    assert bootcamp_run['is_user_eligible_to_pay'] is False  # pylint: disable=undefined-loop-variable

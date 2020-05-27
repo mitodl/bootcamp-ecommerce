@@ -74,13 +74,6 @@ describe("PaymentPage", () => {
     )
   })
 
-  it("only passes payable fakeRuns to the Payment component", async () => {
-    fakeRuns[1].is_user_eligible_to_pay = false
-
-    const { inner } = await renderPage()
-    assert.lengthOf(inner.find("Payment").prop("payableBootcampRunsData"), 2)
-  })
-
   it("does not show the payment & payment history sections while API results are still pending", async () => {
     const { wrapper } = await renderPage({
       queries: {

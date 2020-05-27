@@ -9,7 +9,7 @@ import faker
 import pytest
 from rest_framework import status as statuses
 
-from applications.constants import AppStates
+from applications.constants import AppStates, VALID_APP_STATE_CHOICES
 from applications.factories import BootcampApplicationFactory
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import make_reference_id
@@ -81,7 +81,7 @@ def test_using_serializer_validation(client):
     client.force_login(user)
     resp = client.post(payment_url, data={
         "payment_amount": "-1",
-        "run_key": 3,
+        "application_id": 3,
     })
     assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
     assert resp.json() == {
@@ -95,7 +95,7 @@ def test_login_required(client):
     assert resp.status_code == statuses.HTTP_403_FORBIDDEN
 
 
-def test_payment(mocker, client, user, bootcamp_run):
+def test_payment(mocker, client, user, bootcamp_run, application):
     """
     If a user POSTs to the payment API an unfulfilled order should be created
     """
@@ -112,7 +112,7 @@ def test_payment(mocker, client, user, bootcamp_run):
     )
     resp = client.post(reverse('create-payment'), data={
         "payment_amount": bootcamp_run.price,
-        "run_key": bootcamp_run.run_key,
+        "application_id": application.id,
     })
     assert resp.status_code == statuses.HTTP_200_OK
     assert resp.json() == {
@@ -122,7 +122,26 @@ def test_payment(mocker, client, user, bootcamp_run):
     assert generate_cybersource_sa_payload_mock.call_count == 1
     generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/pay/")
     assert create_unfulfilled_order_mock.call_count == 1
-    create_unfulfilled_order_mock.assert_any_call(user, bootcamp_run.run_key, bootcamp_run.price)
+    create_unfulfilled_order_mock.assert_any_call(application=application, payment_amount=bootcamp_run.price)
+
+
+@pytest.mark.parametrize("state", [
+    state for state, _ in VALID_APP_STATE_CHOICES if state != AppStates.AWAITING_PAYMENT.value
+])
+def test_payment_invalid_state(client, state, application, user, bootcamp_run):
+    """
+    A user should only be able to pay if the application state is AWAITING_PAYMENT
+    """
+    application.state = state
+    application.save()
+
+    client.force_login(user)
+    resp = client.post(reverse('create-payment'), data={
+        "payment_amount": bootcamp_run.price,
+        "application_id": application.id,
+    })
+    assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
+    assert resp.json() == ["Invalid application state"]
 
 
 # pylint: disable=too-many-arguments
@@ -312,7 +331,6 @@ BOOTCAMP_RUN_FIELDS = [
     'payments',
     'bootcamp_run_name',
     'display_title',
-    'is_user_eligible_to_pay',
     'price',
 ]
 
@@ -415,43 +433,6 @@ def test_bootcamp_run_list(test_data, client):
     assert len(response_json) == 1
     for resp in response_json:
         assert sorted(list(resp.keys())) == sorted(BOOTCAMP_RUN_FIELDS)
-
-
-def test_bootcamp_run_list_with_no_authorized_runs(test_data, client, mocker):
-    """
-    The view returns an empty list if no authorized bootcamp runs for the user are found
-    """
-    user, _, _ = test_data
-    mocker.patch(
-        'ecommerce.api.payable_bootcamp_run_keys',
-        return_value=[],
-    )
-    bootcamp_run_list_url = reverse('bootcamp-run-list', kwargs={'username': user.username})
-    client.force_login(user)
-
-    response = client.get(bootcamp_run_list_url)
-    assert response.status_code == statuses.HTTP_200_OK
-    assert response.json() == []
-
-
-def test_bootcamp_run_list_paid_with_no_authorized_runs(test_data, fulfilled_order, client, mocker):
-    """
-    The view returns the paid bootcamp runs even if if no authorized bootcamp runs for the user are found
-    """
-    user, _, bootcamp_run = test_data
-    mocker.patch(
-        'ecommerce.api.payable_bootcamp_run_keys',
-        return_value=[],
-    )
-
-    bootcamp_run_list_url = reverse('bootcamp-run-list', kwargs={'username': user.username})
-    client.force_login(user)
-    response = client.get(bootcamp_run_list_url)
-    assert response.status_code == statuses.HTTP_200_OK
-    response_json = response.json()
-    assert len(response_json) == 1
-    assert response_json[0]['run_key'] == bootcamp_run.run_key
-    assert response_json[0]['is_user_eligible_to_pay'] is False
 
 
 def test_user_bootcamp_run_statement(test_data, fulfilled_order, client):
