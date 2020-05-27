@@ -743,20 +743,6 @@ CYBERSOURCE_EXPORT_SERVICE_SANCTIONS_LISTS = get_string(
     description="Additional sanctions lists to validate for exports. Refer to Cybersource docs.",
 )
 
-# BOOTCAMP ADMISSION
-BOOTCAMP_ADMISSION_BASE_URL = get_string(
-    "BOOTCAMP_ADMISSION_BASE_URL",
-    "http://bootcamp-admission.example.com",
-    description="The base url for the bootcamp admissions portal",
-    required=True,
-)
-BOOTCAMP_ADMISSION_KEY = get_string(
-    "BOOTCAMP_ADMISSION_KEY",
-    "",
-    description="The token for authenticating against the bootcamp admissions portal",
-    required=True,
-)
-
 
 # Feature flags
 def get_all_config_keys():
