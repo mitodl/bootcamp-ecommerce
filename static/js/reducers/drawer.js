@@ -1,13 +1,17 @@
 // @Flow
 import { createAction, createReducer } from "@reduxjs/toolkit"
 
-export const toggleDrawer = createAction("TOGGLE_DRAWER")
+export const setDrawerState = createAction("SET_DRAWER_STATE")
+export const setDrawerOpen = createAction("SET_DRAWER_OPEN")
 
 export const drawer = createReducer(
-  { showDrawer: false },
+  { drawerState: null, drawerOpen: false },
   {
-    [toggleDrawer]: state => {
-      state.showDrawer = !state.showDrawer
+    [setDrawerState]: (state, action) => {
+      state.drawerState = action.payload
+    },
+    [setDrawerOpen]: (state, action) => {
+      state.drawerOpen = action.payload
     }
   }
 )

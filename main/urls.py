@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^$', index, name='bootcamp-index'),
 
     url(r'^pay/$', react, name='pay'),
+    path("drawer/", react, name='drawer'),
 
     url(r'^terms_of_service/$', TemplateView.as_view(template_name='bootcamp/tos.html'), name='bootcamp-tos'),
     url(r'^terms_and_conditions/$', TemplateView.as_view(template_name='bootcamp/tac.html'), name='bootcamp-tac'),
