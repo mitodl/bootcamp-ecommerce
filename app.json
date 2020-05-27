@@ -48,14 +48,6 @@
       "description": "E-mail to send 500 reports to",
       "required": false
     },
-    "BOOTCAMP_ADMISSION_BASE_URL": {
-      "description": "The base url for the bootcamp admissions portal",
-      "required": true
-    },
-    "BOOTCAMP_ADMISSION_KEY": {
-      "description": "The token for authenticating against the bootcamp admissions portal",
-      "required": true
-    },
     "BOOTCAMP_DB_CONN_MAX_AGE": {
       "description": "The maximum age of database connections",
       "required": true
