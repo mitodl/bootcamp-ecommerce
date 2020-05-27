@@ -45,38 +45,58 @@ export class ViewProfilePage extends React.Component<Props> {
           <title>{formatTitle(VIEW_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>
         <div className="auth-header row">
-          <h1 className="col-12">Profile</h1>
+          <h1 className="col-6">Profile</h1>
+          <div className="col-6 profile-button-col">
+            <button
+              type="submit"
+              onClick={() => {
+                history.push(routes.profile.update)
+              }}
+              className="btn btn-danger profile-btn"
+            >
+              Edit
+            </button>
+          </div>
         </div>
         <div className="auth-card card-shadow row">
           <div className="container profile-container ">
             <div className="row">
               {currentUser.is_authenticated ? (
                 <div className="col-12 auth-form">
-                  <div className="row">
-                    <h3 className="col-12">
-                      {currentUser.legal_address.first_name ?
-                        `${currentUser.legal_address.first_name} ${currentUser.legal_address.last_name}` :
-                        currentUser.profile.name}
-                    </h3>
+                  <div className="row profile-row">
+                    <div className="col profile-label">First Name</div>
+                    <div className="col">
+                      {currentUser.legal_address.first_name}
+                    </div>
                   </div>
-                  <div className="row">
-                    <div className="col">Gender</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Last Name</div>
+                    <div className="col">
+                      {currentUser.legal_address.last_name}
+                    </div>
+                  </div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Full Name</div>
+                    <div className="col">{currentUser.profile.name}</div>
+                  </div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Gender</div>
                     <div className="col">
                       {fromPairs(GENDER_CHOICES)[currentUser.profile.gender]}
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col">Year of Birth</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Year of Birth</div>
                     <div className="col">{currentUser.profile.birth_year}</div>
                   </div>
-                  <div className="row">
-                    <div className="col">Joined</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Joined</div>
                     <div className="col">
                       {moment(currentUser.created_on).format("MMMM YYYY")}
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col">Address</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Address</div>
                     <div className="col">
                       {join(", ", currentUser.legal_address.street_address)},{" "}
                       {currentUser.legal_address.city}
@@ -88,8 +108,8 @@ export class ViewProfilePage extends React.Component<Props> {
                     </div>
                   </div>
                   {countries && currentUser.legal_address.country ? (
-                    <div className="row">
-                      <div className="col">Country</div>
+                    <div className="row profile-row">
+                      <div className="col profile-label">Country</div>
                       <div className="col">
                         {
                           find(
@@ -101,8 +121,10 @@ export class ViewProfilePage extends React.Component<Props> {
                     </div>
                   ) : null}
                   {countries && currentUser.legal_address.state_or_territory ? (
-                    <div className="row">
-                      <div className="col">State/Province/Region</div>
+                    <div className="row profile-row">
+                      <div className="col profile-label">
+                        State/Province/Region
+                      </div>
                       <div className="col">
                         {
                           find(
@@ -119,27 +141,29 @@ export class ViewProfilePage extends React.Component<Props> {
                       </div>
                     </div>
                   ) : null}
-                  <div className="row">
-                    <div className="col">Company</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Company</div>
                     <div className="col">{currentUser.profile.company}</div>
                   </div>
-                  <div className="row">
-                    <div className="col">Job Title</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Job Title</div>
                     <div className="col">{currentUser.profile.job_title}</div>
                   </div>
                   <div className="form-group dotted" />
-                  <div className="row">
-                    <div className="col">Industry</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Industry</div>
                     <div className="col">{currentUser.profile.industry}</div>
                   </div>
-                  <div className="row">
-                    <div className="col">Job Function</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Job Function</div>
                     <div className="col">
                       {currentUser.profile.job_function}
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col">Years of Work Experience</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">
+                      Years of Work Experience
+                    </div>
                     <div className="col">
                       {
                         fromPairs(EMPLOYMENT_EXPERIENCE)[
@@ -148,8 +172,8 @@ export class ViewProfilePage extends React.Component<Props> {
                       }
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col">Company Size</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Company Size</div>
                     <div className="col">
                       {
                         fromPairs(EMPLOYMENT_SIZE)[
@@ -158,23 +182,12 @@ export class ViewProfilePage extends React.Component<Props> {
                       }
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col">Highest Level of Education</div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">
+                      Highest Level of Education
+                    </div>
                     <div className="col">
                       {currentUser.profile.highest_education}
-                    </div>
-                  </div>
-                  <div className="row-inner justify-content-end">
-                    <div className="row justify-content-end">
-                      <button
-                        type="submit"
-                        onClick={() => {
-                          history.push(routes.profile.update)
-                        }}
-                        className="btn btn-outline-danger large-font"
-                      >
-                        Edit Profile
-                      </button>
                     </div>
                   </div>
                 </div>

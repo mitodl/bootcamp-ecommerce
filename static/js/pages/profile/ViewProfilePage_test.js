@@ -33,7 +33,7 @@ describe("ViewProfilePage", () => {
 
   it("renders the page for a logged in user", async () => {
     const { wrapper } = await renderPage()
-    assert.isTrue(wrapper.find(".btn-outline-danger").exists())
+    assert.isTrue(wrapper.find(".profile-btn").exists())
     assert.isTrue(
       wrapper
         .find(".auth-page")

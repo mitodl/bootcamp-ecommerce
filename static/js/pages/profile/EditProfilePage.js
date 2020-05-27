@@ -83,8 +83,19 @@ export class EditProfilePage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="row auth-header">
-          <h1 className="col-12">Edit Profile</h1>
+        <div className="auth-header row">
+          <h1 className="col-6">Profile</h1>
+          <div className="col-6 profile-button-col">
+            <button
+              type="submit"
+              onClick={() => {
+                history.push(routes.profile.update)
+              }}
+              className="btn btn-danger profile-btn"
+            >
+              Save
+            </button>
+          </div>
         </div>
         <div className="auth-card card-shadow row">
           <div className="container">
