@@ -38,10 +38,11 @@ class InstructorSectionBlock(blocks.StructBlock):
         max_length=255,
         help_text="The heading to display for this section on the page.",
     )
-    subhead = blocks.CharBlock(
-        max_length=255,
+    subhead = blocks.RichTextBlock(
         help_text="The subhead to display for this section on the page.",
     )
+    heading_singular = blocks.CharBlock(
+        max_length=100, help_text="Heading that will highlight the instructor point.",)
     members = blocks.StreamBlock(
         [("member", InstructorBlock())],
         help_text="The instructors to display in this section",

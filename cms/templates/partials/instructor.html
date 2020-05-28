@@ -1,56 +1,70 @@
 {% load wagtailcore_tags image_version_url %}
 <div id="faculty-block" class="instructor-block">
-  {% for section in page.sections %}
-  <div class="container">
-    <h2><b>{{ section.value.heading }}</b></h2>
-    <hr>
-    {% if section.value.subhead %}
-      <h5 class="subheading">{{ section.value.subhead }}</h5>
-    {% endif %}
-    <div class="slider slider-{{ forloop.counter }}">
-      {% for member in section.value.members %}
-        <div class="slide instructor">
-          <div class="slide-holder">
-            <img src="{% image_version_url member.value.image "fill-300x300" %}" alt="{{ member.value.name }}">
-            <h5>{{ member.value.name }}</h5>
-            <div class="text-holder">
-              {{ member.value.title }}
-            </div>
-          </div>
+  <div class="banner">
+    <img src="{% image_version_url page.banner_image "fill-1920x200" %}" alt="{{ page.name }}" />
+  </div>
+  <div class="container instructor-container">
+    <div class="row instructors-header">
+        <div class="col-lg-3 col-sm-4">
+            {{page.heading|richtext}}
         </div>
-      {% endfor %}
+        <div class="col-lg-9 col-sm-8 section-headings">
+            {% for section in page.sections %}
+              <h5>{{ section.value.heading }}</h5>
+              {% if section.value.subhead|richtext %}
+                <p class="subheading">{{ section.value.subhead }}</p>
+              {% endif %}
+            {% endfor %}
+        </div>
     </div>
   </div>
+  <div class="container instructors-container">
+  {% for section in page.sections %}
+    <div class="container">
+      {% if forloop.counter > 1 %}
+        <hr>
+      {% endif%}
+      <div class="slider slider-{{ forloop.counter }}">
+        {% for member in section.value.members %}
+          <div class="slide instructor">
+            <div class="slide-holder">
+              <img src="{% image_version_url member.value.image "fill-300x300" %}" alt="{{ member.value.name }}">
+              <div class="text-holder">
+                <span class="name">{{ member.value.name }}</span>
+                <span class="title">{{ member.value.title }}</span>
+                <strong class="designation">{{ section.value.heading_singular }}</strong>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   {% endfor %}
 </div>
 <script>
 var totalSections = {{ page.sections|length }};
 
 for(i=1 ; i <= totalSections; i++){
-  const numFacultySlides = $(`.slider-1 .slide`).length;
 
   $(`.slider-${i}`).slick({
     rows:           0,
-    slidesToShow:   3,
+    slidesToShow:   4,
     slidesToScroll: 1,
-    dots:           numFacultySlides > 3,
     infinite:       false,
     autoplay:       false,
     responsive:     [
       {
         breakpoint: 1024,
         settings:   {
-          slidesToShow:   3,
-          slidesToScroll: 3,
-          dots:           numFacultySlides > 3
+          slidesToShow:   4,
+          slidesToScroll: 4,
         }
       },
       {
         breakpoint: 992,
         settings:   {
-          slidesToShow:   2,
-          slidesToScroll: 1,
-          dots:           numFacultySlides > 2
+          slidesToShow:   3,
+          slidesToScroll: 2,
         }
       },
       {
@@ -58,7 +72,6 @@ for(i=1 ; i <= totalSections; i++){
         settings:   {
           slidesToShow:   1,
           slidesToScroll: 1,
-          dots:           numFacultySlides > 1
         }
       }
     ]
