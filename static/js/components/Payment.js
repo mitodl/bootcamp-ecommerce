@@ -207,10 +207,11 @@ export default class Payment extends React.Component<*, void> {
       currentUser
     } = this.props
 
-    // $FlowFixMe: an anon user shouldn't be here
     const welcomeMessage =
       currentUser &&
+      // $FlowFixMe: an anon user shouldn't be here
       currentUser.profile &&
+      // $FlowFixMe: an anon user shouldn't be here
       !isNilOrBlank(currentUser.profile.name) ? (
           <h1 className="greeting">Hi {currentUser.profile.name}!</h1>
         ) : null
