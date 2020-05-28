@@ -1,4 +1,5 @@
 import { assert } from "chai"
+import sinon from "sinon"
 import moment from "moment"
 import _ from "lodash"
 
@@ -9,7 +10,10 @@ import {
   formatDollarAmount,
   getRunWithFulfilledOrder,
   getInstallmentDeadlineDates,
-  formatStartEndDateStrings
+  formatStartEndDateStrings,
+  newSetWithout,
+  newSetWith,
+  timeoutPromise
 } from "./util"
 
 describe("util", () => {
@@ -145,5 +149,25 @@ describe("util", () => {
       const result = formatStartEndDateStrings(null, null)
       assert.deepEqual(result, "")
     })
+  })
+
+  it("newSetWith returns a set with an additional item", () => {
+    const set = new Set([1, 2, 3])
+    assert.deepEqual(newSetWith(set, 3), set)
+    assert.deepEqual(newSetWith(set, 4), new Set([1, 2, 3, 4]))
+  })
+
+  it("newSetWithout returns a set without a specified item", () => {
+    const set = new Set([1, 2, 3])
+    assert.deepEqual(newSetWithout(set, 3), new Set([1, 2]))
+    assert.deepEqual(newSetWithout(set, 4), set)
+  })
+
+  it("timeoutPromise returns a Promise that executes a function after a delay then resolves", async () => {
+    const func = sinon.stub()
+    const promise = timeoutPromise(func, 10)
+    sinon.assert.callCount(func, 0)
+    await promise
+    sinon.assert.callCount(func, 1)
   })
 })

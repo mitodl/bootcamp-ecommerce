@@ -15,6 +15,7 @@
 @import "auth";
 @import "user-menu";
 @import "application";
+@import "notification";
 @import "cms/product";
 @import "drawer";
 @import "slick";
@@ -126,6 +127,16 @@ body {
       font-size: 16px;
       text-decoration: none;
       position: relative;
+
+      &.reverse {
+        color: #fff;
+        background-color: black;
+        font-size: 12px;
+        padding: 0 10px 0 10px;
+        line-height: 2.5em;
+        border-radius: 0px;
+        margin: 0px;
+      }
 
       @include breakpoint(phone) {
         padding: 10px 12px;

@@ -48,7 +48,7 @@ describe("RegisterConfirmPage", () => {
       .find("RegisterConfirmPage")
       .instance()
       .componentDidUpdate({})
-    assert.deepEqual(store.getState().userNotifications, {
+    assert.deepEqual(store.getState().ui.userNotifications, {
       "email-verified": {
         type:  "text",
         props: {

@@ -31,14 +31,17 @@ const RegisterExtraDetailsForm = ({ onSubmit }: Props) => (
     render={({ isSubmitting }) => (
       <Form>
         <ProfileFields />
-        <div className="row submit-row no-gutters justify-content-end">
-          <button
-            type="submit"
-            className="btn btn-primary btn-light-blue"
-            disabled={isSubmitting}
-          >
-            Continue
-          </button>
+        <div>
+          <div className="required">*=Required</div>
+          <div className="row submit-row no-gutters justify-content-end">
+            <button
+              type="submit"
+              className="btn btn-outline-danger large-font"
+              disabled={isSubmitting}
+            >
+              Continue
+            </button>
+          </div>
         </div>
       </Form>
     )}

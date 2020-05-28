@@ -62,7 +62,7 @@ const ChangePasswordForm = ({ onSubmit }: Props) => (
         <div className="row submit-row no-gutters justify-content-end">
           <button
             type="submit"
-            className="btn btn-primary btn-light-blue"
+            className="btn btn-danger large-font"
             disabled={isSubmitting}
           >
             Submit

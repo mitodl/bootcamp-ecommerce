@@ -40,7 +40,6 @@ export const LegalAddressFields = ({
     <div className="form-group">
       <label htmlFor="legal_address.first_name" className="row">
         <div className="col-4 font-weight-bold">First Name*</div>
-        <div className="col-8">(Name that will appear on emails)</div>
       </label>
       <Field
         type="text"
@@ -65,7 +64,6 @@ export const LegalAddressFields = ({
     <div className="form-group">
       <label htmlFor="profile.name" className="row">
         <div className="col-4 font-weight-bold">Full Name*</div>
-        <div className="col-8">(As it will appear in your certificate)</div>
       </label>
       <Field
         type="text"
@@ -94,8 +92,7 @@ export const LegalAddressFields = ({
     <div className="form-group">
       {/* LegalAddress fields */}
       <label htmlFor="legal_address.street_address" className="row">
-        <div className="col-4 font-weight-bold">Street Address*</div>
-        <div className="col-8">(Home or Residential Address Only)</div>
+        <div className="col-4 font-weight-bold">Address*</div>
       </label>
       <FieldArray
         name="legal_address.street_address"

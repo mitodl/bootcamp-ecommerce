@@ -44,10 +44,8 @@ export class ViewProfilePage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(VIEW_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="auth-header row d-flex  align-items-center justify-content-between flex-nowrap">
-          <div className="col-auto flex-shrink-1">
-            <h1>Profile</h1>
-          </div>
+        <div className="auth-header row">
+          <h1 className="col-12">Profile</h1>
         </div>
         <div className="auth-card card-shadow row">
           <div className="container profile-container ">
@@ -55,25 +53,11 @@ export class ViewProfilePage extends React.Component<Props> {
               {currentUser.is_authenticated ? (
                 <div className="col-12 auth-form">
                   <div className="row">
-                    <div className="col-2 profile" />
-                    <div className="col-10 d-flex align-items-center">
-                      <h3 className="align-middle">
-                        {currentUser.legal_address.first_name ?
-                          `${currentUser.legal_address.first_name} ${currentUser.legal_address.last_name}` :
-                          currentUser.profile.name}
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="row submit-row no-gutters justify-content-end">
-                    <button
-                      type="submit"
-                      onClick={() => {
-                        history.push(routes.profile.update)
-                      }}
-                      className="btn btn-primary btn-light-blue"
-                    >
-                      Edit Profile
-                    </button>
+                    <h3 className="col-12">
+                      {currentUser.legal_address.first_name ?
+                        `${currentUser.legal_address.first_name} ${currentUser.legal_address.last_name}` :
+                        currentUser.profile.name}
+                    </h3>
                   </div>
                   <div className="row">
                     <div className="col">Gender</div>
@@ -178,6 +162,19 @@ export class ViewProfilePage extends React.Component<Props> {
                     <div className="col">Highest Level of Education</div>
                     <div className="col">
                       {currentUser.profile.highest_education}
+                    </div>
+                  </div>
+                  <div className="row-inner justify-content-end">
+                    <div className="row justify-content-end">
+                      <button
+                        type="submit"
+                        onClick={() => {
+                          history.push(routes.profile.update)
+                        }}
+                        className="btn btn-outline-danger large-font"
+                      >
+                        Edit Profile
+                      </button>
                     </div>
                   </div>
                 </div>

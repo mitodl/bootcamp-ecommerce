@@ -95,7 +95,7 @@ describe("AccountSettingsPage", () => {
       sinon.assert.calledWith(setSubmittingStub, false)
       sinon.assert.calledWith(resetFormStub)
 
-      const { userNotifications } = store.getState()
+      const { userNotifications } = store.getState().ui
       assert.deepEqual(userNotifications, {
         "password-change": {
           type:  ALERT_TYPE_TEXT,
@@ -165,7 +165,7 @@ describe("AccountSettingsPage", () => {
       sinon.assert.calledWith(setSubmittingStub, false)
       sinon.assert.calledWith(resetFormStub)
 
-      const { userNotifications } = store.getState()
+      const { userNotifications } = store.getState().ui
       assert.deepEqual(userNotifications, {
         "email-change": {
           type:  ALERT_TYPE_TEXT,

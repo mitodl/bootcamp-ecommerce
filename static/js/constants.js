@@ -99,8 +99,6 @@ export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
 export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
 
 export const ALERT_TYPE_TEXT = "text"
-export const ALERT_TYPE_UNUSED_COUPON = "unused-coupon"
-export const ALTER_TYPE_B2B_ORDER_STATUS = "b2b-order-status"
 
 export const APP_STATE_IN_PROGRESS = "In Progress"
 export const APP_STATE_IN_REVIEW = "In Review"

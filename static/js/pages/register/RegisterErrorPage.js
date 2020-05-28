@@ -22,7 +22,7 @@ const RegisterErrorPage = () => (
             target="_blank"
             rel="noopener noreferrer"
           >
-            Customer Support Center
+            MIT Bootcamp Customer Support Center
           </a>
         </p>
       </div>

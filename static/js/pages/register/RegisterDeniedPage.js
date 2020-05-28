@@ -36,7 +36,7 @@ export class RegisterDeniedPage extends React.Component<Props> {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Customer Support Center
+                MIT Bootcamp Customer Support Center
               </a>
             </p>
           </div>

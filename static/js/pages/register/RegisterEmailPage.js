@@ -97,7 +97,7 @@ export class RegisterEmailPage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(REGISTER_EMAIL_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="row">
+        <div className="row auth-header">
           <h1 className="col-12">Create Account</h1>
         </div>
         <div className="auth-form auth-card card-shadow row">

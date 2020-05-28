@@ -21,22 +21,21 @@ export class RegisterConfirmSentPage extends React.Component<Props> {
     } = this.props
 
     return (
-      <div className="container auth-page">
+      <div className="container auth-page registration-page">
         <MetaTags>
           <title>{formatTitle(REGISTER_CONFIRM_PAGE_TITLE)}</title>
         </MetaTags>
-        <h1>Sign Up</h1>
-
-        <div className="confirm-sent-page">
-          <h2 className="text-center font-weight-600">Thank You!</h2>
+        <div className="row auth-header">
+          <h1>Sign Up</h1>
+        </div>
+        <div className="row auth-card">
+          <h2 className="font-weight-600">Thank You!</h2>
           <p>
             We sent an email to <span className="email">{email}</span>
             ,<br /> please verify your address to continue.
           </p>
           <p>
-            <b>
-              If you do NOT receive your verification email, here’s what to do:
-            </b>
+            If you do NOT receive your verification email, here’s what to do:
           </p>
           <ol>
             <li>
@@ -63,7 +62,7 @@ export class RegisterConfirmSentPage extends React.Component<Props> {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {` Customer Support Center`}.
+              {` MIT Bootcamp Customer Support Center`}.
             </a>
           </div>
         </div>

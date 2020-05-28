@@ -4,12 +4,20 @@
         <div class="pull-left">
           <a class="brand-logo" href="http://www.mit.edu"></a>
           <div class="divider-large">&nbsp;</div>
-          <a class="bootcamp-link" href="/">Bootcamps</a>
+          <a class="bootcamp-link" href={%  url "bootcamp-index" %}>Bootcamps</a>
           </div>
         <div class="pull-right">
           {% if authenticated %}
-          <a class="header-dashboard-link" href="/logout">
+          <a class="header-dashboard-link" href={%  url "logout" %}>
             Sign Out
+          </a>
+          {% endif %}
+          {% if social_auth_enabled and not authenticated %}
+          <a class="header-dashboard-link reverse" href={% url "login" %}>
+            Sign In
+          </a>
+          <a class="header-dashboard-link reverse" href={%  url "signup" %}>
+            Create Account
           </a>
           {% endif %}
         </div>
