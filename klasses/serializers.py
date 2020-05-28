@@ -8,16 +8,15 @@ from klasses.models import Bootcamp, BootcampRun, Installment
 
 class BootcampSerializer(serializers.ModelSerializer):
     """Serializer for Bootcamp model"""
+
     class Meta:
         model = Bootcamp
-        fields = [
-            "id",
-            "title",
-        ]
+        fields = ["id", "title"]
 
 
 class BootcampRunSerializer(serializers.ModelSerializer):
     """Serializer for BootcampRun model"""
+
     bootcamp = BootcampSerializer()
 
     class Meta:
@@ -35,11 +34,9 @@ class BootcampRunSerializer(serializers.ModelSerializer):
 
 class InstallmentSerializer(serializers.ModelSerializer):
     """Serializer for Installment model"""
+
     amount = serializers.DecimalField(decimal_places=2, max_digits=20)
 
     class Meta:
         model = Installment
-        fields = (
-            'amount',
-            'deadline',
-        )
+        fields = ("amount", "deadline")

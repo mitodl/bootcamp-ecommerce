@@ -4,24 +4,37 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
-from applications.constants import AppStates, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
-from applications.factories import BootcampApplicationFactory, ApplicationStepSubmissionFactory
-from applications.serializers import BootcampApplicationDetailSerializer, BootcampApplicationSerializer
+from applications.constants import (
+    AppStates,
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_REJECTED,
+)
+from applications.factories import (
+    BootcampApplicationFactory,
+    ApplicationStepSubmissionFactory,
+)
+from applications.serializers import (
+    BootcampApplicationDetailSerializer,
+    BootcampApplicationSerializer,
+)
 from applications.views import BootcampApplicationViewset
 from klasses.factories import BootcampRunFactory
 from profiles.factories import UserFactory
 
 
 @pytest.mark.parametrize(
-    "action,expected_serializer", [
+    "action,expected_serializer",
+    [
         ["retrieve", BootcampApplicationDetailSerializer],
         ["list", BootcampApplicationSerializer],
         ["create", BootcampApplicationSerializer],
-    ]
+    ],
 )
 def test_view_serializer(mocker, action, expected_serializer):
     """The bootcamp application view should use the expected serializer depending on the action"""
-    serializer_cls = BootcampApplicationViewset.get_serializer_class(mocker.Mock(action=action))
+    serializer_cls = BootcampApplicationViewset.get_serializer_class(
+        mocker.Mock(action=action)
+    )
     assert serializer_cls == expected_serializer
 
 
@@ -59,17 +72,11 @@ def test_app_create_view(client):
     user = UserFactory.create()
     client.force_login(user)
     url = reverse("applications_api-list")
-    resp = client.post(
-        url,
-        data={"bootcamp_run_id": bootcamp_run.id}
-    )
+    resp = client.post(url, data={"bootcamp_run_id": bootcamp_run.id})
     assert resp.status_code == status.HTTP_201_CREATED
     application_id = resp.json()["id"]
     # Making a request for an existing application should return a 200 instead of a 201
-    resp = client.post(
-        url,
-        data={"bootcamp_run_id": bootcamp_run.id}
-    )
+    resp = client.post(url, data={"bootcamp_run_id": bootcamp_run.id})
     assert resp.status_code == status.HTTP_200_OK
     assert resp.json()["id"] == application_id
 
@@ -100,17 +107,19 @@ def test_review_submission_update(client, mocker, review_status):
     """
     The review submission view should return successful response, and update review_status
     """
-    mocker.patch('applications.views.IsAdminUser.has_permission', return_value=True)
-    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_SUBMISSION_REVIEW.value)
+    mocker.patch("applications.views.IsAdminUser.has_permission", return_value=True)
+    bootcamp_application = BootcampApplicationFactory(
+        state=AppStates.AWAITING_SUBMISSION_REVIEW.value
+    )
     submission = ApplicationStepSubmissionFactory(
         review_status=None,
         bootcamp_application=bootcamp_application,
-        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
     )
     url = reverse("submit-review", kwargs={"pk": submission.id})
-    resp = client.patch(url, content_type='application/json', data={
-        "review_status": review_status,
-        })
+    resp = client.patch(
+        url, content_type="application/json", data={"review_status": review_status}
+    )
     assert resp.status_code == status.HTTP_200_OK
     submission.refresh_from_db()
     assert submission.review_status == review_status

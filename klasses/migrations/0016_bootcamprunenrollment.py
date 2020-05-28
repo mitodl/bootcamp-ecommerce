@@ -9,21 +9,41 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('klasses', '0015_rename_klass_to_bootcamp_run'),
+        ("klasses", "0015_rename_klass_to_bootcamp_run"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BootcampRunEnrollment',
+            name="BootcampRunEnrollment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('updated_on', models.DateTimeField(auto_now=True)),
-                ('bootcamp_run', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollments', to='klasses.BootcampRun')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollments', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("updated_on", models.DateTimeField(auto_now=True)),
+                (
+                    "bootcamp_run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="enrollments",
+                        to="klasses.BootcampRun",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="enrollments",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-            options={
-                'unique_together': {('user', 'bootcamp_run')},
-            },
-        ),
+            options={"unique_together": {("user", "bootcamp_run")}},
+        )
     ]

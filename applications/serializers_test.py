@@ -9,11 +9,14 @@ import factory
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampRunStepSerializer,
-    SubmissionSerializer, BootcampApplicationSerializer,
+    SubmissionSerializer,
+    BootcampApplicationSerializer,
 )
 from applications.factories import (
     BootcampApplicationFactory,
-    BootcampRunApplicationStepFactory, ApplicationStepSubmissionFactory, ApplicationStepFactory,
+    BootcampRunApplicationStepFactory,
+    ApplicationStepSubmissionFactory,
+    ApplicationStepFactory,
 )
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
@@ -28,14 +31,11 @@ from main.utils import now_in_utc
 def app_data():
     """Fixture for a bootcamp application and related data"""
     bootcamp_run = BootcampRunFactory.create()
-    run_steps = BootcampRunApplicationStepFactory.create_batch(2, bootcamp_run=bootcamp_run)
-    application = BootcampApplicationFactory(
-        bootcamp_run=bootcamp_run
+    run_steps = BootcampRunApplicationStepFactory.create_batch(
+        2, bootcamp_run=bootcamp_run
     )
-    return SimpleNamespace(
-        application=application,
-        run_steps=run_steps,
-    )
+    application = BootcampApplicationFactory(bootcamp_run=bootcamp_run)
+    return SimpleNamespace(application=application, run_steps=run_steps)
 
 
 @pytest.mark.django_db
@@ -54,7 +54,9 @@ def test_application_detail_serializer(app_data):
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
         "payment_deadline": None,
         "created_on": serializer_date_format(application.created_on),
-        "run_application_steps": BootcampRunStepSerializer(instance=app_data.run_steps, many=True).data,
+        "run_application_steps": BootcampRunStepSerializer(
+            instance=app_data.run_steps, many=True
+        ).data,
         "submissions": [],
         "orders": [],
     }
@@ -70,9 +72,7 @@ def test_app_detail_serializer_deadline(app_data):
     installments = InstallmentFactory.create_batch(
         2,
         bootcamp_run=application.bootcamp_run,
-        deadline=factory.Iterator([
-            now_in_utc(), (now_in_utc() + timedelta(days=1))
-        ])
+        deadline=factory.Iterator([now_in_utc(), (now_in_utc() + timedelta(days=1))]),
     )
     data = BootcampApplicationDetailSerializer(instance=application).data
     assert data["payment_deadline"] == serializer_date_format(installments[1].deadline)
@@ -87,15 +87,16 @@ def test_application_detail_serializer_nested(app_data):
     submissions = ApplicationStepSubmissionFactory.create_batch(
         2,
         bootcamp_application=application,
-        run_application_step=factory.Iterator(app_data.run_steps)
+        run_application_step=factory.Iterator(app_data.run_steps),
     )
     orders = OrderFactory.create_batch(
-        2,
-        application=application,
-        status=Order.FULFILLED
+        2, application=application, status=Order.FULFILLED
     )
     data = BootcampApplicationDetailSerializer(instance=application).data
-    assert data["submissions"] == SubmissionSerializer(instance=submissions, many=True).data
+    assert (
+        data["submissions"]
+        == SubmissionSerializer(instance=submissions, many=True).data
+    )
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
 
 
@@ -113,7 +114,9 @@ def test_application_list_serializer(app_data):
             "id": application.id,
             "state": application.state,
             "created_on": serializer_date_format(application.created_on),
-            "bootcamp_run": BootcampRunSerializer(instance=application.bootcamp_run).data,
+            "bootcamp_run": BootcampRunSerializer(
+                instance=application.bootcamp_run
+            ).data,
         }
         for application in user_applications
     ]

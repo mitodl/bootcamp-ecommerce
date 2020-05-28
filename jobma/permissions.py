@@ -18,7 +18,7 @@ class JobmaWebhookPermission(BasePermission):
             return False
         header = request.headers.get("authorization", "")
         if header.startswith("Bearer "):
-            token = header[len("Bearer "):]
+            token = header[len("Bearer ") :]
 
             return token == settings.JOBMA_WEBHOOK_ACCESS_TOKEN
         return False

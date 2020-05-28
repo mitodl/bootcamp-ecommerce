@@ -52,6 +52,7 @@ class UserProfileInline(admin.StackedInline):
 
 class UserAdmin(ContribUserAdmin, HijackUserAdminMixin):
     """Admin views for user"""
+
     fieldsets = (
         (None, {"fields": ("username", "password", "last_login")}),
         (_("Personal Info"), {"fields": ("email",)}),

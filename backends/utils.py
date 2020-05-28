@@ -24,11 +24,12 @@ def _send_refresh_request(user_social):
     try:
         user_social.refresh_token(strategy)
     except HTTPError as exc:
-        if exc.response.status_code in (400, 401,):
+        if exc.response.status_code in (400, 401):
             raise InvalidCredentialStored(
-                message='Received a {} status code from the OAUTH server'.format(
-                    exc.response.status_code),
-                http_status_code=exc.response.status_code
+                message="Received a {} status code from the OAUTH server".format(
+                    exc.response.status_code
+                ),
+                http_status_code=exc.response.status_code,
             )
         raise
 
@@ -41,8 +42,10 @@ def refresh_user_token(user_social):
         user_social (UserSocialAuth): a user social auth instance
     """
     try:
-        last_update = datetime.fromtimestamp(user_social.extra_data.get('updated_at'), tz=pytz.UTC)
-        expires_in = timedelta(seconds=user_social.extra_data.get('expires_in'))
+        last_update = datetime.fromtimestamp(
+            user_social.extra_data.get("updated_at"), tz=pytz.UTC
+        )
+        expires_in = timedelta(seconds=user_social.extra_data.get("expires_in"))
     except TypeError:
         _send_refresh_request(user_social)
         return

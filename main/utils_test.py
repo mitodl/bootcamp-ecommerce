@@ -6,17 +6,11 @@ import unittest
 import operator as op
 from math import ceil
 
-from django.test import (
-    override_settings,
-    TestCase,
-)
+from django.test import override_settings, TestCase
 import pytest
 import pytz
 
-from ecommerce.factories import (
-    Order,
-    ReceiptFactory,
-)
+from ecommerce.factories import Order, ReceiptFactory
 from main.utils import (
     get_field_names,
     serialize_model_object,
@@ -32,7 +26,7 @@ from main.utils import (
     all_unique,
     all_equal,
     has_all_keys,
-    group_into_dict
+    group_into_dict,
 )
 from main.test_utils import MockResponse, format_as_iso8601
 
@@ -159,7 +153,6 @@ def test_group_into_dict():
     assert set(grouped_nums[False]) == {1, 3, 5}
 
 
-
 @pytest.mark.parametrize(
     "content,content_type,exp_summary_content,exp_url_in_summary",
     [
@@ -195,18 +188,19 @@ class SerializerTests(TestCase):
     """
     Tests for serialize_model
     """
+
     def test_jsonfield(self):
         """
         Test a model with a JSONField is handled correctly
         """
-        with override_settings(CYBERSOURCE_SECURITY_KEY='asdf'):
+        with override_settings(CYBERSOURCE_SECURITY_KEY="asdf"):
             receipt = ReceiptFactory.create()
             assert serialize_model_object(receipt) == {
-                'created_on': format_as_iso8601(receipt.created_on),
-                'data': receipt.data,
-                'id': receipt.id,
-                'updated_on': format_as_iso8601(receipt.updated_on),
-                'order': receipt.order.id,
+                "created_on": format_as_iso8601(receipt.created_on),
+                "data": receipt.data,
+                "id": receipt.id,
+                "updated_on": format_as_iso8601(receipt.updated_on),
+                "order": receipt.order.id,
             }
 
 
@@ -220,12 +214,12 @@ class FieldNamesTests(unittest.TestCase):
         Assert that get_field_names does not include related fields
         """
         assert set(get_field_names(Order)) == {
-            'user',
-            'status',
-            'total_price_paid',
-            'application',
-            'created_on',
-            'updated_on',
+            "user",
+            "status",
+            "total_price_paid",
+            "application",
+            "created_on",
+            "updated_on",
         }
 
 
@@ -263,7 +257,7 @@ class UtilTests(unittest.TestCase):
         chunk_output = []
         for chunk in chunks(input_range, chunk_size=10):
             chunk_output.append(chunk)
-        assert len(chunk_output) == ceil(113/10)
+        assert len(chunk_output) == ceil(113 / 10)
 
         range_list = []
         for chunk in chunk_output:

@@ -9,10 +9,7 @@ import wagtail.images.blocks
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("wagtailimages", "0001_squashed_0021"),
-        ("cms", "0010_alumnipage"),
-    ]
+    dependencies = [("wagtailimages", "0001_squashed_0021"), ("cms", "0010_alumnipage")]
 
     operations = [
         migrations.AddField(

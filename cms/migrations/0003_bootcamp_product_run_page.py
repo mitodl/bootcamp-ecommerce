@@ -9,30 +9,67 @@ import wagtail.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('klasses', '0014_no_max_len_application_stage'),
-        ('wagtailredirects', '0006_redirect_increase_max_length'),
-        ('wagtailimages', '0001_squashed_0021'),
-        ('wagtailforms', '0004_add_verbose_name_plural'),
-        ('wagtailcore', '0045_assign_unlock_grouppagepermission'),
-        ('cms', '0002_resourcepage'),
+        ("klasses", "0014_no_max_len_application_stage"),
+        ("wagtailredirects", "0006_redirect_increase_max_length"),
+        ("wagtailimages", "0001_squashed_0021"),
+        ("wagtailforms", "0004_add_verbose_name_plural"),
+        ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
+        ("cms", "0002_resourcepage"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BootcampRunPage',
+            name="BootcampRunPage",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('description', wagtail.core.fields.RichTextField(blank=True, help_text='The description shown on the product page')),
-                ('content', wagtail.core.fields.StreamField([('rich_text', wagtail.core.blocks.RichTextBlock())], blank=True, help_text='The content of the benefits page')),
-                ('klasses', models.OneToOneField(help_text='The Klass for this page', null=True, on_delete=django.db.models.deletion.SET_NULL, to='klasses.Klass')),
-                ('thumbnail_image', models.ForeignKey(blank=True, help_text='Thumbnail size must be at least 690x530 pixels.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                (
+                    "description",
+                    wagtail.core.fields.RichTextField(
+                        blank=True,
+                        help_text="The description shown on the product page",
+                    ),
+                ),
+                (
+                    "content",
+                    wagtail.core.fields.StreamField(
+                        [("rich_text", wagtail.core.blocks.RichTextBlock())],
+                        blank=True,
+                        help_text="The content of the benefits page",
+                    ),
+                ),
+                (
+                    "klasses",
+                    models.OneToOneField(
+                        help_text="The Klass for this page",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="klasses.Klass",
+                    ),
+                ),
+                (
+                    "thumbnail_image",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Thumbnail size must be at least 690x530 pixels.",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="wagtailimages.Image",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
-            bases=('wagtailcore.page',),
+            options={"abstract": False},
+            bases=("wagtailcore.page",),
         ),
-        migrations.DeleteModel(
-            name='BootcampPage',
-        ),
+        migrations.DeleteModel(name="BootcampPage"),
     ]

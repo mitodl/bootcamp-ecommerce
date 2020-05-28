@@ -6,6 +6,7 @@ class IgnoreClientContentNegotiation(BaseContentNegotiation):
     """
     Ignore whatever a request's 'Accept' header is if any.
     """
+
     def select_parser(self, request, parsers):
         """
         Select the first parser in the `.parser_classes` list.

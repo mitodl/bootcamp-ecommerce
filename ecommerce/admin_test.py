@@ -21,9 +21,6 @@ def test_save_and_log_model(mocker):
     admin = OrderAdmin(model=order, admin_site=mocker.Mock())
     mock_request = mocker.Mock(user=UserFactory.create())
     admin.save_model(
-        request=mock_request,
-        obj=admin.model,
-        form=mocker.Mock(),
-        change=mocker.Mock()
+        request=mock_request, obj=admin.model, form=mocker.Mock(), change=mocker.Mock()
     )
     assert OrderAudit.objects.count() == 1

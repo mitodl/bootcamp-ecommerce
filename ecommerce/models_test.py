@@ -4,11 +4,7 @@ Tests for ecommerce models
 import pytest
 
 from main.utils import serialize_model_object
-from ecommerce.factories import (
-    LineFactory,
-    OrderFactory,
-    ReceiptFactory,
-)
+from ecommerce.factories import LineFactory, OrderFactory, ReceiptFactory
 from ecommerce.models import Order, Line
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRun
@@ -20,13 +16,15 @@ pytestmark = pytest.mark.django_db
 @pytest.fixture(autouse=True)
 def cybersource_settings(settings):
     """Set Cybersource settings"""
-    settings.CYBERSOURCE_SECURITY_KEY = 'fake'
+    settings.CYBERSOURCE_SECURITY_KEY = "fake"
 
 
 def test_order_str():
     """Test Order.__str__"""
     order = LineFactory.create().order
-    assert str(order) == "Order {}, status={} for user={}".format(order.id, order.status, order.user)
+    assert str(order) == "Order {}, status={} for user={}".format(
+        order.id, order.status, order.user
+    )
 
 
 def test_line_str():
@@ -45,7 +43,9 @@ def test_line_str():
 def test_receipt_str_with_order():
     """Test Receipt.__str__ with an order"""
     receipt = ReceiptFactory.create()
-    assert str(receipt) == "Receipt for order {}".format(receipt.order.id if receipt.order else None)
+    assert str(receipt) == "Receipt for order {}".format(
+        receipt.order.id if receipt.order else None
+    )
 
 
 def test_receipt_str_no_order():
@@ -61,7 +61,7 @@ def test_to_dict():
     order = OrderFactory.create()
     lines = [LineFactory.create(order=order) for _ in range(5)]
     data = order.to_dict()
-    lines_data = data.pop('lines')
+    lines_data = data.pop("lines")
     assert serialize_model_object(order) == data
     assert lines_data == [serialize_model_object(line) for line in lines]
 
@@ -122,8 +122,7 @@ def test_fulfilled_for_user(lines_fulfilled):
     """
     line_fulfilled_1, line_fulfilled_2, user, _ = lines_fulfilled
     assert list(Line.fulfilled_for_user(user)) == sorted(
-        [line_fulfilled_1, line_fulfilled_2],
-        key=lambda x: x.run_key
+        [line_fulfilled_1, line_fulfilled_2], key=lambda x: x.run_key
     )
 
 
@@ -140,4 +139,7 @@ def test_total_paid_for_bootcamp_run(lines_fulfilled):
     Test for the total_paid_for_bootcamp_run classmethod
     """
     line_fulfilled_1, _, user, run_key = lines_fulfilled
-    assert Line.total_paid_for_bootcamp_run(user, run_key).get('total') == line_fulfilled_1.price
+    assert (
+        Line.total_paid_for_bootcamp_run(user, run_key).get("total")
+        == line_fulfilled_1.price
+    )

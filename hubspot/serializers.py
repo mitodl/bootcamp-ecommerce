@@ -19,15 +19,17 @@ class HubspotProductSerializer(serializers.ModelSerializer):
     """
     Serializer for turning a Bootcamp into a hubspot Product
     """
+
     class Meta:
         model = Bootcamp
-        fields = ['title']
+        fields = ["title"]
 
 
 class HubspotDealSerializer(serializers.ModelSerializer):
     """
     Serializer for turning a BootcampApplication into a hubspot deal.
     """
+
     name = serializers.SerializerMethodField()
     purchaser = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
@@ -41,6 +43,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
     def get_purchaser(self, instance):
         """Get the id of the associated user"""
         from hubspot.api import format_hubspot_id
+
         return format_hubspot_id(instance.user.profile.id)
 
     def get_price(self, instance):

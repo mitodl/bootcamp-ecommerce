@@ -72,13 +72,9 @@ SECURE_SSL_REDIRECT = get_bool(
 )
 
 ZENDESK_CONFIG = {
-    "HELP_WIDGET_ENABLED": get_bool(
-        "ZENDESK_HELP_WIDGET_ENABLED",
-        False,
-    ),
+    "HELP_WIDGET_ENABLED": get_bool("ZENDESK_HELP_WIDGET_ENABLED", False),
     "HELP_WIDGET_KEY": get_string(
-        "ZENDESK_HELP_WIDGET_KEY",
-        "d99f12ec-89dd-4111-b5ea-7b36d01bba24",
+        "ZENDESK_HELP_WIDGET_KEY", "d99f12ec-89dd-4111-b5ea-7b36d01bba24"
     ),
 }
 
@@ -112,9 +108,7 @@ INSTALLED_APPS = (
     "compat",
     "hijack_admin",
     # other third party APPS
-
     # wagtail
-
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -144,22 +138,24 @@ INSTALLED_APPS = (
     "jobma",
 )
 
-DISABLE_WEBPACK_LOADER_STATS = get_bool("DISABLE_WEBPACK_LOADER_STATS", False, dev_only=True)
+DISABLE_WEBPACK_LOADER_STATS = get_bool(
+    "DISABLE_WEBPACK_LOADER_STATS", False, dev_only=True
+)
 if not DISABLE_WEBPACK_LOADER_STATS:
     INSTALLED_APPS += ("webpack_loader",)
 
 
 MIDDLEWARE = (
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
-    'wagtail.core.middleware.SiteMiddleware',
-    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "social_django.middleware.SocialAuthExceptionMiddleware",
+    "wagtail.core.middleware.SiteMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 )
 
 # enable the nplusone profiler only in debug mode
@@ -185,9 +181,10 @@ BOOTCAMP_ECOMMERCE_BASE_URL = get_string(
 )
 SITE_BASE_URL = BOOTCAMP_ECOMMERCE_BASE_URL
 SUPPORT_URL = get_string(
-    "BOOTCAMP_SUPPORT_URL", "https://mitbootcamps.zendesk.com/hc/en-us/requests/new",
+    "BOOTCAMP_SUPPORT_URL",
+    "https://mitbootcamps.zendesk.com/hc/en-us/requests/new",
     description="URL for customer support",
-    required=False
+    required=False,
 )
 
 EDXORG_BASE_URL = get_string(
@@ -307,7 +304,6 @@ ROOT_URLCONF = "main.urls"
 
 TEMPLATES = [
     {
-
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR + "/templates/"],
         "APP_DIRS": True,
@@ -320,7 +316,7 @@ TEMPLATES = [
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
                 "main.context_processors.api_keys",
-                'main.context_processors.configuration_context',
+                "main.context_processors.configuration_context",
             ]
         },
     }
@@ -609,7 +605,11 @@ SITE_NAME = get_string(
 )
 WAGTAIL_SITE_NAME = SITE_NAME
 
-MEDIA_ROOT = get_string("MEDIA_ROOT", os.path.join(BASE_DIR, "media"), description="Django MEDIA_ROOT setting")
+MEDIA_ROOT = get_string(
+    "MEDIA_ROOT",
+    os.path.join(BASE_DIR, "media"),
+    description="Django MEDIA_ROOT setting",
+)
 MEDIA_URL = "/media/"
 
 BOOTCAMP_ECOMMERCE_USE_S3 = get_bool(
@@ -626,7 +626,7 @@ AWS_SECRET_ACCESS_KEY = get_string(
 AWS_STORAGE_BUCKET_NAME = get_string(
     "AWS_STORAGE_BUCKET_NAME", False, description="S3 Bucket name."
 )
-AWS_S3_FILE_OVERWRITE = get_bool('AWS_S3_FILE_OVERWRITE', False, dev_only=True)
+AWS_S3_FILE_OVERWRITE = get_bool("AWS_S3_FILE_OVERWRITE", False, dev_only=True)
 AWS_QUERYSTRING_AUTH = get_string("AWS_QUERYSTRING_AUTH", False, write_app_json=False)
 # Provide nice validation of the configuration
 if BOOTCAMP_ECOMMERCE_USE_S3 and (
@@ -638,7 +638,7 @@ if BOOTCAMP_ECOMMERCE_USE_S3 and (
         "AWS_STORAGE_BUCKET_NAME"
     )
 if BOOTCAMP_ECOMMERCE_USE_S3:
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 # Celery
 REDISCLOUD_URL = get_string(
@@ -668,7 +668,7 @@ CELERY_BEAT_SCHEDULE = {
             900,
             description="How often in seconds to check for hubspot errors",
         ),
-    },
+    }
 }
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -813,9 +813,12 @@ JOBMA_BASE_URL = get_string(
     "JOBMA_BASE_URL", "", description="The base URL for accessing Jobma"
 )
 JOBMA_ACCESS_TOKEN = get_string(
-    "JOBMA_ACCESS_TOKEN", "", description="The JOBMA access token used to access their REST API"
+    "JOBMA_ACCESS_TOKEN",
+    "",
+    description="The JOBMA access token used to access their REST API",
 )
 JOBMA_WEBHOOK_ACCESS_TOKEN = get_string(
-    "JOBMA_WEBHOOK_ACCESS_TOKEN", "",
+    "JOBMA_WEBHOOK_ACCESS_TOKEN",
+    "",
     description="The Jobma access token used by us to verify that a postback came from Jobma",
 )

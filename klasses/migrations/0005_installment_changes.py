@@ -7,18 +7,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0004_admission_cache'),
-    ]
+    dependencies = [("klasses", "0004_admission_cache")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='installment',
-            options={'ordering': ['klass', 'deadline']},
+            name="installment", options={"ordering": ["klass", "deadline"]}
         ),
         migrations.AlterField(
-            model_name='installment',
-            name='deadline',
-            field=models.DateTimeField(),
+            model_name="installment", name="deadline", field=models.DateTimeField()
         ),
     ]

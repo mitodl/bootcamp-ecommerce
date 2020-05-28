@@ -5,13 +5,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('applications', '0004_bootcampapplication_resume_upload_date'),
-    ]
+    dependencies = [("applications", "0004_bootcampapplication_resume_upload_date")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='bootcampapplication',
-            name='order',
-        ),
+        migrations.RemoveField(model_name="bootcampapplication", name="order")
     ]

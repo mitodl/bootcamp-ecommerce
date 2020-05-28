@@ -1,10 +1,7 @@
 """Tests for ecommerce views"""
 from unittest.mock import PropertyMock
 
-from django.urls import (
-    resolve,
-    reverse,
-)
+from django.urls import resolve, reverse
 import faker
 import pytest
 from rest_framework import status as statuses
@@ -15,24 +12,17 @@ from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import make_reference_id
 from ecommerce.exceptions import EcommerceException
 from ecommerce.factories import LineFactory, OrderFactory
-from ecommerce.models import (
-    Order,
-    OrderAudit,
-    Receipt,
-)
+from ecommerce.models import Order, OrderAudit, Receipt
 from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
-from ecommerce.test_utils import (
-    create_test_application,
-    create_test_order,
-)
+from ecommerce.test_utils import create_test_application, create_test_order
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRunEnrollment
 from profiles.factories import ProfileFactory, UserFactory
 
 
-CYBERSOURCE_SECURITY_KEY = '🔑'
-CYBERSOURCE_SECURE_ACCEPTANCE_URL = 'http://fake'
-CYBERSOURCE_REFERENCE_PREFIX = 'fake'
+CYBERSOURCE_SECURITY_KEY = "🔑"
+CYBERSOURCE_SECURE_ACCEPTANCE_URL = "http://fake"
+CYBERSOURCE_REFERENCE_PREFIX = "fake"
 FAKE = faker.Factory.create()
 
 
@@ -46,7 +36,7 @@ def ecommerce_settings(settings):
     settings.CYBERSOURCE_SECURITY_KEY = CYBERSOURCE_SECURITY_KEY
     settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL = CYBERSOURCE_SECURE_ACCEPTANCE_URL
     settings.CYBERSOURCE_REFERENCE_PREFIX = CYBERSOURCE_REFERENCE_PREFIX
-    settings.ECOMMERCE_EMAIL = 'ecommerce@example.com'
+    settings.ECOMMERCE_EMAIL = "ecommerce@example.com"
 
 
 @pytest.fixture
@@ -73,16 +63,13 @@ def test_using_serializer_validation(client):
     """
     The view should use the serializer for validation
     """
-    payment_url = reverse('create-payment')
+    payment_url = reverse("create-payment")
     assert resolve(payment_url).func.view_class.serializer_class is PaymentSerializer
 
     # Make sure we haven't overridden something which would skip validation
     user = UserFactory.create()
     client.force_login(user)
-    resp = client.post(payment_url, data={
-        "payment_amount": "-1",
-        "application_id": 3,
-    })
+    resp = client.post(payment_url, data={"payment_amount": "-1", "application_id": 3})
     assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
     assert resp.json() == {
         "payment_amount": ["Ensure this value is greater than or equal to 0.01."]
@@ -91,7 +78,7 @@ def test_using_serializer_validation(client):
 
 def test_login_required(client):
     """Anonymous users are forbidden"""
-    resp = client.post(reverse('create-payment'), data={})
+    resp = client.post(reverse("create-payment"), data={})
     assert resp.status_code == statuses.HTTP_403_FORBIDDEN
 
 
@@ -102,32 +89,47 @@ def test_payment(mocker, client, user, bootcamp_run, application):
     client.force_login(user)
     fake_payload = "fake_payload"
     fake_order = OrderFactory.create(
-        application=BootcampApplicationFactory.create(bootcamp_run=bootcamp_run, user=user)
+        application=BootcampApplicationFactory.create(
+            bootcamp_run=bootcamp_run, user=user
+        )
     )
     generate_cybersource_sa_payload_mock = mocker.patch(
-        'ecommerce.views.generate_cybersource_sa_payload', autospec=True, return_value=fake_payload
+        "ecommerce.views.generate_cybersource_sa_payload",
+        autospec=True,
+        return_value=fake_payload,
     )
     create_unfulfilled_order_mock = mocker.patch(
-        'ecommerce.views.create_unfulfilled_order', autospec=True, return_value=fake_order
+        "ecommerce.views.create_unfulfilled_order",
+        autospec=True,
+        return_value=fake_order,
     )
-    resp = client.post(reverse('create-payment'), data={
-        "payment_amount": bootcamp_run.price,
-        "application_id": application.id,
-    })
+    resp = client.post(
+        reverse("create-payment"),
+        data={"payment_amount": bootcamp_run.price, "application_id": application.id},
+    )
     assert resp.status_code == statuses.HTTP_200_OK
     assert resp.json() == {
-        'payload': fake_payload,
-        'url': CYBERSOURCE_SECURE_ACCEPTANCE_URL,
+        "payload": fake_payload,
+        "url": CYBERSOURCE_SECURE_ACCEPTANCE_URL,
     }
     assert generate_cybersource_sa_payload_mock.call_count == 1
-    generate_cybersource_sa_payload_mock.assert_any_call(fake_order, "http://testserver/pay/")
+    generate_cybersource_sa_payload_mock.assert_any_call(
+        fake_order, "http://testserver/pay/"
+    )
     assert create_unfulfilled_order_mock.call_count == 1
-    create_unfulfilled_order_mock.assert_any_call(application=application, payment_amount=bootcamp_run.price)
+    create_unfulfilled_order_mock.assert_any_call(
+        application=application, payment_amount=bootcamp_run.price
+    )
 
 
-@pytest.mark.parametrize("state", [
-    state for state, _ in VALID_APP_STATE_CHOICES if state != AppStates.AWAITING_PAYMENT.value
-])
+@pytest.mark.parametrize(
+    "state",
+    [
+        state
+        for state, _ in VALID_APP_STATE_CHOICES
+        if state != AppStates.AWAITING_PAYMENT.value
+    ],
+)
 def test_payment_invalid_state(client, state, application, user, bootcamp_run):
     """
     A user should only be able to pay if the application state is AWAITING_PAYMENT
@@ -136,10 +138,10 @@ def test_payment_invalid_state(client, state, application, user, bootcamp_run):
     application.save()
 
     client.force_login(user)
-    resp = client.post(reverse('create-payment'), data={
-        "payment_amount": bootcamp_run.price,
-        "application_id": application.id,
-    })
+    resp = client.post(
+        reverse("create-payment"),
+        data={"payment_amount": bootcamp_run.price, "application_id": application.id},
+    )
     assert resp.status_code == statuses.HTTP_400_BAD_REQUEST
     assert resp.json() == ["Invalid application state"]
 
@@ -152,7 +154,9 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
     """
     payment = 123
     order = create_test_order(application, payment, fulfilled=False)
-    order.application = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    order.application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_PAYMENT.value
+    )
     order.save()
     data_before = order.to_dict()
 
@@ -160,19 +164,19 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
     for _ in range(5):
         data[FAKE.text()] = FAKE.text()
 
-    data['req_reference_number'] = make_reference_id(order)
-    data['decision'] = 'ACCEPT'
-    mocker.patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True)
-    send_email = mocker.patch(
-        'ecommerce.api.MailgunClient.send_individual_email',
+    data["req_reference_number"] = make_reference_id(order)
+    data["decision"] = "ACCEPT"
+    mocker.patch(
+        "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
     )
+    send_email = mocker.patch("ecommerce.api.MailgunClient.send_individual_email")
     paid_in_full_mock = mocker.patch(
-        'applications.models.BootcampApplication.is_paid_in_full',
+        "applications.models.BootcampApplication.is_paid_in_full",
         new_callable=PropertyMock,
     )
     paid_in_full_mock.return_value = has_paid
 
-    resp = client.post(reverse('order-fulfillment'), data=data)
+    resp = client.post(reverse("order-fulfillment"), data=data)
 
     assert len(resp.content) == 0
     assert resp.status_code == statuses.HTTP_200_OK
@@ -193,9 +197,9 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
         AppStates.COMPLETE.value if has_paid else AppStates.AWAITING_PAYMENT.value
     )
 
-    assert BootcampRunEnrollment.objects.filter(bootcamp_run=bootcamp_run, user=user).count() == (
-        1 if has_paid else 0
-    )
+    assert BootcampRunEnrollment.objects.filter(
+        bootcamp_run=bootcamp_run, user=user
+    ).count() == (1 if has_paid else 0)
 
 
 def test_missing_fields(client, mocker):
@@ -207,12 +211,14 @@ def test_missing_fields(client, mocker):
     data = {}
     for _ in range(5):
         data[FAKE.text()] = FAKE.text()
-    mocker.patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=True)
+    mocker.patch(
+        "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
+    )
     try:
         # Missing fields from Cybersource POST will cause the KeyError.
         # In this test we want to make sure we saved the data in Receipt for later
         # analysis even if there is an error.
-        client.post(reverse('order-fulfillment'), data=data)
+        client.post(reverse("order-fulfillment"), data=data)
     except KeyError:
         pass
 
@@ -221,28 +227,21 @@ def test_missing_fields(client, mocker):
     assert Receipt.objects.first().data == data
 
 
-@pytest.mark.parametrize("decision, should_send_email", [
-    ('CANCEL', False),
-    ('something else', True),
-])
+@pytest.mark.parametrize(
+    "decision, should_send_email", [("CANCEL", False), ("something else", True)]
+)
 def test_not_accept(mocker, client, application, decision, should_send_email):
     """
     If the decision is not ACCEPT then the order should be marked as failed
     """
     order = create_test_order(application, 123, fulfilled=False)
 
-    data = {
-        'req_reference_number': make_reference_id(order),
-        'decision': decision,
-    }
+    data = {"req_reference_number": make_reference_id(order), "decision": decision}
     mocker.patch(
-        'ecommerce.views.IsSignedByCyberSource.has_permission',
-        return_value=True
+        "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
     )
-    send_email = mocker.patch(
-        'ecommerce.api.MailgunClient.send_individual_email',
-    )
-    resp = client.post(reverse('order-fulfillment'), data=data)
+    send_email = mocker.patch("ecommerce.api.MailgunClient.send_individual_email")
+    resp = client.post(reverse("order-fulfillment"), data=data)
     assert resp.status_code == statuses.HTTP_200_OK
     assert len(resp.content) == 0
     order.refresh_from_db()
@@ -252,9 +251,11 @@ def test_not_accept(mocker, client, application, decision, should_send_email):
     if should_send_email:
         assert send_email.call_count == 1
         assert send_email.call_args[0] == (
-            'Order fulfillment failed, decision={decision}'.format(decision='something else'),
-            'Order fulfillment failed for order {order}'.format(order=order),
-            'ecommerce@example.com',
+            "Order fulfillment failed, decision={decision}".format(
+                decision="something else"
+            ),
+            "Order fulfillment failed for order {order}".format(order=order),
+            "ecommerce@example.com",
         )
     else:
         assert send_email.call_count == 0
@@ -268,48 +269,39 @@ def test_ignore_duplicate_cancel(client, mocker, application):
     order.status = Order.FAILED
     order.save()
 
-    data = {
-        'req_reference_number': make_reference_id(order),
-        'decision': 'CANCEL',
-    }
+    data = {"req_reference_number": make_reference_id(order), "decision": "CANCEL"}
     mocker.patch(
-        'ecommerce.views.IsSignedByCyberSource.has_permission',
-        return_value=True
+        "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
     )
-    resp = client.post(reverse('order-fulfillment'), data=data)
+    resp = client.post(reverse("order-fulfillment"), data=data)
     assert resp.status_code == statuses.HTTP_200_OK
 
     assert Order.objects.count() == 1
     assert Order.objects.get(id=order.id).status == Order.FAILED
 
 
-@pytest.mark.parametrize("order_status, decision", [
-    (Order.FAILED, 'ERROR'),
-    (Order.FULFILLED, 'ERROR'),
-    (Order.FULFILLED, 'SUCCESS'),
-])
+@pytest.mark.parametrize(
+    "order_status, decision",
+    [(Order.FAILED, "ERROR"), (Order.FULFILLED, "ERROR"), (Order.FULFILLED, "SUCCESS")],
+)
 def test_error_on_duplicate_order(mocker, client, application, order_status, decision):
     """If there is a duplicate message (except for CANCEL), raise an exception"""
     order = create_test_order(application, 123, fulfilled=False)
     order.status = order_status
     order.save()
 
-    data = {
-        'req_reference_number': make_reference_id(order),
-        'decision': decision,
-    }
+    data = {"req_reference_number": make_reference_id(order), "decision": decision}
     mocker.patch(
-        'ecommerce.views.IsSignedByCyberSource.has_permission',
-        return_value=True
+        "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
     )
     with pytest.raises(EcommerceException) as ex:
-        client.post(reverse('order-fulfillment'), data=data)
+        client.post(reverse("order-fulfillment"), data=data)
 
     assert Order.objects.count() == 1
     assert Order.objects.get(id=order.id).status == order_status
 
     assert ex.value.args[0] == "Order {id} is expected to have status 'created'".format(
-        id=order.id,
+        id=order.id
     )
 
 
@@ -317,21 +309,23 @@ def test_no_permission(client, mocker):
     """
     If the permission class didn't give permission we shouldn't get access to the POST
     """
-    mocker.patch('ecommerce.views.IsSignedByCyberSource.has_permission', return_value=False)
-    resp = client.post(reverse('order-fulfillment'), data={})
+    mocker.patch(
+        "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=False
+    )
+    resp = client.post(reverse("order-fulfillment"), data={})
     assert resp.status_code == statuses.HTTP_403_FORBIDDEN
 
 
 BOOTCAMP_RUN_FIELDS = [
-    'run_key',
-    'start_date',
-    'end_date',
-    'total_paid',
-    'installments',
-    'payments',
-    'bootcamp_run_name',
-    'display_title',
-    'price',
+    "run_key",
+    "start_date",
+    "end_date",
+    "total_paid",
+    "installments",
+    "payments",
+    "bootcamp_run_name",
+    "display_title",
+    "price",
 ]
 
 
@@ -345,13 +339,15 @@ def test_data():
     user.social_auth.create(
         provider=EdxOrgOAuth2.name,
         uid=user.username,
-        extra_data={"access_token": "fooooootoken"}
+        extra_data={"access_token": "fooooootoken"},
     )
     other_user = ProfileFactory.create().user
 
     for _ in range(3):
         bootcamp_run = BootcampRunFactory.create()
-    BootcampApplicationFactory.create(bootcamp_run=bootcamp_run, user=user, state=AppStates.AWAITING_PAYMENT.value)
+    BootcampApplicationFactory.create(
+        bootcamp_run=bootcamp_run, user=user, state=AppStates.AWAITING_PAYMENT.value
+    )
 
     # just need one bootcamp run, so returning the last created
     return user, other_user, bootcamp_run
@@ -371,14 +367,26 @@ def test_only_self_can_access_apis(test_data, client):
     Only the the requester user can access her own info
     """
     user, other_user, bootcamp_run = test_data
-    detail_url_user = reverse('bootcamp-run-detail', kwargs={'username': user.username, 'run_key': bootcamp_run.run_key})
+    detail_url_user = reverse(
+        "bootcamp-run-detail",
+        kwargs={"username": user.username, "run_key": bootcamp_run.run_key},
+    )
     detail_url_other_user = reverse(
-        'bootcamp-run-detail', kwargs={'username': other_user.username, 'run_key': bootcamp_run.run_key})
-    list_url_user = reverse('bootcamp-run-list', kwargs={'username': user.username})
-    list_url_other_user = reverse('bootcamp-run-list', kwargs={'username': other_user.username})
+        "bootcamp-run-detail",
+        kwargs={"username": other_user.username, "run_key": bootcamp_run.run_key},
+    )
+    list_url_user = reverse("bootcamp-run-list", kwargs={"username": user.username})
+    list_url_other_user = reverse(
+        "bootcamp-run-list", kwargs={"username": other_user.username}
+    )
 
     # anonymous
-    for url in (detail_url_user, detail_url_other_user, list_url_user, list_url_other_user, ):
+    for url in (
+        detail_url_user,
+        detail_url_other_user,
+        list_url_user,
+        list_url_other_user,
+    ):
         assert client.get(url).status_code == statuses.HTTP_403_FORBIDDEN
 
     client.force_login(other_user)
@@ -399,14 +407,17 @@ def test_bootcamp_run_detail(test_data, client):
     Test for bootcamp run detail view in happy path
     """
     user, _, bootcamp_run = test_data
-    bootcamp_run_detail_url = reverse('bootcamp-run-detail', kwargs={'username': user.username, 'run_key': bootcamp_run.run_key})
+    bootcamp_run_detail_url = reverse(
+        "bootcamp-run-detail",
+        kwargs={"username": user.username, "run_key": bootcamp_run.run_key},
+    )
     client.force_login(user)
 
     response = client.get(bootcamp_run_detail_url)
     assert response.status_code == statuses.HTTP_200_OK
     response_json = response.json()
     assert sorted(list(response_json.keys())) == sorted(BOOTCAMP_RUN_FIELDS)
-    assert response_json['run_key'] == bootcamp_run.run_key
+    assert response_json["run_key"] == bootcamp_run.run_key
 
 
 def test_bootcamp_run_detail_fake_run(test_data, client):
@@ -414,9 +425,14 @@ def test_bootcamp_run_detail_fake_run(test_data, client):
     Test if a request is made for a not existing bootcamp run
     """
     user, _, _ = test_data
-    bootcamp_run_detail_url = reverse('bootcamp-run-detail', kwargs={'username': user.username, 'run_key': 123456789})
+    bootcamp_run_detail_url = reverse(
+        "bootcamp-run-detail",
+        kwargs={"username": user.username, "run_key": 123_456_789},
+    )
     client.force_login(user)
-    assert client.get(bootcamp_run_detail_url).status_code == statuses.HTTP_404_NOT_FOUND
+    assert (
+        client.get(bootcamp_run_detail_url).status_code == statuses.HTTP_404_NOT_FOUND
+    )
 
 
 def test_bootcamp_run_list(test_data, client):
@@ -424,7 +440,9 @@ def test_bootcamp_run_list(test_data, client):
     Test for bootcamp run list view in happy path
     """
     user, _, _ = test_data
-    bootcamp_run_list_url = reverse('bootcamp-run-list', kwargs={'username': user.username})
+    bootcamp_run_list_url = reverse(
+        "bootcamp-run-list", kwargs={"username": user.username}
+    )
     client.force_login(user)
 
     response = client.get(bootcamp_run_list_url)
@@ -440,29 +458,36 @@ def test_user_bootcamp_run_statement(test_data, fulfilled_order, client):
     Test that the user bootcamp run statement view returns the expected filled-in template
     """
     user, _, bootcamp_run = test_data
-    bootcamp_run_statement_url = reverse('bootcamp-run-statement', kwargs={'run_key': bootcamp_run.run_key})
+    bootcamp_run_statement_url = reverse(
+        "bootcamp-run-statement", kwargs={"run_key": bootcamp_run.run_key}
+    )
     client.force_login(user)
 
     response = client.get(bootcamp_run_statement_url)
     assert response.status_code == statuses.HTTP_200_OK
-    assert response.template_name == 'bootcamp/statement.html'
-    rendered_template_content = response.content.decode('utf-8')
+    assert response.template_name == "bootcamp/statement.html"
+    rendered_template_content = response.content.decode("utf-8")
     # User's full name should be in the statement
-    assert response.data['user']['full_name'] in rendered_template_content
+    assert response.data["user"]["full_name"] in rendered_template_content
     # Bootcamp run title should be in the statement
-    assert response.data['bootcamp_run']['display_title'] in rendered_template_content
+    assert response.data["bootcamp_run"]["display_title"] in rendered_template_content
     # Total payment amount should be in the statement
-    assert '${}'.format(response.data['bootcamp_run']['total_paid']) in rendered_template_content
+    assert (
+        "${}".format(response.data["bootcamp_run"]["total_paid"])
+        in rendered_template_content
+    )
     # Each individual payment should be in the statement
-    line_payments = fulfilled_order.line_set.values_list('price', flat=True)
+    line_payments = fulfilled_order.line_set.values_list("price", flat=True)
     for line_payment in line_payments:
-        assert '${}'.format(line_payment) in rendered_template_content
+        assert "${}".format(line_payment) in rendered_template_content
 
 
 def test_user_bootcamp_run_statement_without_order(test_data, client):
     """If there is no order, the bootcamp run statement view should return a 404"""
     user, _, bootcamp_run = test_data
-    bootcamp_run_statement_url = reverse('bootcamp-run-statement', kwargs={'run_key': bootcamp_run.run_key})
+    bootcamp_run_statement_url = reverse(
+        "bootcamp-run-statement", kwargs={"run_key": bootcamp_run.run_key}
+    )
     client.force_login(user)
 
     response = client.get(bootcamp_run_statement_url)
@@ -471,7 +496,9 @@ def test_user_bootcamp_run_statement_without_order(test_data, client):
 
 def test_checkout_data(mocker, client):
     """The checkout data API should return serialized application data"""
-    app_awaiting_payment = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    app_awaiting_payment = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_PAYMENT.value
+    )
     user = app_awaiting_payment.user
     # An application a different state should be filtered out
     BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value, user=user)
@@ -481,10 +508,12 @@ def test_checkout_data(mocker, client):
     url = f'{reverse("checkout-data-detail")}?application={app_awaiting_payment.id}'
     resp = client.get(url)
 
-    assert resp.json() == CheckoutDataSerializer(
-        instance=app_awaiting_payment,
-        context={"request": mock_request}
-    ).data
+    assert (
+        resp.json()
+        == CheckoutDataSerializer(
+            instance=app_awaiting_payment, context={"request": mock_request}
+        ).data
+    )
 
 
 def test_checkout_data_no_application_id(client, user):

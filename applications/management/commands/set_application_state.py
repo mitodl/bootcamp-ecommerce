@@ -20,10 +20,7 @@ class Command(BaseCommand):
             required=True,
         )
         parser.add_argument(
-            "--run",
-            type=str,
-            help="The id or title of the bootcamp run",
-            required=True,
+            "--run", type=str, help="The id or title of the bootcamp run", required=True
         )
 
     def handle(self, *args, **options):
@@ -33,7 +30,9 @@ class Command(BaseCommand):
             bootcamp_run = BootcampRun.objects.get(id=run_property)
         else:
             bootcamp_run = BootcampRun.objects.get(title=run_property)
-        bootcamp_app = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
+        bootcamp_app = BootcampApplication.objects.get(
+            user=user, bootcamp_run=bootcamp_run
+        )
         derived_state = derive_application_state(bootcamp_app)
 
         if bootcamp_app.state != derived_state:

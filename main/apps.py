@@ -6,7 +6,8 @@ from django.apps import AppConfig
 
 class MainAppConfig(AppConfig):
     """AppConfig for main app"""
-    name = 'main'
+
+    name = "main"
 
     def ready(self):
         # check for missing configurations

@@ -13,23 +13,24 @@ class EdxOrgOAuth2(BaseOAuth2):
     """
     EDX.org OAuth2 authentication backend
     """
-    name = 'edxorg'
-    ID_KEY = 'edx_id'
+
+    name = "edxorg"
+    ID_KEY = "edx_id"
     REQUEST_TOKEN_URL = None
     EDXORG_BASE_URL = settings.EDXORG_BASE_URL
 
     # Settings for Django OAUTH toolkit
-    AUTHORIZATION_URL = urljoin(EDXORG_BASE_URL, '/oauth2/authorize/')
-    ACCESS_TOKEN_URL = urljoin(EDXORG_BASE_URL, '/oauth2/access_token/')
-    DEFAULT_SCOPE = ['read', 'write']
+    AUTHORIZATION_URL = urljoin(EDXORG_BASE_URL, "/oauth2/authorize/")
+    ACCESS_TOKEN_URL = urljoin(EDXORG_BASE_URL, "/oauth2/access_token/")
+    DEFAULT_SCOPE = ["read", "write"]
 
-    ACCESS_TOKEN_METHOD = 'POST'
+    ACCESS_TOKEN_METHOD = "POST"
     REDIRECT_STATE = False
     EXTRA_DATA = [
-        ('refresh_token', 'refresh_token', True),
-        ('expires_in', 'expires_in'),
-        ('token_type', 'token_type', True),
-        ('scope', 'scope'),
+        ("refresh_token", "refresh_token", True),
+        ("expires_in", "expires_in"),
+        ("token_type", "token_type", True),
+        ("scope", "scope"),
     ]
 
     def user_data(self, access_token, *args, **kwargs):
@@ -47,9 +48,7 @@ class EdxOrgOAuth2(BaseOAuth2):
         """
         return self.get_json(
             urljoin(self.EDXORG_BASE_URL, "/api/mobile/v0.5/my_user_info"),
-            headers={
-                "Authorization": "Bearer {}".format(access_token),
-            }
+            headers={"Authorization": "Bearer {}".format(access_token)},
         )
 
     def get_user_details(self, response):
@@ -69,16 +68,16 @@ class EdxOrgOAuth2(BaseOAuth2):
                 the following keys:
                 <remote_id>, `username`, `email`, `fullname`, `first_name`, `last_name`
         """
-        full, _, _ = self.get_user_names(response['name'])
+        full, _, _ = self.get_user_names(response["name"])
 
         return {
-            'edx_id': response['username'],
-            'username': response['username'],
-            'email': response['email'],
-            'fullname': full,
+            "edx_id": response["username"],
+            "username": response["username"],
+            "email": response["email"],
+            "fullname": full,
             # the following are not necessary because they are used only inside the User object.
-            'first_name': '',
-            'last_name': '',
+            "first_name": "",
+            "last_name": "",
         }
 
     def get_user_id(self, details, response):
@@ -106,5 +105,5 @@ class EdxOrgOAuth2(BaseOAuth2):
             dict of information about the user
         """
         response = super(EdxOrgOAuth2, self).refresh_token(token, *args, **kwargs)
-        response['updated_at'] = datetime.now(tz=pytz.UTC).timestamp()
+        response["updated_at"] = datetime.now(tz=pytz.UTC).timestamp()
         return response

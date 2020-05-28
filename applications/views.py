@@ -6,8 +6,14 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
-from applications.serializers import BootcampApplicationDetailSerializer, BootcampApplicationSerializer
-from applications.api import get_or_create_bootcamp_application, set_submission_review_status
+from applications.serializers import (
+    BootcampApplicationDetailSerializer,
+    BootcampApplicationSerializer,
+)
+from applications.api import (
+    get_or_create_bootcamp_application,
+    set_submission_review_status,
+)
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission
@@ -17,13 +23,14 @@ class BootcampApplicationViewset(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
     """
     View for fetching users' serialized bootcamp application(s)
     """
+
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated, UserIsOwnerPermission,)
+    permission_classes = (IsAuthenticated, UserIsOwnerPermission)
     owner_field = "user"
 
     def get_queryset(self):
@@ -46,16 +53,15 @@ class BootcampApplicationViewset(
         if not BootcampRun.objects.filter(id=bootcamp_run_id).exists():
             return Response(
                 data={"error": "Bootcamp does not exist"},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
         application, created = get_or_create_bootcamp_application(
-            user=request.user,
-            bootcamp_run_id=bootcamp_run_id
+            user=request.user, bootcamp_run_id=bootcamp_run_id
         )
         serializer_cls = self.get_serializer_class()
         return Response(
             data=serializer_cls(instance=application).data,
-            status=(status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+            status=(status.HTTP_201_CREATED if created else status.HTTP_200_OK),
         )
 
 
@@ -63,6 +69,7 @@ class ReviewSubmissionView(UpdateAPIView):
     """
     Admin view for setting review status on application submission
     """
+
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAdminUser,)
     lookup_field = "pk"

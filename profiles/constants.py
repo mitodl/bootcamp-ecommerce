@@ -54,6 +54,6 @@ HIGHEST_EDUCATION_CHOICES = (
 )
 
 COUNTRIES_REQUIRING_POSTAL_CODE = (
-    pycountry.countries.get(alpha_2='US'),
-    pycountry.countries.get(alpha_2='CA')
+    pycountry.countries.get(alpha_2="US"),
+    pycountry.countries.get(alpha_2="CA"),
 )

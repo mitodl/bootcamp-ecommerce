@@ -143,7 +143,7 @@ def create_tempfile_csv(rows_iter):
 def format_as_iso8601(time, remove_microseconds=True):
     """Helper function to format datetime with the Z at the end"""
     # Can't use datetime.isoformat() because format is slightly different from this
-    iso_format = '%Y-%m-%dT%H:%M:%S.%f'
+    iso_format = "%Y-%m-%dT%H:%M:%S.%f"
     # chop off microseconds to make milliseconds
     str_time = time.strftime(iso_format)
     if remove_microseconds:

@@ -27,7 +27,7 @@ class TestViews(TestCase):
         """Verify the index view is as expected when user is anonymous"""
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
-        version = '0.0.1'
+        version = "0.0.1"
         recaptcha_key = "abc"
         support_url = "http://test.edu/form"
         with self.settings(
@@ -39,29 +39,24 @@ class TestViews(TestCase):
                 "HELP_WIDGET_KEY": "fake_key",
             },
             RECAPTCHA_SITE_KEY=recaptcha_key,
-            SUPPORT_URL=support_url
-        ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
-            resp = self.client.get('/')
-        self.assertContains(
-            resp,
-            "Pay Here for your MIT Bootcamp",
-            status_code=200
-        )
+            SUPPORT_URL=support_url,
+        ), patch("main.templatetags.render_bundle._get_bundle") as get_bundle:
+            resp = self.client.get("/")
+        self.assertContains(resp, "Pay Here for your MIT Bootcamp", status_code=200)
 
         bundles = [bundle[0][1] for bundle in get_bundle.call_args_list]
-        assert set(bundles) == {
-            'sentry_client',
-            'style',
-            'third_party',
-        }
-        js_settings = json.loads(resp.context['js_settings_json'])
+        assert set(bundles) == {"sentry_client", "style", "third_party"}
+        js_settings = json.loads(resp.context["js_settings_json"])
         assert js_settings == {
-            'environment': environment,
-            'release_version': version,
-            'sentry_dsn': "",
-            'public_path': '/static/bundles/',
-            'user': None,
-            'zendesk_config': {"help_widget_enabled": False, "help_widget_key": "fake_key"},
+            "environment": environment,
+            "release_version": version,
+            "sentry_dsn": "",
+            "public_path": "/static/bundles/",
+            "user": None,
+            "zendesk_config": {
+                "help_widget_enabled": False,
+                "help_widget_key": "fake_key",
+            },
             "recaptchaKey": recaptcha_key,
             "support_url": support_url,
         }
@@ -69,8 +64,7 @@ class TestViews(TestCase):
     def test_index_logged_in(self):
         """Verify the user is redirected to pay if logged in"""
         self.client.force_login(self.user)
-        assert self.client.get(reverse('bootcamp-index')
-                               ).status_code == HTTP_302_FOUND
+        assert self.client.get(reverse("bootcamp-index")).status_code == HTTP_302_FOUND
 
     def test_index_logged_in_post(self):
         """
@@ -78,9 +72,9 @@ class TestViews(TestCase):
         and that the GET parameters are kept
         """
         self.client.force_login(self.user)
-        resp = self.client.post(reverse('bootcamp-index') + '?foo=bar')
+        resp = self.client.post(reverse("bootcamp-index") + "?foo=bar")
         assert resp.status_code == HTTP_302_FOUND
-        assert resp.url == reverse('pay') + '?foo=bar'
+        assert resp.url == reverse("pay") + "?foo=bar"
 
     @override_settings(USE_WEBPACK_DEV_SERVER=False)
     def test_pay(self):
@@ -90,7 +84,7 @@ class TestViews(TestCase):
         self.client.force_login(self.user)
         host = FuzzyText().fuzz()
         environment = FuzzyText().fuzz()
-        version = '0.0.1'
+        version = "0.0.1"
         recaptcha_key = "abc"
         support_url = "http://test.edu/form"
         with self.settings(
@@ -102,29 +96,24 @@ class TestViews(TestCase):
                 "HELP_WIDGET_KEY": "fake_key",
             },
             RECAPTCHA_SITE_KEY=recaptcha_key,
-            SUPPORT_URL=support_url
-        ), patch('main.templatetags.render_bundle._get_bundle') as get_bundle:
-            resp = self.client.get(reverse('pay'))
+            SUPPORT_URL=support_url,
+        ), patch("main.templatetags.render_bundle._get_bundle") as get_bundle:
+            resp = self.client.get(reverse("pay"))
 
         bundles = [bundle[0][1] for bundle in get_bundle.call_args_list]
-        assert set(bundles) == {
-            'root',
-            'sentry_client',
-            'style',
-            'third_party',
-        }
+        assert set(bundles) == {"root", "sentry_client", "style", "third_party"}
 
-        js_settings = json.loads(resp.context['js_settings_json'])
+        js_settings = json.loads(resp.context["js_settings_json"])
         assert js_settings == {
-            'environment': environment,
-            'release_version': version,
-            'sentry_dsn': "",
-            'public_path': '/static/bundles/',
-            'user': {
-                'full_name': self.user.profile.name,
-                'username': None
+            "environment": environment,
+            "release_version": version,
+            "sentry_dsn": "",
+            "public_path": "/static/bundles/",
+            "user": {"full_name": self.user.profile.name, "username": None},
+            "zendesk_config": {
+                "help_widget_enabled": False,
+                "help_widget_key": "fake_key",
             },
-            "zendesk_config": {"help_widget_enabled": False, "help_widget_key": "fake_key"},
             "recaptchaKey": recaptcha_key,
             "support_url": support_url,
         }

@@ -12,7 +12,10 @@ from requests import HTTPError
 from applications.factories import BootcampApplicationFactory
 from hubspot.api import (
     make_contact_sync_message,
-    make_product_sync_message, make_deal_sync_message, make_line_sync_message)
+    make_product_sync_message,
+    make_deal_sync_message,
+    make_line_sync_message,
+)
 from hubspot.conftest import TIMESTAMPS
 from hubspot.factories import HubspotErrorCheckFactory
 from hubspot.models import HubspotErrorCheck
@@ -20,7 +23,11 @@ from hubspot.tasks import (
     sync_contact_with_hubspot,
     HUBSPOT_SYNC_URL,
     check_hubspot_api_errors,
-    sync_product_with_hubspot, sync_deal_with_hubspot, sync_line_with_hubspot, sync_bulk_with_hubspot)
+    sync_product_with_hubspot,
+    sync_deal_with_hubspot,
+    sync_line_with_hubspot,
+    sync_bulk_with_hubspot,
+)
 from klasses.factories import BootcampFactory, PersonalPriceFactory, InstallmentFactory
 from profiles.factories import ProfileFactory, UserFactory
 
@@ -44,6 +51,7 @@ def test_sync_contact_with_hubspot(mock_hubspot_request):
     mock_hubspot_request.assert_called_once_with(
         "CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body
     )
+
 
 def test_sync_contact_with_hubspot_missing_email(mock_hubspot_request):
     """Test that send_hubspot_request is not called if email is not in message"""
@@ -79,7 +87,9 @@ def test_sync_deal_with_hubspot(mock_hubspot_request):
 def test_sync_line_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a LINE sync"""
     application = BootcampApplicationFactory.create()
-    PersonalPriceFactory.create(bootcamp_run=application.bootcamp_run, user=application.user)
+    PersonalPriceFactory.create(
+        bootcamp_run=application.bootcamp_run, user=application.user
+    )
 
     sync_line_with_hubspot(application.id)
     body = make_line_sync_message(application.id)
@@ -129,7 +139,7 @@ def test_skip_error_checks(settings, mock_hubspot_errors):
 
 def test_sync_bulk(mocker):
     """Test the hubspot bulk sync function"""
-    mock_request = mocker.patch('hubspot.tasks.send_hubspot_request')
+    mock_request = mocker.patch("hubspot.tasks.send_hubspot_request")
     profile = ProfileFactory.create()
     sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")
     mock_request.assert_called_once()
@@ -137,9 +147,11 @@ def test_sync_bulk(mocker):
 
 def test_sync_bulk_logs_errors(mocker):
     """Test that hubspot bulk sync correctly logs errors"""
-    mock_request = mocker.patch(f"hubspot.api.requests.put", return_value=Mock(
-        raise_for_status=Mock(side_effect=HTTPError())))
-    mock_log = mocker.patch('hubspot.api.log.exception')
+    mock_request = mocker.patch(
+        f"hubspot.api.requests.put",
+        return_value=Mock(raise_for_status=Mock(side_effect=HTTPError())),
+    )
+    mock_log = mocker.patch("hubspot.api.log.exception")
 
     profile = ProfileFactory.create()
     sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")

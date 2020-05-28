@@ -16,8 +16,9 @@ from main.utils import get_field_names
 
 class ApplicationStepAdmin(admin.ModelAdmin):
     """Admin for ApplicationStep"""
+
     model = models.ApplicationStep
-    list_display = ('id', 'get_bootcamp_title', 'submission_type', 'step_order')
+    list_display = ("id", "get_bootcamp_title", "submission_type", "step_order")
     ordering = ("bootcamp", "step_order")
 
     def get_bootcamp_title(self, obj):
@@ -30,11 +31,23 @@ class ApplicationStepAdmin(admin.ModelAdmin):
 
 class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
     """Admin for BootcampRunApplicationStep"""
+
     model = models.BootcampRunApplicationStep
-    list_display = ('id', 'get_bootcamp_title', 'get_run_title', 'due_date', 'get_submission_type', 'get_step_order')
+    list_display = (
+        "id",
+        "get_bootcamp_title",
+        "get_run_title",
+        "due_date",
+        "get_submission_type",
+        "get_step_order",
+    )
     list_filter = ("bootcamp_run__bootcamp",)
     raw_id_fields = ("bootcamp_run",)
-    ordering = ("bootcamp_run__bootcamp", "bootcamp_run", "application_step__step_order")
+    ordering = (
+        "bootcamp_run__bootcamp",
+        "bootcamp_run",
+        "application_step__step_order",
+    )
 
     def get_bootcamp_title(self, obj):
         """Returns the bootcamp title"""
@@ -67,6 +80,7 @@ class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
 
 class OrderInline(admin.StackedInline):
     """Inline form for Order"""
+
     model = Order
     readonly_fields = get_field_names(Order)
     extra = 0
@@ -81,9 +95,16 @@ class OrderInline(admin.StackedInline):
 
 class BootcampApplicationAdmin(TimestampedModelAdmin):
     """Admin for BootcampApplication"""
+
     model = models.BootcampApplication
     inlines = [OrderInline]
-    list_display = ('id', 'get_user_email', 'get_bootcamp_title', 'get_run_title', 'state')
+    list_display = (
+        "id",
+        "get_user_email",
+        "get_bootcamp_title",
+        "get_run_title",
+        "state",
+    )
     search_fields = ("user__email", "user__username")
     list_filter = ("bootcamp_run__bootcamp",)
     raw_id_fields = ("user", "bootcamp_run")
@@ -91,7 +112,9 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
     def get_queryset(self, request):
         """Overrides base queryset"""
         return (
-            super().get_queryset(request).select_related("user", "bootcamp_run__bootcamp")
+            super()
+            .get_queryset(request)
+            .select_related("user", "bootcamp_run__bootcamp")
         )
 
     def get_user_email(self, obj):
@@ -118,28 +141,30 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
 
 class AppStepSubmissionInline(GenericTabularInline):
     """Admin class for ApplicationStepSubmission"""
+
     model = models.ApplicationStepSubmission
     max_num = 1
-    raw_id_fields = ("bootcamp_application", "run_application_step",)
+    raw_id_fields = ("bootcamp_application", "run_application_step")
 
 
 class SubmissionTypeAdmin(TimestampedModelAdmin):
     """Base admin class for submission types"""
-    list_display = ('id', 'get_user_email', 'get_run_title', 'app_step_submission_link')
-    readonly_fields = ('get_user_email', 'get_run_title', 'app_step_submission_link')
+
+    list_display = ("id", "get_user_email", "get_run_title", "app_step_submission_link")
+    readonly_fields = ("get_user_email", "get_run_title", "app_step_submission_link")
     search_fields = (
         "app_step_submissions__bootcamp_application__user__email",
         "app_step_submissions__bootcamp_application__bootcamp_run__title",
         "app_step_submissions__bootcamp_application__bootcamp_run__bootcamp__title",
     )
-    inlines = [
-        AppStepSubmissionInline
-    ]
+    inlines = [AppStepSubmissionInline]
 
     def get_queryset(self, request):
         """Overrides base queryset"""
         return (
-            super().get_queryset(request).prefetch_related(
+            super()
+            .get_queryset(request)
+            .prefetch_related(
                 "app_step_submissions__bootcamp_application__user",
                 "app_step_submissions__bootcamp_application__bootcamp_run",
             )
@@ -148,44 +173,63 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
     def get_user_email(self, obj):
         """Returns the user email"""
         app_step_submission = obj.app_step_submissions.first()
-        return None if app_step_submission is None else app_step_submission.bootcamp_application.user.email
+        return (
+            None
+            if app_step_submission is None
+            else app_step_submission.bootcamp_application.user.email
+        )
 
     get_user_email.short_description = "Application User"
-    get_user_email.admin_order_field = "app_step_submission__bootcamp_application__user__email"
+    get_user_email.admin_order_field = (
+        "app_step_submission__bootcamp_application__user__email"
+    )
 
     def get_run_title(self, obj):
         """Returns the bootcamp run title"""
         app_step_submission = obj.app_step_submissions.first()
-        return None if app_step_submission is None else app_step_submission.bootcamp_application.bootcamp_run.title
+        return (
+            None
+            if app_step_submission is None
+            else app_step_submission.bootcamp_application.bootcamp_run.title
+        )
 
     get_run_title.short_description = "Application Bootcamp Run"
-    get_run_title.admin_order_field = "app_step_submission__bootcamp_application__bootcamp_run__title"
+    get_run_title.admin_order_field = (
+        "app_step_submission__bootcamp_application__bootcamp_run__title"
+    )
 
     def app_step_submission_link(self, obj):
         """Returns a link to the related bootcamp application"""
         app_step_submission = obj.app_step_submissions.first()
         if app_step_submission is None:
             return None
-        return mark_safe('<a href="{}">Submission ({})</a>'.format(
-            reverse(
-                "admin:applications_{}_change".format(models.ApplicationStepSubmission._meta.model_name),
-                args=(app_step_submission.id,)
-            ),  # pylint: disable=protected-access
-            app_step_submission.id
-        ))
-    app_step_submission_link.short_description = 'Application Submission'
+        return mark_safe(
+            '<a href="{}">Submission ({})</a>'.format(
+                reverse(
+                    "admin:applications_{}_change".format(
+                        models.ApplicationStepSubmission._meta.model_name
+                    ),
+                    args=(app_step_submission.id,),
+                ),  # pylint: disable=protected-access
+                app_step_submission.id,
+            )
+        )
+
+    app_step_submission_link.short_description = "Application Submission"
 
 
 class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     """Admin class for VideoInterviewSubmission"""
+
     model = models.VideoInterviewSubmission
 
     def get_list_display(self, request):
-        return tuple(super().get_list_display(request) or ()) + ('interview',)
+        return tuple(super().get_list_display(request) or ()) + ("interview",)
 
 
 class QuizSubmissionAdmin(SubmissionTypeAdmin):
     """Admin for QuizSubmission"""
+
     model = models.QuizSubmission
 
     def get_list_display(self, request):
@@ -194,36 +238,46 @@ class QuizSubmissionAdmin(SubmissionTypeAdmin):
 
 class ApplicationStepSubmissionForm(forms.ModelForm):
     """Form for ApplicationStepSubmission admin"""
+
     def clean_object_id(self):
         """Validates the object_id input"""
         content_type = self.cleaned_data.get("content_type")
         object_id = self.cleaned_data.get("object_id")
-        if content_type and not content_type.model_class().objects.filter(id=object_id).exists():
-            raise ValidationError(f"The object_id must match the id of a {content_type.model} object")
+        if (
+            content_type
+            and not content_type.model_class().objects.filter(id=object_id).exists()
+        ):
+            raise ValidationError(
+                f"The object_id must match the id of a {content_type.model} object"
+            )
         return object_id
 
 
 class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
     """Admin for ApplicationStepSubmission"""
+
     model = models.ApplicationStepSubmission
     form = ApplicationStepSubmissionForm
     list_display = (
-        'id',
-        'bootcamp_application_id',
-        'get_user_email',
-        'get_run_title',
-        'content_type',
-        'submission_content_obj_link',
+        "id",
+        "bootcamp_application_id",
+        "get_user_email",
+        "get_run_title",
+        "content_type",
+        "submission_content_obj_link",
     )
     list_filter = ("bootcamp_application__bootcamp_run",)
-    raw_id_fields = ("bootcamp_application", "run_application_step",)
+    raw_id_fields = ("bootcamp_application", "run_application_step")
     readonly_fields = ("submission_content_obj_link",)
 
     def get_queryset(self, request):
         """Overrides base queryset"""
         return (
-            super().get_queryset(request)
-            .select_related("bootcamp_application__user", "bootcamp_application__bootcamp_run")
+            super()
+            .get_queryset(request)
+            .select_related(
+                "bootcamp_application__user", "bootcamp_application__bootcamp_run"
+            )
             .prefetch_related("content_object")
         )
 
@@ -238,14 +292,19 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
         """Returns a link to the content object"""
         if obj.content_object is None:
             return None
-        return mark_safe('<a href="{}">{}</a>'.format(
-            reverse(
-                "admin:applications_{}_change".format(obj.content_object._meta.model_name),
-                args=(obj.object_id,)
-            ),  # pylint: disable=protected-access
-            obj.content_object
-        ))
-    submission_content_obj_link.short_description = 'submission object'
+        return mark_safe(
+            '<a href="{}">{}</a>'.format(
+                reverse(
+                    "admin:applications_{}_change".format(
+                        obj.content_object._meta.model_name
+                    ),
+                    args=(obj.object_id,),
+                ),  # pylint: disable=protected-access
+                obj.content_object,
+            )
+        )
+
+    submission_content_obj_link.short_description = "submission object"
 
     def get_user_email(self, obj):
         """Returns the user email"""

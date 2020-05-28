@@ -75,9 +75,15 @@ class ProfileFactory(DjangoModelFactory):
     industry = Faker("word")
     job_function = Faker("word")
 
-    company_size = FuzzyChoice(choices=[size[0] for size in COMPANY_SIZE_CHOICES if size[0]])
-    years_experience = FuzzyChoice(choices=[exp[0] for exp in YRS_EXPERIENCE_CHOICES if exp[0]])
-    highest_education = FuzzyChoice(choices=[ed[0] for ed in HIGHEST_EDUCATION_CHOICES if ed[0]])
+    company_size = FuzzyChoice(
+        choices=[size[0] for size in COMPANY_SIZE_CHOICES if size[0]]
+    )
+    years_experience = FuzzyChoice(
+        choices=[exp[0] for exp in YRS_EXPERIENCE_CHOICES if exp[0]]
+    )
+    highest_education = FuzzyChoice(
+        choices=[ed[0] for ed in HIGHEST_EDUCATION_CHOICES if ed[0]]
+    )
 
     class Meta:
         model = Profile

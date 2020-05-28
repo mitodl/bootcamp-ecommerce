@@ -17,10 +17,8 @@ def serialize_maybe_user(user):
         full_name = user.profile.name.strip()
     except ObjectDoesNotExist:
         full_name = None
-    return {
-        'username': get_social_username(user),
-        'full_name': full_name
-    }
+    return {"username": get_social_username(user), "full_name": full_name}
+
 
 class WriteableSerializerMethodField(serializers.SerializerMethodField):
     """

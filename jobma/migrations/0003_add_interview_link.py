@@ -5,18 +5,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('jobma', '0002_rename_klass'),
-    ]
+    dependencies = [("jobma", "0002_rename_klass")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='interview',
-            name='interview_id',
-        ),
+        migrations.RemoveField(model_name="interview", name="interview_id"),
         migrations.AddField(
-            model_name='interview',
-            name='interview_url',
+            model_name="interview",
+            name="interview_url",
             field=models.TextField(blank=True, null=True),
         ),
     ]

@@ -10,8 +10,12 @@ from rest_framework.test import APIClient
 from wagtail.core.models import Site
 
 from applications.constants import AppStates, VALID_SUBMISSION_TYPE_CHOICES
-from applications.factories import BootcampApplicationFactory, ApplicationStepFactory, \
-    BootcampRunApplicationStepFactory, ApplicationStepSubmissionFactory
+from applications.factories import (
+    BootcampApplicationFactory,
+    ApplicationStepFactory,
+    BootcampRunApplicationStepFactory,
+    ApplicationStepSubmissionFactory,
+)
 from backends.edxorg import EdxOrgOAuth2
 from klasses.factories import InstallmentFactory
 from profiles.factories import UserFactory
@@ -20,10 +24,7 @@ from profiles.factories import UserFactory
 @pytest.fixture
 def social_extra_data():
     """Some fake data for populating social auth"""
-    yield {
-        "access_token": "fooooootoken",
-        "refresh_token": "baaaarrefresh",
-    }
+    yield {"access_token": "fooooootoken", "refresh_token": "baaaarrefresh"}
 
 
 @pytest.fixture
@@ -31,13 +32,11 @@ def user(db, social_extra_data):
     """Creates a user"""
     # create a user
     user = UserFactory.create()
-    user.social_auth.create(
-        provider='not_edx',
-    )
+    user.social_auth.create(provider="not_edx")
     user.social_auth.create(
         provider=EdxOrgOAuth2.name,
         uid="{}_edx".format(user.username),
-        extra_data=social_extra_data
+        extra_data=social_extra_data,
     )
     yield user
 
@@ -134,7 +133,5 @@ def awaiting_submission_app():
     )
 
     return SimpleNamespace(
-        application=application,
-        run_steps=run_steps,
-        installment=installment
+        application=application, run_steps=run_steps, installment=installment
     )

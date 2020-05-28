@@ -9,6 +9,7 @@ from main.utils import get_filename_from_path
 
 class BootcampRunStepSerializer(serializers.ModelSerializer):
     """BootcampRunApplicationStep serializer"""
+
     step_order = serializers.SerializerMethodField()
     submission_type = serializers.SerializerMethodField()
 
@@ -22,16 +23,12 @@ class BootcampRunStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BootcampRunApplicationStep
-        fields = [
-            "id",
-            "due_date",
-            "step_order",
-            "submission_type",
-        ]
+        fields = ["id", "due_date", "step_order", "submission_type"]
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
     """ApplicationStepSubmission serializer"""
+
     class Meta:
         model = models.ApplicationStepSubmission
         fields = [
@@ -45,6 +42,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
 
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     """Detailed BootcampApplication serializer"""
+
     resume_filename = serializers.SerializerMethodField()
     payment_deadline = serializers.SerializerMethodField()
     run_application_steps = serializers.SerializerMethodField()
@@ -54,7 +52,8 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     def get_resume_filename(self, bootcamp_application):
         """Gets the resume filename (without the path) if one exists"""
         return (
-            None if not bootcamp_application.resume_file
+            None
+            if not bootcamp_application.resume_file
             else get_filename_from_path(bootcamp_application.resume_file.name)
         )
 
@@ -88,13 +87,9 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
 
 class BootcampApplicationSerializer(serializers.ModelSerializer):
     """BootcampApplication serializer"""
+
     bootcamp_run = BootcampRunSerializer()
 
     class Meta:
         model = models.BootcampApplication
-        fields = [
-            "id",
-            "state",
-            "created_on",
-            "bootcamp_run",
-        ]
+        fields = ["id", "state", "created_on", "bootcamp_run"]

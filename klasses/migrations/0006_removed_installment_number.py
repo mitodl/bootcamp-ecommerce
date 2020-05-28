@@ -7,17 +7,9 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0005_installment_changes'),
-    ]
+    dependencies = [("klasses", "0005_installment_changes")]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='installment',
-            unique_together=set([]),
-        ),
-        migrations.RemoveField(
-            model_name='installment',
-            name='installment_number',
-        ),
+        migrations.AlterUniqueTogether(name="installment", unique_together=set([])),
+        migrations.RemoveField(model_name="installment", name="installment_number"),
     ]

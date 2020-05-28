@@ -15,7 +15,12 @@ from wagtail.images.models import Image
 from wagtail.core.blocks import StreamBlock
 from wagtail.snippets.models import register_snippet
 
-from cms.blocks import ResourceBlock, InstructorSectionBlock, ThreeColumnImageTextBlock, AlumniBlock
+from cms.blocks import (
+    ResourceBlock,
+    InstructorSectionBlock,
+    ThreeColumnImageTextBlock,
+    AlumniBlock,
+)
 from main.views import _serialize_js_settings
 
 
@@ -92,11 +97,7 @@ class BootcampPage(Page):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(AlumniPage)
 
-    subpage_types = [
-        "ThreeColumnImageTextPage",
-        "InstructorsPage",
-        "AlumniPage"
-    ]
+    subpage_types = ["ThreeColumnImageTextPage", "InstructorsPage", "AlumniPage"]
 
 
 class BootcampRunPage(BootcampPage):
@@ -195,8 +196,11 @@ class ThreeColumnImageTextPage(BootcampRunChildPage):
     """
 
     column_image_text_section = StreamField(
-        StreamBlock([("column_image_text_section",
-                      ThreeColumnImageTextBlock())], min_num=3, max_num=3),
+        StreamBlock(
+            [("column_image_text_section", ThreeColumnImageTextBlock())],
+            min_num=3,
+            max_num=3,
+        ),
         blank=False,
         null=True,
         help_text="Enter detail about area upto max 3 blocks.",
@@ -209,6 +213,7 @@ class InstructorsPage(BootcampRunChildPage):
     """
     InstructorsPage representing a "Your MIT Instructors" section on a product page
     """
+
     banner_image = models.ForeignKey(
         Image,
         null=True,
@@ -217,7 +222,7 @@ class InstructorsPage(BootcampRunChildPage):
         help_text="Image that will display as a banner at the top of the section, must be at least 750x505 pixels.",
     )
     heading = RichTextField(
-        default='Instructors',
+        default="Instructors",
         blank=False,
         help_text="The heading to display on this section.",
     )
@@ -281,6 +286,7 @@ class AlumniPage(BootcampRunChildPage):
     """
     Page that holds alumni for a product
     """
+
     banner_image = models.ForeignKey(
         Image,
         null=True,
@@ -289,7 +295,9 @@ class AlumniPage(BootcampRunChildPage):
         help_text="Image that will display as a banner at the top of the section, must be at least 750x505 pixels.",
     )
     heading = models.CharField(
-        max_length=100, default='Alumni', help_text="The heading to display on this section."
+        max_length=100,
+        default="Alumni",
+        help_text="The heading to display on this section.",
     )
     text = RichTextField(
         blank=False,

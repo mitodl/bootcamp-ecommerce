@@ -9,11 +9,13 @@ from jobma.models import Interview, Job
 
 class InterviewAdmin(admin.ModelAdmin):
     """Admin for Interview"""
+
     model = Interview
 
 
 class JobAdmin(admin.ModelAdmin):
     """Admin for Job"""
+
     model = Job
 
 

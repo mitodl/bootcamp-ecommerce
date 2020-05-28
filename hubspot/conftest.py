@@ -31,12 +31,12 @@ error_response_json = [
         "changeOccurredTimestamp": hubspot_timestamp(TIMESTAMPS[0]),
         "errorTimestamp": hubspot_timestamp(TIMESTAMPS[7]),
         "type": "UNKNOWNERROR",
-        "details": 'Error performing[CREATE] CONTACT[16] for portal 5890463, error was [5890463] create/update '
-                   'by email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions.'
-                   'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-13T12:05:53.602759Z '
-                   'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
-                   '"Property values were not valid","correlationId":"fcde9e27-6e3b-4b3b-83c2-f6bd01289685",'
-                   '"requestId":"8ede7b56-8269-4a5c-b2ea-a48a2dd9cd5d',
+        "details": "Error performing[CREATE] CONTACT[16] for portal 5890463, error was [5890463] create/update "
+        "by email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions."
+        'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-13T12:05:53.602759Z '
+        'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
+        '"Property values were not valid","correlationId":"fcde9e27-6e3b-4b3b-83c2-f6bd01289685",'
+        '"requestId":"8ede7b56-8269-4a5c-b2ea-a48a2dd9cd5d',
         "status": "OPEN",
     },
     {
@@ -46,12 +46,12 @@ error_response_json = [
         "changeOccurredTimestamp": hubspot_timestamp(TIMESTAMPS[0]),
         "errorTimestamp": hubspot_timestamp(TIMESTAMPS[5]),
         "type": "UNKNOWNERROR",
-        "details": 'Error performing[CREATE] CONTACT[55] for portal 5890463, error was [5890463] create/update '
-                   'by email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions.'
-                   'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-21T17:32:43.135139Z '
-                   'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
-                   '"Property values were not valid","correlationId":"51274e2f-d839-4476-a077-eba7a38d3786",'
-                   '"requestId":"9c1f2ded-78da-41a2-a607-568acfbd908f',
+        "details": "Error performing[CREATE] CONTACT[55] for portal 5890463, error was [5890463] create/update "
+        "by email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions."
+        'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-21T17:32:43.135139Z '
+        'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
+        '"Property values were not valid","correlationId":"51274e2f-d839-4476-a077-eba7a38d3786",'
+        '"requestId":"9c1f2ded-78da-41a2-a607-568acfbd908f',
         "status": "OPEN",
     },
     {
@@ -61,12 +61,12 @@ error_response_json = [
         "changeOccurredTimestamp": hubspot_timestamp(TIMESTAMPS[0]),
         "errorTimestamp": hubspot_timestamp(TIMESTAMPS[4]),
         "type": "UNKNOWNERROR",
-        "details": 'Error performing[CREATE] DEAL[116] for portal 5890463, error was [5890463] create/update by '
-                   'email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions.'
-                   'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-13T12:05:53.602759Z '
-                   'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
-                   '"Property values were not valid","correlationId":"fcde9e27-6e3b-4b3b-83c2-f6bd01289685",'
-                   '"requestId":"8ede7b56-8269-4a5c-b2ea-a48a2dd9cd5d',
+        "details": "Error performing[CREATE] DEAL[116] for portal 5890463, error was [5890463] create/update by "
+        "email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions."
+        'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-13T12:05:53.602759Z '
+        'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
+        '"Property values were not valid","correlationId":"fcde9e27-6e3b-4b3b-83c2-f6bd01289685",'
+        '"requestId":"8ede7b56-8269-4a5c-b2ea-a48a2dd9cd5d',
         "status": "OPEN",
     },
     {
@@ -76,12 +76,12 @@ error_response_json = [
         "changeOccurredTimestamp": hubspot_timestamp(TIMESTAMPS[0]),
         "errorTimestamp": hubspot_timestamp(TIMESTAMPS[3]),
         "type": "UNKNOWNERROR",
-        "details": 'Error performing[CREATE] DEAL[155] for portal 5890463, error was [5890463] create/update by '
-                   'email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions.'
-                   'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-21T17:32:43.135139Z '
-                   'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
-                   '"Property values were not valid","correlationId":"51274e2f-d839-4476-a077-eba7a38d3786",'
-                   '"requestId":"9c1f2ded-78da-41a2-a607-568acfbd908f',
+        "details": "Error performing[CREATE] DEAL[155] for portal 5890463, error was [5890463] create/update by "
+        "email failed - java.util.concurrent.CompletionException: com.hubspot.properties.exceptions."
+        'InvalidProperty: {"validationResults":[{"isValid":false,"message":"2019-05-21T17:32:43.135139Z '
+        'was not a valid long.","error":"INVALIDLONG","name":"createdate"}],"status":"error","message":'
+        '"Property values were not valid","correlationId":"51274e2f-d839-4476-a077-eba7a38d3786",'
+        '"requestId":"9c1f2ded-78da-41a2-a607-568acfbd908f',
         "status": "OPEN",
     },
 ]

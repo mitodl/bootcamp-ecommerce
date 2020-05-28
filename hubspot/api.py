@@ -15,8 +15,11 @@ from django.utils import timezone
 
 from applications.models import BootcampApplication
 from hubspot.decorators import try_again
-from hubspot.serializers import HubspotProductSerializer, \
-    HubspotDealSerializer, HubspotLineSerializer
+from hubspot.serializers import (
+    HubspotProductSerializer,
+    HubspotDealSerializer,
+    HubspotLineSerializer,
+)
 from klasses.models import Bootcamp
 
 
@@ -285,7 +288,7 @@ def make_line_sync_message(application_id):
     """
     application = BootcampApplication.objects.get(id=application_id)
     properties = HubspotLineSerializer(instance=application).data
-    properties['quantity'] = 1
+    properties["quantity"] = 1
     return [make_sync_message(application.integration_id, properties)]
 
 

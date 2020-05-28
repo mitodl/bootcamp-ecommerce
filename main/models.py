@@ -4,13 +4,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import transaction
-from django.db.models import (
-    DateTimeField,
-    ForeignKey,
-    Manager,
-    Model,
-    SET_NULL,
-)
+from django.db.models import DateTimeField, ForeignKey, Manager, Model, SET_NULL
 from django.db.models.query import QuerySet
 import pytz
 
@@ -19,6 +13,7 @@ class TimestampedModelQuerySet(QuerySet):
     """
     Subclassed QuerySet for TimestampedModelManager
     """
+
     def update(self, **kwargs):
         """
         Automatically update updated_on timestamp when .update(). This is because .update()
@@ -34,6 +29,7 @@ class TimestampedModelManager(Manager):
     """
     Subclassed manager for TimestampedModel
     """
+
     def update(self, **kwargs):
         """
         Allows access to TimestampedModelQuerySet's update method on the manager
@@ -51,6 +47,7 @@ class TimestampedModel(Model):
     """
     Base model for create/update timestamps
     """
+
     objects = TimestampedModelManager()
     created_on = DateTimeField(auto_now_add=True)  # UTC
     updated_on = DateTimeField(auto_now=True)  # UTC
@@ -118,9 +115,7 @@ class AuditableModel(Model):
             before_dict = before_obj.to_dict()
 
         audit_kwargs = dict(
-            acting_user=acting_user,
-            data_before=before_dict,
-            data_after=self.to_dict(),
+            acting_user=acting_user, data_before=before_dict, data_after=self.to_dict()
         )
         audit_class = self.get_audit_class()
         audit_kwargs[audit_class.get_related_field_name()] = self

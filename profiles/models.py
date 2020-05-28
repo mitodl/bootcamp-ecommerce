@@ -144,7 +144,8 @@ class LegalAddress(TimestampedModel):
                 self.street_address,
                 self.city,
                 self.country,
-                self.state_or_territory or country not in COUNTRIES_REQUIRING_POSTAL_CODE,
+                self.state_or_territory
+                or country not in COUNTRIES_REQUIRING_POSTAL_CODE,
                 self.postal_code or country not in COUNTRIES_REQUIRING_POSTAL_CODE,
             )
         )

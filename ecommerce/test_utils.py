@@ -13,16 +13,13 @@ def create_test_application():
     profile = ProfileFactory.create()
     user = profile.user
     user.social_auth.create(
-        provider=EdxOrgOAuth2.name,
-        uid="{}_edx".format(user.username),
+        provider=EdxOrgOAuth2.name, uid="{}_edx".format(user.username)
     )
     installment_1 = InstallmentFactory.create(amount=200)
     bootcamp_run = installment_1.bootcamp_run
     InstallmentFactory.create(bootcamp_run=bootcamp_run)
     application = BootcampApplicationFactory.create(
-        user=user,
-        bootcamp_run=bootcamp_run,
-        state=AppStates.AWAITING_PAYMENT.value,
+        user=user, bootcamp_run=bootcamp_run, state=AppStates.AWAITING_PAYMENT.value
     )
     return application
 

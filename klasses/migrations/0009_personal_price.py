@@ -11,21 +11,42 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('klasses', '0008_remove_admission_cache'),
+        ("klasses", "0008_remove_admission_cache"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PersonalPrice',
+            name="PersonalPrice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.DecimalField(decimal_places=2, max_digits=20)),
-                ('klass', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='personal_prices', to='klasses.Klass')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='klass_prices', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("price", models.DecimalField(decimal_places=2, max_digits=20)),
+                (
+                    "klass",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="personal_prices",
+                        to="klasses.Klass",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="klass_prices",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AlterUniqueTogether(
-            name='personalprice',
-            unique_together=set([('klass', 'user')]),
+            name="personalprice", unique_together=set([("klass", "user")])
         ),
     ]

@@ -173,7 +173,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("created_on", "updated_on")
         extra_kwargs = {
-            "name": {"allow_null": True}, # this is to support not submitting name on the extra details part of the auth flow
+            "name": {
+                "allow_null": True
+            },  # this is to support not submitting name on the extra details part of the auth flow
             "birth_year": {"allow_null": False, "required": True},
             "gender": {"allow_blank": False, "required": True},
             "company": {"allow_blank": False, "required": True},

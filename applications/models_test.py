@@ -9,11 +9,12 @@ from django.db import models
 import pytest
 
 
-from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED
-from applications.models import (
-    ApplicationStepSubmission,
-    APP_SUBMISSION_MODELS,
+from applications.constants import (
+    VALID_SUBMISSION_TYPE_CHOICES,
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_REJECTED,
 )
+from applications.models import ApplicationStepSubmission, APP_SUBMISSION_MODELS
 from applications.factories import (
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
@@ -70,26 +71,32 @@ def test_submission_types():
         (
             models.Q(app_label="applications", model=model_cls._meta.model_name)
             for model_cls in APP_SUBMISSION_MODELS
-        )  # pylint: disable=protected-access
+        ),  # pylint: disable=protected-access
     )
     assert (
-        ApplicationStepSubmission._meta.get_field("content_type").get_limit_choices_to() == expected_content_type_limit
+        ApplicationStepSubmission._meta.get_field("content_type").get_limit_choices_to()
+        == expected_content_type_limit
     )  # pylint: disable=protected-access
 
 
-@pytest.mark.parametrize("file_name,expected", [
-    ('resume.pdf', True),
-    ('resume', False),
-    ('resume.doc', True),
-    ('resume.docx', True),
-    ('resume.png', False)
-])
+@pytest.mark.parametrize(
+    "file_name,expected",
+    [
+        ("resume.pdf", True),
+        ("resume", False),
+        ("resume.doc", True),
+        ("resume.docx", True),
+        ("resume.png", False),
+    ],
+)
 def test_bootcamp_application_resume_file_validation(file_name, expected):
     """
     A BootcampApplication should raise an exception if profile is not complete or extension is not allowed
     """
-    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_RESUME.value)
-    resume_file = SimpleUploadedFile(file_name, b'file_content')
+    bootcamp_application = BootcampApplicationFactory(
+        state=AppStates.AWAITING_RESUME.value
+    )
+    resume_file = SimpleUploadedFile(file_name, b"file_content")
 
     if expected:
         bootcamp_application.upload_resume(resume_file)
@@ -110,15 +117,14 @@ def test_is_ready_for_payment():
     submission = ApplicationStepSubmissionFactory.create(
         bootcamp_application__bootcamp_run=bootcamp_run,
         run_application_step__bootcamp_run=bootcamp_run,
-        review_status=REVIEW_STATUS_APPROVED
+        review_status=REVIEW_STATUS_APPROVED,
     )
     bootcamp_application = submission.bootcamp_application
 
     assert bootcamp_application.is_ready_for_payment() is True
 
     application_step = BootcampRunApplicationStepFactory.create(
-        bootcamp_run=bootcamp_run,
-        application_step__bootcamp=bootcamp_run.bootcamp
+        bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
     )
     submission_not_approved = ApplicationStepSubmissionFactory.create(
         review_status=None,
@@ -141,8 +147,7 @@ def test_bootcamp_run_application_step_validation():
     """
     bootcamps = BootcampFactory.create_batch(2)
     step = BootcampRunApplicationStepFactory.create(
-        application_step__bootcamp=bootcamps[0],
-        bootcamp_run__bootcamp=bootcamps[0],
+        application_step__bootcamp=bootcamps[0], bootcamp_run__bootcamp=bootcamps[0]
     )
     step.bootcamp_run.bootcamp = bootcamps[1]
     with pytest.raises(ValidationError):
@@ -197,36 +202,42 @@ def test_get_total_paid_no_payments(application):
     assert application.total_paid == 0
 
 
-@pytest.mark.parametrize("run_price,personal_price,expected_price", [
-    [10, None, 10],
-    [10, 5, 5],
-    [10, 25, 25],
-])  # pylint: disable=too-many-arguments
-def test_price(application, bootcamp_run, user, run_price, personal_price, expected_price):
+@pytest.mark.parametrize(
+    "run_price,personal_price,expected_price",
+    [[10, None, 10], [10, 5, 5], [10, 25, 25]],
+)  # pylint: disable=too-many-arguments
+def test_price(
+    application, bootcamp_run, user, run_price, personal_price, expected_price
+):
     """
     BootcampApplication.price should return the personal price for the run, or else the full price
     """
     Installment.objects.all().delete()
     for _ in range(2):
-        InstallmentFactory.create(amount=run_price/2, bootcamp_run=bootcamp_run)
+        InstallmentFactory.create(amount=run_price / 2, bootcamp_run=bootcamp_run)
 
     if personal_price is not None:
-        PersonalPrice.objects.create(bootcamp_run=bootcamp_run, user=user, price=personal_price)
+        PersonalPrice.objects.create(
+            bootcamp_run=bootcamp_run, user=user, price=personal_price
+        )
 
     assert application.price == expected_price
 
 
-@pytest.mark.parametrize("price,total_paid,expected_fully_paid", [
-    [10, 10, True],
-    [10, 9, False],
-    [10, 11, True],
-])  # pylint: disable=too-many-arguments
+@pytest.mark.parametrize(
+    "price,total_paid,expected_fully_paid",
+    [[10, 10, True], [10, 9, False], [10, 11, True]],
+)  # pylint: disable=too-many-arguments
 def test_is_paid_in_full(mocker, application, price, total_paid, expected_fully_paid):
     """
     is_paid_in_full should return true if the payments match or exceed the price of the run
     """
-    price_mock = mocker.patch("applications.models.BootcampApplication.price", new_callable=PropertyMock)
+    price_mock = mocker.patch(
+        "applications.models.BootcampApplication.price", new_callable=PropertyMock
+    )
     price_mock.return_value = price
-    total_paid_mock = mocker.patch("applications.models.BootcampApplication.total_paid", new_callable=PropertyMock)
+    total_paid_mock = mocker.patch(
+        "applications.models.BootcampApplication.total_paid", new_callable=PropertyMock
+    )
     total_paid_mock.return_value = total_paid
     assert application.is_paid_in_full is expected_fully_paid

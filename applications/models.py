@@ -16,7 +16,8 @@ from applications.constants import (
     AppStates,
     VALID_APP_STATE_CHOICES,
     VALID_REVIEW_STATUS_CHOICES,
-    REVIEW_STATUS_APPROVED)
+    REVIEW_STATUS_APPROVED,
+)
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
 from jobma.models import Interview
@@ -26,10 +27,9 @@ from main.utils import now_in_utc
 
 class ApplicationStep(models.Model):
     """Defines a stage in a bootcamp application for which users must submit/upload something"""
+
     bootcamp = models.ForeignKey(
-        'klasses.Bootcamp',
-        on_delete=models.CASCADE,
-        related_name='application_steps'
+        "klasses.Bootcamp", on_delete=models.CASCADE, related_name="application_steps"
     )
     step_order = models.PositiveSmallIntegerField(default=1)
     submission_type = models.CharField(
@@ -49,15 +49,14 @@ class BootcampRunApplicationStep(ValidateOnSaveMixin):
     Defines a due date and other metadata for a bootcamp application step as it applies to a specific run
     of that bootcamp
     """
+
     application_step = models.ForeignKey(
-        ApplicationStep,
-        on_delete=models.CASCADE,
-        related_name='run_steps'
+        ApplicationStep, on_delete=models.CASCADE, related_name="run_steps"
     )
     bootcamp_run = models.ForeignKey(
-        'klasses.BootcampRun',
+        "klasses.BootcampRun",
         on_delete=models.CASCADE,
-        related_name='application_steps'
+        related_name="application_steps",
     )
     due_date = models.DateTimeField(null=True, blank=True)
 
@@ -65,8 +64,7 @@ class BootcampRunApplicationStep(ValidateOnSaveMixin):
         if self.bootcamp_run.bootcamp_id != self.application_step.bootcamp_id:
             raise ValidationError(
                 "The bootcamp run does not match the bootcamp linked to the application step ({}, {}).".format(
-                    self.bootcamp_run.bootcamp_id,
-                    self.application_step.bootcamp_id,
+                    self.bootcamp_run.bootcamp_id, self.application_step.bootcamp_id
                 )
             )
         return super().clean()
@@ -90,21 +88,17 @@ def _get_resume_upload_path(instance, filename):
 
 class BootcampApplicationQuerySet(models.QuerySet):
     """Custom queryset for BootcampApplication model"""
+
     def prefetch_state_data(self):
         """Prefetches models that inform the state of bootcamp applications"""
-        return (
-            self.select_related(
-                "user__profile",
-            ).prefetch_related(
-                "submissions",
-                "orders",
-                "bootcamp_run__application_steps__application_step",
-            )
+        return self.select_related("user__profile").prefetch_related(
+            "submissions", "orders", "bootcamp_run__application_steps__application_step"
         )
 
 
 class BootcampApplicationManager(models.Manager):
     """Custom manager for BootcampApplication model"""
+
     def get_queryset(self):  # pylint:disable=missing-docstring
         return BootcampApplicationQuerySet(self.model, using=self._db)
 
@@ -115,25 +109,31 @@ class BootcampApplicationManager(models.Manager):
 
 class BootcampApplication(TimestampedModel):
     """A user's application to a run of a bootcamp"""
+
     objects = BootcampApplicationManager()
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='bootcamp_applications'
+        User, on_delete=models.CASCADE, related_name="bootcamp_applications"
     )
     bootcamp_run = models.ForeignKey(
-        'klasses.BootcampRun',
-        on_delete=models.CASCADE,
-        related_name='applications'
+        "klasses.BootcampRun", on_delete=models.CASCADE, related_name="applications"
     )
-    resume_file = models.FileField(upload_to=_get_resume_upload_path, null=True, blank=True)
+    resume_file = models.FileField(
+        upload_to=_get_resume_upload_path, null=True, blank=True
+    )
     resume_upload_date = models.DateTimeField(null=True, blank=True)
-    state = FSMField(default=AppStates.AWAITING_PROFILE_COMPLETION.value, choices=VALID_APP_STATE_CHOICES)
+    state = FSMField(
+        default=AppStates.AWAITING_PROFILE_COMPLETION.value,
+        choices=VALID_APP_STATE_CHOICES,
+    )
 
     @property
     def total_paid(self):
         """Calculate the total paid of all fulfilled orders for this application"""
-        return sum(order.total_price_paid for order in self.orders.all() if order.status == Order.FULFILLED)
+        return sum(
+            order.total_price_paid
+            for order in self.orders.all()
+            if order.status == Order.FULFILLED
+        )
 
     @property
     def price(self):
@@ -151,14 +151,21 @@ class BootcampApplication(TimestampedModel):
         """Calculate if the user has fully paid for their application"""
         return self.total_paid >= self.price
 
-    @transition(field=state, source=AppStates.AWAITING_PAYMENT.value, target=AppStates.COMPLETE.value)
+    @transition(
+        field=state,
+        source=AppStates.AWAITING_PAYMENT.value,
+        target=AppStates.COMPLETE.value,
+    )
     def complete(self):
         """Mark the application as completed"""
 
     @transition(
         field=state,
-        source=[AppStates.AWAITING_RESUME.value, AppStates.AWAITING_USER_SUBMISSIONS.value],
-        target=AppStates.AWAITING_USER_SUBMISSIONS.value
+        source=[
+            AppStates.AWAITING_RESUME.value,
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+        ],
+        target=AppStates.AWAITING_USER_SUBMISSIONS.value,
     )
     def upload_resume(self, resume_file):
         """Save resume and make sure that the state can be transitioned to a new state"""
@@ -170,11 +177,17 @@ class BootcampApplication(TimestampedModel):
     @transition(
         field=state,
         source=AppStates.AWAITING_SUBMISSION_REVIEW.value,
-        target=RETURN_VALUE(AppStates.AWAITING_USER_SUBMISSIONS.value, AppStates.AWAITING_PAYMENT.value))
+        target=RETURN_VALUE(
+            AppStates.AWAITING_USER_SUBMISSIONS.value, AppStates.AWAITING_PAYMENT.value
+        ),
+    )
     def approve_submission(self):
         """Approve application submission"""
-        return (AppStates.AWAITING_PAYMENT.value
-                if self.is_ready_for_payment() else AppStates.AWAITING_USER_SUBMISSIONS.value)
+        return (
+            AppStates.AWAITING_PAYMENT.value
+            if self.is_ready_for_payment()
+            else AppStates.AWAITING_USER_SUBMISSIONS.value
+        )
 
     @transition(
         field=state,
@@ -187,7 +200,7 @@ class BootcampApplication(TimestampedModel):
     @transition(
         field=state,
         source=AppStates.AWAITING_SUBMISSION_REVIEW.value,
-        target=AppStates.REJECTED.value
+        target=AppStates.REJECTED.value,
     )
     def reject_submission(self):
         """Reject application submission"""
@@ -203,7 +216,9 @@ class BootcampApplication(TimestampedModel):
         Make sure all steps are submitted, reviewed and approved
         """
         if self.all_application_steps_submitted():
-            return not self.submissions.exclude(review_status=REVIEW_STATUS_APPROVED).exists()
+            return not self.submissions.exclude(
+                review_status=REVIEW_STATUS_APPROVED
+            ).exists()
         return False
 
     @property
@@ -226,6 +241,7 @@ class BootcampApplication(TimestampedModel):
 
 class SubmissionTypeModel(TimestampedModel):
     """Base model for any type of submission that is required on a user's bootcamp application"""
+
     submission_step_title = None
 
     class Meta:
@@ -234,20 +250,20 @@ class SubmissionTypeModel(TimestampedModel):
 
 class VideoInterviewSubmission(SubmissionTypeModel):
     """A video interview that was submitted for review in a bootcamp application"""
+
     submission_step_title = "Video Interview"
     app_step_submissions = GenericRelation(
-        "applications.ApplicationStepSubmission",
-        related_query_name="videointerviews"
+        "applications.ApplicationStepSubmission", related_query_name="videointerviews"
     )
     interview = models.OneToOneField(Interview, on_delete=models.CASCADE)
 
 
 class QuizSubmission(SubmissionTypeModel):
     """A quiz that was submitted for review in a bootcamp application"""
+
     submission_step_title = "Quiz"
     app_step_submissions = GenericRelation(
-        "applications.ApplicationStepSubmission",
-        related_query_name="quizzes"
+        "applications.ApplicationStepSubmission", related_query_name="quizzes"
     )
 
     started_date = models.DateTimeField(null=True, blank=True)
@@ -258,18 +274,17 @@ APP_SUBMISSION_MODELS = [VideoInterviewSubmission, QuizSubmission]
 
 class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
     """An item that was uploaded/submitted for review by a user as part of their bootcamp application"""
+
     bootcamp_application = models.ForeignKey(
-        BootcampApplication,
-        on_delete=models.CASCADE,
-        related_name='submissions'
+        BootcampApplication, on_delete=models.CASCADE, related_name="submissions"
     )
     run_application_step = models.ForeignKey(
-        BootcampRunApplicationStep,
-        on_delete=models.CASCADE,
-        related_name='submissions'
+        BootcampRunApplicationStep, on_delete=models.CASCADE, related_name="submissions"
     )
     submitted_date = models.DateTimeField(null=True, blank=True)
-    review_status = models.CharField(max_length=20, choices=VALID_REVIEW_STATUS_CHOICES, null=True, blank=True)
+    review_status = models.CharField(
+        max_length=20, choices=VALID_REVIEW_STATUS_CHOICES, null=True, blank=True
+    )
     review_status_date = models.DateTimeField(null=True, blank=True)
     # This limits the choice of content type to models we have specified as application submission models
     valid_submission_types = reduce(
@@ -277,7 +292,7 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
         (
             models.Q(app_label="applications", model=model_cls._meta.model_name)
             for model_cls in APP_SUBMISSION_MODELS
-        )  # pylint: disable=protected-access
+        ),  # pylint: disable=protected-access
     )
     content_type = models.ForeignKey(
         ContentType,
@@ -293,7 +308,10 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
         unique_together = ["bootcamp_application", "run_application_step"]
 
     def clean(self):
-        if self.bootcamp_application.bootcamp_run != self.run_application_step.bootcamp_run:
+        if (
+            self.bootcamp_application.bootcamp_run
+            != self.run_application_step.bootcamp_run
+        ):
             raise ValidationError(
                 "The application step does not match the application's bootcamp run ({}, {}).".format(
                     self.bootcamp_application.bootcamp_run_id,

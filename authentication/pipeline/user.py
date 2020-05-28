@@ -90,12 +90,7 @@ def create_user_via_email(
         return {}
 
     # if the user has data for all the fields, skip this step
-    if (
-        user and
-        user.password and
-        user.profile.name and
-        user.legal_address.is_complete
-    ):
+    if user and user.password and user.profile.name and user.legal_address.is_complete:
         return {}
 
     if not strategy.is_api_request():
@@ -134,7 +129,9 @@ def create_user_via_email(
             user = create_user_with_generated_username(serializer, username)
             if user is None:
                 raise IntegrityError(
-                    "Failed to create User with generated username ({})".format(username)
+                    "Failed to create User with generated username ({})".format(
+                        username
+                    )
                 )
         except Exception as exc:
             raise UserCreationFailedException(backend, current_partial) from exc

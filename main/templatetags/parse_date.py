@@ -19,4 +19,5 @@ def parse_iso_datetime(date_string):
     except ValueError:
         return None
 
+
 register.filter(parse_iso_datetime)

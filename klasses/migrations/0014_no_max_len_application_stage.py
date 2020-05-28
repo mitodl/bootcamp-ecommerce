@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0013_personalprice_application_stage'),
-    ]
+    dependencies = [("klasses", "0013_personalprice_application_stage")]
 
     operations = [
         migrations.AlterField(
-            model_name='personalprice',
-            name='application_stage',
+            model_name="personalprice",
+            name="application_stage",
             field=models.TextField(blank=True),
-        ),
+        )
     ]

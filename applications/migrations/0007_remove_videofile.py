@@ -7,19 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jobma', '0003_add_interview_link'),
-        ('applications', '0006_change_submission_types'),
+        ("jobma", "0003_add_interview_link"),
+        ("applications", "0006_change_submission_types"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='videointerviewsubmission',
-            name='video_file',
+            model_name="videointerviewsubmission", name="video_file"
         ),
         migrations.AddField(
-            model_name='videointerviewsubmission',
-            name='interview',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, to='jobma.Interview'),
+            model_name="videointerviewsubmission",
+            name="interview",
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="jobma.Interview",
+            ),
             preserve_default=False,
         ),
     ]

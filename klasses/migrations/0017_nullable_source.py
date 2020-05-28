@@ -5,14 +5,22 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0016_bootcamprunenrollment'),
-    ]
+    dependencies = [("klasses", "0016_bootcamprunenrollment")]
 
     operations = [
         migrations.AlterField(
-            model_name='bootcamprun',
-            name='source',
-            field=models.CharField(blank=True, choices=[(None, None), ('SMApply', 'SMApply'), ('FluidRev', 'FluidRev')], default=None, max_length=10, null=True),
-        ),
+            model_name="bootcamprun",
+            name="source",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    (None, None),
+                    ("SMApply", "SMApply"),
+                    ("FluidRev", "FluidRev"),
+                ],
+                default=None,
+                max_length=10,
+                null=True,
+            ),
+        )
     ]

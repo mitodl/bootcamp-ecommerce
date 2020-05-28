@@ -20,9 +20,7 @@ def _serialize_js_settings(request):  # pylint: disable=missing-docstring
         "public_path": public_path(request),
         "user": serialize_maybe_user(request.user),
         "zendesk_config": {
-            "help_widget_enabled": settings.ZENDESK_CONFIG.get(
-                "HELP_WIDGET_ENABLED"
-            ),
+            "help_widget_enabled": settings.ZENDESK_CONFIG.get("HELP_WIDGET_ENABLED"),
             "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
         },
         "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
@@ -36,16 +34,20 @@ def index(request):
     Index page
     """
     if request.user.is_authenticated:
-        to_url = reverse('pay')
+        to_url = reverse("pay")
         if request.GET:
             to_url = "{}?{}".format(to_url, request.GET.urlencode())
         return redirect(to=to_url)
 
     authenticated = not request.user.is_anonymous
-    return render(request, "bootcamp/index.html", context={
-        "js_settings_json": json.dumps(_serialize_js_settings(request)),
-        "authenticated": authenticated,
-    })
+    return render(
+        request,
+        "bootcamp/index.html",
+        context={
+            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            "authenticated": authenticated,
+        },
+    )
 
 
 @csrf_exempt
@@ -53,10 +55,14 @@ def react(request):
     """
     View for pages served by react
     """
-    return render(request, "bootcamp/react.html", context={
-        "js_settings_json": json.dumps(_serialize_js_settings(request)),
-        "authenticated": not request.user.is_anonymous,
-    })
+    return render(
+        request,
+        "bootcamp/react.html",
+        context={
+            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            "authenticated": not request.user.is_anonymous,
+        },
+    )
 
 
 class BackgroundImagesCSSView(TemplateView):
@@ -64,6 +70,7 @@ class BackgroundImagesCSSView(TemplateView):
     Pass a CSS file through Django's template system, so that we can make
     the URLs point to a CDN.
     """
+
     template_name = "background-images.css"
     content_type = "text/css"
 
@@ -80,7 +87,7 @@ def standard_error_page(request, status_code, template_filename):
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "support_url": settings.SUPPORT_URL,
             "authenticated": authenticated,
-        }
+        },
     )
     response.status_code = status_code
     return response

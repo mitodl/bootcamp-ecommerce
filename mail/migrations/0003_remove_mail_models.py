@@ -7,27 +7,14 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('mail', '0002_default_email_templates'),
-    ]
+    dependencies = [("mail", "0002_default_email_templates")]
 
     operations = [
         migrations.RemoveField(
-            model_name='sentautomaticemails',
-            name='automatic_email',
+            model_name="sentautomaticemails", name="automatic_email"
         ),
-        migrations.RemoveField(
-            model_name='sentautomaticemails',
-            name='klass',
-        ),
-        migrations.RemoveField(
-            model_name='sentautomaticemails',
-            name='user',
-        ),
-        migrations.DeleteModel(
-            name='AutomaticReminderEmail',
-        ),
-        migrations.DeleteModel(
-            name='SentAutomaticEmails',
-        ),
+        migrations.RemoveField(model_name="sentautomaticemails", name="klass"),
+        migrations.RemoveField(model_name="sentautomaticemails", name="user"),
+        migrations.DeleteModel(name="AutomaticReminderEmail"),
+        migrations.DeleteModel(name="SentAutomaticEmails"),
     ]
