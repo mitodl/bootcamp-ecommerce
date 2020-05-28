@@ -2,15 +2,11 @@
 import { assert } from "chai"
 import sinon from "sinon"
 
-import EditProfilePage from "./EditProfilePage"
-import {
-  makeAnonymousUser,
-  makeCountries,
-  makeUser
-} from "../../factories/user"
-import IntegrationTestHelper from "../../util/integration_test_helper"
+import EditProfileDisplay from "./EditProfileDisplay"
+import { makeAnonymousUser, makeCountries, makeUser } from "../factories/user"
+import IntegrationTestHelper from "../util/integration_test_helper"
 
-describe("EditProfilePage", () => {
+describe("EditProfileDisplay", () => {
   let helper, renderPage
   const user = makeUser()
   const countries = makeCountries()
@@ -26,14 +22,14 @@ describe("EditProfilePage", () => {
       body:   countries
     })
 
-    renderPage = helper.configureReduxQueryRenderer(EditProfilePage)
+    renderPage = helper.configureReduxQueryRenderer(EditProfileDisplay)
   })
 
   afterEach(() => {
     helper.cleanup()
   })
 
-  it("renders the page for a logged in user", async () => {
+  it("renders the display for a logged in user", async () => {
     const { wrapper } = await renderPage()
     assert.isTrue(wrapper.find("EditProfileForm").exists())
     assert.isFalse(
@@ -44,7 +40,7 @@ describe("EditProfilePage", () => {
     )
   })
 
-  it("renders the page for an anonymous user", async () => {
+  it("renders the display for an anonymous user", async () => {
     helper.handleRequestStub.withArgs("/api/users/me").returns({
       status: 200,
       body:   makeAnonymousUser()
@@ -79,6 +75,7 @@ describe("EditProfilePage", () => {
         }
       })
 
+      assert(wrapper.find("EditProfileForm").exists())
       await wrapper.find("EditProfileForm").prop("onSubmit")(values, actions)
 
       const expectedPayload = {
@@ -99,11 +96,6 @@ describe("EditProfilePage", () => {
       )
       sinon.assert.calledWith(setSubmitting, false)
       assert.equal(setErrors.length, 0)
-      if (hasError) {
-        assert.isNull(helper.currentLocation)
-      } else {
-        assert.equal(helper.currentLocation.pathname, "/profile/")
-      }
     })
   })
 })

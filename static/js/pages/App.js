@@ -8,7 +8,6 @@ import { useRequest } from "redux-query-react"
 
 import PrivateRoute from "../components/PrivateRoute"
 import NotificationContainer from "../components/NotificationContainer"
-import ProfilePages from "./profile/ProfilePages"
 import LoginPages from "./login/LoginPages"
 import RegisterPages from "./register/RegisterPages"
 import ApplicationPages from "./applications/ApplicationPages"
@@ -42,10 +41,6 @@ export default function App(props: Props) {
       <NotificationContainer />
       <Switch>
         <Route path={`${match.url}pay/`} component={PaymentPage} />
-        <Route
-          path={urljoin(match.url, String(routes.profile))}
-          component={ProfilePages}
-        />
         <Route
           path={urljoin(match.url, String(routes.login))}
           component={LoginPages}
