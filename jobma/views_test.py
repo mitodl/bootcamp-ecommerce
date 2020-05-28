@@ -29,17 +29,19 @@ def test_jobma_webhook(client, mocker, jobma_status, expected_state_change):
     )
     interview = submission.content_object.interview
     application = submission.bootcamp_application
+    results_url = "http://path/to/a/url"
 
     mocker.patch('jobma.permissions.JobmaWebhookPermission.has_permission', return_value=True)
     response = client.put(
         reverse('jobma-webhook', kwargs={"pk": interview.id}), content_type='application/json', data={
             "status": jobma_status,
-            "results_url": "http://path/to/a/url"
+            "results_url": results_url
         }
     )
     assert response.status_code == status.HTTP_200_OK
     interview.refresh_from_db()
     assert interview.status == jobma_status
+    assert interview.results_url == results_url
 
     application.refresh_from_db()
     assert application.state == (

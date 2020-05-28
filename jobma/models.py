@@ -43,7 +43,8 @@ class Interview(AuditableModel):
     """An interview for a job which has been created on Jobma"""
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
-    interview_url = models.TextField(blank=True, null=True)  # this will be null until published on Jobma
+    interview_url = models.TextField(blank=True, null=True)
+    results_url = models.TextField(blank=True, null=True)
     candidate_first_name = models.TextField()
     candidate_last_name = models.TextField()
     candidate_phone = models.TextField()
