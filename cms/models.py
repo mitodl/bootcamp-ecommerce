@@ -15,7 +15,7 @@ from wagtail.images.models import Image
 from wagtail.core.blocks import StreamBlock
 from wagtail.snippets.models import register_snippet
 
-from cms.blocks import ResourceBlock, InstructorSectionBlock, ThreeColumnImageTextBlock
+from cms.blocks import ResourceBlock, InstructorSectionBlock, ThreeColumnImageTextBlock, AlumniBlock
 from main.views import _serialize_js_settings
 
 
@@ -87,9 +87,15 @@ class BootcampPage(Page):
         """Gets the three column image text section child page"""
         return self._get_child_page_of_type(ThreeColumnImageTextPage)
 
+    @property
+    def alumni(self):
+        """Gets the faculty members page"""
+        return self._get_child_page_of_type(AlumniPage)
+
     subpage_types = [
         "ThreeColumnImageTextPage",
         "InstructorsPage",
+        "AlumniPage"
     ]
 
 
@@ -256,3 +262,47 @@ class SiteNotification(models.Model):
 
     def __str__(self):
         return self.message
+
+
+class AlumniPage(BootcampRunChildPage):
+    """
+    Page that holds alumni for a product
+    """
+    banner_image = models.ForeignKey(
+        Image,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Image that will display as a banner at the top of the section, must be at least 750x505 pixels.",
+    )
+    heading = models.CharField(
+        max_length=100, default='Alumni', help_text="The heading to display on this section."
+    )
+    text = RichTextField(
+        blank=False,
+        help_text="Extra text to appear besides alumni quotes in this section.",
+    )
+    highlight_quote = models.CharField(
+        null=True,
+        max_length=255,
+        help_text="Highlighted quote to display for this section.",
+    )
+    highlight_name = models.CharField(
+        max_length=100, help_text="Name of the alumni for the highlighted quote."
+    )
+    alumni_bios = StreamField(
+        [("alumni", AlumniBlock())],
+        blank=False,
+        help_text="Alumni to display in this section.",
+    )
+    content_panels = [
+        ImageChooserPanel("banner_image"),
+        FieldPanel("heading"),
+        FieldPanel("text"),
+        FieldPanel("highlight_quote"),
+        FieldPanel("highlight_name"),
+        StreamFieldPanel("alumni_bios"),
+    ]
+
+    class Meta:
+        verbose_name = "Alumni Section"

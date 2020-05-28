@@ -1,0 +1,136 @@
+.alumni-block {
+  .banner {
+    min-height: 350px;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding-bottom: 140px;
+    margin: 0 -15px;
+    position: relative;
+    z-index: 1;
+
+    img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      object-fit: cover;
+    }
+
+    h1 {
+      font-weight: 700;
+      color: $gray-42;
+    }
+  }
+
+  h1 {
+    margin: 0 0 0 30px;
+  }
+
+  .alumni-container {
+    @include media-breakpoint-down(sm) {
+      padding: 15px;
+    }
+
+    background: white;
+    padding: 50px;
+    margin-top: -90px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+
+    .alumni-header {
+      @include media-breakpoint-down(sm) {
+        margin-bottom: 15px;
+      }
+
+      margin-bottom: 50px;
+
+      h2 {
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .rich-text {
+        h3 {
+          margin-bottom: 25px;
+
+          a {
+            text-decoration: underline;
+            color: $wewak;
+          }
+        }
+      }
+    }
+
+    .alumnus {
+      margin-bottom: 10px;
+
+      span {
+        display: block;
+      }
+
+      .name {
+        font-size: 20px;
+      }
+
+      .title {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .text-holder {
+    @include media-breakpoint-down(sm) {
+      margin: 0 -30px 20px;
+      background-color: $alabaster;
+      padding: 10px 30px;
+    }
+
+    padding-left: 50px;
+
+    q {
+      font-weight: 700;
+      font-size: 30px;
+      line-height: 35px;
+    }
+
+    .name {
+      display: block;
+      font-size: 30px;
+      color: $dark-gray;
+      font-style: normal;
+    }
+  }
+
+  .img-area {
+    @include media-breakpoint-down(sm) {
+      border: 0px;
+    }
+
+    border-right: 2px solid $gray-80;
+
+    .image-holder {
+      @include media-breakpoint-down(sm) {
+        border: none;
+        padding: 0px;
+        margin: 0 0 20px;
+      }
+
+      @include media-breakpoint-down(md) {
+        padding: 0;
+      }
+
+      padding: 0 30px;
+
+      img {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+      }
+    }
+  }
+}

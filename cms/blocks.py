@@ -53,10 +53,33 @@ class ThreeColumnImageTextBlock(blocks.StructBlock):
     A generic custom block used to input heading, sub-heading, body and image.
     """
 
-    heading = blocks.CharBlock(max_length=100, help_text="Heading that will highlight the main point.",)
-    sub_heading = blocks.CharBlock(max_length=250, help_text="Area sub heading.")
+    heading = blocks.CharBlock(
+        max_length=100, help_text="Heading that will highlight the main point.",)
+    sub_heading = blocks.CharBlock(
+        max_length=250, help_text="Area sub heading.")
     body = blocks.RichTextBlock()
-    image = ImageChooserBlock(help_text="image size must be at least 150x50 pixels.",)
+    image = ImageChooserBlock(
+        help_text="image size must be at least 150x50 pixels.",)
 
     class Meta:
         icon = "plus"
+
+
+class AlumniBlock(blocks.StructBlock):
+    """
+    Block class that defines alumni section
+    """
+    image = ImageChooserBlock(
+        help_text="The image of the alumni"
+    )
+    name = blocks.CharBlock(max_length=100, help_text="Name of the alumni.")
+    title = blocks.CharBlock(
+        max_length=255, help_text="The title to display after the name."
+    )
+    class_text = blocks.CharBlock(
+        max_length=100,
+        help_text="A brief description about the alumni class."
+    )
+    quote = blocks.RichTextBlock(
+        help_text="The quote that appears on the alumni section."
+    )
