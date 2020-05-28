@@ -19,6 +19,7 @@ import {
 } from "../actions"
 import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
 import queries from "../lib/queries"
+import { currentUserSelector } from "../lib/queries/users"
 import { createForm, getRunWithFulfilledOrder } from "../util/util"
 import Payment from "../components/Payment"
 import PaymentHistory from "../components/PaymentHistory"
@@ -28,6 +29,7 @@ import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
 import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
 import type { BootcampRun, BootcampRunsResponse } from "../flow/bootcampTypes"
+import type { CurrentUser } from "../flow/authTypes"
 
 type Props = {
   ui: UIState,
@@ -47,7 +49,8 @@ type Props = {
   setSelectedBootcampRunKey: (runKey: number) => void,
   setTimeoutActive: (active: boolean) => void,
   setToastMessage: (payload: any) => void,
-  showDialog: (dialogKey: string) => void
+  showDialog: (dialogKey: string) => void,
+  currentUser: ?CurrentUser
 }
 
 export class PaymentPage extends React.Component<Props> {
@@ -74,9 +77,14 @@ export class PaymentPage extends React.Component<Props> {
   }
 
   fetchBootcampRuns() {
-    const { fetchBootcampRuns, bootcampRunsProcessing } = this.props
-    if (!bootcampRunsProcessing) {
-      fetchBootcampRuns(SETTINGS.user.username)
+    const {
+      fetchBootcampRuns,
+      bootcampRunsProcessing,
+      currentUser
+    } = this.props
+    if (!bootcampRunsProcessing && currentUser) {
+      // $FlowFixMe: an anon user shouldn't end up here
+      fetchBootcampRuns(currentUser.username)
     }
   }
 
@@ -161,15 +169,21 @@ export class PaymentPage extends React.Component<Props> {
   }
 
   handleOrderPending = (): void => {
-    const { fetchBootcampRuns, setTimeoutActive, setToastMessage } = this.props
+    const {
+      fetchBootcampRuns,
+      setTimeoutActive,
+      setToastMessage,
+      currentUser
+    } = this.props
     if (!this.props.ui.timeoutActive) {
       setTimeout(() => {
         const { ui } = this.props
         setTimeoutActive(false)
         const deadline = moment(ui.initialTime).add(2, "minutes")
         const now = moment()
-        if (now.isBefore(deadline)) {
-          fetchBootcampRuns(SETTINGS.user.username)
+        // $FlowFixMe: an anon user won't end up here
+        if (now.isBefore(deadline) && currentUser.username) {
+          fetchBootcampRuns(currentUser.username)
         } else {
           setToastMessage({
             message: "Order was not processed",
@@ -253,13 +267,14 @@ export class PaymentPage extends React.Component<Props> {
       bootcampRunsFinished,
       payableBootcampRunsData,
       selectedBootcampRun,
-      showDialog
+      showDialog,
+      currentUser
     } = this.props
 
     let renderedPayment = null
     let renderedPaymentHistory = null
 
-    if (bootcampRunsFinished) {
+    if (bootcampRunsFinished && currentUser) {
       renderedPayment = (
         <Payment
           hideDialog={hideDialog}
@@ -272,6 +287,7 @@ export class PaymentPage extends React.Component<Props> {
           sendPayment={this.sendPayment}
           setPaymentAmount={this.setPaymentAmount}
           setSelectedBootcampRunKey={this.setSelectedBootcampRunKey}
+          currentUser={currentUser}
         />
       )
 
@@ -343,7 +359,8 @@ const mapStateToProps = R.compose(
       ["queries", "bootcampRuns", "isFinished"],
       state
     ),
-    ui: state.ui
+    ui:          state.ui,
+    currentUser: currentUserSelector(state)
   })
 )
 

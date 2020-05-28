@@ -13,6 +13,7 @@ import {
 } from "../util/util"
 import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
+import type { CurrentUser } from "../flow/authTypes"
 
 export const PAYMENT_CONFIRMATION_DIALOG = "paymentConfirmationDialog"
 const isVisible = R.propOr(false, PAYMENT_CONFIRMATION_DIALOG)
@@ -28,7 +29,8 @@ export default class Payment extends React.Component<*, void> {
     sendPayment: () => void,
     setPaymentAmount: (event: InputEvent) => void,
     setSelectedBootcampRunKey: (event: InputEvent) => void,
-    showDialog: (dialogKey: string) => void
+    showDialog: (dialogKey: string) => void,
+    currentUser: ?CurrentUser
   }
 
   getTotalOwedUpToInstallment = (nextInstallmentIndex: number): number => {
@@ -199,11 +201,20 @@ export default class Payment extends React.Component<*, void> {
   }
 
   render() {
-    const { payableBootcampRunsData, selectedBootcampRun } = this.props
+    const {
+      payableBootcampRunsData,
+      selectedBootcampRun,
+      currentUser
+    } = this.props
 
-    const welcomeMessage = !isNilOrBlank(SETTINGS.user.full_name) ? (
-      <h1 className="greeting">Hi {SETTINGS.user.full_name}!</h1>
-    ) : null
+    const welcomeMessage =
+      currentUser &&
+      // $FlowFixMe: an anon user shouldn't be here
+      currentUser.profile &&
+      // $FlowFixMe: an anon user shouldn't be here
+      !isNilOrBlank(currentUser.profile.name) ? (
+          <h1 className="greeting">Hi {currentUser.profile.name}!</h1>
+        ) : null
     let renderedRunChoice
     if (payableBootcampRunsData.length > 1) {
       renderedRunChoice = this.renderBootcampRunDropdown()

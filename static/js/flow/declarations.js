@@ -1,9 +1,5 @@
 // @flow
 declare var SETTINGS: {
-  user: {
-    full_name: string,
-    username: string
-  },
   gaTrackingID: string,
   reactGaDebug: boolean,
   recaptchaKey: ?string,

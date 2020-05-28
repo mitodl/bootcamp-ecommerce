@@ -7,12 +7,7 @@ import Adapter from "enzyme-adapter-react-16"
 
 configure({ adapter: new Adapter() })
 // Define globals we would usually get from Django
-const _createSettings = () => ({
-  user: {
-    full_name: "Jane Doe",
-    username:  "janedoe"
-  }
-})
+const _createSettings = () => ({})
 
 global.SETTINGS = _createSettings()
 global._testing = true

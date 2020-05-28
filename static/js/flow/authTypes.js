@@ -65,6 +65,7 @@ export type UnusedCoupon = {
 }
 
 export type Profile = {
+  name: string,
   gender: string,
   birth_year: number,
   company: string,
