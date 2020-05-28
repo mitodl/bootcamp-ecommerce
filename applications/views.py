@@ -2,7 +2,7 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView, GenericAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
@@ -13,7 +13,7 @@ from applications.serializers import (
 from applications.api import (
     get_or_create_bootcamp_application,
     set_submission_review_status,
-)
+    process_upload_resume)
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission
@@ -92,5 +92,29 @@ class ReviewSubmissionView(UpdateAPIView):
         submission = self.get_object()
         review_status = request.data["review_status"]
         set_submission_review_status(submission, review_status)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class UploadResumeView(GenericAPIView):
+    """
+    View for uploading resume and linkedin link
+    """
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated, UserIsOwnerPermission,)
+    lookup_field = "pk"
+    owner_field = "user"
+    queryset = BootcampApplication.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        """
+        Update the application with resume
+        """
+        application = self.get_object()
+        linkedin_url = request.data.get("linkedin_url", False)
+        resume_file = request.FILES.get('file', False)
+        if not (linkedin_url or resume_file):
+            raise ValidationError("At least one form of resume is required.")
+        process_upload_resume(resume_file, linkedin_url, application)
 
         return Response(status=status.HTTP_200_OK)

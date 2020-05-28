@@ -91,7 +91,7 @@ def get_required_submission_type(application):
     )
 
 
-def process_upload_resume(resume_file, bootcamp_application):
+def process_upload_resume(resume_file, linkedin_url, bootcamp_application):
     """
     Process the resume file and save it to BootcampApplication
 
@@ -104,7 +104,10 @@ def process_upload_resume(resume_file, bootcamp_application):
         raise InvalidApplicationException(
             "The BootcampApplication is still awaiting profile completion"
         )
-    bootcamp_application.upload_resume(resume_file)
+    if resume_file:
+        bootcamp_application.upload_resume(resume_file)
+    if linkedin_url:
+        bootcamp_application.save_linkedin(linkedin_url)
     # when state transition happens need to save manually
     bootcamp_application.save()
 

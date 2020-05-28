@@ -120,6 +120,7 @@ class BootcampApplication(TimestampedModel):
     resume_file = models.FileField(
         upload_to=_get_resume_upload_path, null=True, blank=True
     )
+    linkedin_url = models.URLField(blank=True, null=True)
     resume_upload_date = models.DateTimeField(null=True, blank=True)
     state = FSMField(
         default=AppStates.AWAITING_PROFILE_COMPLETION.value,
@@ -171,6 +172,17 @@ class BootcampApplication(TimestampedModel):
         """Save resume and make sure that the state can be transitioned to a new state"""
         validate_file_extension(resume_file)
         self.resume_file = resume_file
+        self.resume_upload_date = now_in_utc()
+        self.save()
+
+    @transition(
+        field=state,
+        source=[AppStates.AWAITING_RESUME.value, AppStates.AWAITING_USER_SUBMISSIONS.value],
+        target=AppStates.AWAITING_USER_SUBMISSIONS.value
+    )
+    def save_linkedin(self, linkedin_url):
+        """Save resume and make sure that the state can be transitioned to a new state"""
+        self.linkedin_url = linkedin_url
         self.resume_upload_date = now_in_utc()
         self.save()
 

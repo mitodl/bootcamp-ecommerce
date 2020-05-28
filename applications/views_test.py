@@ -1,5 +1,6 @@
 """Tests for bootcamp application views"""
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from django.urls import reverse
 from rest_framework import status
@@ -144,3 +145,34 @@ def test_review_submission_update(client, mocker, review_status):
     assert resp.status_code == status.HTTP_200_OK
     submission.refresh_from_db()
     assert submission.review_status == review_status
+
+
+@pytest.mark.parametrize(
+    "has_resume,has_linkedin,state", [
+        [True, True, AppStates.AWAITING_USER_SUBMISSIONS.value],
+        [False, True, AppStates.AWAITING_USER_SUBMISSIONS.value],
+        [True, False, AppStates.AWAITING_USER_SUBMISSIONS.value],
+])
+@pytest.mark.django_db
+def test_upload_resume_view(client, mocker, has_resume, has_linkedin, state):
+    """
+    Upload resume view should return successful response, and update application state
+    """
+    mocker.patch('applications.views.UserIsOwnerPermission.has_permission', return_value=True)
+    bootcamp_application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value)
+    client.force_login(bootcamp_application.user)
+
+    url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})
+    data = {}
+    if has_linkedin:
+        data['linkedin_url'] = "some_url"
+    if has_resume:
+        resume_file = SimpleUploadedFile("resume.pdf", b'file_content')
+        data['file'] = resume_file
+    resp = client.post(url, data)
+    assert resp.status_code == status.HTTP_200_OK
+    bootcamp_application.refresh_from_db()
+    assert bootcamp_application.state == state
+
+    if has_resume:
+        assert resume_file.name in bootcamp_application.resume_file.name

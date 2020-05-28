@@ -134,6 +134,24 @@ def test_get_or_create_bootcamp_application(mocker):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("has_resume,has_linkedin,expected", [
+    (True, False, AppStates.AWAITING_USER_SUBMISSIONS.value),
+    (True, True, AppStates.AWAITING_USER_SUBMISSIONS.value)
+])
+def test_process_upload_resume_success(has_resume, has_linkedin, expected):
+    """
+    process_upload_resume should update the application step when saving resume
+    """
+    existing_app = BootcampApplicationFactory(state=AppStates.AWAITING_RESUME.value)
+    resume_file = False
+    if has_resume:
+        resume_file = SimpleUploadedFile('resume.pdf', b'file_content')
+    process_upload_resume(resume_file, ('url' if has_linkedin else False), existing_app)
+
+    assert existing_app.state == expected
+
+
+@pytest.mark.django_db
 def test_process_upload_resume():
     """
     process_upload_resume should raise an exception if in wrong state
@@ -143,7 +161,7 @@ def test_process_upload_resume():
     )
     resume_file = SimpleUploadedFile("resume.pdf", b"file_content")
     with pytest.raises(InvalidApplicationException):
-        process_upload_resume(resume_file, existing_app)
+        process_upload_resume(resume_file, False, existing_app)
 
 
 @pytest.mark.django_db
