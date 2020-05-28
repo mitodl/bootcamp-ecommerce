@@ -71,6 +71,7 @@ urlpatterns = [
     path("account-settings/", react, name="account-settings"),
     path("profile/", react, name="profile-view"),
     path("profile/edit/", react, name="profile-edit"),
+    path("applications/", react, name="applications"),
     # Wagtail
     re_path(
         r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",

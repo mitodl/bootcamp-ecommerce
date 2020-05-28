@@ -102,6 +102,21 @@ export const ALERT_TYPE_TEXT = "text"
 export const ALERT_TYPE_UNUSED_COUPON = "unused-coupon"
 export const ALTER_TYPE_B2B_ORDER_STATUS = "b2b-order-status"
 
+export const APP_STATE_IN_PROGRESS = "In Progress"
+export const APP_STATE_IN_REVIEW = "In Review"
+export const APP_STATE_COMPLETE = "Complete"
+export const APP_STATE_REJECTED = "Rejected"
+
+export const APP_STATE_TEXT_MAP = {
+  AWAITING_PROFILE_COMPLETION: APP_STATE_IN_PROGRESS,
+  AWAITING_RESUME:             APP_STATE_IN_PROGRESS,
+  AWAITING_USER_SUBMISSIONS:   APP_STATE_IN_PROGRESS,
+  AWAITING_SUBMISSION_REVIEW:  APP_STATE_IN_REVIEW,
+  AWAITING_PAYMENT:            APP_STATE_IN_PROGRESS,
+  COMPLETE:                    APP_STATE_COMPLETE,
+  REJECTED:                    APP_STATE_REJECTED
+}
+
 // HTML title for different pages
 export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
 export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE
@@ -124,3 +139,5 @@ export const ACCOUNT_SETTINGS_PAGE_TITLE = "Account Settings"
 export const EMAIL_CONFIRM_PAGE_TITLE = "Confirm Email Change"
 
 export const RECEIPT_PAGE_TITLE = "Receipt"
+
+export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard"

@@ -14,6 +14,7 @@
 @import "resource";
 @import "auth";
 @import "user-menu";
+@import "application";
 @import "cms/product";
 @import "drawer";
 @import "slick";
@@ -31,7 +32,8 @@ body {
   .standard-layout {
     background-color: $default-background-color;
     color: $default-text-color;
-    text-align: center;
+    text-align: left;
+    padding-top: 30px;
   }
 }
 

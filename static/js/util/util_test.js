@@ -2,13 +2,14 @@ import { assert } from "chai"
 import moment from "moment"
 import _ from "lodash"
 
-import { generateFakeRuns, generateFakeInstallment } from "../factories"
+import { generateFakePayableRuns, generateFakeInstallment } from "../factories"
 import {
   createForm,
   isNilOrBlank,
   formatDollarAmount,
   getRunWithFulfilledOrder,
-  getInstallmentDeadlineDates
+  getInstallmentDeadlineDates,
+  formatStartEndDateStrings
 } from "./util"
 
 describe("util", () => {
@@ -60,7 +61,7 @@ describe("util", () => {
     let bootcampRuns, bootcampRun
 
     beforeEach(() => {
-      bootcampRuns = generateFakeRuns(1, { hasPayment: true })
+      bootcampRuns = generateFakePayableRuns(1, { hasPayment: true })
       bootcampRun = bootcampRuns[0]
     })
 
@@ -107,6 +108,42 @@ describe("util", () => {
       _.each(getInstallmentDeadlineDates(installments), (installment, i) => {
         assert.isTrue(installment.isSame(moments[i]))
       })
+    })
+  })
+
+  describe("formatStartEndDateStrings", () => {
+    it("should format correctly when two date strings are provided", () => {
+      const datetimes = [
+        moment({ milliseconds: 0 }),
+        moment({ milliseconds: 0 }).add(5, "days")
+      ]
+      const result = formatStartEndDateStrings(
+        datetimes[0].format(),
+        datetimes[1].format()
+      )
+      assert.deepEqual(
+        result,
+        `${datetimes[0].format("MMM D, YYYY")} - ${datetimes[1].format(
+          "MMM D, YYYY"
+        )}`
+      )
+    })
+
+    it("should format correctly when only a start date is provided", () => {
+      const dt = moment()
+      const result = formatStartEndDateStrings(dt.format(), null)
+      assert.deepEqual(result, `Starts ${dt.format("MMM D, YYYY")}`)
+    })
+
+    it("should format correctly when only an end date is provided", () => {
+      const dt = moment()
+      const result = formatStartEndDateStrings(null, dt.format())
+      assert.deepEqual(result, `Ends ${dt.format("MMM D, YYYY")}`)
+    })
+
+    it("should return an empty string when no dates are provided", () => {
+      const result = formatStartEndDateStrings(null, null)
+      assert.deepEqual(result, "")
     })
   })
 })

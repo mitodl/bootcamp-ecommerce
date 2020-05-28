@@ -3,6 +3,7 @@ Serializers for bootcamps
 """
 from rest_framework import serializers
 
+from cms.serializers import BootcampRunPageSerializer
 from klasses.models import Bootcamp, BootcampRun, Installment
 
 
@@ -18,6 +19,18 @@ class BootcampRunSerializer(serializers.ModelSerializer):
     """Serializer for BootcampRun model"""
 
     bootcamp = BootcampSerializer()
+
+    def to_representation(self, instance):
+        page_fields = {}
+        if self.context.get("include_page") is True:
+            page_fields = {
+                "page": (
+                    BootcampRunPageSerializer(instance=instance.bootcamprunpage).data
+                    if hasattr(instance, "bootcamprunpage")
+                    else {}
+                )
+            }
+        return {**super().to_representation(instance), **page_fields}
 
     class Meta:
         model = BootcampRun
