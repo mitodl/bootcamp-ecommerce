@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.43.0
+Version 0.43.0 (Released May 28, 2020)
 --------------
 
 - Update application state after Jobma webhook (#552)
