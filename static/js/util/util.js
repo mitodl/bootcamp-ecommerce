@@ -47,6 +47,30 @@ export const formatReadableDate = (datetime: moment$Moment): string =>
 export const formatReadableDateFromStr = (datetimeString: string): string =>
   formatReadableDate(moment(datetimeString))
 
+export const formatStartEndDateStrings = (
+  startDtString: ?string,
+  endDtString: ?string
+): string => {
+  let formattedStart, formattedEnd
+  if (startDtString) {
+    formattedStart = formatReadableDateFromStr(startDtString)
+  }
+  if (endDtString) {
+    formattedEnd = formatReadableDateFromStr(endDtString)
+  }
+  if (!formattedStart && !formattedEnd) {
+    return ""
+  } else if (!formattedStart) {
+    // $FlowFixMe: This cannot be un-initialized
+    return `Ends ${formattedEnd}`
+  } else if (!formattedEnd) {
+    // $FlowFixMe: This cannot be un-initialized
+    return `Starts ${formattedStart}`
+  } else {
+    return `${formattedStart} - ${formattedEnd}`
+  }
+}
+
 export const getRunWithFulfilledOrder = (
   runData: ?Array<Object>,
   orderId: number

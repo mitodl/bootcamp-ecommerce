@@ -37,7 +37,17 @@ class BootcampApplicationViewset(
         if self.action == "retrieve":
             return BootcampApplication.objects.prefetch_state_data()
         else:
-            return BootcampApplication.objects.filter(user=self.request.user).all()
+            return (
+                BootcampApplication.objects.filter(user=self.request.user)
+                .select_related("bootcamp_run__bootcamprunpage")
+                .order_by("-created_on")
+            )
+
+    def get_serializer_context(self):
+        added_context = {}
+        if self.action == "list":
+            added_context = {"include_page": True}
+        return {**super().get_serializer_context(), **added_context}
 
     def get_serializer_class(self):
         if self.action == "retrieve":

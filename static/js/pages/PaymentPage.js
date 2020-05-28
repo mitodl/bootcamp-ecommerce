@@ -28,7 +28,10 @@ import Toast from "../components/Toast"
 import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
 import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
-import type { BootcampRun, BootcampRunsResponse } from "../flow/bootcampTypes"
+import type {
+  PayableBootcampRun,
+  BootcampRunsResponse
+} from "../flow/bootcampTypes"
 import type { CurrentUser } from "../flow/authTypes"
 
 type Props = {
@@ -44,7 +47,7 @@ type Props = {
   bootcampRunsProcessing: boolean,
   paymentProcessing: boolean,
   payableBootcampRunsData: BootcampRunsResponse,
-  selectedBootcampRun: ?BootcampRun,
+  selectedBootcampRun: ?PayableBootcampRun,
   setPaymentAmount: (amount: string) => void,
   setSelectedBootcampRunKey: (runKey: number) => void,
   setTimeoutActive: (active: boolean) => void,

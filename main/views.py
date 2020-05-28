@@ -32,7 +32,7 @@ def index(request):
     Index page
     """
     if request.user.is_authenticated:
-        to_url = reverse("pay")
+        to_url = reverse("applications")
         if request.GET:
             to_url = "{}?{}".format(to_url, request.GET.urlencode())
         return redirect(to=to_url)

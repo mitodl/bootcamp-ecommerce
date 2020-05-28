@@ -1,7 +1,33 @@
 import _ from "lodash"
 import moment from "moment"
+import casual from "casual-browserify"
 
-export const generateFakeRuns = (
+import type { BootcampRun, BootcampRunPage } from "../flow/bootcampTypes"
+import { incrementer } from "../util/util"
+
+const incr = incrementer()
+
+export const generateFakeRunPage = (): BootcampRunPage => ({
+  description:         casual.text,
+  subhead:             casual.text,
+  thumbnail_image_src: casual.url
+})
+
+export const generateFakeRun = (): BootcampRun => ({
+  id:            incr.next().value,
+  display_title: casual.title,
+  title:         casual.title,
+  run_key:       casual.word,
+  start_date:    moment().format(),
+  end_date:      moment().format(),
+  page:          generateFakeRunPage(),
+  bootcamp:      {
+    id:    incr.next().value,
+    title: casual.title
+  }
+})
+
+export const generateFakePayableRuns = (
   numRuns = 1,
   { hasInstallment = true, hasPayment = false } = {}
 ) => {

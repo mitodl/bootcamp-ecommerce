@@ -4,7 +4,7 @@ import { assert } from "chai"
 import _ from "lodash"
 
 import PaymentHistory from "./PaymentHistory"
-import { generateFakeRuns } from "../factories"
+import { generateFakePayableRuns } from "../factories"
 
 describe("PaymentHistory", () => {
   const statementLinkSelector = "a.statement-link"
@@ -20,7 +20,7 @@ describe("PaymentHistory", () => {
   it("should show rows of payment history information", () => {
     const bootcampCount = 3
     const paymentAmount = 100
-    let fakeRuns = generateFakeRuns(bootcampCount)
+    let fakeRuns = generateFakePayableRuns(bootcampCount)
     // Set all fake bootcamp runs to have payments
     fakeRuns = setPaymentValues(fakeRuns, paymentAmount)
     fakeRuns[0].price = 1000
@@ -38,7 +38,7 @@ describe("PaymentHistory", () => {
   })
 
   it("should show a link to view a payment statement", () => {
-    const fakeRuns = generateFakeRuns(1)
+    const fakeRuns = generateFakePayableRuns(1)
     const wrapper = renderPaymentHistory(fakeRuns)
     const statementLink = wrapper.find(statementLinkSelector)
     assert.equal(

@@ -38,5 +38,9 @@ export const routes = {
 
   account: include("/account/", {
     confirmEmail: "confirm-email"
+  }),
+
+  applications: include("/applications/", {
+    dashboard: ""
   })
 }

@@ -3,6 +3,7 @@ import pytest
 
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 from applications.constants import (
     AppStates,
@@ -23,19 +24,39 @@ from profiles.factories import UserFactory
 
 
 @pytest.mark.parametrize(
-    "action,expected_serializer",
+    "action,exp_serializer",
     [
         ["retrieve", BootcampApplicationDetailSerializer],
         ["list", BootcampApplicationSerializer],
         ["create", BootcampApplicationSerializer],
     ],
 )
-def test_view_serializer(mocker, action, expected_serializer):
+def test_view_serializer(mocker, action, exp_serializer):
     """The bootcamp application view should use the expected serializer depending on the action"""
     serializer_cls = BootcampApplicationViewset.get_serializer_class(
         mocker.Mock(action=action)
     )
-    assert serializer_cls == expected_serializer
+    assert serializer_cls == exp_serializer
+
+
+@pytest.mark.django_db
+def test_view_serializer_context(mocker):
+    """
+    The bootcamp application view should add context to the serializer in the list view
+    """
+    application = BootcampApplicationFactory.create()
+    patched_serializer = mocker.patch(
+        "applications.views.BootcampApplicationSerializer",
+        return_value=mocker.Mock(data={"key": "value"}),
+    )
+    view = BootcampApplicationViewset.as_view({"get": "list"})
+    factory = APIRequestFactory()
+    request = factory.get(reverse("applications_api-list"))
+    force_authenticate(request, user=application.user)
+    view(request).render()
+    serializer_context = patched_serializer.call_args_list[0][1]["context"]
+    assert "include_page" in serializer_context
+    assert serializer_context["include_page"] is True
 
 
 @pytest.mark.django_db

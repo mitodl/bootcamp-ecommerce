@@ -1,5 +1,6 @@
 // @flow
-import { nthArg, objOf, pathOr } from "ramda"
+import { objOf, pathOr } from "ramda"
+import { nextState } from "./util"
 
 import type {
   CurrentUser,
@@ -10,9 +11,6 @@ import { getCookie } from "../api"
 
 export const currentUserSelector = (state: any): ?CurrentUser =>
   state.entities.currentUser
-
-// replace the previous state with the next state without merging
-const nextState = nthArg(1)
 
 // project the result into entities.currentUser
 const transformCurrentUser = objOf("currentUser")

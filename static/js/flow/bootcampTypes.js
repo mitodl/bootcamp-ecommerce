@@ -16,7 +16,29 @@ export type Installment = {
   deadline: string,
 }
 
+export type Bootcamp = {
+  id: number,
+  title: string,
+}
+
+export type BootcampRunPage = {
+  description: ?string,
+  subhead: string,
+  thumbnail_image_src: ?string,
+}
+
 export type BootcampRun = {
+  id: number,
+  display_title: string,
+  title: string,
+  run_key: string,
+  start_date: ?string,
+  end_date: ?string,
+  bootcamp: Bootcamp,
+  page?: ?BootcampRunPage,
+}
+
+export type PayableBootcampRun = {
   run_key: number,
   bootcamp_run_name: string,
   display_name: string,
@@ -28,4 +50,4 @@ export type BootcampRun = {
   installments: Array<Installment>
 }
 
-export type BootcampRunsResponse = Array<BootcampRun>
+export type BootcampRunsResponse = Array<PayableBootcampRun>

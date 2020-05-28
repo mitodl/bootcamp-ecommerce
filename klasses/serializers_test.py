@@ -1,8 +1,10 @@
 """
-Tests for serializers
+Tests for bootcamp serializers
 """
 import pytest
 
+from cms.factories import BootcampRunPageFactory
+from cms.serializers import BootcampRunPageSerializer
 from klasses.factories import BootcampFactory, BootcampRunFactory, InstallmentFactory
 from klasses.serializers import (
     BootcampSerializer,
@@ -50,3 +52,14 @@ def test_bootcamp_run_serializer():
         "end_date": serializer_date_format(run.end_date),
         "run_key": run.run_key,
     }
+
+
+def test_bootcamp_run_serializer_with_page():
+    """BootcampRunSerializer should serialize the bootcamp run with CMS page data if requested in the context"""
+    run = BootcampRunFactory.create()
+    serialized = BootcampRunSerializer(run, context={"include_page": True}).data
+    assert "page" in serialized
+    assert serialized["page"] == {}
+    page = BootcampRunPageFactory.create(bootcamp_run=run)
+    serialized = BootcampRunSerializer(run, context={"include_page": True}).data
+    assert serialized["page"] == BootcampRunPageSerializer(instance=page).data

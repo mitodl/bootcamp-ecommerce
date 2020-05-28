@@ -6,7 +6,7 @@ import _ from "lodash"
 import moment from "moment"
 
 import Payment from "./Payment"
-import { generateFakeRuns, generateFakeInstallment } from "../factories"
+import { generateFakePayableRuns, generateFakeInstallment } from "../factories"
 import {
   formatDollarAmount,
   formatReadableDate,
@@ -44,7 +44,7 @@ describe("Payment", () => {
   })
 
   it("shows the name of the user in a welcome message", () => {
-    const fakeRuns = generateFakeRuns()
+    const fakeRuns = generateFakePayableRuns()
     const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
     const welcomeMsg = wrapper.find(welcomeMsgSelector)
     assert.include(welcomeMsg.text(), user.profile.name)
@@ -52,13 +52,13 @@ describe("Payment", () => {
 
   it("does not show the welcome message if the name of the user is blank", () => {
     user.profile.name = ""
-    const fakeRuns = generateFakeRuns()
+    const fakeRuns = generateFakePayableRuns()
     const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
     assert.isFalse(wrapper.find(welcomeMsgSelector).exists())
   })
 
   it("shows the selected bootcamp run", () => {
-    const fakeRuns = generateFakeRuns(3)
+    const fakeRuns = generateFakePayableRuns(3)
     const wrapper = renderPayment({
       payableBootcampRunsData: fakeRuns,
       selectedBootcampRun:     fakeRuns[0]
@@ -71,7 +71,7 @@ describe("Payment", () => {
     [null, "null date message"]
   ].forEach(([deadlineDateISO, deadlineDateDesc]) => {
     it(`shows payment due date message with ${deadlineDateDesc}`, () => {
-      const fakeRuns = generateFakeRuns(1)
+      const fakeRuns = generateFakePayableRuns(1)
       fakeRuns[0].payment_deadline = deadlineDateISO
       const wrapper = renderPayment({
         payableBootcampRunsData: fakeRuns,
@@ -88,7 +88,7 @@ describe("Payment", () => {
   })
 
   it("should show terms and conditions message", () => {
-    const fakeRun = generateFakeRuns(1, { hasInstallment: true })[0]
+    const fakeRun = generateFakePayableRuns(1, { hasInstallment: true })[0]
     const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
     const termsText = wrapper.find(".tac").text()
     const termsLink = wrapper.find(".tac-link")
@@ -108,7 +108,7 @@ describe("Payment", () => {
       it(`should${
         shouldShowDropdown ? "" : " not"
       } be shown when ${numRuns} bootcamp runs available`, () => {
-        const fakeRuns = generateFakeRuns(numRuns)
+        const fakeRuns = generateFakePayableRuns(numRuns)
         const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
         assert.equal(
           wrapper.find(runDropdownSelector).exists(),
@@ -128,7 +128,7 @@ describe("Payment", () => {
       it(`should${
         shouldShowMessage ? "" : " not"
       } be shown when ${numRuns} bootcamp runs available`, () => {
-        const fakeRuns = generateFakeRuns(numRuns)
+        const fakeRuns = generateFakePayableRuns(numRuns)
         const wrapper = renderPayment({ payableBootcampRunsData: fakeRuns })
         assert.equal(
           wrapper
@@ -143,7 +143,7 @@ describe("Payment", () => {
 
   describe("deadline message", () => {
     it("should show the final payment deadline date and no installment deadline with one installment", () => {
-      const fakeRun = generateFakeRuns(1, { hasInstallment: true })[0]
+      const fakeRun = generateFakePayableRuns(1, { hasInstallment: true })[0]
       const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
       const deadlineMsgHtml = wrapper.find(deadlineMsgSelector).html()
       const expectedFinalDeadline = formatReadableDateFromStr(
@@ -157,7 +157,7 @@ describe("Payment", () => {
     })
 
     it("should show the final payment deadline date with multiple installments", () => {
-      const fakeRun = generateFakeRuns(1)[0]
+      const fakeRun = generateFakePayableRuns(1)[0]
       const future = moment().add(5, "days")
       fakeRun.installments = [
         generateFakeInstallment({
@@ -181,7 +181,7 @@ describe("Payment", () => {
     })
 
     it("should show an installment deadline message when multiple installments exist", () => {
-      const fakeRun = generateFakeRuns(1)[0]
+      const fakeRun = generateFakePayableRuns(1)[0]
       const nextInstallmentDate = moment().add(5, "days")
       fakeRun.installments = [
         generateFakeInstallment({ deadline: nextInstallmentDate.format() }),
@@ -210,7 +210,7 @@ describe("Payment", () => {
       let fakeRun
 
       beforeEach(() => {
-        fakeRun = generateFakeRuns(1)[0]
+        fakeRun = generateFakePayableRuns(1)[0]
         fakeRun.installments = [
           generateFakeInstallment({
             deadline: moment(nextInstallmentDate)

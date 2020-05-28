@@ -7,7 +7,7 @@ import { TOAST_SUCCESS, TOAST_FAILURE } from "../constants"
 import PaymentPage, { PaymentPage as InnerPaymentPage } from "./PaymentPage"
 import { PAYMENT_CONFIRMATION_DIALOG } from "../components/Payment"
 import * as util from "../util/util"
-import { generateFakeRuns } from "../factories"
+import { generateFakePayableRuns } from "../factories"
 import { makeUser } from "../factories/user"
 import IntegrationTestHelper from "../util/integration_test_helper"
 
@@ -25,7 +25,7 @@ describe("PaymentPage", () => {
       .returns({ status: 200, body: user })
 
     bootcampRunsUrl = `/api/v0/bootcamps/${user.username}/`
-    fakeRuns = generateFakeRuns(3, {
+    fakeRuns = generateFakePayableRuns(3, {
       hasInstallment: true,
       hasPayment:     true
     })

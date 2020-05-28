@@ -10,6 +10,7 @@ import PrivateRoute from "../components/PrivateRoute"
 import ProfilePages from "./profile/ProfilePages"
 import LoginPages from "./login/LoginPages"
 import RegisterPages from "./register/RegisterPages"
+import ApplicationPages from "./applications/ApplicationPages"
 import PaymentPage from "./PaymentPage"
 import EmailConfirmPage from "./settings/EmailConfirmPage"
 import AccountSettingsPage from "./settings/AccountSettingsPage"
@@ -57,6 +58,10 @@ export default function App(props: Props) {
         <PrivateRoute
           path={urljoin(match.url, String(routes.accountSettings))}
           component={AccountSettingsPage}
+        />
+        <PrivateRoute
+          path={urljoin(match.url, String(routes.applications))}
+          component={ApplicationPages}
         />
       </Switch>
     </div>
