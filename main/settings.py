@@ -22,7 +22,7 @@ from main.envs import get_string, get_bool, get_int, get_list, get_any
 from main.sentry import init_sentry
 
 
-VERSION = "0.43.0"
+VERSION = "0.43.1"
 
 ENVIRONMENT = get_string(
     "BOOTCAMP_ENVIRONMENT",
