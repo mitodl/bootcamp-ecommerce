@@ -29,7 +29,7 @@ import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
 import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
 import type { BootcampRun, BootcampRunsResponse } from "../flow/bootcampTypes"
-import type { HttpAuthResponse, User } from "../flow/authTypes"
+import type { CurrentUser } from "../flow/authTypes"
 
 type Props = {
   ui: UIState,
@@ -50,7 +50,7 @@ type Props = {
   setTimeoutActive: (active: boolean) => void,
   setToastMessage: (payload: any) => void,
   showDialog: (dialogKey: string) => void,
-  currentUser: () => Promise<HttpAuthResponse<User>>
+  currentUser: ?CurrentUser
 }
 
 export class PaymentPage extends React.Component<Props> {
@@ -83,6 +83,7 @@ export class PaymentPage extends React.Component<Props> {
       currentUser
     } = this.props
     if (!bootcampRunsProcessing && currentUser) {
+      // $FlowFixMe: an anon user shouldn't end up here
       fetchBootcampRuns(currentUser.username)
     }
   }
@@ -180,7 +181,8 @@ export class PaymentPage extends React.Component<Props> {
         setTimeoutActive(false)
         const deadline = moment(ui.initialTime).add(2, "minutes")
         const now = moment()
-        if (now.isBefore(deadline)) {
+        // $FlowFixMe: an anon user won't end up here
+        if (now.isBefore(deadline) && currentUser.username) {
           fetchBootcampRuns(currentUser.username)
         } else {
           setToastMessage({

@@ -13,7 +13,7 @@ import {
 } from "../util/util"
 import type { UIState } from "../reducers/ui"
 import type { InputEvent } from "../flow/events"
-import type { HttpAuthResponse, User } from "../flow/authTypes"
+import type { CurrentUser } from "../flow/authTypes"
 
 export const PAYMENT_CONFIRMATION_DIALOG = "paymentConfirmationDialog"
 const isVisible = R.propOr(false, PAYMENT_CONFIRMATION_DIALOG)
@@ -30,7 +30,7 @@ export default class Payment extends React.Component<*, void> {
     setPaymentAmount: (event: InputEvent) => void,
     setSelectedBootcampRunKey: (event: InputEvent) => void,
     showDialog: (dialogKey: string) => void,
-    currentUser: () => Promise<HttpAuthResponse<User>>
+    currentUser: ?CurrentUser
   }
 
   getTotalOwedUpToInstallment = (nextInstallmentIndex: number): number => {
@@ -207,9 +207,13 @@ export default class Payment extends React.Component<*, void> {
       currentUser
     } = this.props
 
-    const welcomeMessage = !isNilOrBlank(currentUser.profile.name) ? (
-      <h1 className="greeting">Hi {currentUser.profile.name}!</h1>
-    ) : null
+    // $FlowFixMe: an anon user shouldn't be here
+    const welcomeMessage =
+      currentUser &&
+      currentUser.profile &&
+      !isNilOrBlank(currentUser.profile.name) ? (
+          <h1 className="greeting">Hi {currentUser.profile.name}!</h1>
+        ) : null
     let renderedRunChoice
     if (payableBootcampRunsData.length > 1) {
       renderedRunChoice = this.renderBootcampRunDropdown()
