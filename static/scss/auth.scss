@@ -164,16 +164,17 @@
   border-radius: 5px;
 
   &:hover {
-      color: white;
-      background-color: $outline-red;
+    color: white;
+    background-color: $outline-red;
   }
 }
 
 .profile-label {
   color: $label-gray;
   width: 201px;
+
   &:after {
-    content: ": "
+    content: ": ";
   }
 }
 
