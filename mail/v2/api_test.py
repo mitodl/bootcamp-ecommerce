@@ -180,7 +180,8 @@ def test_build_message(mocker, settings):
     context = {"context_key": "context_value"}
     metadata = EmailMetadata(tags=["my-tag"], user_variables={"k1": "v1", "k2": "v2"})
     patched_render = mocker.patch(
-        "mail.v2.api.render_email_templates", return_value=(subject, text_body, html_body)
+        "mail.v2.api.render_email_templates",
+        return_value=(subject, text_body, html_body),
     )
     patched_anymail_message = mocker.patch("mail.v2.api.AnymailMessage")
     mock_connection = mocker.Mock()
@@ -250,7 +251,9 @@ def test_send_message(mailoutbox):
 
 def test_send_message_failure(mocker):
     """Tests that send_messages logs all exceptions"""
-    sendmail = mocker.patch("mail.v2.api.AnymailMessage.send", side_effect=ConnectionError)
+    sendmail = mocker.patch(
+        "mail.v2.api.AnymailMessage.send", side_effect=ConnectionError
+    )
     patched_logger = mocker.patch("mail.v2.api.log")
     users = UserFactory.create_batch(2)
 

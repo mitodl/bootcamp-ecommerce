@@ -10,20 +10,64 @@ import wagtail.images.blocks
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wagtailcore', '0045_assign_unlock_grouppagepermission'),
-        ('cms', '0007_instructorspage'),
+        ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
+        ("cms", "0007_instructorspage"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ThreeColumnImageTextPage',
+            name="ThreeColumnImageTextPage",
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('column_image_text_section', wagtail.core.fields.StreamField([('column_image_text_section', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock(help_text='Heading that will highlight the main point.', max_length=100)), ('sub_heading', wagtail.core.blocks.CharBlock(help_text='Area sub heading.', max_length=250)), ('body', wagtail.core.blocks.RichTextBlock()), ('image', wagtail.images.blocks.ImageChooserBlock(help_text='image size must be at least 150x50 pixels.'))]))], help_text='Enter detail about area upto max 3 blocks.', null=True)),
+                (
+                    "page_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="wagtailcore.Page",
+                    ),
+                ),
+                (
+                    "column_image_text_section",
+                    wagtail.core.fields.StreamField(
+                        [
+                            (
+                                "column_image_text_section",
+                                wagtail.core.blocks.StructBlock(
+                                    [
+                                        (
+                                            "heading",
+                                            wagtail.core.blocks.CharBlock(
+                                                help_text="Heading that will highlight the main point.",
+                                                max_length=100,
+                                            ),
+                                        ),
+                                        (
+                                            "sub_heading",
+                                            wagtail.core.blocks.CharBlock(
+                                                help_text="Area sub heading.",
+                                                max_length=250,
+                                            ),
+                                        ),
+                                        ("body", wagtail.core.blocks.RichTextBlock()),
+                                        (
+                                            "image",
+                                            wagtail.images.blocks.ImageChooserBlock(
+                                                help_text="image size must be at least 150x50 pixels."
+                                            ),
+                                        ),
+                                    ]
+                                ),
+                            )
+                        ],
+                        help_text="Enter detail about area upto max 3 blocks.",
+                        null=True,
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
-            bases=('wagtailcore.page',),
-        ),
+            options={"abstract": False},
+            bases=("wagtailcore.page",),
+        )
     ]

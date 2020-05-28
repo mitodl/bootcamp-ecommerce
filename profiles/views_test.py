@@ -62,6 +62,7 @@ def test_get_user_by_id(user_client, user):
         "is_authenticated": True,
     }
 
+
 def test_get_user_by_me(user_client, user):
     """Test that user can request their own user by the 'me' alias"""
     resp = user_client.get(reverse("users_api-me"))

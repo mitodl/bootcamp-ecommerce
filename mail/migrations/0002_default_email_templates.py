@@ -28,7 +28,7 @@ Thanks & best regards,
 
 Admissions Committee
 MIT Global Entrepreneurship Bootcamps
-        """
+        """,
     )
 
     # second email for reminders to pay 2 days before deadline
@@ -51,7 +51,7 @@ Thanks & best regards,
 
 Admissions Committee
 MIT Global Entrepreneurship Bootcamps
-        """
+        """,
     )
 
     # third email for reminders to pay on the day of deadline
@@ -74,7 +74,7 @@ Thanks & best regards,
 
 Admissions Committee
 MIT Global Entrepreneurship Bootcamps
-        """
+        """,
     )
 
 
@@ -89,10 +89,6 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('mail', '0001_initial'),
-    ]
+    dependencies = [("mail", "0001_initial")]
 
-    operations = [
-        migrations.RunPython(forwards_func, reverse_func),
-    ]
+    operations = [migrations.RunPython(forwards_func, reverse_func)]

@@ -20,7 +20,8 @@ class MailgunClient:
     """
     Provides functions for communicating with the Mailgun REST API.
     """
-    _basic_auth_credentials = ('api', settings.MAILGUN_KEY)
+
+    _basic_auth_credentials = ("api", settings.MAILGUN_KEY)
 
     @staticmethod
     def default_params():
@@ -31,11 +32,11 @@ class MailgunClient:
         Returns:
             dict: A dict of default parameters for the Mailgun API
         """
-        return {'from': settings.EMAIL_SUPPORT}
+        return {"from": settings.EMAIL_SUPPORT}
 
     @classmethod
     def _mailgun_request(  # pylint: disable=too-many-arguments
-            cls, request_func, endpoint, params, sender_name=None, raise_for_status=True
+        cls, request_func, endpoint, params, sender_name=None, raise_for_status=True
     ):
         """
         Sends a request to the Mailgun API
@@ -48,19 +49,16 @@ class MailgunClient:
         Returns:
             requests.Response: HTTP response
         """
-        mailgun_url = '{}/{}'.format(settings.MAILGUN_URL, endpoint)
+        mailgun_url = "{}/{}".format(settings.MAILGUN_URL, endpoint)
         email_params = cls.default_params()
         email_params.update(params)
         # Update 'from' address if sender_name was specified
         if sender_name is not None:
-            email_params['from'] = "{sender_name} <{email}>".format(
-                sender_name=sender_name,
-                email=email_params['from']
+            email_params["from"] = "{sender_name} <{email}>".format(
+                sender_name=sender_name, email=email_params["from"]
             )
         response = request_func(
-            mailgun_url,
-            auth=cls._basic_auth_credentials,
-            data=email_params
+            mailgun_url, auth=cls._basic_auth_credentials, data=email_params
         )
         if response.status_code == status.HTTP_401_UNAUTHORIZED:
             message = "Mailgun API keys not properly configured."
@@ -71,9 +69,16 @@ class MailgunClient:
         return response
 
     @classmethod
-    def send_batch(cls, subject, body, recipients,  # pylint: disable=too-many-arguments, too-many-locals
-                   sender_address=None, sender_name=None, chunk_size=settings.MAILGUN_BATCH_CHUNK_SIZE,
-                   raise_for_status=True):
+    def send_batch(
+        cls,
+        subject,
+        body,
+        recipients,  # pylint: disable=too-many-arguments, too-many-locals
+        sender_address=None,
+        sender_name=None,
+        chunk_size=settings.MAILGUN_BATCH_CHUNK_SIZE,
+        raise_for_status=True,
+    ):  # pylint:disable=too-many-locals, too-many-arguments
         """
         Sends a text email to a list of recipients (one email per recipient) via batch.
 
@@ -99,16 +104,17 @@ class MailgunClient:
                along with recipients we failed to send to.
         """
         # Convert null contexts to empty dicts
-        recipients = (
-            (email, context or {}) for email, context in recipients
-        )
+        recipients = ((email, context or {}) for email, context in recipients)
 
         if settings.MAILGUN_RECIPIENT_OVERRIDE is not None:
             # This is used for debugging only
-            body = '{body}\n\n[overridden recipient]\n{recipient_data}'.format(
+            body = "{body}\n\n[overridden recipient]\n{recipient_data}".format(
                 body=body,
-                recipient_data='\n'.join(
-                    ["{}: {}".format(recipient, json.dumps(context)) for recipient, context in recipients]
+                recipient_data="\n".join(
+                    [
+                        "{}: {}".format(recipient, json.dumps(context))
+                        for recipient, context in recipients
+                    ]
                 ),
             )
             recipients = [(settings.MAILGUN_RECIPIENT_OVERRIDE, {})]
@@ -121,18 +127,18 @@ class MailgunClient:
             emails = list(chunk_dict.keys())
 
             params = {
-                'to': emails,
-                'subject': subject,
-                'text': body,
-                'recipient-variables': json.dumps(chunk_dict),
+                "to": emails,
+                "subject": subject,
+                "text": body,
+                "recipient-variables": json.dumps(chunk_dict),
             }
             if sender_address:
-                params['from'] = sender_address
+                params["from"] = sender_address
 
             try:
                 response = cls._mailgun_request(
                     requests.post,
-                    'messages',
+                    "messages",
                     params,
                     sender_name=sender_name,
                     raise_for_status=raise_for_status,
@@ -142,9 +148,7 @@ class MailgunClient:
             except ImproperlyConfigured:
                 raise
             except Exception as exception:  # pylint: disable=broad-except
-                exception_pairs.append(
-                    (emails, exception)
-                )
+                exception_pairs.append((emails, exception))
 
         if len(exception_pairs) > 0:
             raise SendBatchException(exception_pairs)
@@ -152,9 +156,16 @@ class MailgunClient:
         return responses
 
     @classmethod
-    def send_individual_email(cls, subject, body, recipient,  # pylint: disable=too-many-arguments
-                              recipient_variables=None,
-                              sender_address=None, sender_name=None, raise_for_status=True):
+    def send_individual_email(
+        cls,
+        subject,
+        body,
+        recipient,  # pylint: disable=too-many-arguments
+        recipient_variables=None,
+        sender_address=None,
+        sender_name=None,
+        raise_for_status=True,
+    ):  # pylint:disable=too-many-arguments
         """
         Sends a text email to a single recipient.
 

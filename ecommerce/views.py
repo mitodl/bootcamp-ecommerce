@@ -28,16 +28,9 @@ from ecommerce.api import (
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
 )
-from ecommerce.constants import (
-    CYBERSOURCE_DECISION_ACCEPT,
-    CYBERSOURCE_DECISION_CANCEL,
-)
+from ecommerce.constants import CYBERSOURCE_DECISION_ACCEPT, CYBERSOURCE_DECISION_CANCEL
 from ecommerce.exceptions import EcommerceException
-from ecommerce.models import (
-    Line,
-    Order,
-    Receipt,
-)
+from ecommerce.models import Line, Order, Receipt
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
 from hubspot.task_helpers import sync_hubspot_deal_from_order
@@ -54,6 +47,7 @@ class PaymentView(CreateAPIView):
     """
     View for payment API. This creates an Order in our system and provides a dictionary to send to Cybersource.
     """
+
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = PaymentSerializer
@@ -64,34 +58,35 @@ class PaymentView(CreateAPIView):
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        payment_amount = Decimal(serializer.data['payment_amount'])
-        application_id = serializer.data['application_id']
+        payment_amount = Decimal(serializer.data["payment_amount"])
+        application_id = serializer.data["application_id"]
 
         application = get_object_or_404(
-            BootcampApplication,
-            id=application_id,
-            user=self.request.user,
+            BootcampApplication, id=application_id, user=self.request.user
         )
         if application.state != AppStates.AWAITING_PAYMENT.value:
             log.error(
-                "User attempted to pay for application %d with invalid state %s", application.id, application.state,
+                "User attempted to pay for application %d with invalid state %s",
+                application.id,
+                application.state,
             )
             raise ValidationError("Invalid application state")
 
         order = create_unfulfilled_order(
-            application=application,
-            payment_amount=payment_amount,
+            application=application, payment_amount=payment_amount
         )
 
         # Sync order data with hubspot
         sync_hubspot_deal_from_order(order)
 
-        redirect_url = self.request.build_absolute_uri(reverse('pay'))
+        redirect_url = self.request.build_absolute_uri(reverse("pay"))
 
-        return Response({
-            'payload': generate_cybersource_sa_payload(order, redirect_url),
-            'url': settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL,
-        })
+        return Response(
+            {
+                "payload": generate_cybersource_sa_payload(order, redirect_url),
+                "url": settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL,
+            }
+        )
 
 
 class OrderFulfillmentView(APIView):
@@ -102,7 +97,7 @@ class OrderFulfillmentView(APIView):
     """
 
     authentication_classes = ()
-    permission_classes = (IsSignedByCyberSource, )
+    permission_classes = (IsSignedByCyberSource,)
 
     def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
         """
@@ -112,17 +107,19 @@ class OrderFulfillmentView(APIView):
         receipt = Receipt.objects.create(data=request.data)
 
         # Link the order with the receipt if we can parse it
-        reference_number = request.data['req_reference_number']
+        reference_number = request.data["req_reference_number"]
         order = get_new_order_by_reference_number(reference_number)
         receipt.order = order
         receipt.save()
 
-        decision = request.data['decision']
+        decision = request.data["decision"]
         if order.status == Order.FAILED and decision == CYBERSOURCE_DECISION_CANCEL:
             # This is a duplicate message, ignore since it's already handled
             return Response(status=statuses.HTTP_200_OK)
         elif order.status != Order.CREATED:
-            raise EcommerceException("Order {} is expected to have status 'created'".format(order.id))
+            raise EcommerceException(
+                "Order {} is expected to have status 'created'".format(order.id)
+            )
 
         if decision != CYBERSOURCE_DECISION_ACCEPT:
             handle_rejected_order(order=order, decision=decision)
@@ -140,40 +137,35 @@ class UserBootcampRunDetail(GenericAPIView):
     """
     Class based view for user bootcamp run view.
     """
-    authentication_classes = (
-        SessionAuthentication,
-    )
-    permission_classes = (
-        IsAuthenticated,
-        CanReadIfSelf,
-    )
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated, CanReadIfSelf)
     lookup_field = "run_key"
     lookup_url_kwarg = "run_key"
     queryset = BootcampRun.objects.all()
 
-    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
+    def get(
+        self, request, username, *args, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         Returns a serialized bootcamp run and payment for a user
         """
         user = get_object_or_404(
-            User,
-            social_auth__uid=username,
-            social_auth__provider=EdxOrgOAuth2.name
+            User, social_auth__uid=username, social_auth__provider=EdxOrgOAuth2.name
         )
         bootcamp_run = self.get_object()
-        return Response(serialize_user_bootcamp_run(user=user, bootcamp_run=bootcamp_run))
+        return Response(
+            serialize_user_bootcamp_run(user=user, bootcamp_run=bootcamp_run)
+        )
 
 
 class UserBootcampRunStatement(RetrieveAPIView):
     """
     View class for a user's bootcamp run payment statement
     """
-    authentication_classes = (
-        SessionAuthentication,
-    )
-    permission_classes = (
-        IsAuthenticated,
-    )
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = "run_key"
     lookup_url_kwarg = "run_key"
     queryset = BootcampRun.objects.all()
@@ -190,9 +182,11 @@ class UserBootcampRunStatement(RetrieveAPIView):
         return Response(
             {
                 "user": serialize_maybe_user(request.user),
-                "bootcamp_run": serialize_user_bootcamp_run(user=request.user, bootcamp_run=bootcamp_run)
+                "bootcamp_run": serialize_user_bootcamp_run(
+                    user=request.user, bootcamp_run=bootcamp_run
+                ),
             },
-            template_name='bootcamp/statement.html'
+            template_name="bootcamp/statement.html",
         )
 
 
@@ -200,22 +194,18 @@ class UserBootcampRunList(APIView):
     """
     Class based view for user bootcamp run list view.
     """
-    authentication_classes = (
-        SessionAuthentication,
-    )
-    permission_classes = (
-        IsAuthenticated,
-        CanReadIfSelf,
-    )
 
-    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated, CanReadIfSelf)
+
+    def get(
+        self, request, username, *args, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         Returns serialized bootcamp runs and payments for all runs that a user can pay for.
         """
         user = get_object_or_404(
-            User,
-            social_auth__uid=username,
-            social_auth__provider=EdxOrgOAuth2.name
+            User, social_auth__uid=username, social_auth__provider=EdxOrgOAuth2.name
         )
 
         return Response(serialize_user_bootcamp_runs(user=user))
@@ -225,25 +215,26 @@ class CheckoutDataView(RetrieveAPIView):
     """
     List application ecommerce data for a user, for payable applications
     """
-    authentication_classes = (
-        SessionAuthentication,
-    )
-    permission_classes = (
-        IsAuthenticated,
-    )
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = CheckoutDataSerializer
 
     def get_queryset(self):
         """Filter on valid applications for the user"""
-        return BootcampApplication.objects.filter(
-            user=self.request.user,
-            state=AppStates.AWAITING_PAYMENT.value,
-        ).select_related("bootcamp_run").prefetch_related(
-            "bootcamp_run__personal_prices",
-            "bootcamp_run__installment_set",
-            "orders",
-            "orders__line_set",
-        ).order_by("id")
+        return (
+            BootcampApplication.objects.filter(
+                user=self.request.user, state=AppStates.AWAITING_PAYMENT.value
+            )
+            .select_related("bootcamp_run")
+            .prefetch_related(
+                "bootcamp_run__personal_prices",
+                "bootcamp_run__installment_set",
+                "orders",
+                "orders__line_set",
+            )
+            .order_by("id")
+        )
 
     def get_object(self):
         """Get the application given the query parameter"""

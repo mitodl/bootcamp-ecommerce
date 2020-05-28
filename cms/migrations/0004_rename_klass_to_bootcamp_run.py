@@ -7,18 +7,20 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('klasses', '0015_rename_klass_to_bootcamp_run'),
-        ('cms', '0003_bootcamp_product_run_page'),
+        ("klasses", "0015_rename_klass_to_bootcamp_run"),
+        ("cms", "0003_bootcamp_product_run_page"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='bootcamprunpage',
-            name='klasses',
-        ),
+        migrations.RemoveField(model_name="bootcamprunpage", name="klasses"),
         migrations.AddField(
-            model_name='bootcamprunpage',
-            name='bootcamp_run',
-            field=models.OneToOneField(help_text='The bootcamp run for this page', null=True, on_delete=django.db.models.deletion.SET_NULL, to='klasses.BootcampRun'),
+            model_name="bootcamprunpage",
+            name="bootcamp_run",
+            field=models.OneToOneField(
+                help_text="The bootcamp run for this page",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="klasses.BootcampRun",
+            ),
         ),
     ]

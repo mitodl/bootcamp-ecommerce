@@ -1,7 +1,11 @@
 """API for bootcamp applications app"""
 from django.db import transaction
 
-from applications.constants import AppStates, REVIEW_STATUS_REJECTED, REVIEW_STATUS_APPROVED
+from applications.constants import (
+    AppStates,
+    REVIEW_STATUS_REJECTED,
+    REVIEW_STATUS_APPROVED,
+)
 from applications.exceptions import InvalidApplicationException
 from applications.models import BootcampApplication
 from main.utils import now_in_utc
@@ -21,13 +25,8 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
         Tuple[BootcampApplication, bool]: The bootcamp application paired with a boolean indicating whether
             or not a new application was created
     """
-    bootcamp_app, created = (
-        BootcampApplication.objects
-        .select_for_update()
-        .get_or_create(
-            user=user,
-            bootcamp_run_id=bootcamp_run_id,
-        )
+    bootcamp_app, created = BootcampApplication.objects.select_for_update().get_or_create(
+        user=user, bootcamp_run_id=bootcamp_run_id
     )
     if created:
         derived_state = derive_application_state(bootcamp_app)
@@ -36,7 +35,9 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
     return bootcamp_app, created
 
 
-def derive_application_state(bootcamp_application):  # pylint: disable=too-many-return-statements
+def derive_application_state(
+    bootcamp_application
+):  # pylint: disable=too-many-return-statements
     """
     Returns the correct state that an application should be in based on the application object itself and related data
 
@@ -46,12 +47,17 @@ def derive_application_state(bootcamp_application):  # pylint: disable=too-many-
     Returns:
         str: The derived state of the bootcamp application based on related data
     """
-    if not hasattr(bootcamp_application.user, "profile") or not bootcamp_application.user.profile.is_complete:
+    if (
+        not hasattr(bootcamp_application.user, "profile")
+        or not bootcamp_application.user.profile.is_complete
+    ):
         return AppStates.AWAITING_PROFILE_COMPLETION.value
     if not bootcamp_application.resume_file:
         return AppStates.AWAITING_RESUME.value
     submissions = list(bootcamp_application.submissions.all())
-    submission_review_statuses = [submission.review_status for submission in submissions]
+    submission_review_statuses = [
+        submission.review_status for submission in submissions
+    ]
     if any([status == REVIEW_STATUS_REJECTED for status in submission_review_statuses]):
         return AppStates.REJECTED.value
     elif any([status is None for status in submission_review_statuses]):
@@ -77,9 +83,7 @@ def get_required_submission_type(application):
     submission_subquery = application.submissions.all()
     return (
         application.bootcamp_run.application_steps.exclude(
-            id__in=submission_subquery.values_list(
-                "run_application_step", flat=True
-            )
+            id__in=submission_subquery.values_list("run_application_step", flat=True)
         )
         .order_by("application_step__step_order")
         .values_list("application_step__submission_type", flat=True)
@@ -97,7 +101,9 @@ def process_upload_resume(resume_file, bootcamp_application):
 
     """
     if bootcamp_application.state == AppStates.AWAITING_PROFILE_COMPLETION.value:
-        raise InvalidApplicationException("The BootcampApplication is still awaiting profile completion")
+        raise InvalidApplicationException(
+            "The BootcampApplication is still awaiting profile completion"
+        )
     bootcamp_application.upload_resume(resume_file)
     # when state transition happens need to save manually
     bootcamp_application.save()
@@ -115,8 +121,7 @@ def set_submission_review_status(submission, review_status):
     if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
         raise InvalidApplicationException(
             "The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
-                bootcamp_application.id,
-                bootcamp_application.state
+                bootcamp_application.id, bootcamp_application.state
             )
         )
     submission.review_status = review_status

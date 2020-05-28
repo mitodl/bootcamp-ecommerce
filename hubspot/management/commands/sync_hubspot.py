@@ -10,7 +10,8 @@ from hubspot.api import (
     make_contact_sync_message,
     make_product_sync_message,
     make_deal_sync_message,
-    make_line_sync_message)
+    make_line_sync_message,
+)
 from hubspot.tasks import sync_bulk_with_hubspot
 from klasses.models import Bootcamp
 
@@ -35,7 +36,13 @@ class Command(BaseCommand):
                 returns a sync message for that model
             object_type (str) one of "CONTACT", "DEAL", "PRODUCT", "LINE_ITEM"
         """
-        sync_bulk_with_hubspot(objects, make_object_sync_message, object_type, print_to_console=True, **kwargs)
+        sync_bulk_with_hubspot(
+            objects,
+            make_object_sync_message,
+            object_type,
+            print_to_console=True,
+            **kwargs,
+        )
 
     def sync_contacts(self):
         """
@@ -55,9 +62,7 @@ class Command(BaseCommand):
         """
         print("  Syncing products with hubspot products...")
         self.bulk_sync_model(
-            Bootcamp.objects.all(),
-            make_product_sync_message,
-            "PRODUCT",
+            Bootcamp.objects.all(), make_product_sync_message, "PRODUCT"
         )
         print("  Finished")
 
@@ -67,8 +72,12 @@ class Command(BaseCommand):
         and the ecommerce Order
         """
         print("  Syncing orders with hubspot deals...")
-        self.bulk_sync_model(BootcampApplication.objects.all(), make_deal_sync_message, "DEAL")
-        self.bulk_sync_model(BootcampApplication.objects.all(), make_line_sync_message, "LINE_ITEM")
+        self.bulk_sync_model(
+            BootcampApplication.objects.all(), make_deal_sync_message, "DEAL"
+        )
+        self.bulk_sync_model(
+            BootcampApplication.objects.all(), make_line_sync_message, "LINE_ITEM"
+        )
         print("  Finished")
 
     def sync_all(self):
@@ -107,9 +116,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Syncing with hubspot...")
         if not (
-            options["sync_contacts"] or
-            options["sync_products"] or
-            options["sync_deals"]
+            options["sync_contacts"]
+            or options["sync_products"]
+            or options["sync_deals"]
         ):
             # If no flags are set, sync everything
             self.sync_all()

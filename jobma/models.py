@@ -1,10 +1,7 @@
 """jobma models"""
 from django.db import models
 
-from jobma.constants import (
-    JOBMA_INTERVIEW_STATUSES,
-    PENDING,
-)
+from jobma.constants import JOBMA_INTERVIEW_STATUSES, PENDING
 from klasses.models import BootcampRun
 from main.models import AuditableModel, AuditModel
 from main.utils import serialize_model_object
@@ -32,15 +29,17 @@ class Job(AuditableModel):
 
 class JobAudit(AuditModel):
     """An audit model for Job"""
+
     job = models.ForeignKey(Job, null=True, on_delete=models.SET_NULL)
 
     @classmethod
     def get_related_field_name(cls):
-        return 'job'
+        return "job"
 
 
 class Interview(AuditableModel):
     """An interview for a job which has been created on Jobma"""
+
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
 
     interview_url = models.TextField(blank=True, null=True)
@@ -49,7 +48,10 @@ class Interview(AuditableModel):
     candidate_last_name = models.TextField()
     candidate_phone = models.TextField()
     candidate_email = models.TextField()
-    status = models.TextField(default=PENDING, choices=[(status, status) for status in JOBMA_INTERVIEW_STATUSES])
+    status = models.TextField(
+        default=PENDING,
+        choices=[(status, status) for status in JOBMA_INTERVIEW_STATUSES],
+    )
 
     @classmethod
     def get_audit_class(cls):
@@ -64,8 +66,9 @@ class Interview(AuditableModel):
 
 class InterviewAudit(AuditModel):
     """Audit model for Interview"""
+
     interview = models.ForeignKey(Interview, null=True, on_delete=models.SET_NULL)
 
     @classmethod
     def get_related_field_name(cls):
-        return 'interview'
+        return "interview"

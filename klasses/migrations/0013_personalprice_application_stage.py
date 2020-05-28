@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0012_adding_source_to_klass'),
-    ]
+    dependencies = [("klasses", "0012_adding_source_to_klass")]
 
     operations = [
         migrations.AddField(
-            model_name='personalprice',
-            name='application_stage',
+            model_name="personalprice",
+            name="application_stage",
             field=models.CharField(blank=True, max_length=40),
-        ),
+        )
     ]

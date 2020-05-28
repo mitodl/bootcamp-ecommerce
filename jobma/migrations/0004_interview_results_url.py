@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('jobma', '0003_add_interview_link'),
-    ]
+    dependencies = [("jobma", "0003_add_interview_link")]
 
     operations = [
         migrations.AddField(
-            model_name='interview',
-            name='results_url',
+            model_name="interview",
+            name="results_url",
             field=models.TextField(blank=True, null=True),
-        ),
+        )
     ]

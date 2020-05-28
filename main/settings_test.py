@@ -38,65 +38,65 @@ class TestSettings(TestCase):
         Returns:
             dict: dictionary of the newly reloaded settings ``vars``
         """
-        importlib.reload(sys.modules['main.settings'])
+        importlib.reload(sys.modules["main.settings"])
         # Restore settings to original settings after test
         self.addCleanup(cleanup_settings)
-        return vars(sys.modules['main.settings'])
+        return vars(sys.modules["main.settings"])
 
     def test_admin_settings(self):
         """Verify that we configure email with environment variable"""
 
-        settings_vars = self.patch_settings({
-            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_ADMIN_EMAIL': '',
-        })
-        self.assertFalse(settings_vars.get('ADMINS', False))
-
-        test_admin_email = 'cuddle_bunnies@example.com'
-        settings_vars = self.patch_settings({
-            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_ADMIN_EMAIL': test_admin_email,
-        })
-        self.assertEqual(
-            (('Admins', test_admin_email),),
-            settings_vars['ADMINS']
+        settings_vars = self.patch_settings(
+            {
+                "BOOTCAMP_ECOMMERCE_BASE_URL": "http://bootcamp.example.com",
+                "BOOTCAMP_ADMIN_EMAIL": "",
+            }
         )
+        self.assertFalse(settings_vars.get("ADMINS", False))
+
+        test_admin_email = "cuddle_bunnies@example.com"
+        settings_vars = self.patch_settings(
+            {
+                "BOOTCAMP_ECOMMERCE_BASE_URL": "http://bootcamp.example.com",
+                "BOOTCAMP_ADMIN_EMAIL": test_admin_email,
+            }
+        )
+        self.assertEqual((("Admins", test_admin_email),), settings_vars["ADMINS"])
         # Manually set ADMIN to our test setting and verify e-mail
         # goes where we expect
-        settings.ADMINS = (('Admins', test_admin_email),)
-        mail.mail_admins('Test', 'message')
+        settings.ADMINS = (("Admins", test_admin_email),)
+        mail.mail_admins("Test", "message")
         self.assertIn(test_admin_email, mail.outbox[0].to)
 
     def test_db_ssl_enable(self):
         """Verify that we can enable/disable database SSL with a var"""
 
         # Check default state is SSL on
-        settings_vars = self.patch_settings({
-            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-        })
+        settings_vars = self.patch_settings(
+            {"BOOTCAMP_ECOMMERCE_BASE_URL": "http://bootcamp.example.com"}
+        )
         self.assertEqual(
-            settings_vars['DATABASES']['default']['OPTIONS'],
-            {'sslmode': 'require'}
+            settings_vars["DATABASES"]["default"]["OPTIONS"], {"sslmode": "require"}
         )
 
         # Check enabling the setting explicitly
-        settings_vars = self.patch_settings({
-            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_DB_DISABLE_SSL': 'True',
-        })
-        self.assertEqual(
-            settings_vars['DATABASES']['default']['OPTIONS'],
-            {}
+        settings_vars = self.patch_settings(
+            {
+                "BOOTCAMP_ECOMMERCE_BASE_URL": "http://bootcamp.example.com",
+                "BOOTCAMP_DB_DISABLE_SSL": "True",
+            }
         )
+        self.assertEqual(settings_vars["DATABASES"]["default"]["OPTIONS"], {})
 
         # Disable it
-        settings_vars = self.patch_settings({
-            'BOOTCAMP_ECOMMERCE_BASE_URL': 'http://bootcamp.example.com',
-            'BOOTCAMP_DB_DISABLE_SSL': 'False',
-        })
+        settings_vars = self.patch_settings(
+            {
+                "BOOTCAMP_ECOMMERCE_BASE_URL": "http://bootcamp.example.com",
+                "BOOTCAMP_DB_DISABLE_SSL": "False",
+            }
+        )
         self.assertEqual(
-            settings_vars['DATABASES']['default']['OPTIONS'],
-            {'sslmode': 'require'}
+            settings_vars["DATABASES"]["default"]["OPTIONS"], {"sslmode": "require"}
         )
 
     @staticmethod

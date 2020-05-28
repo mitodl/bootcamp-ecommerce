@@ -10,6 +10,7 @@ from klasses.models import BootcampRun
 
 class BootcampViewSet(ListModelMixin, GenericViewSet):
     """Viewset for bootcamps"""
+
     permission_classes = (IsAuthenticated,)
     serializer_class = BootcampRunSerializer
 
@@ -17,5 +18,7 @@ class BootcampViewSet(ListModelMixin, GenericViewSet):
         """Make a queryset which optionally shows what runs are available for enrollment"""
         queryset = BootcampRun.objects.all().select_related("bootcamp")
         if self.request.query_params.get("available") == "true":
-            queryset = queryset.filter(start_date__lt=Now()).exclude(applications__user=self.request.user)
+            queryset = queryset.filter(start_date__lt=Now()).exclude(
+                applications__user=self.request.user
+            )
         return queryset.order_by("id")

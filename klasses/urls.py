@@ -9,6 +9,4 @@ from klasses.views import BootcampViewSet
 router = routers.DefaultRouter()
 router.register("bootcampruns", BootcampViewSet, "bootcamp-runs")
 
-urlpatterns = [
-    path("api/", include(router.urls)),
-]
+urlpatterns = [path("api/", include(router.urls))]

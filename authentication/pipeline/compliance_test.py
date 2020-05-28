@@ -48,7 +48,13 @@ def test_verify_api_disabled_no_compliance_check(mocker, mock_create_user_strate
     ],
 )
 def test_verify_exports_compliance_user_active(
-    mailoutbox, mocker, mock_create_user_strategy, user, is_active, inquiry_exists, should_verify
+    mailoutbox,
+    mocker,
+    mock_create_user_strategy,
+    user,
+    is_active,
+    inquiry_exists,
+    should_verify,
 ):  # pylint: disable=too-many-arguments
     """Assert that the user is verified only if they already haven't been"""
     user.is_active = is_active
@@ -60,7 +66,10 @@ def test_verify_exports_compliance_user_active(
         is_denied=False, is_unknown=False
     )
 
-    assert compliance.verify_exports_compliance(mock_create_user_strategy, None, user=user) == {}
+    assert (
+        compliance.verify_exports_compliance(mock_create_user_strategy, None, user=user)
+        == {}
+    )
 
     if should_verify:
         mock_api.verify_user_with_exports.assert_called_once_with(user)
@@ -79,7 +88,9 @@ def test_verify_exports_compliance_no_record(mocker, mock_create_user_strategy, 
     mock_api.verify_user_with_exports.assert_called_once_with(user)
 
 
-def test_verify_exports_compliance_api_raises_exception(mocker, mock_create_user_strategy, user):
+def test_verify_exports_compliance_api_raises_exception(
+    mocker, mock_create_user_strategy, user
+):
     """Assert that an error to try again later is raised if the export api raises an exception"""
 
     mock_api = mocker.patch("authentication.pipeline.compliance.api")
@@ -92,7 +103,9 @@ def test_verify_exports_compliance_api_raises_exception(mocker, mock_create_user
 
 
 @pytest.mark.parametrize("email_fails", [True, False])
-def test_verify_exports_compliance_denied(mailoutbox, mocker, mock_create_user_strategy, user, email_fails):
+def test_verify_exports_compliance_denied(
+    mailoutbox, mocker, mock_create_user_strategy, user, email_fails
+):
     """Assert that a UserExportBlockedException is raised if the inquiry result is denied"""
     reason_code = 100
     mock_api = mocker.patch("authentication.pipeline.compliance.api")
@@ -116,7 +129,9 @@ def test_verify_exports_compliance_denied(mailoutbox, mocker, mock_create_user_s
     assert len(mailoutbox) == (0 if email_fails else 1)
 
 
-def test_verify_exports_compliance_unknown(mailoutbox, mocker, mock_create_user_strategy, user):
+def test_verify_exports_compliance_unknown(
+    mailoutbox, mocker, mock_create_user_strategy, user
+):
     """Assert that a UserExportBlockedException is raised if the inquiry result is unknown"""
     mock_api = mocker.patch("authentication.pipeline.compliance.api")
     mock_api.verify_user_with_exports.return_value = mocker.Mock(

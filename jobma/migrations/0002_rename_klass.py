@@ -7,14 +7,16 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jobma', '0001_initial'),
-        ('klasses', '0015_rename_klass_to_bootcamp_run'),
+        ("jobma", "0001_initial"),
+        ("klasses", "0015_rename_klass_to_bootcamp_run"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='job',
-            name='run',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='klasses.BootcampRun'),
-        ),
+            model_name="job",
+            name="run",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="klasses.BootcampRun"
+            ),
+        )
     ]

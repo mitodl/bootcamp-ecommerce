@@ -14,32 +14,38 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 
-from main.views import (
-    index,
-    react,
-    BackgroundImagesCSSView
-)
+from main.views import index, react, BackgroundImagesCSSView
 
 
 urlpatterns = [
-    url(r'^$', index, name='bootcamp-index'),
-
-    url(r'^pay/$', react, name='pay'),
-
-    url(r'^terms_of_service/$', TemplateView.as_view(template_name='bootcamp/tos.html'), name='bootcamp-tos'),
-    url(r'^terms_and_conditions/$', TemplateView.as_view(template_name='bootcamp/tac.html'), name='bootcamp-tac'),
-    url(r'^status/', include('server_status.urls')),
+    url(r"^$", index, name="bootcamp-index"),
+    url(r"^pay/$", react, name="pay"),
+    url(
+        r"^terms_of_service/$",
+        TemplateView.as_view(template_name="bootcamp/tos.html"),
+        name="bootcamp-tos",
+    ),
+    url(
+        r"^terms_and_conditions/$",
+        TemplateView.as_view(template_name="bootcamp/tac.html"),
+        name="bootcamp-tac",
+    ),
+    url(r"^status/", include("server_status.urls")),
     url(r"^admin/", admin.site.urls),
-    url(r'^hijack/', include('hijack.urls', namespace='hijack')),
-    url('', include('applications.urls')),
-    url('', include('ecommerce.urls')),
-    url('', include('social_django.urls', namespace='social')),
+    url(r"^hijack/", include("hijack.urls", namespace="hijack")),
+    url("", include("applications.urls")),
+    url("", include("ecommerce.urls")),
+    url("", include("social_django.urls", namespace="social")),
     path("", include("authentication.urls")),
     path("", include("profiles.urls")),
     path("", include("klasses.urls")),
-    url('', include('jobma.urls')),
-    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
-    url(r'^background-images\.css$', BackgroundImagesCSSView.as_view(), name='background-images-css'),
+    url("", include("jobma.urls")),
+    url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    url(
+        r"^background-images\.css$",
+        BackgroundImagesCSSView.as_view(),
+        name="background-images-css",
+    ),
     # named routes mapped to the react app
     path("signin/", react, name="login"),
     path("signin/password/", react, name="login-password"),
@@ -71,13 +77,13 @@ urlpatterns = [
         ServeView.as_view(),
         name="wagtailimages_serve",
     ),
-    re_path(r'^cms/', include(wagtailadmin_urls)),
-    re_path(r'^documents/', include(wagtaildocs_urls)),
-    re_path(r'bootcamps/', include(wagtail_urls)),
+    re_path(r"^cms/", include(wagtailadmin_urls)),
+    re_path(r"^documents/", include(wagtaildocs_urls)),
+    re_path(r"bootcamps/", include(wagtail_urls)),
 ] + (
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +
-    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 )
 
-handler404 = 'main.views.page_404'
-handler500 = 'main.views.page_500'
+handler404 = "main.views.page_404"
+handler500 = "main.views.page_500"

@@ -20,8 +20,8 @@ class CanReadIfSelf(BasePermission):
 
         user = get_object_or_404(
             User,
-            social_auth__uid=view.kwargs['username'],
-            social_auth__provider=EdxOrgOAuth2.name
+            social_auth__uid=view.kwargs["username"],
+            social_auth__provider=EdxOrgOAuth2.name,
         )
 
         # if the user is looking for their own profile, they're good

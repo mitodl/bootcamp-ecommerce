@@ -4,7 +4,11 @@ Tests for serializers
 import pytest
 
 from klasses.factories import BootcampFactory, BootcampRunFactory, InstallmentFactory
-from klasses.serializers import BootcampSerializer, BootcampRunSerializer, InstallmentSerializer
+from klasses.serializers import (
+    BootcampSerializer,
+    BootcampRunSerializer,
+    InstallmentSerializer,
+)
 from main.test_utils import serializer_date_format
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
@@ -19,8 +23,8 @@ def test_installment_serializer():
     inst = InstallmentFactory.create()
 
     expected = {
-        'amount': inst.amount,
-        'deadline': inst.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        "amount": inst.amount,
+        "deadline": inst.deadline.strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     assert InstallmentSerializer(inst).data == expected
 

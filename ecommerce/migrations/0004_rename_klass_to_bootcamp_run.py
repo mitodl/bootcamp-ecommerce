@@ -6,14 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ecommerce', '0003_rename_line_klass_id_to_klass_key'),
-        ('klasses', '0015_rename_klass_to_bootcamp_run'),
+        ("ecommerce", "0003_rename_line_klass_id_to_klass_key"),
+        ("klasses", "0015_rename_klass_to_bootcamp_run"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='line',
-            old_name='klass_key',
-            new_name='run_key',
-        ),
+            model_name="line", old_name="klass_key", new_name="run_key"
+        )
     ]

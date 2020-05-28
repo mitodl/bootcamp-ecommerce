@@ -7,23 +7,22 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0011_bootcamp_legacy_default_false'),
-    ]
+    dependencies = [("klasses", "0011_bootcamp_legacy_default_false")]
 
     operations = [
         migrations.AddField(
-            model_name='klass',
-            name='source',
-            field=models.CharField(choices=[('SMApply', 'SMApply'), ('FluidRev', 'FluidRev')], default='FluidRev', max_length=10),
+            model_name="klass",
+            name="source",
+            field=models.CharField(
+                choices=[("SMApply", "SMApply"), ("FluidRev", "FluidRev")],
+                default="FluidRev",
+                max_length=10,
+            ),
         ),
         migrations.AlterField(
-            model_name='klass',
-            name='klass_key',
-            field=models.IntegerField(),
+            model_name="klass", name="klass_key", field=models.IntegerField()
         ),
         migrations.AlterUniqueTogether(
-            name='klass',
-            unique_together=set([('klass_key', 'source')]),
+            name="klass", unique_together=set([("klass_key", "source")])
         ),
     ]

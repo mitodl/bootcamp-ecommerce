@@ -7,18 +7,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('ecommerce', '0001_initial'),
-    ]
+    dependencies = [("ecommerce", "0001_initial")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='line',
-            name='klasse_id',
-        ),
+        migrations.RemoveField(model_name="line", name="klasse_id"),
         migrations.AddField(
-            model_name='line',
-            name='klass_id',
+            model_name="line",
+            name="klass_id",
             field=models.IntegerField(default=None),
             preserve_default=False,
         ),

@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('applications', '0003_move_review_fields'),
-    ]
+    dependencies = [("applications", "0003_move_review_fields")]
 
     operations = [
         migrations.AddField(
-            model_name='bootcampapplication',
-            name='resume_upload_date',
+            model_name="bootcampapplication",
+            name="resume_upload_date",
             field=models.DateTimeField(blank=True, null=True),
-        ),
+        )
     ]

@@ -15,6 +15,7 @@ def try_again(func):
 
     The wrapped function should return a requests response object.
     """
+
     @functools.wraps(func)
     def wrapper_try_again(*args, **kwargs):
         max_attempts = 3

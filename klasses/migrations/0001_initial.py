@@ -10,44 +10,74 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Bootcamp',
+            name="Bootcamp",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.TextField()),
             ],
         ),
         migrations.CreateModel(
-            name='Installment',
+            name="Installment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('installment_number', models.IntegerField()),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=20)),
-                ('deadline', models.DateTimeField(null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("installment_number", models.IntegerField()),
+                ("amount", models.DecimalField(decimal_places=2, max_digits=20)),
+                ("deadline", models.DateTimeField(null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Klass',
+            name="Klass",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.TextField(blank=True)),
-                ('klass_id', models.IntegerField()),
-                ('start_date', models.DateTimeField(null=True)),
-                ('end_date', models.DateTimeField(null=True)),
-                ('bootcamp', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='klasses.Bootcamp')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.TextField(blank=True)),
+                ("klass_id", models.IntegerField()),
+                ("start_date", models.DateTimeField(null=True)),
+                ("end_date", models.DateTimeField(null=True)),
+                (
+                    "bootcamp",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="klasses.Bootcamp",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='installment',
-            name='klass',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='klasses.Klass'),
+            model_name="installment",
+            name="klass",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="klasses.Klass"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='installment',
-            unique_together=set([('klass', 'installment_number')]),
+            name="installment", unique_together=set([("klass", "installment_number")])
         ),
     ]

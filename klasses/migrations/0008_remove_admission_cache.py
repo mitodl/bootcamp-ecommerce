@@ -7,24 +7,13 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0007_add_installment_index'),
-    ]
+    dependencies = [("klasses", "0007_add_installment_index")]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='bootcampadmissioncache',
-            unique_together=set([]),
+            name="bootcampadmissioncache", unique_together=set([])
         ),
-        migrations.RemoveField(
-            model_name='bootcampadmissioncache',
-            name='klass',
-        ),
-        migrations.RemoveField(
-            model_name='bootcampadmissioncache',
-            name='user',
-        ),
-        migrations.DeleteModel(
-            name='BootcampAdmissionCache',
-        ),
+        migrations.RemoveField(model_name="bootcampadmissioncache", name="klass"),
+        migrations.RemoveField(model_name="bootcampadmissioncache", name="user"),
+        migrations.DeleteModel(name="BootcampAdmissionCache"),
     ]

@@ -2,10 +2,7 @@
 from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
 
-from factory.fuzzy import (
-    FuzzyInteger,
-    FuzzyText,
-)
+from factory.fuzzy import FuzzyInteger, FuzzyText
 
 from jobma.models import Interview, Job
 from klasses.factories import BootcampRunFactory
@@ -13,6 +10,7 @@ from klasses.factories import BootcampRunFactory
 
 class JobFactory(DjangoModelFactory):
     """Factory for Job"""
+
     job_id = FuzzyInteger(10, 12345)
     job_code = FuzzyText()
     job_title = FuzzyText()
@@ -25,6 +23,7 @@ class JobFactory(DjangoModelFactory):
 
 class InterviewFactory(DjangoModelFactory):
     """Factory for Interview"""
+
     job = SubFactory(JobFactory)
     interview_url = Faker("url")
     candidate_first_name = FuzzyText()

@@ -10,6 +10,7 @@ from requests.exceptions import HTTPError
 from backends import utils
 from backends.utils import get_social_username
 from backends.edxorg import EdxOrgOAuth2
+
 # pylint: disable=protected-access
 
 
@@ -33,7 +34,11 @@ def update_social_extra_data(user, data):
 @pytest.fixture
 def mock_refresh(mocker, social_extra_data):
     """Mock refresh_token"""
-    yield mocker.patch('backends.edxorg.EdxOrgOAuth2.refresh_token', return_value=social_extra_data, autospec=True)
+    yield mocker.patch(
+        "backends.edxorg.EdxOrgOAuth2.refresh_token",
+        return_value=social_extra_data,
+        autospec=True,
+    )
 
 
 # pylint: disable=redefined-outer-name
@@ -42,7 +47,7 @@ def test_refresh(mock_refresh, now, user):
 
     extra_data = {
         "updated_at": (now - timedelta(weeks=1)).timestamp(),
-        "expires_in": 100  # seconds
+        "expires_in": 100,  # seconds
     }
     social_user = update_social_extra_data(user, extra_data)
     utils.refresh_user_token(social_user)
@@ -52,7 +57,10 @@ def test_refresh(mock_refresh, now, user):
 def test_refresh_no_extradata(mock_refresh, user):
     """The refresh needs to be called because there is not valid timestamps"""
     social_user = user.social_auth.get(provider=EdxOrgOAuth2.name)
-    social_user.extra_data = {"access_token": "fooooootoken", "refresh_token": "baaaarrefresh"}
+    social_user.extra_data = {
+        "access_token": "fooooootoken",
+        "refresh_token": "baaaarrefresh",
+    }
     social_user.save()
     utils.refresh_user_token(social_user)
     assert mock_refresh.called is True
@@ -62,7 +70,7 @@ def test_no_refresh(mock_refresh, now, user):
     """The refresh does not need to be called"""
     extra_data = {
         "updated_at": (now - timedelta(minutes=1)).timestamp(),
-        "expires_in": 31535999  # 1 year - 1 second
+        "expires_in": 31_535_999,  # 1 year - 1 second
     }
     social_user = update_social_extra_data(user, extra_data)
     utils.refresh_user_token(social_user)
@@ -71,6 +79,7 @@ def test_no_refresh(mock_refresh, now, user):
 
 def test_refresh_400_error_server(mocker, mock_refresh, user):
     """Test to check what happens when the OAUTH server returns 400 code"""
+
     def raise_http_error(*args, **kwargs):  # pylint: disable=unused-argument
         """Mock function to raise an exception"""
         error = HTTPError()
@@ -86,6 +95,7 @@ def test_refresh_400_error_server(mocker, mock_refresh, user):
 
 def test_refresh_401_error_server(mocker, mock_refresh, user):
     """Test to check what happens when the OAUTH server returns 401 code"""
+
     def raise_http_error(*args, **kwargs):  # pylint: disable=unused-argument
         """Mock function to raise an exception"""
         error = HTTPError()

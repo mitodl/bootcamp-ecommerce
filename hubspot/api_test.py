@@ -100,12 +100,12 @@ def test_send_hubspot_request(mocker, request_method, endpoint, api_url, expecte
 
 def test_send_hubspot_request_try_again(mocker):
     """Test the try again decorator"""
-    mock_request = mocker.patch(f"hubspot.api.requests.get", return_value=Mock(
-        raise_for_status=Mock(side_effect=HTTPError())))
-
-    api.send_hubspot_request(
-        "sync-errors", "/extensions/ecomm/v1", "GET"
+    mock_request = mocker.patch(
+        f"hubspot.api.requests.get",
+        return_value=Mock(raise_for_status=Mock(side_effect=HTTPError())),
     )
+
+    api.send_hubspot_request("sync-errors", "/extensions/ecomm/v1", "GET")
     assert mock_request.call_count == 3
 
 
@@ -151,7 +151,9 @@ def test_make_contact_sync_message():
     serialized_user["street_address"] = "\n".join(serialized_user.pop("street_address"))
     assert contact_sync_message == [
         {
-            "integratorObjectId": "{}-{}".format(settings.HUBSPOT_ID_PREFIX, profile.id),
+            "integratorObjectId": "{}-{}".format(
+                settings.HUBSPOT_ID_PREFIX, profile.id
+            ),
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
             "propertyNameToValues": api.sanitize_properties(serialized_user),
@@ -168,12 +170,15 @@ def test_make_deal_sync_message():
     deal_sync_message = api.make_deal_sync_message(application.id)
     assert deal_sync_message == [
         {
-            "integratorObjectId": "{}-BootcampApplication-{}".format(settings.HUBSPOT_ID_PREFIX, application.id),
+            "integratorObjectId": "{}-BootcampApplication-{}".format(
+                settings.HUBSPOT_ID_PREFIX, application.id
+            ),
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
             "propertyNameToValues": api.sanitize_properties(serialized_app),
         }
     ]
+
 
 @pytest.mark.django_db
 def test_make_line_sync_message():
@@ -185,12 +190,15 @@ def test_make_line_sync_message():
     line_sync_message = api.make_line_sync_message(application.id)
     assert line_sync_message == [
         {
-            "integratorObjectId": "{}-BootcampApplication-{}".format(settings.HUBSPOT_ID_PREFIX, application.id),
+            "integratorObjectId": "{}-BootcampApplication-{}".format(
+                settings.HUBSPOT_ID_PREFIX, application.id
+            ),
             "action": "UPSERT",
             "changeOccurredTimestamp": any_instance_of(int),
             "propertyNameToValues": api.sanitize_properties(serialized_line),
         }
     ]
+
 
 @pytest.mark.django_db
 def test_make_contact_sync_message_no_profile():

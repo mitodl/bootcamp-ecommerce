@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profiles', '0002_profile_fluidreview_id'),
-    ]
+    dependencies = [("profiles", "0002_profile_fluidreview_id")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='smapply_id',
+            model_name="profile",
+            name="smapply_id",
             field=models.IntegerField(blank=True, null=True),
-        ),
+        )
     ]

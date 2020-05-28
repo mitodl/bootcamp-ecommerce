@@ -6,16 +6,22 @@ import wagtail.core.fields
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('cms', '0008_column_image_text_section'),
-    ]
+    dependencies = [("cms", "0008_column_image_text_section")]
 
     operations = [
         migrations.CreateModel(
-            name='SiteNotification',
+            name="SiteNotification",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', wagtail.core.fields.RichTextField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", wagtail.core.fields.RichTextField(max_length=255)),
             ],
-        ),
+        )
     ]

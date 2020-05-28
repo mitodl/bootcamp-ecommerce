@@ -3,6 +3,7 @@ Fixtures for pipeline tests
 """
 import pytest
 
+
 @pytest.fixture
 def mock_create_user_strategy(mocker):
     """Fixture that returns a valid strategy for create_user_via_email"""

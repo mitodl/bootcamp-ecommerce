@@ -12,21 +12,39 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('klasses', '0003_rename_klass_id_to_klass_key'),
+        ("klasses", "0003_rename_klass_id_to_klass_key"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BootcampAdmissionCache',
+            name="BootcampAdmissionCache",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('klass', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='klasses.Klass')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data", django.contrib.postgres.fields.jsonb.JSONField()),
+                (
+                    "klass",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="klasses.Klass"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AlterUniqueTogether(
-            name='bootcampadmissioncache',
-            unique_together=set([('user', 'klass')]),
+            name="bootcampadmissioncache", unique_together=set([("user", "klass")])
         ),
     ]

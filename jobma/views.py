@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 class JobmaWebhookView(GenericAPIView):
     """An endpoint for Jobma to publish the interview status"""
+
     permission_classes = (JobmaWebhookPermission,)
     lookup_field = "pk"
     queryset = Interview.objects.all()
@@ -29,7 +30,9 @@ class JobmaWebhookView(GenericAPIView):
         interview.save_and_log(None)
 
         if status in JOBMA_COMPLETED_INTERVIEW_STATUSES:
-            for submission in interview.videointerviewsubmission.app_step_submissions.all():
+            for (
+                submission
+            ) in interview.videointerviewsubmission.app_step_submissions.all():
                 submission.bootcamp_application.complete_interview()
                 submission.bootcamp_application.save()
 

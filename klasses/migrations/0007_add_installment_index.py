@@ -7,17 +7,13 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0006_removed_installment_number'),
-    ]
+    dependencies = [("klasses", "0006_removed_installment_number")]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='installment',
-            unique_together=set([('klass', 'deadline')]),
+            name="installment", unique_together=set([("klass", "deadline")])
         ),
         migrations.AlterIndexTogether(
-            name='installment',
-            index_together=set([('klass', 'deadline')]),
+            name="installment", index_together=set([("klass", "deadline")])
         ),
     ]

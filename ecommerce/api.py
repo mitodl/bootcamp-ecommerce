@@ -20,20 +20,14 @@ from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from main.utils import remove_html_tags
 from ecommerce.constants import CYBERSOURCE_DECISION_CANCEL
-from ecommerce.exceptions import (
-    EcommerceException,
-    ParseException,
-)
-from ecommerce.models import (
-    Line,
-    Order,
-)
+from ecommerce.exceptions import EcommerceException, ParseException
+from ecommerce.models import Line, Order
 from mail.api import MailgunClient
 
 
-ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 log = logging.getLogger(__name__)
-_REFERENCE_NUMBER_PREFIX = 'BOOTCAMP-'
+_REFERENCE_NUMBER_PREFIX = "BOOTCAMP-"
 
 
 @transaction.atomic
@@ -64,7 +58,7 @@ def create_unfulfilled_order(*, application, payment_amount):
     Line.objects.create(
         order=order,
         run_key=run_key,
-        description='Installment for {}'.format(bootcamp_run.title),
+        description="Installment for {}".format(bootcamp_run.title),
         price=payment_amount,
     )
     order.save_and_log(application.user)
@@ -82,16 +76,16 @@ def generate_cybersource_sa_signature(payload):
     """
     # This is documented in certain CyberSource sample applications:
     # http://apps.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_SOP/html/wwhelp/wwhimpl/js/html/wwhelp.htm#href=creating_profile.05.6.html
-    keys = payload['signed_field_names'].split(',')
-    message = ','.join('{}={}'.format(key, payload[key]) for key in keys)
+    keys = payload["signed_field_names"].split(",")
+    message = ",".join("{}={}".format(key, payload[key]) for key in keys)
 
     digest = hmac.new(
-        settings.CYBERSOURCE_SECURITY_KEY.encode('utf-8'),
-        msg=message.encode('utf-8'),
+        settings.CYBERSOURCE_SECURITY_KEY.encode("utf-8"),
+        msg=message.encode("utf-8"),
         digestmod=hashlib.sha256,
     ).digest()
 
-    return b64encode(digest).decode('utf-8')
+    return b64encode(digest).decode("utf-8")
 
 
 def generate_cybersource_sa_payload(order, redirect_url):
@@ -120,53 +114,55 @@ def generate_cybersource_sa_payload(order, redirect_url):
     run_title = remove_html_tags(bootcamp_run.title)
     if not run_title:
         raise ValidationError(
-            'Bootcamp run {run_key} title is either empty or contains only HTML.'.format(run_key=run_key)
+            "Bootcamp run {run_key} title is either empty or contains only HTML.".format(
+                run_key=run_key
+            )
         )
 
     bootcamp_title = remove_html_tags(bootcamp_run.bootcamp.title)
     if not bootcamp_title:
         raise ValidationError(
-            'Bootcamp {bootcamp_id} title is either empty or contains only HTML.'.format(bootcamp_id=bootcamp_run.bootcamp.id)
+            "Bootcamp {bootcamp_id} title is either empty or contains only HTML.".format(
+                bootcamp_id=bootcamp_run.bootcamp.id
+            )
         )
 
     payload = {
-        'access_key': settings.CYBERSOURCE_ACCESS_KEY,
-        'amount': str(order.total_price_paid),
-        'consumer_id': get_social_username(order.user),
-        'currency': 'USD',
-        'locale': 'en-us',
-        'item_0_code': 'klass',
-        'item_0_name': '{}'.format(run_title),
-        'item_0_quantity': 1,
-        'item_0_sku': '{}'.format(run_key),
-        'item_0_tax_amount': '0',
-        'item_0_unit_price': str(order.total_price_paid),
-        'line_item_count': 1,
-        'override_custom_cancel_page': "{base}?status=cancel".format(base=redirect_url),
-        'override_custom_receipt_page': "{base}?status=receipt&order={order}&award={award}".format(
-            base=redirect_url,
-            order=order.id,
-            award=run_key
+        "access_key": settings.CYBERSOURCE_ACCESS_KEY,
+        "amount": str(order.total_price_paid),
+        "consumer_id": get_social_username(order.user),
+        "currency": "USD",
+        "locale": "en-us",
+        "item_0_code": "klass",
+        "item_0_name": "{}".format(run_title),
+        "item_0_quantity": 1,
+        "item_0_sku": "{}".format(run_key),
+        "item_0_tax_amount": "0",
+        "item_0_unit_price": str(order.total_price_paid),
+        "line_item_count": 1,
+        "override_custom_cancel_page": "{base}?status=cancel".format(base=redirect_url),
+        "override_custom_receipt_page": "{base}?status=receipt&order={order}&award={award}".format(
+            base=redirect_url, order=order.id, award=run_key
         ),
-        'reference_number': make_reference_id(order),
-        'profile_id': settings.CYBERSOURCE_PROFILE_ID,
-        'signed_date_time': datetime.now(tz=pytz.UTC).strftime(ISO_8601_FORMAT),
-        'transaction_type': 'sale',
-        'transaction_uuid': uuid.uuid4().hex,
-        'unsigned_field_names': '',
-        'merchant_defined_data1': 'bootcamp',
-        'merchant_defined_data2': '{}'.format(bootcamp_title),
-        'merchant_defined_data3': 'klass',
-        'merchant_defined_data4': '{}'.format(run_title),
-        'merchant_defined_data5': '{}'.format(run_key),
-        'merchant_defined_data6': 'learner',
-        'merchant_defined_data7': '{}'.format(order.user.profile.name),
-        'merchant_defined_data8': '{}'.format(order.user.email),
+        "reference_number": make_reference_id(order),
+        "profile_id": settings.CYBERSOURCE_PROFILE_ID,
+        "signed_date_time": datetime.now(tz=pytz.UTC).strftime(ISO_8601_FORMAT),
+        "transaction_type": "sale",
+        "transaction_uuid": uuid.uuid4().hex,
+        "unsigned_field_names": "",
+        "merchant_defined_data1": "bootcamp",
+        "merchant_defined_data2": "{}".format(bootcamp_title),
+        "merchant_defined_data3": "klass",
+        "merchant_defined_data4": "{}".format(run_title),
+        "merchant_defined_data5": "{}".format(run_key),
+        "merchant_defined_data6": "learner",
+        "merchant_defined_data7": "{}".format(order.user.profile.name),
+        "merchant_defined_data8": "{}".format(order.user.email),
     }
 
-    field_names = sorted(list(payload.keys()) + ['signed_field_names'])
-    payload['signed_field_names'] = ','.join(field_names)
-    payload['signature'] = generate_cybersource_sa_signature(payload)
+    field_names = sorted(list(payload.keys()) + ["signed_field_names"])
+    payload["signed_field_names"] = ",".join(field_names)
+    payload["signature"] = generate_cybersource_sa_signature(payload)
 
     return payload
 
@@ -183,22 +179,28 @@ def get_new_order_by_reference_number(reference_number):
             An order
     """
     if not reference_number.startswith(_REFERENCE_NUMBER_PREFIX):
-        raise ParseException("Reference number must start with {}".format(_REFERENCE_NUMBER_PREFIX))
-    reference_number = reference_number[len(_REFERENCE_NUMBER_PREFIX):]
+        raise ParseException(
+            "Reference number must start with {}".format(_REFERENCE_NUMBER_PREFIX)
+        )
+    reference_number = reference_number[len(_REFERENCE_NUMBER_PREFIX) :]
 
     try:
-        order_id_pos = reference_number.rindex('-')
+        order_id_pos = reference_number.rindex("-")
     except ValueError:
         raise ParseException("Unable to find order number in reference number")
 
     try:
-        order_id = int(reference_number[order_id_pos + 1:])
+        order_id = int(reference_number[order_id_pos + 1 :])
     except ValueError:
         raise ParseException("Unable to parse order number")
 
     prefix = reference_number[:order_id_pos]
     if prefix != settings.CYBERSOURCE_REFERENCE_PREFIX:
-        log.error("CyberSource prefix doesn't match: %s != %s", prefix, settings.CYBERSOURCE_REFERENCE_PREFIX)
+        log.error(
+            "CyberSource prefix doesn't match: %s != %s",
+            prefix,
+            settings.CYBERSOURCE_REFERENCE_PREFIX,
+        )
         raise ParseException("CyberSource prefix doesn't match")
 
     try:
@@ -218,7 +220,9 @@ def make_reference_id(order):
         str:
             A reference number for use with CyberSource to keep track of orders
     """
-    return "{}{}-{}".format(_REFERENCE_NUMBER_PREFIX, settings.CYBERSOURCE_REFERENCE_PREFIX, order.id)
+    return "{}{}-{}".format(
+        _REFERENCE_NUMBER_PREFIX, settings.CYBERSOURCE_REFERENCE_PREFIX, order.id
+    )
 
 
 def complete_successful_order(order):
@@ -234,10 +238,7 @@ def complete_successful_order(order):
     run = order.get_bootcamp_run()
     application = order.application
     if application.is_paid_in_full:
-        BootcampRunEnrollment.objects.get_or_create(
-            user=order.user,
-            bootcamp_run=run,
-        )
+        BootcampRunEnrollment.objects.get_or_create(user=order.user, bootcamp_run=run)
 
         try:
             application.complete()
@@ -271,10 +272,8 @@ def handle_rejected_order(*, order, decision):
                 "Order fulfillment failed, decision={decision}".format(
                     decision=decision
                 ),
-                "Order fulfillment failed for order {order}".format(
-                    order=order,
-                ),
-                settings.ECOMMERCE_EMAIL
+                "Order fulfillment failed for order {order}".format(order=order),
+                settings.ECOMMERCE_EMAIL,
             )
         except:  # pylint: disable=bare-except
             log.exception(
@@ -295,8 +294,10 @@ def serialize_user_bootcamp_runs(user):
         list: list of dictionaries describing a bootcamp run and payments for it by the user
     """
     return [
-        serialize_user_bootcamp_run(user, bootcamp_run) for bootcamp_run in
-        BootcampRun.objects.filter(applications__user=user).select_related('bootcamp').order_by('run_key')
+        serialize_user_bootcamp_run(user, bootcamp_run)
+        for bootcamp_run in BootcampRun.objects.filter(applications__user=user)
+        .select_related("bootcamp")
+        .order_by("run_key")
     ]
 
 
@@ -321,7 +322,14 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
         "start_date": bootcamp_run.start_date,
         "end_date": bootcamp_run.end_date,
         "price": bootcamp_run.personal_price(user),
-        "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run.run_key).get('total') or Decimal('0.00'),
-        "payments": LineSerializer(Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True).data,
-        "installments": InstallmentSerializer(bootcamp_run.installment_set.order_by('deadline'), many=True).data,
+        "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run.run_key).get(
+            "total"
+        )
+        or Decimal("0.00"),
+        "payments": LineSerializer(
+            Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True
+        ).data,
+        "installments": InstallmentSerializer(
+            bootcamp_run.installment_set.order_by("deadline"), many=True
+        ).data,
     }

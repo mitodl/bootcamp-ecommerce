@@ -15,7 +15,7 @@ def api_keys(request):
         "APIKEYS": {
             "GOOGLE_ANALYTICS": settings.GA_TRACKING_ID,
             "SMARTLOOK": settings.SL_TRACKING_ID,
-            "GOOGLE_TAG_MANAGER": settings.GTM_TRACKING_ID
+            "GOOGLE_TAG_MANAGER": settings.GTM_TRACKING_ID,
         }
     }
 
@@ -28,5 +28,5 @@ def configuration_context(request):
         "zendesk_config": {
             "help_widget_enabled": settings.ZENDESK_CONFIG.get("HELP_WIDGET_ENABLED"),
             "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
-        },
+        }
     }

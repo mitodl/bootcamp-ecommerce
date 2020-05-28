@@ -17,7 +17,11 @@ from hubspot.api import (
     get_sync_errors,
     hubspot_timestamp,
     parse_hubspot_id,
-    make_product_sync_message, make_deal_sync_message, make_line_sync_message, exists_in_hubspot)
+    make_product_sync_message,
+    make_deal_sync_message,
+    make_line_sync_message,
+    exists_in_hubspot,
+)
 from hubspot.models import HubspotErrorCheck, HubspotLineResync
 from klasses.models import PersonalPrice
 
@@ -31,7 +35,7 @@ ASSOCIATED_DEAL_RE = re.compile(fr"\[hs_assoc__deal_id: (.+)\]")
 def sync_contact_with_hubspot(user_id):
     """Send a sync-message to sync a user with a hubspot contact"""
     body = make_contact_sync_message(user_id)
-    if not body[0].get('propertyNameToValues', {}).get('email'):
+    if not body[0].get("propertyNameToValues", {}).get("email"):
         return  # Skip if message is missing required field
 
     response = send_hubspot_request("CONTACT", HUBSPOT_SYNC_URL, "PUT", body=body)
@@ -82,17 +86,19 @@ def check_hubspot_api_errors():
             details = error.get("details", "")
 
             if (
-                obj_id is not None and
-                "LINE_ITEM" in obj_type and
-                error_type == "INVALID_ASSOCIATION_PROPERTY" and
-                ASSOCIATED_DEAL_RE.search(details) is not None
+                obj_id is not None
+                and "LINE_ITEM" in obj_type
+                and error_type == "INVALID_ASSOCIATION_PROPERTY"
+                and ASSOCIATED_DEAL_RE.search(details) is not None
             ):
                 try:
                     personal_price = PersonalPrice.objects.get(id=obj_id)
                 except ObjectDoesNotExist:
                     pass
                 else:
-                    HubspotLineResync.objects.get_or_create(personal_price=personal_price)
+                    HubspotLineResync.objects.get_or_create(
+                        personal_price=personal_price
+                    )
                     continue
 
             log.error(
@@ -123,7 +129,9 @@ def retry_invalid_line_associations():
             sync_line_with_hubspot(hubspot_line_resync.personal_price.id)
 
 
-def sync_bulk_with_hubspot(objects, make_object_sync_message, object_type, print_to_console=False, **kwargs):
+def sync_bulk_with_hubspot(
+    objects, make_object_sync_message, object_type, print_to_console=False, **kwargs
+):
     """
     Sync all database objects of a certain type with hubspot
     Args:
@@ -133,14 +141,14 @@ def sync_bulk_with_hubspot(objects, make_object_sync_message, object_type, print
         object_type (str) one of "CONTACT", "DEAL", "PRODUCT", "LINE_ITEM"
         print_to_console (bool) whether to print status messages to console
     """
-    sync_messages = [
-        make_object_sync_message(obj.id, **kwargs)[0] for obj in objects
-    ]
+    sync_messages = [make_object_sync_message(obj.id, **kwargs)[0] for obj in objects]
 
     if object_type == "CONTACT":
         # Skip sync if message is missing required field
         sync_messages = [
-            message for message in sync_messages if message.get('propertyNameToValues', {}).get('email')
+            message
+            for message in sync_messages
+            if message.get("propertyNameToValues", {}).get("email")
         ]
 
     while len(sync_messages) > 0:
@@ -162,4 +170,4 @@ def sync_bulk_with_hubspot(objects, make_object_sync_message, object_type, print
                     )
                 )
             else:
-                log.exception('Bulk sync failed for %s', object_type)
+                log.exception("Bulk sync failed for %s", object_type)

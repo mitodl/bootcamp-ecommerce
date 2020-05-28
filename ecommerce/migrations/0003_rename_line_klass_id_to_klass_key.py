@@ -7,14 +7,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('ecommerce', '0002_rename_klass'),
-    ]
+    dependencies = [("ecommerce", "0002_rename_klass")]
 
     operations = [
         migrations.RenameField(
-            model_name='line',
-            old_name='klass_id',
-            new_name='klass_key',
-        ),
+            model_name="line", old_name="klass_id", new_name="klass_key"
+        )
     ]

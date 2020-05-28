@@ -7,14 +7,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0001_initial'),
-    ]
+    dependencies = [("klasses", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='klass',
-            name='klass_id',
-            field=models.IntegerField(unique=True),
-        ),
+            model_name="klass", name="klass_id", field=models.IntegerField(unique=True)
+        )
     ]

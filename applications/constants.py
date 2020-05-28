@@ -19,6 +19,7 @@ SUBMISSION_TYPE_STATE = {
 
 class AppStates(Enum):
     """Enum of possible bootcamp application states"""
+
     AWAITING_PROFILE_COMPLETION = "AWAITING_PROFILE_COMPLETION"
     AWAITING_RESUME = "AWAITING_RESUME"
     AWAITING_USER_SUBMISSIONS = "AWAITING_USER_SUBMISSIONS"
@@ -32,10 +33,9 @@ class AppStates(Enum):
         return self.value
 
 
-VALID_APP_STATE_CHOICES = list(zip(
-    (member.value for member in AppStates),
-    (member.value for member in AppStates),
-))
+VALID_APP_STATE_CHOICES = list(
+    zip((member.value for member in AppStates), (member.value for member in AppStates))
+)
 REVIEW_STATUS_APPROVED = "approved"
 REVIEW_STATUS_REJECTED = "rejected"
 ALL_REVIEW_STATUSES = [REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED]

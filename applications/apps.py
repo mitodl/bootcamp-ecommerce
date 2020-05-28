@@ -4,7 +4,8 @@ from django.apps import AppConfig
 
 class ApplicationConfig(AppConfig):
     """AppConfig for bootcamp applications"""
-    name = 'applications'
+
+    name = "applications"
 
     def ready(self):
         """Application is ready"""

@@ -21,13 +21,13 @@ class IsSignedByCyberSource(BasePermission):
         Returns true if request params are signed by CyberSource
         """
         signature = generate_cybersource_sa_signature(request.data)
-        if request.data['signature'] == signature:
+        if request.data["signature"] == signature:
             return True
         else:
             log.error(
                 "Cybersource signature failed: we expected %s but we got %s. Payload: %s",
                 signature,
-                request.data['signature'],
+                request.data["signature"],
                 request.data,
             )
             return False

@@ -213,7 +213,9 @@ def webpack_dev_server_url(request):
     """
     Get the full URL where the webpack dev server should be running
     """
-    return 'http://{}:{}'.format(webpack_dev_server_host(request), settings.WEBPACK_DEV_SERVER_PORT)
+    return "http://{}:{}".format(
+        webpack_dev_server_host(request), settings.WEBPACK_DEV_SERVER_PORT
+    )
 
 
 def now_in_utc():
@@ -236,9 +238,9 @@ def serialize_model_object(obj):
             A representation of the model
     """
     # serialize works on iterables so we need to wrap object in a list, then unwrap it
-    data = json.loads(serialize('json', [obj]))[0]
-    serialized = data['fields']
-    serialized['id'] = data['pk']
+    data = json.loads(serialize("json", [obj]))[0]
+    serialized = data["fields"]
+    serialized["id"] = data["pk"]
     return serialized
 
 
@@ -253,7 +255,9 @@ def get_field_names(model):
             A list of field names
     """
     return [
-        field.name for field in model._meta.get_fields() if not field.auto_created  # pylint: disable=protected-access
+        field.name
+        for field in model._meta.get_fields()
+        if not field.auto_created  # pylint: disable=protected-access
     ]
 
 
@@ -292,8 +296,8 @@ def chunks(iterable, chunk_size=20):
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text)
+    clean = re.compile("<.*?>")
+    return re.sub(clean, "", text)
 
 
 def get_error_response_summary(response):

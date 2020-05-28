@@ -35,16 +35,15 @@ from main.utils import now_in_utc
 def test_derive_application_state():
     """derive_application_state should return the correct state based on the bootcamp application and related data"""
     bootcamp_run = BootcampRunFactory.create()
-    installment = InstallmentFactory.create(bootcamp_run=bootcamp_run, amount=Decimal('100'))
+    installment = InstallmentFactory.create(
+        bootcamp_run=bootcamp_run, amount=Decimal("100")
+    )
     run_steps = BootcampRunApplicationStepFactory.create_batch(
-        2,
-        bootcamp_run=bootcamp_run
+        2, bootcamp_run=bootcamp_run
     )
 
     app = BootcampApplicationFactory.create(
-        bootcamp_run=bootcamp_run,
-        user__profile=None,
-        resume_file=None,
+        bootcamp_run=bootcamp_run, user__profile=None, resume_file=None
     )
     assert derive_application_state(app) == AppStates.AWAITING_PROFILE_COMPLETION.value
 
@@ -52,18 +51,13 @@ def test_derive_application_state():
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.AWAITING_RESUME.value
 
-    app.resume_file = SimpleUploadedFile(
-        "resume.txt",
-        b"these are the file contents!"
-    )
+    app.resume_file = SimpleUploadedFile("resume.txt", b"these are the file contents!")
     app.save()
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.AWAITING_USER_SUBMISSIONS.value
 
     first_submission = ApplicationStepSubmissionFactory.create(
-        bootcamp_application=app,
-        run_application_step=run_steps[0],
-        review_status=None
+        bootcamp_application=app, run_application_step=run_steps[0], review_status=None
     )
     assert derive_application_state(app) == AppStates.AWAITING_SUBMISSION_REVIEW.value
 
@@ -85,7 +79,7 @@ def test_derive_application_state():
         order__user=app.user,
         order__application=app,
         run_key=app.bootcamp_run.run_key,
-        price=installment.amount
+        price=installment.amount,
     )
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.COMPLETE.value
@@ -97,10 +91,7 @@ def test_derive_application_state_rejected():
     run_step = BootcampRunApplicationStepFactory.create()
     app = BootcampApplicationFactory.create(
         bootcamp_run=run_step.bootcamp_run,
-        resume_file=SimpleUploadedFile(
-            "resume.txt",
-            b"these are the file contents!"
-        )
+        resume_file=SimpleUploadedFile("resume.txt", b"these are the file contents!"),
     )
     ApplicationStepSubmissionFactory.create(
         bootcamp_application=app,
@@ -118,11 +109,14 @@ def test_get_or_create_bootcamp_application(mocker):
     application state set properly
     """
     patched_derive_state = mocker.patch(
-        "applications.api.derive_application_state", return_value=AppStates.COMPLETE.value
+        "applications.api.derive_application_state",
+        return_value=AppStates.COMPLETE.value,
     )
     users = UserFactory.create_batch(2)
     bootcamp_runs = BootcampRunFactory.create_batch(2)
-    bootcamp_app, created = get_or_create_bootcamp_application(bootcamp_run_id=bootcamp_runs[0].id, user=users[0])
+    bootcamp_app, created = get_or_create_bootcamp_application(
+        bootcamp_run_id=bootcamp_runs[0].id, user=users[0]
+    )
     patched_derive_state.assert_called_once_with(bootcamp_app)
     assert bootcamp_app.bootcamp_run == bootcamp_runs[0]
     assert bootcamp_app.user == users[0]
@@ -130,10 +124,11 @@ def test_get_or_create_bootcamp_application(mocker):
     assert created is True
     # The function should just return the existing application if one exists already
     existing_app = BootcampApplicationFactory.create(
-        user=users[1],
-        bootcamp_run=bootcamp_runs[1]
+        user=users[1], bootcamp_run=bootcamp_runs[1]
     )
-    bootcamp_app, created = get_or_create_bootcamp_application(bootcamp_run_id=bootcamp_runs[1].id, user=users[1])
+    bootcamp_app, created = get_or_create_bootcamp_application(
+        bootcamp_run_id=bootcamp_runs[1].id, user=users[1]
+    )
     assert bootcamp_app == existing_app
     assert created is False
 
@@ -143,33 +138,45 @@ def test_process_upload_resume():
     """
     process_upload_resume should raise an exception if in wrong state
     """
-    existing_app = BootcampApplicationFactory(state=AppStates.AWAITING_PROFILE_COMPLETION.value)
-    resume_file = SimpleUploadedFile('resume.pdf', b'file_content')
+    existing_app = BootcampApplicationFactory(
+        state=AppStates.AWAITING_PROFILE_COMPLETION.value
+    )
+    resume_file = SimpleUploadedFile("resume.pdf", b"file_content")
     with pytest.raises(InvalidApplicationException):
         process_upload_resume(resume_file, existing_app)
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("review,other_submissions,other_steps,expected", [
+@pytest.mark.parametrize(
+    "review,other_submissions,other_steps,expected",
+    [
         (REVIEW_STATUS_APPROVED, True, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
-    (REVIEW_STATUS_APPROVED, False, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
+        (
+            REVIEW_STATUS_APPROVED,
+            False,
+            True,
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+        ),
         (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
         (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
-])
+    ],
+)
 def test_set_submission_review_status(review, other_submissions, other_steps, expected):
     """
     set_submission_review_status should set submission review and update application state
     """
-    bootcamp_application = BootcampApplicationFactory(state=AppStates.AWAITING_SUBMISSION_REVIEW.value)
+    bootcamp_application = BootcampApplicationFactory(
+        state=AppStates.AWAITING_SUBMISSION_REVIEW.value
+    )
     submission = ApplicationStepSubmissionFactory(
         review_status=None,
         bootcamp_application=bootcamp_application,
-        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
     )
     if other_submissions:
         application_step = BootcampRunApplicationStepFactory.create(
             bootcamp_run=bootcamp_application.bootcamp_run,
-            application_step__bootcamp=bootcamp_application.bootcamp_run.bootcamp
+            application_step__bootcamp=bootcamp_application.bootcamp_run.bootcamp,
         )
         ApplicationStepSubmissionFactory.create(
             review_status=None,
@@ -177,7 +184,9 @@ def test_set_submission_review_status(review, other_submissions, other_steps, ex
             run_application_step=application_step,
         )
     if other_steps:
-        BootcampRunApplicationStepFactory.create(bootcamp_run=bootcamp_application.bootcamp_run)
+        BootcampRunApplicationStepFactory.create(
+            bootcamp_run=bootcamp_application.bootcamp_run
+        )
 
     set_submission_review_status(submission, review)
     assert submission.review_status == review

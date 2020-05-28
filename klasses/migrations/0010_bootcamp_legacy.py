@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('klasses', '0009_personal_price'),
-    ]
+    dependencies = [("klasses", "0009_personal_price")]
 
     operations = [
         migrations.AddField(
-            model_name='bootcamp',
-            name='legacy',
+            model_name="bootcamp",
+            name="legacy",
             field=models.BooleanField(default=True),
-        ),
+        )
     ]

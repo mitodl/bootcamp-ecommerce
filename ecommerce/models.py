@@ -13,11 +13,7 @@ from django.db.models import (
 )
 
 
-from main.models import (
-    AuditableModel,
-    AuditModel,
-    TimestampedModel,
-)
+from main.models import AuditableModel, AuditModel, TimestampedModel
 from main.utils import serialize_model_object
 from klasses.models import BootcampRun
 
@@ -26,10 +22,11 @@ class Order(AuditableModel, TimestampedModel):
     """
     Represents a payment the user has made
     """
-    FULFILLED = 'fulfilled'
-    FAILED = 'failed'
-    CREATED = 'created'
-    REFUNDED = 'refunded'
+
+    FULFILLED = "fulfilled"
+    FAILED = "failed"
+    CREATED = "created"
+    REFUNDED = "refunded"
 
     STATUSES = [CREATED, FULFILLED, FAILED, REFUNDED]
 
@@ -46,7 +43,7 @@ class Order(AuditableModel, TimestampedModel):
         null=True,
         blank=True,
         db_index=True,
-        related_name="orders"
+        related_name="orders",
     )
 
     def __str__(self):
@@ -78,7 +75,7 @@ class Order(AuditableModel, TimestampedModel):
         Add any Lines to the serialized representation of the Order
         """
         data = serialize_model_object(self)
-        data['lines'] = [serialize_model_object(line) for line in self.line_set.all()]
+        data["lines"] = [serialize_model_object(line) for line in self.line_set.all()]
         return data
 
     def get_bootcamp_run(self):
@@ -98,11 +95,12 @@ class OrderAudit(AuditModel):
     """
     Audit model for Order. This also stores information for Line.
     """
+
     order = ForeignKey(Order, null=True, on_delete=SET_NULL)
 
     @classmethod
     def get_related_field_name(cls):
-        return 'order'
+        return "order"
 
     def __str__(self):
         """Description for Order"""
@@ -113,6 +111,7 @@ class Line(TimestampedModel):
     """
     Represents a line item in the order
     """
+
     order = ForeignKey(Order, on_delete=CASCADE)
     run_key = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=20)
@@ -132,27 +131,34 @@ class Line(TimestampedModel):
         """
         Returns the list of lines for fulfilled orders for a specific user
         """
-        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED).order_by('run_key')
+        return cls.objects.filter(
+            order__user=user, order__status=Order.FULFILLED
+        ).order_by("run_key")
 
     @classmethod
     def for_user_bootcamp_run(cls, user, run_key):
         """
         Returns all the orders that are associated to the payment of a specific run_key
         """
-        return cls.fulfilled_for_user(user).filter(run_key=run_key).order_by('order__created_on')
+        return (
+            cls.fulfilled_for_user(user)
+            .filter(run_key=run_key)
+            .order_by("order__created_on")
+        )
 
     @classmethod
     def total_paid_for_bootcamp_run(cls, user, run_key):
         """
         Returns the total amount paid for a bootcamp run
         """
-        return cls.for_user_bootcamp_run(user, run_key).aggregate(total=Sum('price'))
+        return cls.for_user_bootcamp_run(user, run_key).aggregate(total=Sum("price"))
 
 
 class Receipt(TimestampedModel):
     """
     The contents of the message from CyberSource about an Order fulfillment or cancellation
     """
+
     order = ForeignKey(Order, null=True, on_delete=CASCADE)
     data = JSONField()
 

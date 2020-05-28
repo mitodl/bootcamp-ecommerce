@@ -556,7 +556,9 @@ class AuthStateMachine(RuleBasedStateMachine):
         with export_check_response("100_success"):
             result = assert_api_call(
                 self.client,
-                reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
+                reverse(
+                    "psa-register-details", kwargs={"backend_name": EmailAuth.name}
+                ),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -593,7 +595,9 @@ class AuthStateMachine(RuleBasedStateMachine):
         with export_check_response("700_reject"):
             assert_api_call(
                 self.client,
-                reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
+                reverse(
+                    "psa-register-details", kwargs={"backend_name": EmailAuth.name}
+                ),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],
@@ -632,7 +636,9 @@ class AuthStateMachine(RuleBasedStateMachine):
         ):
             assert_api_call(
                 self.client,
-                reverse("psa-register-details", kwargs={"backend_name": EmailAuth.name}),
+                reverse(
+                    "psa-register-details", kwargs={"backend_name": EmailAuth.name}
+                ),
                 {
                     "flow": auth_state["flow"],
                     "partial_token": auth_state["partial_token"],

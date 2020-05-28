@@ -9,16 +9,30 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('klasses', '0013_personalprice_application_stage'),
-        ('hubspot', '0001_initial'),
+        ("klasses", "0013_personalprice_application_stage"),
+        ("hubspot", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HubspotLineResync',
+            name="HubspotLineResync",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('personal_price', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='klasses.PersonalPrice')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "personal_price",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="klasses.PersonalPrice",
+                    ),
+                ),
             ],
-        ),
+        )
     ]

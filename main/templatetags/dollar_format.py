@@ -13,6 +13,7 @@ def dollar_format(dollars):
     Returns:
         str: The formatted string
     """
-    return '${:,.2f}'.format(float(dollars))
+    return "${:,.2f}".format(float(dollars))
+
 
 register.filter(dollar_format)
