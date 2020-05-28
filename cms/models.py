@@ -209,12 +209,25 @@ class InstructorsPage(BootcampRunChildPage):
     """
     InstructorsPage representing a "Your MIT Instructors" section on a product page
     """
-
+    banner_image = models.ForeignKey(
+        Image,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Image that will display as a banner at the top of the section, must be at least 750x505 pixels.",
+    )
+    heading = RichTextField(
+        default='Instructors',
+        blank=False,
+        help_text="The heading to display on this section.",
+    )
     sections = StreamField(
         [("section", InstructorSectionBlock())],
         help_text="The instructor to display in this section",
     )
     content_panels = [
+        ImageChooserPanel("banner_image"),
+        FieldPanel("heading"),
         StreamFieldPanel("sections"),
     ]
 

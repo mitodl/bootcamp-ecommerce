@@ -105,7 +105,7 @@
 .slick-prev,
 .slick-next {
   position: absolute;
-  left: 0px;
+  left: -15px;
   z-index: 99;
   top: 50%;
   font-size: 0;
@@ -124,20 +124,14 @@
 
   @include media-breakpoint-up(md) {
     left: -25px;
-    width: 50px;
-    height: 50px;
     padding: 5px 0;
   }
 
   @include media-breakpoint-up(lg) {
-    width: 50px;
-    height: 50px;
     padding: 15px 0;
   }
   @media (min-width: 1275px) {
     left: -65px;
-    width: 70px;
-    height: 70px;
   }
   @media (min-width: 1450px) {
     left: -135px;
@@ -166,7 +160,7 @@
 
 .slick-next {
   left: auto;
-  right: 0px;
+  right: -15px;
 
   @include media-breakpoint-up(md) {
     right: -25px;
