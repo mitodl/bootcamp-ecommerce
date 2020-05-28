@@ -21,9 +21,11 @@ class JobmaWebhookView(GenericAPIView):
     def put(self, request, *args, **kwargs):
         """Update the Jobma interview status result"""
         status = request.data["status"]
+        results_url = request.data.get("results_url")
 
         interview = self.get_object()
         interview.status = status
+        interview.results_url = results_url
         interview.save_and_log(None)
 
         if status in JOBMA_COMPLETED_INTERVIEW_STATUSES:
