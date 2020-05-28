@@ -57,7 +57,7 @@ export class EditProfilePage extends React.Component<Props> {
         } :
         {})
     }
-
+    console.log(payload)
     try {
       const {
         body: { errors }
@@ -65,6 +65,7 @@ export class EditProfilePage extends React.Component<Props> {
       { body: Object } = await editProfile(payload)
 
       if (errors && errors.length > 0) {
+        console.log(errors)
         setErrors({
           email: errors[0]
         })
@@ -73,6 +74,7 @@ export class EditProfilePage extends React.Component<Props> {
       }
     } finally {
       setSubmitting(false)
+      console.log("done")
     }
   }
 
@@ -83,39 +85,11 @@ export class EditProfilePage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="auth-header row">
-          <h1 className="col-6">Profile</h1>
-          <div className="col-6 profile-button-col">
-            <button
-              type="submit"
-              onClick={() => {
-                history.push(routes.profile.update)
-              }}
-              className="btn btn-danger profile-btn"
-            >
-              Save
-            </button>
-          </div>
-        </div>
-        <div className="auth-card card-shadow row">
-          <div className="container">
-            <div className="row">
-              <div className="col-12 auth-form">
-                {currentUser.is_authenticated ? (
-                  <EditProfileForm
-                    countries={countries}
-                    user={currentUser}
-                    onSubmit={this.onSubmit.bind(this)}
-                  />
-                ) : (
-                  <div className="row">
-                    You must be logged in to edit your profile.
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <EditProfileForm
+          countries={countries}
+          user={currentUser}
+          onSubmit={this.onSubmit.bind(this)}
+        />
       </div>
     ) : null
   }

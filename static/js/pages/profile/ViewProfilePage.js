@@ -3,8 +3,7 @@ import React from "react"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { connectRequest } from "redux-query-react"
-import moment from "moment"
-import { find, fromPairs, join, propEq } from "ramda"
+import { find, fromPairs, propEq } from "ramda"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
 
@@ -79,34 +78,12 @@ export class ViewProfilePage extends React.Component<Props> {
                     <div className="col profile-label">Full Name</div>
                     <div className="col">{currentUser.profile.name}</div>
                   </div>
-                  <div className="row profile-row">
-                    <div className="col profile-label">Gender</div>
-                    <div className="col">
-                      {fromPairs(GENDER_CHOICES)[currentUser.profile.gender]}
+                  {currentUser.legal_address.street_address.map((line, idx) => (
+                    <div className="row profile-row" key={idx}>
+                      <div className="col profile-label">Address {idx + 1}</div>
+                      <div className="col">{line}</div>
                     </div>
-                  </div>
-                  <div className="row profile-row">
-                    <div className="col profile-label">Year of Birth</div>
-                    <div className="col">{currentUser.profile.birth_year}</div>
-                  </div>
-                  <div className="row profile-row">
-                    <div className="col profile-label">Joined</div>
-                    <div className="col">
-                      {moment(currentUser.created_on).format("MMMM YYYY")}
-                    </div>
-                  </div>
-                  <div className="row profile-row">
-                    <div className="col profile-label">Address</div>
-                    <div className="col">
-                      {join(", ", currentUser.legal_address.street_address)},{" "}
-                      {currentUser.legal_address.city}
-                      {currentUser.legal_address.postal_code ?
-                        ` ${currentUser.legal_address.state_or_territory.slice(
-                          3
-                        )} ${currentUser.legal_address.postal_code}` :
-                        ""}
-                    </div>
-                  </div>
+                  ))}
                   {countries && currentUser.legal_address.country ? (
                     <div className="row profile-row">
                       <div className="col profile-label">Country</div>
@@ -141,6 +118,17 @@ export class ViewProfilePage extends React.Component<Props> {
                       </div>
                     </div>
                   ) : null}
+                  <div className="divider" />
+                  <div className="row profile-row">
+                    <div className="col profile-label">Gender</div>
+                    <div className="col">
+                      {fromPairs(GENDER_CHOICES)[currentUser.profile.gender]}
+                    </div>
+                  </div>
+                  <div className="row profile-row">
+                    <div className="col profile-label">Year of Birth</div>
+                    <div className="col">{currentUser.profile.birth_year}</div>
+                  </div>
                   <div className="row profile-row">
                     <div className="col profile-label">Company</div>
                     <div className="col">{currentUser.profile.company}</div>
@@ -161,6 +149,16 @@ export class ViewProfilePage extends React.Component<Props> {
                     </div>
                   </div>
                   <div className="row profile-row">
+                    <div className="col profile-label">Company Size</div>
+                    <div className="col">
+                      {
+                        fromPairs(EMPLOYMENT_SIZE)[
+                          currentUser.profile.company_size
+                        ]
+                      }
+                    </div>
+                  </div>
+                  <div className="row profile-row">
                     <div className="col profile-label">
                       Years of Work Experience
                     </div>
@@ -168,16 +166,6 @@ export class ViewProfilePage extends React.Component<Props> {
                       {
                         fromPairs(EMPLOYMENT_EXPERIENCE)[
                           currentUser.profile.years_experience
-                        ]
-                      }
-                    </div>
-                  </div>
-                  <div className="row profile-row">
-                    <div className="col profile-label">Company Size</div>
-                    <div className="col">
-                      {
-                        fromPairs(EMPLOYMENT_SIZE)[
-                          currentUser.profile.company_size
                         ]
                       }
                     </div>
