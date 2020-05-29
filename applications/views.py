@@ -98,7 +98,7 @@ class ReviewSubmissionView(UpdateAPIView):
 
 class UploadResumeView(GenericAPIView):
     """
-    View for uploading resume and linkedin link
+    View for uploading resume and linkedin URL
     """
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated, UserIsOwnerPermission,)
@@ -108,13 +108,16 @@ class UploadResumeView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         """
-        Update the application with resume
+        Update the application with resume and/or linkedin URL
         """
         application = self.get_object()
-        linkedin_url = request.data.get("linkedin_url", False)
-        resume_file = request.FILES.get('file', False)
-        if not (linkedin_url or resume_file):
+        linkedin_url = request.data.get("linkedin_url")
+        resume_file = request.FILES.get('file')
+        if linkedin_url is None and resume_file is None:
             raise ValidationError("At least one form of resume is required.")
-        process_upload_resume(resume_file, linkedin_url, application)
+
+        application.add_resume(resume_file=resume_file, linkedin_url=linkedin_url)
+        # when state transition happens need to save manually
+        application.save()
 
         return Response(status=status.HTTP_200_OK)

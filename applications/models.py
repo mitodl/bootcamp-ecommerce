@@ -169,7 +169,7 @@ class BootcampApplication(TimestampedModel):
         target=AppStates.AWAITING_USER_SUBMISSIONS.value,
     )
     def add_resume(self, *, resume_file=None, linkedin_url=None):
-        """Save resume and make sure that the state can be transitioned to a new state"""
+        """Add resume and/or linkedin URL to the application and transition to a new state"""
         if resume_file:
             validate_file_extension(resume_file)
             self.resume_file = resume_file
