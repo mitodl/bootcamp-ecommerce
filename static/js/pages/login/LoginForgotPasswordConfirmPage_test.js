@@ -93,8 +93,8 @@ describe("LoginForgotPasswordConfirmPage", () => {
       })
       sinon.assert.calledWith(setSubmittingStub, false)
 
-      const { userNotifications } = store.getState()
-      assert.deepEqual(userNotifications, {
+      const { ui } = store.getState()
+      assert.deepEqual(ui.userNotifications, {
         "forgot-password-confirm": {
           type:  ALERT_TYPE_TEXT,
           props: {

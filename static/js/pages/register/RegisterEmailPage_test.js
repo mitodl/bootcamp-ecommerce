@@ -98,7 +98,7 @@ describe("RegisterEmailPage", () => {
     sinon.assert.notCalled(setErrorsStub)
     sinon.assert.calledWith(setSubmittingStub, false)
 
-    const { userNotifications } = store.getState()
+    const { userNotifications } = store.getState().ui
 
     assert.deepEqual(userNotifications, {
       "account-exists": {

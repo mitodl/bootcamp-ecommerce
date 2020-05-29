@@ -68,16 +68,16 @@ export class LoginForgotPasswordPage extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="container auth-page">
+      <div className="container auth-page registration-page">
         <MetaTags>
           <title>{formatTitle(FORGOT_PASSWORD_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="auth-header">
+        <div className="row auth-header">
           <h1>Forgot Password</h1>
         </div>
         {this.state.forgotEmailSent ? (
-          <div className="card-shadow confirm-sent-page">
-            <h3 className="text-center">Thank You!</h3>
+          <div className="row auth-card">
+            <h3>Thank You!</h3>
             {this.state.text}
             <p>
               <b>
@@ -113,7 +113,7 @@ export class LoginForgotPasswordPage extends React.Component<Props, State> {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Customer Support Center.
+                MIT Bootcamp Customer Support Center.
               </a>
             </div>
           </div>

@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
+from main import features
 from main.templatetags.render_bundle import public_path
 
 
@@ -44,6 +45,7 @@ def index(request):
         context={
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "authenticated": authenticated,
+            "social_auth_enabled": features.is_enabled(features.SOCIAL_AUTH_API),
         },
     )
 
@@ -59,6 +61,7 @@ def react(request, **kwargs):
         context={
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "authenticated": not request.user.is_anonymous,
+            "social_auth_enabled": features.is_enabled(features.SOCIAL_AUTH_API),
         },
     )
 

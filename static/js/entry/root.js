@@ -4,6 +4,7 @@ import { createBrowserHistory } from "history"
 import React from "react"
 import ReactDOM from "react-dom"
 import { AppContainer } from "react-hot-loader"
+import "../notifications.js"
 
 import configureStore from "../store/configureStore"
 import Router, { routes } from "../Router"

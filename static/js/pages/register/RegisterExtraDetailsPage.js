@@ -4,7 +4,6 @@ import React from "react"
 import { REGISTER_EXTRA_DETAILS_PAGE_TITLE } from "../../constants"
 import { compose } from "redux"
 import { connect } from "react-redux"
-import { Link } from "react-router-dom"
 import { mutateAsync, requestAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
@@ -12,7 +11,6 @@ import { MetaTags } from "react-meta-tags"
 import { STATE_ERROR, handleAuthResponse } from "../../lib/auth"
 import auth from "../../lib/queries/auth"
 import users from "../../lib/queries/users"
-import { routes } from "../../lib/urls"
 import { qsBackendSelector, qsPartialTokenSelector } from "../../lib/selectors"
 import { formatTitle } from "../../util/util"
 
@@ -82,27 +80,13 @@ export class RegisterExtraDetailsPage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(REGISTER_EXTRA_DETAILS_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="auth-header row d-flex flex-row align-items-center justify-content-between flex-nowrap">
-          <div className="col-auto flex-shrink-1">
-            <h1>Create an Account</h1>
-          </div>
-          <div className="col-auto align-text-right gray-text">
-            <h4>Step 2 of 2</h4>
-          </div>
+        <div className="row auth-header">
+          <h1 className="col-12">Create Account</h1>
         </div>
-        <div className="auth-card card-shadow row">
-          <div className="container">
-            <div className="row">
-              <div className="col-12 form-group">
-                {`Already have an account? `}
-                <Link to={routes.login.begin}>Click here</Link>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12 auth-form">
-                <RegisterExtraDetailsForm onSubmit={this.onSubmit.bind(this)} />
-              </div>
-            </div>
+        <div className="auth-form auth-card card-shadow row">
+          <div className="col-12 auth-step">Steps 2 of 2</div>
+          <div className="col-12">
+            <RegisterExtraDetailsForm onSubmit={this.onSubmit.bind(this)} />
           </div>
         </div>
       </div>

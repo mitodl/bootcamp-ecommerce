@@ -1,11 +1,8 @@
 .btn {
-  border: none;
   margin: 0;
   text-align: center;
-  text-transform: uppercase;
   vertical-align: middle;
   letter-spacing: normal;
-  color: #fff;
   cursor: pointer;
 
   &.large-cta {
@@ -20,6 +17,15 @@
   &:hover {
     text-decoration: none;
     background: $red-hover;
+  }
+
+  &.large-font {
+    font-size: 24px;
+    line-height: 24px;
+    height: 40px;
+    width: 160px;
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
   }
 }
 
@@ -136,4 +142,12 @@ input[type=number] {
       background-color: #fff;
     }
   }
+}
+
+.recaptcha-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }

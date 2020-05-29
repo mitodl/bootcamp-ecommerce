@@ -48,13 +48,14 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
         />
         <ProfileFields />
         <div className="row-inner justify-content-end">
+          <div className="required">*=Required</div>
           <div className="row justify-content-end">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn btn-primary btn-light-blue btn-profile-submit"
+              className="btn btn-outline-danger large-font"
             >
-              CONTINUE
+              Continue
             </button>
           </div>
         </div>

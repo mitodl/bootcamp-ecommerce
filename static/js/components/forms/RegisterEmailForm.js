@@ -47,7 +47,7 @@ const RegisterEmailForm = ({ onSubmit }: Props) => (
           <ErrorMessage name="email" component={FormError} />
         </div>
         {SETTINGS.recaptchaKey ? (
-          <div className="form-group">
+          <div className="form-group recaptcha-container">
             <ScaledRecaptcha
               onRecaptcha={value => setFieldValue("recaptcha", value)}
               recaptchaKey={SETTINGS.recaptchaKey}
@@ -55,10 +55,17 @@ const RegisterEmailForm = ({ onSubmit }: Props) => (
             <ErrorMessage name="recaptcha" component={FormError} />
           </div>
         ) : null}
+        <div className="form-group">
+          By creating an account I agree to the{" "}
+          <a href="/terms_and_conditions/" target="_blank">
+            Terms and Conditions
+          </a>
+          .
+        </div>
         <div className="row submit-row no-gutters justify-content-end">
           <button
             type="submit"
-            className="btn btn-primary btn-light-blue"
+            className="btn btn-danger large-font"
             disabled={isSubmitting}
           >
             Submit

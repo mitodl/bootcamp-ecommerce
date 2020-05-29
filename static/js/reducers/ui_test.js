@@ -9,10 +9,13 @@ import {
   setTimeoutActive,
   setToastMessage,
   showDialog,
-  hideDialog
+  hideDialog,
+  addUserNotification,
+  removeUserNotification
 } from "../actions"
 import { createAssertReducerResultState } from "../util/test_utils"
 import configureStore from "../store/configureStore"
+import { ALERT_TYPE_TEXT } from "../constants"
 
 describe("ui reducers", () => {
   let store, assertReducerResultState
@@ -59,5 +62,23 @@ describe("ui reducers", () => {
   it("should unset the dialog state", () => {
     store.dispatch(hideDialog("dialog"))
     assert.equal(store.getState().ui.dialogVisibility["dialog"], false)
+  })
+
+  it("should let you add and remove user notifications", () => {
+    const messageId = "some-text-alert"
+    const payload = {
+      [messageId]: {
+        type:  ALERT_TYPE_TEXT,
+        props: {
+          text: "some message"
+        }
+      }
+    }
+
+    store.dispatch(addUserNotification(payload))
+    assert.deepEqual(store.getState().ui.userNotifications, payload)
+
+    store.dispatch(removeUserNotification(messageId))
+    assert.deepEqual(store.getState().ui.userNotifications, {})
   })
 })

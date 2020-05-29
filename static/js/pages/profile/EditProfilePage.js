@@ -83,10 +83,8 @@ export class EditProfilePage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="auth-header row d-flex  align-items-center justify-content-between flex-nowrap">
-          <div className="col-auto flex-shrink-1">
-            <h1>Edit Profile</h1>
-          </div>
+        <div className="row auth-header">
+          <h1 className="col-12">Edit Profile</h1>
         </div>
         <div className="auth-card card-shadow row">
           <div className="container">

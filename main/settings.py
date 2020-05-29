@@ -822,3 +822,17 @@ JOBMA_WEBHOOK_ACCESS_TOKEN = get_string(
     "",
     description="The Jobma access token used by us to verify that a postback came from Jobma",
 )
+
+# Relative URL to be used by Djoser for the link in the password reset email
+# (see: http://djoser.readthedocs.io/en/stable/settings.html#password-reset-confirm-url)
+PASSWORD_RESET_CONFIRM_URL = "password_reset/confirm/{uid}/{token}/"
+
+# Djoser library settings (see: http://djoser.readthedocs.io/en/stable/settings.html)
+DJOSER = {
+    "PASSWORD_RESET_CONFIRM_URL": PASSWORD_RESET_CONFIRM_URL,
+    "SET_PASSWORD_RETYPE": False,
+    "LOGOUT_ON_PASSWORD_CHANGE": False,
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": True,
+    "EMAIL": {"password_reset": "authentication.views.CustomPasswordResetEmail"},
+}

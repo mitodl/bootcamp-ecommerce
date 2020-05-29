@@ -1,0 +1,70 @@
+.notifications {
+  position: relative;
+  z-index: 1;
+
+  // HACK: Using this rule to get around styling issues with <p> elements in the
+  //       notification content (notification content in Wagtail is configured to be HTML,
+  //       and Wagtail wraps content in a <p> tag by default when you use the editor).
+  &.site-wide {
+    p {
+      margin: 0;
+    }
+  }
+
+  .alert {
+    margin-bottom: 0;
+
+    &.alert-info, &.alert-danger {
+      color: white;
+
+      a.alert-link, .close {
+        color: white;
+      }
+
+      a.alert-link {
+        font-weight: inherit;
+        text-decoration: underline;
+
+        &:hover {
+          font-weight: 700;
+        }
+      }
+
+      .close {
+        opacity: 1;
+      }
+    }
+
+    &.alert-info {
+      background: linear-gradient(
+        to right,
+        #fe28e4 0%,
+        #ff783c 100%
+      );
+    }
+
+    &.alert-danger {
+      background-color: $primary;
+    }
+  }
+
+  // Django-rendered implementation
+  .notification {
+    background: $primary;
+    text-align: center;
+    color: white;
+  }
+
+  .close-notification {
+    text-decoration: none;
+    color: white;
+    float: right;
+    margin-right: 10px;
+
+    &:after {
+      content: "\e906";
+      font-family: icomoon;
+      margin-left: 10px;
+   }
+ }
+}

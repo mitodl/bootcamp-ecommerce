@@ -85,6 +85,7 @@
     "react-router-dom": "^5.1.2",
     "react-test-renderer": "^16.13.1",
     "react-zendesk": "^0.1.9",
+    "reactstrap": "^8.0.0",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
     "redux-asserts": "^0.0.12",
