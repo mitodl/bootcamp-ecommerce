@@ -148,13 +148,14 @@ def test_review_submission_update(client, mocker, review_status):
 
 
 @pytest.mark.parametrize(
-    "has_resume,has_linkedin,state", [
-        [True, True, AppStates.AWAITING_USER_SUBMISSIONS.value],
-        [False, True, AppStates.AWAITING_USER_SUBMISSIONS.value],
-        [True, False, AppStates.AWAITING_USER_SUBMISSIONS.value],
+    "has_resume,has_linkedin,resp_status", [
+        [True, True, status.HTTP_200_OK],
+        [False, True, status.HTTP_200_OK],
+        [True, False, status.HTTP_200_OK],
+        [False, False, status.HTTP_400_BAD_REQUEST]
 ])
 @pytest.mark.django_db
-def test_upload_resume_view(client, mocker, has_resume, has_linkedin, state):
+def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_status):
     """
     Upload resume view should return successful response, and update application state
     """
@@ -170,9 +171,13 @@ def test_upload_resume_view(client, mocker, has_resume, has_linkedin, state):
         resume_file = SimpleUploadedFile("resume.pdf", b'file_content')
         data['file'] = resume_file
     resp = client.post(url, data)
-    assert resp.status_code == status.HTTP_200_OK
+
+    assert resp.status_code == resp_status
     bootcamp_application.refresh_from_db()
-    assert bootcamp_application.state == state
+    if has_resume or has_linkedin:
+        assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS.value
+    else:
+        assert bootcamp_application.state == AppStates.AWAITING_RESUME.value
 
     if has_resume:
         assert resume_file.name in bootcamp_application.resume_file.name

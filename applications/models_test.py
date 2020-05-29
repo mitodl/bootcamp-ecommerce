@@ -99,11 +99,11 @@ def test_bootcamp_application_resume_file_validation(file_name, expected):
     resume_file = SimpleUploadedFile(file_name, b"file_content")
 
     if expected:
-        bootcamp_application.upload_resume(resume_file)
+        bootcamp_application.add_resume(resume_file=resume_file)
         assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS.value
     else:
         with pytest.raises(ValidationError):
-            bootcamp_application.upload_resume(resume_file)
+            bootcamp_application.add_resume(resume_file=resume_file)
         assert bootcamp_application.state == AppStates.AWAITING_RESUME.value
 
 

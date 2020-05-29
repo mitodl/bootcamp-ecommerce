@@ -134,11 +134,12 @@ def test_get_or_create_bootcamp_application(mocker):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("has_resume,has_linkedin,expected", [
-    (True, False, AppStates.AWAITING_USER_SUBMISSIONS.value),
-    (True, True, AppStates.AWAITING_USER_SUBMISSIONS.value)
+@pytest.mark.parametrize("has_resume,has_linkedin", [
+    (True, False),
+    (True, True),
+    (False, True)
 ])
-def test_process_upload_resume_success(has_resume, has_linkedin, expected):
+def test_process_upload_resume_success(has_resume, has_linkedin):
     """
     process_upload_resume should update the application step when saving resume
     """
@@ -148,7 +149,7 @@ def test_process_upload_resume_success(has_resume, has_linkedin, expected):
         resume_file = SimpleUploadedFile('resume.pdf', b'file_content')
     process_upload_resume(resume_file, ('url' if has_linkedin else False), existing_app)
 
-    assert existing_app.state == expected
+    assert existing_app.state == AppStates.AWAITING_USER_SUBMISSIONS.value
 
 
 @pytest.mark.django_db
