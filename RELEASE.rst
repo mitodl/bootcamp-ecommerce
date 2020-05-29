@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.43.1 (Released May 29, 2020)
+--------------
+
+- Add results_url from Jobma webhook (#580)
+- update product page instruction section design
+- add product page: alumni section
+
 Version 0.43.0 (Released May 28, 2020)
 --------------
 
