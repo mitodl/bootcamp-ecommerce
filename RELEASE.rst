@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Version 0.43.2
+--------------
+
+- Update login/registration UI to match designs (#537)
+- Don't error on unexpected arguments in react view (#590)
+- Added user application dashboard (list view)
+- Get user info from API on payment page (#567)
+- apply black formatting/checking (#581)
+
 Version 0.43.1 (Released May 29, 2020)
 --------------
 
