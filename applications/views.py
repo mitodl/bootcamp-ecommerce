@@ -13,7 +13,6 @@ from applications.serializers import (
 from applications.api import (
     get_or_create_bootcamp_application,
     set_submission_review_status,
-    process_upload_resume,
 )
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from klasses.models import BootcampRun

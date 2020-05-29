@@ -8,8 +8,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from applications.api import (
     get_or_create_bootcamp_application,
     derive_application_state,
-    process_upload_resume,
-    InvalidApplicationException,
     set_submission_review_status,
     get_required_submission_type,
 )
