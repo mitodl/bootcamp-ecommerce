@@ -148,28 +148,34 @@ def test_review_submission_update(client, mocker, review_status):
 
 
 @pytest.mark.parametrize(
-    "has_resume,has_linkedin,resp_status", [
+    "has_resume,has_linkedin,resp_status",
+    [
         [True, True, status.HTTP_200_OK],
         [False, True, status.HTTP_200_OK],
         [True, False, status.HTTP_200_OK],
-        [False, False, status.HTTP_400_BAD_REQUEST]
-])
+        [False, False, status.HTTP_400_BAD_REQUEST],
+    ],
+)
 @pytest.mark.django_db
 def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_status):
     """
     Upload resume view should return successful response, and update application state
     """
-    mocker.patch('applications.views.UserIsOwnerPermission.has_permission', return_value=True)
-    bootcamp_application = BootcampApplicationFactory.create(state=AppStates.AWAITING_RESUME.value)
+    mocker.patch(
+        "applications.views.UserIsOwnerPermission.has_permission", return_value=True
+    )
+    bootcamp_application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_RESUME.value
+    )
     client.force_login(bootcamp_application.user)
 
     url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})
     data = {}
     if has_linkedin:
-        data['linkedin_url'] = "some_url"
+        data["linkedin_url"] = "some_url"
     if has_resume:
-        resume_file = SimpleUploadedFile("resume.pdf", b'file_content')
-        data['file'] = resume_file
+        resume_file = SimpleUploadedFile("resume.pdf", b"file_content")
+        data["file"] = resume_file
     resp = client.post(url, data)
 
     assert resp.status_code == resp_status

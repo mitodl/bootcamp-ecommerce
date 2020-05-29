@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('applications', '0007_remove_videofile'),
-    ]
+    dependencies = [("applications", "0007_remove_videofile")]
 
     operations = [
         migrations.AddField(
-            model_name='bootcampapplication',
-            name='linkedin_url',
+            model_name="bootcampapplication",
+            name="linkedin_url",
             field=models.URLField(blank=True, null=True),
-        ),
+        )
     ]

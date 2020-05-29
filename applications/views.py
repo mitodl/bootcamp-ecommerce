@@ -13,7 +13,8 @@ from applications.serializers import (
 from applications.api import (
     get_or_create_bootcamp_application,
     set_submission_review_status,
-    process_upload_resume)
+    process_upload_resume,
+)
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission
@@ -100,8 +101,9 @@ class UploadResumeView(GenericAPIView):
     """
     View for uploading resume and linkedin URL
     """
+
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated, UserIsOwnerPermission,)
+    permission_classes = (IsAuthenticated, UserIsOwnerPermission)
     lookup_field = "pk"
     owner_field = "user"
     queryset = BootcampApplication.objects.all()
@@ -112,7 +114,7 @@ class UploadResumeView(GenericAPIView):
         """
         application = self.get_object()
         linkedin_url = request.data.get("linkedin_url")
-        resume_file = request.FILES.get('file')
+        resume_file = request.FILES.get("file")
         if linkedin_url is None and resume_file is None:
             raise ValidationError("At least one form of resume is required.")
 
