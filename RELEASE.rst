@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.43.1
+Version 0.43.1 (Released May 29, 2020)
 --------------
 
 - Add results_url from Jobma webhook (#580)
