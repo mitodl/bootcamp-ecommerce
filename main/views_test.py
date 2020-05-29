@@ -60,3 +60,10 @@ def test_index_logged_in_post(client):
     resp = client.post(reverse("bootcamp-index") + "?foo=bar")
     assert resp.status_code == HTTP_302_FOUND
     assert resp.url == reverse("applications") + "?foo=bar"
+
+
+@pytest.mark.django_db
+def test_password_reset_link(client):
+    """Verify that the password reset link doesn't cause an error"""
+    resp = client.get("/signin/forgot-password/confirm/MTA3/5gw-ccd72e49361be41f4924/")
+    assert resp.status_code == 200
