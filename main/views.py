@@ -49,7 +49,7 @@ def index(request):
 
 
 @csrf_exempt
-def react(request):
+def react(request, **kwargs):
     """
     View for pages served by react
     """
