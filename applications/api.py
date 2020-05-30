@@ -91,24 +91,6 @@ def get_required_submission_type(application):
     )
 
 
-def process_upload_resume(resume_file, bootcamp_application):
-    """
-    Process the resume file and save it to BootcampApplication
-
-    Args:
-        resume_file (File): file profided by the user
-        bootcamp_application (BootcampApplication): A bootcamp application
-
-    """
-    if bootcamp_application.state == AppStates.AWAITING_PROFILE_COMPLETION.value:
-        raise InvalidApplicationException(
-            "The BootcampApplication is still awaiting profile completion"
-        )
-    bootcamp_application.upload_resume(resume_file)
-    # when state transition happens need to save manually
-    bootcamp_application.save()
-
-
 def set_submission_review_status(submission, review_status):
     """
     Process review of an application step submission
