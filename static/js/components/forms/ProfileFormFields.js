@@ -162,6 +162,18 @@ export const LegalAddressFields = ({
       </Field>
       <ErrorMessage name="legal_address.country" component={FormError} />
     </div>
+    <div className="form-group">
+      <label htmlFor="legal_address.city" className="font-weight-bold">
+        City*
+      </label>
+      <Field
+        type="text"
+        name="legal_address.city"
+        className="form-control"
+        autoComplete="address-level2"
+      />
+      <ErrorMessage name="legal_address.city" component={FormError} />
+    </div>
     {includes(values.legal_address.country, COUNTRIES_REQUIRING_STATE) ? (
       <div className="form-group">
         <label
@@ -192,18 +204,6 @@ export const LegalAddressFields = ({
         />
       </div>
     ) : null}
-    <div className="form-group">
-      <label htmlFor="legal_address.city" className="font-weight-bold">
-        City*
-      </label>
-      <Field
-        type="text"
-        name="legal_address.city"
-        className="form-control"
-        autoComplete="address-level2"
-      />
-      <ErrorMessage name="legal_address.city" component={FormError} />
-    </div>
     {includes(values.legal_address.country, COUNTRIES_REQUIRING_POSTAL_CODE) ? (
       <div className="form-group">
         <label htmlFor="legal_address.postal_code" className="font-weight-bold">

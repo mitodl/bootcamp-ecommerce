@@ -8,7 +8,7 @@ import { mutateAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
 
-import { EDIT_PROFILE_PAGE_TITLE } from "../constants"
+import { EDIT_PROFILE_PAGE_TITLE, PROFILE_VIEW } from "../constants"
 import users, { currentUserSelector } from "../lib/queries/users"
 import queries from "../lib/queries"
 import { formatTitle } from "../util/util"
@@ -41,7 +41,6 @@ type Props = {|
 export class EditProfileDisplay extends React.Component<Props> {
   async onSubmit(profileData: User, { setSubmitting, setErrors }: Object) {
     const { editProfile, updateDrawer } = this.props
-    console.log("In onSubmit")
     const payload = {
       ...profileData,
       ...(profileData.profile ?
@@ -63,7 +62,7 @@ export class EditProfileDisplay extends React.Component<Props> {
           email: errors[0]
         })
       } else {
-        updateDrawer("profileView")
+        updateDrawer(PROFILE_VIEW)
       }
     } finally {
       setSubmitting(false)

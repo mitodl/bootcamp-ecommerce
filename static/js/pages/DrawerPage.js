@@ -9,6 +9,7 @@ import { drawerSelector } from "../lib/selectors"
 import { setDrawerOpen, setDrawerState } from "../reducers/drawer"
 import EditProfileDisplay from "../components/EditProfileDisplay"
 import ViewProfileDisplay from "../components/ViewProfileDisplay"
+import { PROFILE_EDIT, PROFILE_VIEW } from "../constants"
 
 type Props = {}
 
@@ -26,9 +27,9 @@ export function DrawerPage(props: Props) {
 
   const renderChild = () => {
     switch (drawerState) {
-    case "profileEdit":
+    case PROFILE_EDIT:
       return <EditProfileDisplay />
-    case "profileView":
+    case PROFILE_VIEW:
       return <ViewProfileDisplay />
     }
   }
@@ -41,14 +42,10 @@ export function DrawerPage(props: Props) {
           <button onClick={() => closeDrawer()}>Close Drawer</button>
         </li>
         <li>
-          <button onClick={() => openDrawer("profileEdit")}>
-            Edit Profile
-          </button>
+          <button onClick={() => openDrawer(PROFILE_EDIT)}>Edit Profile</button>
         </li>
         <li>
-          <button onClick={() => openDrawer("profileView")}>
-            View Profile
-          </button>
+          <button onClick={() => openDrawer(PROFILE_VIEW)}>View Profile</button>
         </li>
       </ul>
     </>

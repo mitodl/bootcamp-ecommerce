@@ -79,7 +79,9 @@ export function ViewProfileDisplay(props: Props) {
                 </div>
                 {currentUser.legal_address.street_address.map((line, idx) => (
                   <div className="row profile-row" key={idx}>
-                    <div className="col profile-label">Address {idx + 1}</div>
+                    <div className="col profile-label">
+                      Address{idx > 0 ? ` ${idx + 1}` : ""}
+                    </div>
                     <div className="col">{line}</div>
                   </div>
                 ))}
@@ -96,6 +98,10 @@ export function ViewProfileDisplay(props: Props) {
                     </div>
                   </div>
                 ) : null}
+                <div className="row profile-row">
+                  <div className="col profile-label">City</div>
+                  <div className="col">{currentUser.legal_address.city}</div>
+                </div>
                 {countries && currentUser.legal_address.state_or_territory ? (
                   <div className="row profile-row">
                     <div className="col profile-label">
