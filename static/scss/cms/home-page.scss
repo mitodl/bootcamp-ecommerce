@@ -1,0 +1,57 @@
+// sass-lint:disable mixins-before-declarations
+.home-page {
+  .header {
+    min-height: 50vh;
+
+    .container > .row {
+      min-height: 50vh;
+
+      .title-column {
+
+        @include media-breakpoint-up(md) {
+          padding-left: 20px;
+        }
+
+        @include media-breakpoint-up(lg) {
+          padding-left: 50px;
+        }
+
+
+        .title-block {
+          color: $tundora;
+
+          h1 {
+            font-size: 60px;
+            text-transform: unset;
+
+            @include media-breakpoint-down(sm) {
+              font-size: 35px;
+            }
+          }
+
+          h2 {
+            font-size: 40px;
+            font-weight: 300;
+
+            @include media-breakpoint-down(sm) {
+              font-size: 25px;
+            }
+          }
+        }
+      }
+
+      .description-column {
+        border-left: 2px solid $dusty-gray;
+
+        @include media-breakpoint-down(sm) {
+          margin-left: 15px;
+          margin-top: 30px;
+        }
+      }
+
+      .rich-text {
+        font-weight: 300;
+      }
+    }
+  }
+}

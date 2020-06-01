@@ -14,11 +14,10 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 
-from main.views import index, react, BackgroundImagesCSSView
+from main.views import react, BackgroundImagesCSSView
 
 
 urlpatterns = [
-    url(r"^$", index, name="bootcamp-index"),
     url(r"^pay/$", react, name="pay"),
     url(
         r"^terms_of_service/$",
@@ -78,7 +77,7 @@ urlpatterns = [
     ),
     re_path(r"^cms/", include(wagtailadmin_urls)),
     re_path(r"^documents/", include(wagtaildocs_urls)),
-    re_path(r"bootcamps/", include(wagtail_urls)),
+    url("", include(wagtail_urls)),
 ] + (
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

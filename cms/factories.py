@@ -3,7 +3,7 @@
 import factory
 from factory.django import DjangoModelFactory
 import faker
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Site
 from wagtail.core.rich_text import RichText
 import wagtail_factories
 
@@ -90,3 +90,24 @@ class ProgramDescriptionPageFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.ProgramDescriptionPage
+
+
+class HomePageFactory(wagtail_factories.PageFactory):
+    """HomePage factory class"""
+
+    title = factory.fuzzy.FuzzyText()
+    tagline = factory.fuzzy.FuzzyText()
+    description = factory.fuzzy.FuzzyText()
+    slug = "wagtail-home"
+
+    class Meta:
+        model = models.HomePage
+
+    @factory.post_generation
+    def post_gen(obj, create, extracted, **kwargs):  # pylint:disable=unused-argument
+        """Post-generation hook, moves home page to the root of the site"""
+        if create:
+            site = Site.objects.get(is_default_site=True)
+            site.root_page = obj
+            site.save()
+        return obj

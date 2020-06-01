@@ -3,6 +3,7 @@ Page models for the CMS
 """
 import json
 
+from django.conf import settings
 from django.db import models
 from django.http.response import Http404
 from django.utils.text import slugify
@@ -25,6 +26,35 @@ from cms.blocks import (
 )
 
 from main.views import _serialize_js_settings
+
+
+class HomePage(Page):
+    """
+    CMS page representing the website home page
+    """
+
+    template = "home_page.html"
+
+    tagline = models.CharField(
+        max_length=255,
+        help_text="The tagline to display in the hero section on the page.",
+    )
+    description = RichTextField(
+        blank=True, help_text="The description shown in the hero section on the page."
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("tagline"),
+        FieldPanel("description"),
+    ]
+
+    def get_context(self, request, *args, **kwargs):
+        return {
+            **super().get_context(request, *args, **kwargs),
+            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            "site_name": settings.SITE_NAME,
+            "title": self.title,
+        }
 
 
 class BootcampPage(Page):
@@ -75,6 +105,7 @@ class BootcampPage(Page):
         return {
             **super().get_context(request, *args, **kwargs),
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            "site_name": settings.SITE_NAME,
             "title": self.title,
             # The context variables below are added to avoid duplicate queries within the templates
             "three_column_image_text_section": self.three_column_image_text_section,

@@ -6,7 +6,8 @@
 
 {% block content %}
   {% include "top_nav.html" %}
-  <div class="header">
+  <div class="product-page">
+    <div class="header">
       {% image page.header_image fill-1920x1080 %}
       <div class="d-flex flex-column container-fluid">
           <div class="row flex-grow-1"></div>
@@ -34,6 +35,7 @@
   {% if page.alumni %} {% include "partials/alumni.html" with page=page.alumni %} {% endif %}
   {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
   {% if page.learning_resources %} {% include "partials/learning_resources_page.html" with page=page.learning_resources %} {% endif %}
+  </div>
 {% endblock %}
 {% block footer %}
     {% include "footer.html" %}
