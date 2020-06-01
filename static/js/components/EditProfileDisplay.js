@@ -8,21 +8,20 @@ import { mutateAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
 
-import { EDIT_PROFILE_PAGE_TITLE } from "../../constants"
-import users, { currentUserSelector } from "../../lib/queries/users"
-import { routes } from "../../lib/urls"
-import queries from "../../lib/queries"
-import { formatTitle } from "../../util/util"
+import { EDIT_PROFILE_PAGE_TITLE, PROFILE_VIEW } from "../constants"
+import users, { currentUserSelector } from "../lib/queries/users"
+import queries from "../lib/queries"
+import { formatTitle } from "../util/util"
 
-import EditProfileForm from "../../components/forms/EditProfileForm"
+import EditProfileForm from "./forms/EditProfileForm"
 
-import type { RouterHistory } from "react-router"
 import type {
   Country,
   CurrentUser,
   User,
   HttpAuthResponse
-} from "../../flow/authTypes"
+} from "../flow/authTypes"
+import { setDrawerState } from "../reducers/drawer"
 
 type StateProps = {|
   countries: ?Array<Country>,
@@ -30,23 +29,18 @@ type StateProps = {|
 |}
 
 type DispatchProps = {|
-  editProfile: (userProfileData: User) => Promise<HttpAuthResponse<User>>
-|}
-
-type ProfileProps = {|
-  history: RouterHistory
+  editProfile: (userProfileData: User) => Promise<HttpAuthResponse<User>>,
+  updateDrawer: (state: Object) => void
 |}
 
 type Props = {|
   ...StateProps,
-  ...DispatchProps,
-  ...ProfileProps
+  ...DispatchProps
 |}
 
-export class EditProfilePage extends React.Component<Props> {
+export class EditProfileDisplay extends React.Component<Props> {
   async onSubmit(profileData: User, { setSubmitting, setErrors }: Object) {
-    const { editProfile, history } = this.props
-
+    const { editProfile, updateDrawer } = this.props
     const payload = {
       ...profileData,
       ...(profileData.profile ?
@@ -57,7 +51,6 @@ export class EditProfilePage extends React.Component<Props> {
         } :
         {})
     }
-
     try {
       const {
         body: { errors }
@@ -69,7 +62,7 @@ export class EditProfilePage extends React.Component<Props> {
           email: errors[0]
         })
       } else {
-        history.push(routes.profile.view)
+        updateDrawer(PROFILE_VIEW)
       }
     } finally {
       setSubmitting(false)
@@ -83,28 +76,11 @@ export class EditProfilePage extends React.Component<Props> {
         <MetaTags>
           <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>
-        <div className="row auth-header">
-          <h1 className="col-12">Edit Profile</h1>
-        </div>
-        <div className="auth-card card-shadow row">
-          <div className="container">
-            <div className="row">
-              <div className="col-12 auth-form">
-                {currentUser.is_authenticated ? (
-                  <EditProfileForm
-                    countries={countries}
-                    user={currentUser}
-                    onSubmit={this.onSubmit.bind(this)}
-                  />
-                ) : (
-                  <div className="row">
-                    You must be logged in to edit your profile.
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <EditProfileForm
+          countries={countries}
+          user={currentUser}
+          onSubmit={this.onSubmit.bind(this)}
+        />
       </div>
     ) : null
   }
@@ -118,9 +94,10 @@ const mapStateToProps = createStructuredSelector({
   countries:   queries.users.countriesSelector
 })
 
-const mapDispatchToProps = {
-  editProfile: editProfile
-}
+const mapDispatchToProps = dispatch => ({
+  editProfile:  (data: User) => dispatch(editProfile(data)),
+  updateDrawer: (newState: ?string) => dispatch(setDrawerState(newState))
+})
 
 const mapPropsToConfigs = () => [
   queries.users.countriesQuery(),
@@ -130,4 +107,4 @@ const mapPropsToConfigs = () => [
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   connectRequest(mapPropsToConfigs)
-)(EditProfilePage)
+)(EditProfileDisplay)

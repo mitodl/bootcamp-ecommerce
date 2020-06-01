@@ -25,3 +25,8 @@ export const qsBackendSelector = createParamSelector(
 export const qsNextSelector = createParamSelector("next")
 export const qsErrorSelector = createParamSelector("error")
 export const qsEmailSelector = createParamSelector("email")
+
+export const drawerSelector = createSelector(
+  state => state.drawer,
+  drawer => drawer
+)

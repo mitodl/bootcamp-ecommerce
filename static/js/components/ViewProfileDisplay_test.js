@@ -1,15 +1,11 @@
 // @flow
 import { assert } from "chai"
 
-import ViewProfilePage from "./ViewProfilePage"
-import {
-  makeAnonymousUser,
-  makeCountries,
-  makeUser
-} from "../../factories/user"
-import IntegrationTestHelper from "../../util/integration_test_helper"
+import ViewProfileDisplay from "./ViewProfileDisplay"
+import { makeAnonymousUser, makeCountries, makeUser } from "../factories/user"
+import IntegrationTestHelper from "../util/integration_test_helper"
 
-describe("ViewProfilePage", () => {
+describe("ViewProfileDisplay", () => {
   let helper, renderPage
   const user = makeUser()
   const countries = makeCountries()
@@ -24,16 +20,16 @@ describe("ViewProfilePage", () => {
       status: 200,
       body:   countries
     })
-    renderPage = helper.configureReduxQueryRenderer(ViewProfilePage)
+    renderPage = helper.configureReduxQueryRenderer(ViewProfileDisplay)
   })
 
   afterEach(() => {
     helper.cleanup()
   })
 
-  it("renders the page for a logged in user", async () => {
+  it("renders the display for a logged in user", async () => {
     const { wrapper } = await renderPage()
-    assert.isTrue(wrapper.find(".btn-outline-danger").exists())
+    assert.isTrue(wrapper.find(".profile-btn").exists())
     assert.isTrue(
       wrapper
         .find(".auth-page")
@@ -50,7 +46,7 @@ describe("ViewProfilePage", () => {
     )
   })
 
-  it("renders the page for an anonymous user", async () => {
+  it("renders the display for an anonymous user", async () => {
     helper.handleRequestStub.withArgs("/api/users/me").returns({
       status: 200,
       body:   makeAnonymousUser()

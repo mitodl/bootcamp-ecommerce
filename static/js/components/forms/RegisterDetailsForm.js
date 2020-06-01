@@ -20,7 +20,7 @@ const INITIAL_VALUES = {
   legal_address: {
     first_name:         "",
     last_name:          "",
-    street_address:     ["", ""],
+    street_address:     [""],
     city:               "",
     country:            "",
     state_or_territory: "",

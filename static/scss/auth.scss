@@ -138,3 +138,47 @@
   font-weight: bold;
   float: left;
 }
+
+.profile-row {
+  font-family: Helvetica;
+  font-size: 18px;
+  letter-spacing: 0.9px;
+  margin-bottom: 10px;
+}
+
+.profile-button-col {
+  text-align: end;
+}
+
+.profile-btn {
+  color: black;
+  background-color: white;
+  font-size: 18px;
+  line-height: 18px;
+  font-weight: bold;
+  font-family: Lato, Helvetica, sans-serif;
+  box-sizing: border-box;
+  height: 31px;
+  width: 71px;
+  border: 1px solid $outline-red;
+  border-radius: 5px;
+
+  &:hover {
+    color: white;
+    background-color: $outline-red;
+  }
+}
+
+.profile-label {
+  color: $label-gray;
+  width: 201px;
+
+  &:after {
+    content: ": ";
+  }
+}
+
+.divider {
+  border-top: 1px solid black;
+  padding-top: 10px;
+}
