@@ -1,7 +1,6 @@
 """
 Test end to end django views.
 """
-import json
 import pytest
 from cms import factories
 
