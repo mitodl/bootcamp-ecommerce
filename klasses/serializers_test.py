@@ -43,6 +43,7 @@ def test_bootcamp_serializer():
 def test_bootcamp_run_serializer():
     """BootcampRunSerializer should serialize the bootcamp run"""
     run = BootcampRunFactory.create()
+    installment = InstallmentFactory.create(bootcamp_run=run)
     assert BootcampRunSerializer(run).data == {
         "id": run.id,
         "title": run.title,
@@ -51,6 +52,7 @@ def test_bootcamp_run_serializer():
         "start_date": serializer_date_format(run.start_date),
         "end_date": serializer_date_format(run.end_date),
         "run_key": run.run_key,
+        "installments": [InstallmentSerializer(installment).data],
     }
 
 

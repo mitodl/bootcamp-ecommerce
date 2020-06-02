@@ -52,6 +52,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     run_application_steps = serializers.SerializerMethodField()
     submissions = SubmissionSerializer(many=True, read_only=True)
     orders = ApplicationOrderSerializer(many=True, read_only=True)
+    bootcamp_run = BootcampRunSerializer(read_only=True)
 
     def get_resume_filename(self, bootcamp_application):
         """Gets the resume filename (without the path) if one exists"""
@@ -77,7 +78,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
         model = models.BootcampApplication
         fields = [
             "id",
-            "bootcamp_run_id",
+            "bootcamp_run",
             "state",
             "resume_filename",
             "linkedin_url",

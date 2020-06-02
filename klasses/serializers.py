@@ -7,6 +7,16 @@ from cms.serializers import BootcampRunPageSerializer
 from klasses.models import Bootcamp, BootcampRun, Installment
 
 
+class InstallmentSerializer(serializers.ModelSerializer):
+    """Serializer for Installment model"""
+
+    amount = serializers.DecimalField(decimal_places=2, max_digits=20)
+
+    class Meta:
+        model = Installment
+        fields = ("amount", "deadline")
+
+
 class BootcampSerializer(serializers.ModelSerializer):
     """Serializer for Bootcamp model"""
 
@@ -19,6 +29,7 @@ class BootcampRunSerializer(serializers.ModelSerializer):
     """Serializer for BootcampRun model"""
 
     bootcamp = BootcampSerializer()
+    installments = InstallmentSerializer(many=True, source="installment_set")
 
     def to_representation(self, instance):
         page_fields = {}
@@ -42,14 +53,5 @@ class BootcampRunSerializer(serializers.ModelSerializer):
             "run_key",
             "start_date",
             "end_date",
+            "installments",
         ]
-
-
-class InstallmentSerializer(serializers.ModelSerializer):
-    """Serializer for Installment model"""
-
-    amount = serializers.DecimalField(decimal_places=2, max_digits=20)
-
-    class Meta:
-        model = Installment
-        fields = ("amount", "deadline")

@@ -3,10 +3,14 @@ import { assert } from "chai"
 import { Drawer as RMWCDrawer } from "@rmwc/drawer"
 
 import Drawer from "./Drawer"
-import { PROFILE_EDIT, PROFILE_VIEW } from "../constants"
+import { PAYMENT, PROFILE_EDIT, PROFILE_VIEW } from "../constants"
 
 import IntegrationTestHelper from "../util/integration_test_helper"
-import { setDrawerOpen, setDrawerState } from "../reducers/drawer"
+import {
+  setDrawerOpen,
+  setDrawerState,
+  setDrawerMeta
+} from "../reducers/drawer"
 
 describe("Drawer", () => {
   let helper, render
@@ -23,7 +27,8 @@ describe("Drawer", () => {
   //
   ;[
     [PROFILE_EDIT, "EditProfileDisplay"],
-    [PROFILE_VIEW, "ViewProfileDisplay"]
+    [PROFILE_VIEW, "ViewProfileDisplay"],
+    [PAYMENT, "PaymentDisplay"]
   ].forEach(([drawerType, expComponent]) => {
     it(`should render a drawer component with a ${expComponent} child`, async () => {
       const { wrapper } = await render({}, [
@@ -44,5 +49,11 @@ describe("Drawer", () => {
     const { wrapper, store } = await render({}, [setDrawerOpen(false)])
     wrapper.find(RMWCDrawer).prop("onClose")()
     assert.isFalse(store.getState().drawer.drawerOpen)
+  })
+
+  it("should set metadata for drawer", async () => {
+    const data = { meta: "data" }
+    const { store } = await render({}, [setDrawerMeta(data)])
+    assert.deepEqual(store.getState().drawer.drawerMeta, data)
   })
 })

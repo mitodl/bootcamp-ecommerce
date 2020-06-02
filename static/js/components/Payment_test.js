@@ -72,7 +72,7 @@ describe("Payment", () => {
   ].forEach(([deadlineDateISO, deadlineDateDesc]) => {
     it(`shows payment due date message with ${deadlineDateDesc}`, () => {
       const fakeRuns = generateFakePayableRuns(1)
-      fakeRuns[0].payment_deadline = deadlineDateISO
+      fakeRuns[0].installments = [{ deadline: deadlineDateISO }]
       const wrapper = renderPayment({
         payableBootcampRunsData: fakeRuns,
         selectedBootcampRun:     fakeRuns[0]

@@ -60,6 +60,7 @@ class BootcampApplicationFactory(DjangoModelFactory):
     state = fuzzy.FuzzyChoice(
         choices=list(map(op.itemgetter(0), VALID_APP_STATE_CHOICES))
     )
+    linkedin_url = Faker("url")
 
     class Meta:
         model = models.BootcampApplication

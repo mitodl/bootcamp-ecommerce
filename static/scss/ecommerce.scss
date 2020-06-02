@@ -1,0 +1,70 @@
+.payment-drawer {
+  max-width: 600px;
+  padding: 25px;
+
+  .drawer-title {
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2.6px;
+  }
+
+  .bootcamp {
+    margin-top: 20px;
+    letter-spacing: 1.95px;
+    line-height: 30px;
+    font-size: 18px;
+
+    .bootcamp-title {
+      font-weight: 600;
+    }
+  }
+
+  .payment-deadline {
+    letter-spacing: 1.73px;
+    font-size: 16px;
+    line-height: 29px;
+    margin-top: 20px;
+    font-weight: 600;
+  }
+
+  .payment-amount {
+    margin-top: 24px;
+    letter-spacing: 1.95px;
+    font-size: 18px;
+  }
+
+  .payment-input-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 29px;
+
+    input {
+      width: 380px;
+      border: 1px black solid;
+
+      &::placeholder {
+        color: $label-gray;
+        line-height: 22px;
+        letter-spacing: 1.95px;
+        font-size: 18px;
+      }
+    }
+
+    button {
+      margin-left: 20px;
+      border: 0;
+      border-radius: 5px;
+      background-color: $button-red;
+      color: white;
+      font-weight: 600;
+    }
+  }
+
+  .terms-and-conditions {
+    margin-top: 24px;
+    letter-spacing: 1.73px;
+    line-height: 29px;
+    font-size: 16px;
+  }
+}

@@ -79,7 +79,7 @@ class PaymentView(CreateAPIView):
         # Sync order data with hubspot
         sync_hubspot_deal_from_order(order)
 
-        redirect_url = self.request.build_absolute_uri(reverse("pay"))
+        redirect_url = self.request.build_absolute_uri(reverse("applications"))
 
         return Response(
             {

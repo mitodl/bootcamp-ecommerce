@@ -23,18 +23,21 @@ export type ApplicationSubmission = {
   review_status_date:      ?string
 }
 
-export type ApplicationOrder = {
+export type LegacyOrderPartial = {
   id:               number,
-  status:           ?string,
-  total_price_paid: ?number,
-  created_on:       ?string,
-  updated_on:       ?string
+  status:           string,
+  created_on:       string,
+  updated_on:       string
 }
+
+export type ApplicationOrder = {
+  total_price_paid: number,
+} & LegacyOrderPartial
 
 export type ApplicationDetail = {
   id:                    number,
   state:                 string,
-  bootcamp_run_id:       number,
+  bootcamp_run:          BootcampRun,
   resume_filename:       ?string,
   linkedin_url:          ?string,
   resume_upload_date:    ?string,

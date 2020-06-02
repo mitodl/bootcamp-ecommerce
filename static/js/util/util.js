@@ -1,4 +1,5 @@
 // @flow
+import Decimal from "decimal.js-light"
 import * as R from "ramda"
 import moment from "moment"
 
@@ -125,4 +126,19 @@ export const timeoutPromise = (
       resolve()
     }, timeoutMs)
   )
+}
+
+export const formatPrice = (price: ?string | number | Decimal): string => {
+  if (price === null || price === undefined) {
+    return ""
+  } else {
+    let formattedPrice: Decimal = Decimal(price)
+
+    if (formattedPrice.isInteger()) {
+      formattedPrice = formattedPrice.toFixed(0)
+    } else {
+      formattedPrice = formattedPrice.toFixed(2, Decimal.ROUND_HALF_UP)
+    }
+    return `$${formattedPrice}`
+  }
 }

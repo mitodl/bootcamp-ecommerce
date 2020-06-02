@@ -6,7 +6,7 @@ export type Payment = {
     created_on: string,
     updated_on: string,
   },
-  run_key: string,
+  run_key: number,
   price: number,
   description: string,
 }
@@ -36,12 +36,13 @@ export type BootcampRun = {
   end_date: ?string,
   bootcamp: Bootcamp,
   page?: ?BootcampRunPage,
+  installments: Array<Installment>,
 }
 
 export type PayableBootcampRun = {
   run_key: number,
   bootcamp_run_name: string,
-  display_name: string,
+  display_title: string,
   start_date: string,
   end_date: string,
   price: number,
