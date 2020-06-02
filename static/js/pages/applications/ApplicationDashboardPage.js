@@ -3,12 +3,18 @@
 import React from "react"
 import { compose } from "redux"
 import { connect } from "react-redux"
+import { requestAsync } from "redux-query"
 import { connectRequest } from "redux-query-react"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
+import { Collapse } from "reactstrap"
+import * as R from "ramda"
 
 import queries from "../../lib/queries"
-import { applicationsSelector } from "../../lib/queries/applications"
+import {
+  applicationDetailSelector,
+  applicationsSelector
+} from "../../lib/queries/applications"
 import { currentUserSelector } from "../../lib/queries/users"
 import { formatStartEndDateStrings, formatTitle } from "../../util/util"
 import {
@@ -16,16 +22,82 @@ import {
   APPLICATIONS_DASHBOARD_PAGE_TITLE
 } from "../../constants"
 
-import type { Application } from "../../flow/applicationTypes"
+import type {
+  Application,
+  ApplicationDetailState
+} from "../../flow/applicationTypes"
 import type { User } from "../../flow/authTypes"
 
 type Props = {
   applications: Array<Application>,
-  currentUser: User
+  allApplicationDetail: ApplicationDetailState,
+  currentUser: User,
+  fetchAppDetail: Function
 }
 
-export class ApplicationDashboardPage extends React.Component<Props> {
+type State = {
+  collapseVisible: Object
+}
+
+export class ApplicationDashboardPage extends React.Component<Props, State> {
+  state = {
+    collapseVisible: {}
+  }
+
+  onCollapseToggle = (applicationId: number): void => {
+    this.setState({
+      collapseVisible: {
+        ...this.state.collapseVisible,
+        [applicationId]: !this.state.collapseVisible[applicationId]
+      }
+    })
+  }
+
+  loadAndRevealAppDetail = async (applicationId: number) => {
+    const { fetchAppDetail } = this.props
+    const { collapseVisible } = this.state
+    if (!collapseVisible[applicationId]) {
+      await fetchAppDetail(applicationId)
+    }
+    this.onCollapseToggle(applicationId)
+  }
+
+  renderApplicationDetail = (applicationId: number) => {
+    const { allApplicationDetail } = this.props
+
+    if (!allApplicationDetail || !allApplicationDetail[String(applicationId)]) {
+      return null
+    }
+    return (
+      <div className="row application-detail">
+        <div className="col-12">
+          <h3>Profile Information</h3>
+          <a className="btn-link">View/Edit Profile</a>
+        </div>
+        <div className="col-12">
+          <h3>Resume or LinkedIn Profile</h3>
+          <a className="btn-link">View/Edit Resume</a>
+        </div>
+        <div className="col-12">
+          <h3>Video interview</h3>
+          <a className="btn-link">Take Video Interview</a>
+        </div>
+        <div className="col-12">
+          <h3>Application Review</h3>
+        </div>
+        <div className="col-12">
+          <h3>Payment</h3>
+          <a className="btn-link">Make a Payment</a>
+        </div>
+      </div>
+    )
+  }
+
   renderApplicationCard = (application: Application) => {
+    const { collapseVisible } = this.state
+
+    const isOpen = collapseVisible[String(application.id)]
+
     return (
       <div className="application-card container" key={application.id}>
         <div className="row justify-content-between">
@@ -69,6 +141,19 @@ export class ApplicationDashboardPage extends React.Component<Props> {
             <strong>{APP_STATE_TEXT_MAP[application.state]}</strong>
           </div>
         </div>
+        <div className="row text-right">
+          <div className="col-12">
+            <a
+              className="btn-text"
+              onClick={R.partial(this.loadAndRevealAppDetail, [application.id])}
+            >
+              {isOpen ? "Collapse −" : "Expand ＋"}
+            </a>
+          </div>
+        </div>
+        <Collapse isOpen={isOpen}>
+          {this.renderApplicationDetail(application.id)}
+        </Collapse>
       </div>
     )
   }
@@ -91,15 +176,24 @@ export class ApplicationDashboardPage extends React.Component<Props> {
   }
 }
 
-const mapStateToProps = () =>
-  createStructuredSelector({
-    applications: applicationsSelector,
-    currentUser:  currentUserSelector
-  })
+const mapStateToProps = createStructuredSelector({
+  applications:         applicationsSelector,
+  allApplicationDetail: applicationDetailSelector,
+  currentUser:          currentUserSelector
+})
+
+const mapDispatchToProps = dispatch => ({
+  fetchAppDetail: async (applicationId: number) =>
+    dispatch(
+      requestAsync(
+        queries.applications.applicationDetailQuery(String(applicationId))
+      )
+    )
+})
 
 const mapPropsToConfigs = () => [queries.applications.applicationsQuery()]
 
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   connectRequest(mapPropsToConfigs)
 )(ApplicationDashboardPage)

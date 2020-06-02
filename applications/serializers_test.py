@@ -51,6 +51,7 @@ def test_application_detail_serializer(app_data):
         "bootcamp_run_id": application.bootcamp_run_id,
         "state": application.state,
         "resume_filename": None,
+        "linkedin_url": None,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
         "payment_deadline": None,
         "created_on": serializer_date_format(application.created_on),

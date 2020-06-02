@@ -76,6 +76,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "bootcamp_run_id",
             "state",
             "resume_filename",
+            "linkedin_url",
             "resume_upload_date",
             "created_on",
             "payment_deadline",

@@ -1,27 +1,42 @@
 /* global SETTINGS: false */
 import { assert } from "chai"
+import sinon from "sinon"
+import wait from "waait"
 
 import ApplicationDashboardPage from "./ApplicationDashboardPage"
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import { APP_STATE_TEXT_MAP } from "../../constants"
-import { makeApplication } from "../../factories/application"
+import {
+  makeApplication,
+  makeApplicationDetail
+} from "../../factories/application"
 import { makeUser } from "../../factories/user"
 
 describe("ApplicationDashboardPage", () => {
   let helper,
     fakeUser,
     renderPage,
+    fakeApplicationDetail,
     fakeApplications = []
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
-    fakeApplications = [makeApplication(), makeApplication()]
     fakeUser = makeUser()
+    fakeApplications = [makeApplication(), makeApplication()]
+    fakeApplicationDetail = makeApplicationDetail()
+    fakeApplicationDetail.id = fakeApplications[0].id
 
     helper.handleRequestStub.withArgs("/api/applications/").returns({
       status: 200,
       body:   fakeApplications
     })
+
+    helper.handleRequestStub
+      .withArgs(`/api/applications/${String(fakeApplicationDetail.id)}/`)
+      .returns({
+        status: 200,
+        body:   fakeApplicationDetail
+      })
 
     renderPage = helper.configureReduxQueryRenderer(
       ApplicationDashboardPage,
@@ -85,5 +100,34 @@ describe("ApplicationDashboardPage", () => {
         .find("img")
         .exists()
     )
+  })
+
+  it("loads detailed application data when the detail section is expanded", async () => {
+    const { wrapper } = await renderPage()
+    let firstApplicationCard = wrapper.find(".application-card").at(0)
+    assert.isFalse(firstApplicationCard.find("Collapse").prop("isOpen"))
+    const btnLinks = firstApplicationCard.find(".btn-text")
+    assert.isTrue(btnLinks.exists())
+    const expandLink = btnLinks.last()
+    assert.include(expandLink.text(), "Expand")
+
+    await expandLink.simulate("click")
+    await wait()
+    wrapper.update()
+    firstApplicationCard = wrapper.find(".application-card").at(0)
+    sinon.assert.calledWith(
+      helper.handleRequestStub,
+      `/api/applications/${String(fakeApplicationDetail.id)}/`,
+      "GET"
+    )
+    assert.isTrue(firstApplicationCard.find("Collapse").prop("isOpen"))
+    assert.include(
+      firstApplicationCard
+        .find(".btn-text")
+        .last()
+        .text(),
+      "Collapse"
+    )
+    assert.exists(firstApplicationCard.find(".application-detail"))
   })
 })
