@@ -1,19 +1,25 @@
 """Views for bootcamp applications"""
+from collections import OrderedDict
+
+from django.db.models import Count, F
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
-from rest_framework.generics import UpdateAPIView, GenericAPIView
+from rest_framework.generics import GenericAPIView
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework_serializer_extensions.views import SerializerExtensionsAPIViewMixin
 
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
+    SubmissionReviewSerializer,
 )
-from applications.api import (
-    get_or_create_bootcamp_application,
-    set_submission_review_status,
-)
+from applications.api import get_or_create_bootcamp_application
+from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission
@@ -75,25 +81,71 @@ class BootcampApplicationViewset(
         )
 
 
-class ReviewSubmissionView(UpdateAPIView):
+class ReviewSubmissionPagination(LimitOffsetPagination):
+    """Pagination class for ReviewSubmissionViewSet"""
+
+    default_limit = 10
+    max_limit = 100
+    facets = {}
+
+    def paginate_queryset(self, queryset, request, view=None):
+        """Paginate the queryset"""
+        self.facets = self.get_facets(queryset)
+        return super().paginate_queryset(queryset, request, view=view)
+
+    def get_paginated_response(self, data):
+        """Return a paginationed response, including facets"""
+        return Response(
+            OrderedDict(
+                [
+                    ("count", self.count),
+                    ("next", self.get_next_link()),
+                    ("previous", self.get_previous_link()),
+                    ("results", data),
+                    ("facets", self.facets),
+                ]
+            )
+        )
+
+    def get_facets(self, queryset):
+        """Return a dictionary of facets"""
+        statuses = (
+            queryset.values("review_status")
+            .order_by("review_status")
+            .annotate(count=Count("review_status"))
+        )
+        bootcamps = (
+            queryset.order_by("bootcamp_application__bootcamp_run__bootcamp__id")
+            .annotate(
+                bootcamp_id=F("bootcamp_application__bootcamp_run__bootcamp__id"),
+                bootcamp_title=F("bootcamp_application__bootcamp_run__bootcamp__title"),
+                count=Count("bootcamp_application"),
+            )
+            .values("bootcamp_id", "bootcamp_title", "count")
+        )
+        return {"review_statuses": statuses, "bootcamps": bootcamps}
+
+
+class ReviewSubmissionViewSet(
+    SerializerExtensionsAPIViewMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
     """
-    Admin view for setting review status on application submission
+    Admin view for managing application submissions
     """
 
     authentication_classes = (SessionAuthentication,)
+    serializer_class = SubmissionReviewSerializer
     permission_classes = (IsAdminUser,)
-    lookup_field = "pk"
     queryset = ApplicationStepSubmission.objects.all()
-
-    def patch(self, request, *args, **kwargs):
-        """
-        Update review status for application submission
-        """
-        submission = self.get_object()
-        review_status = request.data["review_status"]
-        set_submission_review_status(submission, review_status)
-
-        return Response(status=status.HTTP_200_OK)
+    filterset_class = ApplicationStepSubmissionFilterSet
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    pagination_class = ReviewSubmissionPagination
+    ordering_fields = ["created_on"]
+    ordering = "created_on"
 
 
 class UploadResumeView(GenericAPIView):

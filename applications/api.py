@@ -4,11 +4,9 @@ from django.db import transaction
 from applications.constants import (
     AppStates,
     REVIEW_STATUS_REJECTED,
-    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_PENDING,
 )
-from applications.exceptions import InvalidApplicationException
 from applications.models import BootcampApplication
-from main.utils import now_in_utc
 
 
 @transaction.atomic
@@ -60,7 +58,9 @@ def derive_application_state(
     ]
     if any([status == REVIEW_STATUS_REJECTED for status in submission_review_statuses]):
         return AppStates.REJECTED.value
-    elif any([status is None for status in submission_review_statuses]):
+    elif any(
+        [status == REVIEW_STATUS_PENDING for status in submission_review_statuses]
+    ):
         return AppStates.AWAITING_SUBMISSION_REVIEW.value
     elif len(submissions) < bootcamp_application.bootcamp_run.application_steps.count():
         return AppStates.AWAITING_USER_SUBMISSIONS.value
@@ -89,28 +89,3 @@ def get_required_submission_type(application):
         .values_list("application_step__submission_type", flat=True)
         .first()
     )
-
-
-def set_submission_review_status(submission, review_status):
-    """
-    Process review of an application step submission
-
-    Args:
-        submission(ApplicationStepSubmission): The submission that is being reviewed
-        review_status(str): approved or rejected submission
-    """
-    bootcamp_application = submission.bootcamp_application
-    if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
-        raise InvalidApplicationException(
-            "The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
-                bootcamp_application.id, bootcamp_application.state
-            )
-        )
-    submission.review_status = review_status
-    submission.review_status_date = now_in_utc()
-    submission.save()
-    if review_status == REVIEW_STATUS_APPROVED:
-        bootcamp_application.approve_submission()
-    else:
-        bootcamp_application.reject_submission()
-    bootcamp_application.save()

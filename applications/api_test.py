@@ -8,7 +8,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from applications.api import (
     get_or_create_bootcamp_application,
     derive_application_state,
-    set_submission_review_status,
     get_required_submission_type,
 )
 from applications.constants import (
@@ -55,7 +54,7 @@ def test_derive_application_state():
     assert derive_application_state(app) == AppStates.AWAITING_USER_SUBMISSIONS.value
 
     first_submission = ApplicationStepSubmissionFactory.create(
-        bootcamp_application=app, run_application_step=run_steps[0], review_status=None
+        bootcamp_application=app, run_application_step=run_steps[0], is_pending=True
     )
     assert derive_application_state(app) == AppStates.AWAITING_SUBMISSION_REVIEW.value
 
@@ -129,53 +128,6 @@ def test_get_or_create_bootcamp_application(mocker):
     )
     assert bootcamp_app == existing_app
     assert created is False
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "review,other_submissions,other_steps,expected",
-    [
-        (REVIEW_STATUS_APPROVED, True, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
-        (
-            REVIEW_STATUS_APPROVED,
-            False,
-            True,
-            AppStates.AWAITING_USER_SUBMISSIONS.value,
-        ),
-        (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
-        (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
-    ],
-)
-def test_set_submission_review_status(review, other_submissions, other_steps, expected):
-    """
-    set_submission_review_status should set submission review and update application state
-    """
-    bootcamp_application = BootcampApplicationFactory(
-        state=AppStates.AWAITING_SUBMISSION_REVIEW.value
-    )
-    submission = ApplicationStepSubmissionFactory(
-        review_status=None,
-        bootcamp_application=bootcamp_application,
-        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
-    )
-    if other_submissions:
-        application_step = BootcampRunApplicationStepFactory.create(
-            bootcamp_run=bootcamp_application.bootcamp_run,
-            application_step__bootcamp=bootcamp_application.bootcamp_run.bootcamp,
-        )
-        ApplicationStepSubmissionFactory.create(
-            review_status=None,
-            bootcamp_application=bootcamp_application,
-            run_application_step=application_step,
-        )
-    if other_steps:
-        BootcampRunApplicationStepFactory.create(
-            bootcamp_run=bootcamp_application.bootcamp_run
-        )
-
-    set_submission_review_status(submission, review)
-    assert submission.review_status == review
-    assert bootcamp_application.state == expected
 
 
 @pytest.mark.django_db

@@ -7,12 +7,15 @@ dj-static==0.0.6
 django-compat==1.0.15
 django-hijack==2.1.10
 django-hijack-admin==2.1.7
+django-filter==2.2.0
 django-fsm==2.6.1
 django-redis==4.7.0
 django-server-status==0.5.0
 django-webpack-loader==0.5.0
-djangorestframework==3.9.1
+djangorestframework==3.9.2
+djangorestframework-serializer-extensions==2.0.0
 djoser==1.7.0
+dynamic-rest==1.9.6
 edx-api-client==0.6.1
 html5lib==0.999999999
 django-storages==1.9.1

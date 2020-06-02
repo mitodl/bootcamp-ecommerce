@@ -9,11 +9,7 @@ from django.db import models
 import pytest
 
 
-from applications.constants import (
-    VALID_SUBMISSION_TYPE_CHOICES,
-    REVIEW_STATUS_APPROVED,
-    REVIEW_STATUS_REJECTED,
-)
+from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, REVIEW_STATUS_REJECTED
 from applications.models import ApplicationStepSubmission, APP_SUBMISSION_MODELS
 from applications.factories import (
     BootcampRunApplicationStepFactory,
@@ -117,7 +113,7 @@ def test_is_ready_for_payment():
     submission = ApplicationStepSubmissionFactory.create(
         bootcamp_application__bootcamp_run=bootcamp_run,
         run_application_step__bootcamp_run=bootcamp_run,
-        review_status=REVIEW_STATUS_APPROVED,
+        is_approved=True,
     )
     bootcamp_application = submission.bootcamp_application
 
@@ -127,7 +123,7 @@ def test_is_ready_for_payment():
         bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
     )
     submission_not_approved = ApplicationStepSubmissionFactory.create(
-        review_status=None,
+        is_pending=True,
         bootcamp_application=bootcamp_application,
         run_application_step=application_step,
     )

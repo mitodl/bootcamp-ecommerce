@@ -123,6 +123,8 @@ INSTALLED_APPS = (
     "wagtail.contrib.routable_page",
     "modelcluster",
     "taggit",
+    "django_filters",
+    "rest_framework_serializer_extensions",
     # Our INSTALLED_APPS
     "backends",
     "main",

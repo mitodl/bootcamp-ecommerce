@@ -6,7 +6,7 @@ from rest_framework import routers
 
 from applications.views import (
     BootcampApplicationViewset,
-    ReviewSubmissionView,
+    ReviewSubmissionViewSet,
     UploadResumeView,
 )
 
@@ -14,14 +14,10 @@ router = routers.SimpleRouter()
 router.register(
     r"applications", BootcampApplicationViewset, basename="applications_api"
 )
+router.register(r"submissions", ReviewSubmissionViewSet, basename="submissions_api")
 
 urlpatterns = [
     url(r"^api/", include(router.urls)),
-    url(
-        r"^api/submissions/(?P<pk>\d+)/$",
-        ReviewSubmissionView.as_view(),
-        name="submit-review",
-    ),
     url(
         r"^api/applications/(?P<pk>\d+)/resume/$",
         UploadResumeView.as_view(),
