@@ -7,14 +7,24 @@ import { Theme } from "@rmwc/theme"
 
 import { drawerSelector } from "../lib/selectors"
 import { setDrawerOpen } from "../reducers/drawer"
+import { PROFILE_EDIT, PROFILE_VIEW } from "../constants"
 
-type Props = {
-  children?: React.Node
+import EditProfileDisplay from "./EditProfileDisplay"
+import ViewProfileDisplay from "./ViewProfileDisplay"
+
+const renderDrawerContents = (drawerState: string): ?React$Element<*> => {
+  switch (drawerState) {
+  case PROFILE_EDIT:
+    return <EditProfileDisplay />
+  case PROFILE_VIEW:
+    return <ViewProfileDisplay />
+  default:
+    return null
+  }
 }
 
-export default function Drawer(props: Props) {
-  const { children } = props
-  const { drawerOpen } = useSelector(drawerSelector)
+export default function Drawer() {
+  const { drawerOpen, drawerState } = useSelector(drawerSelector)
 
   const dispatch = useDispatch()
   const closeDrawer = useCallback(() => {
@@ -24,7 +34,9 @@ export default function Drawer(props: Props) {
   return (
     <Theme>
       <RMWCDrawer open={drawerOpen} onClose={closeDrawer} dir="rtl" modal>
-        <DrawerContent dir="ltr">{children}</DrawerContent>
+        <DrawerContent dir="ltr">
+          {renderDrawerContents(drawerState)}
+        </DrawerContent>
       </RMWCDrawer>
     </Theme>
   )

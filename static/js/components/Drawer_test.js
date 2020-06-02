@@ -1,12 +1,12 @@
 // @flow
-import React from "react"
 import { assert } from "chai"
 import { Drawer as RMWCDrawer } from "@rmwc/drawer"
 
 import Drawer from "./Drawer"
+import { PROFILE_EDIT, PROFILE_VIEW } from "../constants"
 
 import IntegrationTestHelper from "../util/integration_test_helper"
-import { setDrawerOpen } from "../reducers/drawer"
+import { setDrawerOpen, setDrawerState } from "../reducers/drawer"
 
 describe("Drawer", () => {
   let helper, render
@@ -20,15 +20,19 @@ describe("Drawer", () => {
     helper.cleanup()
   })
 
-  it("should render a drawer component with children", async () => {
-    const { wrapper } = await render(
-      {
-        children: <div className="testtesttest">test</div>
-      },
-      [setDrawerOpen(true)]
-    )
-    assert.ok(wrapper.find(RMWCDrawer).exists())
-    assert.equal(wrapper.find(".testtesttest").text(), "test")
+  //
+  ;[
+    [PROFILE_EDIT, "EditProfileDisplay"],
+    [PROFILE_VIEW, "ViewProfileDisplay"]
+  ].forEach(([drawerType, expComponent]) => {
+    it(`should render a drawer component with a ${expComponent} child`, async () => {
+      const { wrapper } = await render({}, [
+        setDrawerState(drawerType),
+        setDrawerOpen(true)
+      ])
+      assert.ok(wrapper.find(RMWCDrawer).exists())
+      assert.isTrue(wrapper.find(expComponent).exists())
+    })
   })
 
   it("should have the drawer open if action is dispatch", async () => {

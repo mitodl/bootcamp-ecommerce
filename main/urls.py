@@ -70,7 +70,6 @@ urlpatterns = [
     path("account/confirm-email/", react, name="account-confirm-email-change"),
     path("account-settings/", react, name="account-settings"),
     path("applications/", react, name="applications"),
-    path("drawer/", react, name="drawer"),
     # Wagtail
     re_path(
         r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",

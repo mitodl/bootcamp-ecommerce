@@ -21,6 +21,7 @@ import {
   APP_STATE_TEXT_MAP,
   APPLICATIONS_DASHBOARD_PAGE_TITLE
 } from "../../constants"
+import { setDrawerOpen, setDrawerState } from "../../reducers/drawer"
 
 import type {
   Application,
@@ -32,7 +33,9 @@ type Props = {
   applications: Array<Application>,
   allApplicationDetail: ApplicationDetailState,
   currentUser: User,
-  fetchAppDetail: Function
+  fetchAppDetail: Function,
+  setDrawerOpen: Function,
+  setDrawerState: Function
 }
 
 type State = {
@@ -63,7 +66,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
   }
 
   renderApplicationDetail = (applicationId: number) => {
-    const { allApplicationDetail } = this.props
+    const { allApplicationDetail, setDrawerOpen, setDrawerState } = this.props
 
     if (!allApplicationDetail || !allApplicationDetail[String(applicationId)]) {
       return null
@@ -72,7 +75,15 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       <div className="row application-detail">
         <div className="col-12">
           <h3>Profile Information</h3>
-          <a className="btn-link">View/Edit Profile</a>
+          <a
+            className="btn-link"
+            onClick={() => {
+              setDrawerState("profileEdit")
+              setDrawerOpen(true)
+            }}
+          >
+            View/Edit Profile
+          </a>
         </div>
         <div className="col-12">
           <h3>Resume or LinkedIn Profile</h3>
@@ -188,7 +199,9 @@ const mapDispatchToProps = dispatch => ({
       requestAsync(
         queries.applications.applicationDetailQuery(String(applicationId))
       )
-    )
+    ),
+  setDrawerOpen:  (newState: boolean) => dispatch(setDrawerOpen(newState)),
+  setDrawerState: (newState: ?string) => dispatch(setDrawerState(newState))
 })
 
 const mapPropsToConfigs = () => [queries.applications.applicationsQuery()]
