@@ -6,6 +6,7 @@ import pytest
 from cms.factories import (
     SiteNotificationFactory,
     BootcampRunPageFactory,
+    ResourcePageFactory,
     LearningResourcePageFactory,
     ProgramDescriptionPageFactory,
 )
@@ -75,3 +76,21 @@ def test_program_description_page():
         assert block.block_type == "steps"
         assert block.value["title"] == "Introduction"
         assert block.value["description"].source == "description of title"
+
+
+def test_bootcamp_run_page_site_name(settings, mocker):
+    """
+    BootcampRunPage should include site_name in its context
+    """
+    settings.SITE_NAME = "a site's name"
+    page = BootcampRunPageFactory.create()
+    assert page.get_context(mocker.Mock())["site_name"] == settings.SITE_NAME
+
+
+def test_resource_page_site_name(settings, mocker):
+    """
+    ResourcePage should include site_name in its context
+    """
+    settings.SITE_NAME = "a site's name"
+    page = ResourcePageFactory.create()
+    assert page.get_context(mocker.Mock())["site_name"] == settings.SITE_NAME

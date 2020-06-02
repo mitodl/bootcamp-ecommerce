@@ -47,6 +47,13 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
         return obj
 
 
+class ResourcePageFactory(wagtail_factories.PageFactory):
+    """ResourcePage factory"""
+
+    class Meta:
+        model = models.ResourcePage
+
+
 class TitleLinksBlockFactory(wagtail_factories.StructBlockFactory):
     """TitleLinksBlock factory class"""
 

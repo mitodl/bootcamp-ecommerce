@@ -107,15 +107,11 @@ class BootcampPage(Page):
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "site_name": settings.SITE_NAME,
             "title": self.title,
+            "site_name": settings.SITE_NAME,
             # The context variables below are added to avoid duplicate queries within the templates
             "three_column_image_text_section": self.three_column_image_text_section,
             "program_description_section": self.program_description_section,
         }
-
-    def _get_child_page_of_type(self, cls):
-        """Gets the first child page of the given type if it exists"""
-        child = self.get_children().type(cls).live().first()
-        return child.specific if child else None
 
     @property
     def instructors(self):
@@ -355,9 +351,10 @@ class ResourcePage(Page):
     ]
 
     def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request)
-
-        return context
+        return {
+            **super().get_context(request, *args, **kwargs),
+            "site_name": settings.SITE_NAME,
+        }
 
 
 @register_snippet
