@@ -20,6 +20,7 @@ from cms.blocks import (
     InstructorSectionBlock,
     ThreeColumnImageTextBlock,
     AlumniBlock,
+    TitleLinksBlock,
 )
 from main.views import _serialize_js_settings
 
@@ -97,7 +98,17 @@ class BootcampPage(Page):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(AlumniPage)
 
-    subpage_types = ["ThreeColumnImageTextPage", "InstructorsPage", "AlumniPage"]
+    @property
+    def learning_resources(self):
+        """Get the learning resources page"""
+        return self._get_child_page_of_type(LearningResourcePage)
+
+    subpage_types = [
+        "ThreeColumnImageTextPage",
+        "InstructorsPage",
+        "AlumniPage",
+        "LearningResourcePage",
+    ]
 
 
 class BootcampRunPage(BootcampPage):
@@ -327,3 +338,24 @@ class AlumniPage(BootcampRunChildPage):
 
     class Meta:
         verbose_name = "Alumni Section"
+
+
+class LearningResourcePage(BootcampRunChildPage):
+    """
+    Page that holds the learning resources for a product
+    """
+
+    heading = models.CharField(
+        max_length=100,
+        default="Learning Resources",
+        help_text="The heading to display on this section.",
+    )
+    items = StreamField(
+        [("item", TitleLinksBlock())],
+        help_text="The resources with links to display in this section",
+    )
+
+    content_panels = [FieldPanel("heading"), StreamFieldPanel("items")]
+
+    class Meta:
+        verbose_name = "Learning Resources Section"

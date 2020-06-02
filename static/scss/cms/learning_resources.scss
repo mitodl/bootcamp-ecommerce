@@ -1,0 +1,52 @@
+.learning-block {
+  background: $white-smoke;
+  padding: 50px 0;
+
+  h2 {
+    @include media-breakpoint-down(sm) {
+      font-size: 30px;
+      line-height: 35px;
+    }
+
+    margin: 0 0 50px;
+    color: $matterhorn;
+    font-size: 40px;
+    line-height: 45px;
+    font-weight: bold;
+  }
+
+  h3 {
+    @include media-breakpoint-down(sm) {
+      min-height: 0px;
+    }
+
+    font-size: 23px;
+    font-weight: bold;
+    line-height: 30px;
+    color: $matterhorn;
+    margin: 0 0 20px;
+    min-height: 60px;
+  }
+
+  .learning-links {
+    @include media-breakpoint-down(sm) {
+      border-left: 1px solid $matterhorn;
+      padding: 10px 0 10px 15px;
+      margin: 0 0 10px;
+    }
+
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    p {
+      font-size: 16px;
+      line-height: 20px;
+
+      a {
+        text-decoration: underline;
+        color: $matterhorn;
+      }
+    }
+  }
+}
