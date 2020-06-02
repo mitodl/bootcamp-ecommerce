@@ -6,7 +6,7 @@ import { generateFakeRun } from "./index"
 import { incrementer } from "../util/util"
 import { APP_STATE_TEXT_MAP } from "../constants"
 
-import type { Application } from "../flow/applicationTypes"
+import type { Application, ApplicationDetail } from "../flow/applicationTypes"
 
 const incr = incrementer()
 
@@ -16,4 +16,19 @@ export const makeApplication = (): Application => ({
   state:        casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
   created_on:   moment().format(),
   bootcamp_run: generateFakeRun()
+})
+
+export const makeApplicationDetail = (): ApplicationDetail => ({
+  // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
+  id:                    incr.next().value,
+  state:                 casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
+  bootcamp_run_id:       casual.integer,
+  resume_filename:       `${casual.word}.${casual.file_extension}`,
+  linkedin_url:          casual.url,
+  resume_upload_date:    moment().format(),
+  payment_deadline:      moment().format(),
+  run_application_steps: [],
+  submissions:           [],
+  orders:                [],
+  created_on:            moment().format()
 })
