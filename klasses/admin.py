@@ -50,6 +50,16 @@ class PersonalPriceAdmin(admin.ModelAdmin):
 
     model = models.PersonalPrice
     list_display = ("bootcamp_run", "user", "price")
+    list_filter = ("bootcamp_run__bootcamp", "bootcamp_run")
+    search_fields = (
+        "price",
+        "bootcamp_run__title",
+        "user__email",
+        "user__username",
+        "user__profile__name",
+        "user__legal_address__first_name",
+        "user__legal_address__last_name",
+    )
 
 
 admin.site.register(models.Bootcamp, BootcampAdmin)
