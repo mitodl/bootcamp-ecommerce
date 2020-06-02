@@ -80,3 +80,16 @@ class AlumniBlock(blocks.StructBlock):
     quote = blocks.RichTextBlock(
         help_text="The quote that appears on the alumni section."
     )
+
+
+class TitleLinksBlock(blocks.StructBlock):
+    """
+    Block class that contains learning resources
+    """
+
+    title = blocks.CharBlock(
+        max_length=100, help_text="The title to display for this section on the page."
+    )
+    links = blocks.RichTextBlock(
+        help_text="Represent resources with the links to display. Add each link in the new line of the editor."
+    )
