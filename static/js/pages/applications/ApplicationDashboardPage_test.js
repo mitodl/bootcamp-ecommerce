@@ -5,7 +5,7 @@ import wait from "waait"
 
 import ApplicationDashboardPage from "./ApplicationDashboardPage"
 import IntegrationTestHelper from "../../util/integration_test_helper"
-import { APP_STATE_TEXT_MAP } from "../../constants"
+import { APP_STATE_TEXT_MAP, PROFILE_VIEW } from "../../constants"
 import {
   makeApplication,
   makeApplicationDetail
@@ -103,18 +103,21 @@ describe("ApplicationDashboardPage", () => {
   })
 
   it("loads detailed application data when the detail section is expanded", async () => {
+    const applicationIndex = 0
     const { wrapper } = await renderPage()
-    let firstApplicationCard = wrapper.find(".application-card").at(0)
+    let firstApplicationCard = wrapper
+      .find(".application-card")
+      .at(applicationIndex)
     assert.isFalse(firstApplicationCard.find("Collapse").prop("isOpen"))
-    const btnLinks = firstApplicationCard.find(".btn-text")
-    assert.isTrue(btnLinks.exists())
-    const expandLink = btnLinks.last()
+    const expandLink = firstApplicationCard.find(".expand-collapse")
     assert.include(expandLink.text(), "Expand")
 
     await expandLink.simulate("click")
     await wait()
     wrapper.update()
-    firstApplicationCard = wrapper.find(".application-card").at(0)
+    firstApplicationCard = wrapper
+      .find(".application-card")
+      .at(applicationIndex)
     sinon.assert.calledWith(
       helper.handleRequestStub,
       `/api/applications/${String(fakeApplicationDetail.id)}/`,
@@ -129,5 +132,22 @@ describe("ApplicationDashboardPage", () => {
       "Collapse"
     )
     assert.exists(firstApplicationCard.find(".application-detail"))
+  })
+
+  it("opens and closes a profile view/edit drawer", async () => {
+    const applicationIndex = 0
+    const { wrapper, store } = await renderPage()
+
+    let appCard = wrapper.find(".application-card").at(applicationIndex)
+    await appCard.find(".expand-collapse").simulate("click")
+    await wait()
+    wrapper.update()
+
+    appCard = wrapper.find(".application-card").at(applicationIndex)
+    await appCard.find(".section-profile a").simulate("click")
+    await wait()
+    const state = store.getState()
+    assert.isTrue(state.drawer.drawerOpen)
+    assert.equal(state.drawer.drawerState, PROFILE_VIEW)
   })
 })

@@ -19,7 +19,8 @@ import { currentUserSelector } from "../../lib/queries/users"
 import { formatStartEndDateStrings, formatTitle } from "../../util/util"
 import {
   APP_STATE_TEXT_MAP,
-  APPLICATIONS_DASHBOARD_PAGE_TITLE
+  APPLICATIONS_DASHBOARD_PAGE_TITLE,
+  PROFILE_VIEW
 } from "../../constants"
 import { setDrawerOpen, setDrawerState } from "../../reducers/drawer"
 
@@ -73,12 +74,12 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     }
     return (
       <div className="row application-detail">
-        <div className="col-12">
+        <div className="col-12 section-profile">
           <h3>Profile Information</h3>
           <a
             className="btn-link"
             onClick={() => {
-              setDrawerState("profileEdit")
+              setDrawerState(PROFILE_VIEW)
               setDrawerOpen(true)
             }}
           >
@@ -155,7 +156,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         <div className="row text-right">
           <div className="col-12">
             <a
-              className="btn-text"
+              className="btn-text expand-collapse"
               onClick={R.partial(this.loadAndRevealAppDetail, [application.id])}
             >
               {isOpen ? "Collapse −" : "Expand ＋"}
