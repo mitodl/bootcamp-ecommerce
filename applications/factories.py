@@ -2,7 +2,7 @@
 Factories for bootcamp application models
 """
 import operator as op
-from factory import Faker, Sequence, SubFactory, fuzzy
+from factory import Faker, Sequence, SubFactory, fuzzy, Trait
 from factory.django import DjangoModelFactory
 import faker
 import pytz
@@ -12,6 +12,9 @@ from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
     VALID_APP_STATE_CHOICES,
     ALL_REVIEW_STATUSES,
+    REVIEW_STATUS_PENDING,
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_REJECTED,
 )
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
@@ -89,6 +92,11 @@ class ApplicationStepSubmissionFactory(DjangoModelFactory):
     submitted_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())
     review_status = fuzzy.FuzzyChoice(choices=ALL_REVIEW_STATUSES)
     review_status_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())
+
+    class Params:
+        is_pending = Trait(review_status=REVIEW_STATUS_PENDING)
+        is_rejected = Trait(review_status=REVIEW_STATUS_REJECTED)
+        is_approved = Trait(review_status=REVIEW_STATUS_APPROVED)
 
     class Meta:
         model = models.ApplicationStepSubmission

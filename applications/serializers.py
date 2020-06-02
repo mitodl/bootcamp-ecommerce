@@ -2,9 +2,12 @@
 from rest_framework import serializers
 
 from applications import models
+from applications.constants import AppStates, REVIEW_STATUS_APPROVED
+from applications.exceptions import InvalidApplicationStateException
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.serializers import BootcampRunSerializer
-from main.utils import get_filename_from_path
+from main.utils import get_filename_from_path, now_in_utc
+from profiles.serializers import UserSerializer
 
 
 class BootcampRunStepSerializer(serializers.ModelSerializer):
@@ -38,6 +41,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "review_status",
             "review_status_date",
         ]
+        read_only_fields = ("submitted_date", "review_status", "review_status_date")
 
 
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
@@ -94,3 +98,46 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BootcampApplication
         fields = ["id", "state", "created_on", "bootcamp_run"]
+
+
+class SubmissionReviewSerializer(SubmissionSerializer):
+    """ApplicationStepSubmission serializer for reviewers"""
+
+    bootcamp_application = BootcampApplicationSerializer(required=False, read_only=True)
+    learner = UserSerializer(
+        source="bootcamp_application.user", required=False, read_only=True
+    )
+
+    def validate(self, attrs):
+        """Validate incoming data for a write"""
+        bootcamp_application = self.instance.bootcamp_application
+
+        if "review_status" in attrs:
+            if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
+                # HTTP 409 error
+                raise InvalidApplicationStateException(
+                    detail="The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
+                        bootcamp_application.id, bootcamp_application.state
+                    )
+                )
+            attrs["review_status_date"] = now_in_utc()
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        """Update an ApplicationStepSubmission"""
+        instance = super().update(instance, validated_data)
+
+        if "review_status" in validated_data:
+            bootcamp_application = instance.bootcamp_application
+            if instance.review_status == REVIEW_STATUS_APPROVED:
+                bootcamp_application.approve_submission()
+            else:
+                bootcamp_application.reject_submission()
+            bootcamp_application.save()
+
+        return instance
+
+    class Meta(SubmissionSerializer.Meta):
+        fields = SubmissionSerializer.Meta.fields + ["bootcamp_application", "learner"]
+        read_only_fields = ("submitted_date", "review_status_date")

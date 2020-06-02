@@ -161,7 +161,6 @@ def test_create_email_change_request_valid_email(user_drf_client, user, mocker):
         data={"new_email": "abc@example.com", "password": user_password},
     )
 
-    print(resp.json())
     assert resp.status_code == status.HTTP_201_CREATED
 
     code = mock_email.call_args[0][1].code

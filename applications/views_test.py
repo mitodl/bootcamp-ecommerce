@@ -8,8 +8,10 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 
 from applications.constants import (
     AppStates,
-    REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_PENDING,
+    ALL_REVIEW_STATUSES,
 )
 from applications.factories import (
     BootcampApplicationFactory,
@@ -18,6 +20,7 @@ from applications.factories import (
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
+    SubmissionReviewSerializer,
 )
 from applications.views import BootcampApplicationViewset
 from klasses.factories import BootcampRunFactory
@@ -122,29 +125,201 @@ def test_app_detail_view_permissions(client):
 
 
 @pytest.mark.parametrize(
-    "review_status", [REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED]
+    "review_status, application_state",
+    [
+        (REVIEW_STATUS_APPROVED, AppStates.AWAITING_PAYMENT.value),
+        (REVIEW_STATUS_REJECTED, AppStates.REJECTED.value),
+    ],
 )
 @pytest.mark.django_db
-def test_review_submission_update(client, mocker, review_status):
+def test_review_submission_update(admin_drf_client, review_status, application_state):
     """
-    The review submission view should return successful response, and update review_status
+    The review submission view should return successful response, and update review_status and application
     """
-    mocker.patch("applications.views.IsAdminUser.has_permission", return_value=True)
-    bootcamp_application = BootcampApplicationFactory(
+    bootcamp_application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_SUBMISSION_REVIEW.value
     )
-    submission = ApplicationStepSubmissionFactory(
-        review_status=None,
+    submission = ApplicationStepSubmissionFactory.create(
+        is_pending=True,
         bootcamp_application=bootcamp_application,
         run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
     )
-    url = reverse("submit-review", kwargs={"pk": submission.id})
-    resp = client.patch(
-        url, content_type="application/json", data={"review_status": review_status}
-    )
+    url = reverse("submissions_api-detail", kwargs={"pk": submission.id})
+    resp = admin_drf_client.patch(url, data={"review_status": review_status})
     assert resp.status_code == status.HTTP_200_OK
     submission.refresh_from_db()
     assert submission.review_status == review_status
+    assert submission.bootcamp_application.state == application_state
+
+
+@pytest.mark.django_db
+def test_review_submission_list(admin_drf_client):
+    """
+    The review submission list view should return a list of all submissions
+    """
+    submissions = [
+        ApplicationStepSubmissionFactory.create(is_pending=True),
+        ApplicationStepSubmissionFactory.create(is_approved=True),
+        ApplicationStepSubmissionFactory.create(is_rejected=True),
+    ]
+    bootcamps = [
+        submission.bootcamp_application.bootcamp_run.bootcamp
+        for submission in submissions
+    ]
+    url = reverse("submissions_api-list")
+    resp = admin_drf_client.get(url)
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json() == {
+        "count": 3,
+        "next": None,
+        "previous": None,
+        "results": [
+            SubmissionReviewSerializer(instance=submission).data
+            for submission in sorted(submissions, key=lambda s: s.id)
+        ],
+        "facets": {
+            "bootcamps": [
+                {
+                    "bootcamp_id": bootcamp.id,
+                    "bootcamp_title": bootcamp.title,
+                    "count": 1,
+                }
+                for bootcamp in sorted(bootcamps, key=lambda b: b.id)
+            ],
+            "review_statuses": [
+                {"review_status": submission.review_status, "count": 1}
+                for submission in sorted(submissions, key=lambda s: s.review_status)
+            ],
+        },
+    }
+
+
+@pytest.mark.django_db
+def test_review_submission_list_query_bootcamp_id(admin_drf_client):
+    """
+    The review submission list view should return a list of submissions filtered by bootcamp id
+    """
+    submission = ApplicationStepSubmissionFactory.create()
+    bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp
+    ApplicationStepSubmissionFactory.create_batch(3)
+    url = reverse("submissions_api-list")
+    resp = admin_drf_client.get(url, {"bootcamp_id": bootcamp.id})
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json() == {
+        "count": 1,
+        "next": None,
+        "previous": None,
+        "results": [SubmissionReviewSerializer(instance=submission).data],
+        "facets": {
+            "bootcamps": [
+                {
+                    "bootcamp_id": bootcamp.id,
+                    "bootcamp_title": bootcamp.title,
+                    "count": 1,
+                }
+            ],
+            "review_statuses": [
+                {"review_status": submission.review_status, "count": 1}
+            ],
+        },
+    }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("review_status", ALL_REVIEW_STATUSES)
+def test_review_submission_list_query_review_status(admin_drf_client, review_status):
+    """
+    The review submission list view should return a list of submissions filtered by review status
+    """
+    submissions = [
+        ApplicationStepSubmissionFactory.create(is_pending=True),
+        ApplicationStepSubmissionFactory.create(is_approved=True),
+        ApplicationStepSubmissionFactory.create(is_rejected=True),
+    ]
+    submission = next(filter(lambda s: s.review_status == review_status, submissions))
+    bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp
+    url = reverse("submissions_api-list")
+    resp = admin_drf_client.get(url, {"review_status": review_status})
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json() == {
+        "count": 1,
+        "next": None,
+        "previous": None,
+        "results": [SubmissionReviewSerializer(instance=submission).data],
+        "facets": {
+            "bootcamps": [
+                {
+                    "bootcamp_id": bootcamp.id,
+                    "bootcamp_title": bootcamp.title,
+                    "count": 1,
+                }
+            ],
+            "review_statuses": [
+                {"review_status": submission.review_status, "count": 1}
+            ],
+        },
+    }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "review_statuses",
+    [
+        [REVIEW_STATUS_PENDING],
+        [REVIEW_STATUS_APPROVED],
+        [REVIEW_STATUS_REJECTED],
+        [REVIEW_STATUS_PENDING, REVIEW_STATUS_APPROVED],
+        [REVIEW_STATUS_APPROVED, REVIEW_STATUS_REJECTED],
+        [REVIEW_STATUS_REJECTED, REVIEW_STATUS_PENDING],
+        [REVIEW_STATUS_REJECTED, REVIEW_STATUS_APPROVED, REVIEW_STATUS_PENDING],
+    ],
+)
+def test_review_submission_list_query_review_status_in(
+    admin_drf_client, review_statuses
+):
+    """
+    The review submission list view should return a list of all submissions filtered by multiple review statuses
+    """
+    submissions = [
+        ApplicationStepSubmissionFactory.create(is_pending=True),
+        ApplicationStepSubmissionFactory.create(is_approved=True),
+        ApplicationStepSubmissionFactory.create(is_rejected=True),
+    ]
+    submissions = list(
+        filter(lambda s: s.review_status in review_statuses, submissions)
+    )
+    bootcamps = [
+        submission.bootcamp_application.bootcamp_run.bootcamp
+        for submission in submissions
+    ]
+    url = reverse("submissions_api-list")
+    resp = admin_drf_client.get(url, {"review_status__in": ",".join(review_statuses)})
+    assert resp.status_code == status.HTTP_200_OK
+    json = resp.json()
+    json["results"] = sorted(json["results"], key=lambda s: s["id"])
+    assert json == {
+        "count": len(review_statuses),
+        "next": None,
+        "previous": None,
+        "results": [
+            SubmissionReviewSerializer(instance=submission).data
+            for submission in sorted(submissions, key=lambda s: s.id)
+        ],
+        "facets": {
+            "bootcamps": [
+                {
+                    "bootcamp_id": bootcamp.id,
+                    "bootcamp_title": bootcamp.title,
+                    "count": 1,
+                }
+                for bootcamp in sorted(bootcamps, key=lambda b: b.id)
+            ],
+            "review_statuses": [
+                {"review_status": submission.review_status, "count": 1}
+                for submission in sorted(submissions, key=lambda s: s.review_status)
+            ],
+        },
+    }
 
 
 @pytest.mark.parametrize(

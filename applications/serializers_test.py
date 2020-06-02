@@ -6,11 +6,17 @@ from types import SimpleNamespace
 import pytest
 import factory
 
+from applications.constants import (
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_REJECTED,
+    AppStates,
+)
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampRunStepSerializer,
     SubmissionSerializer,
     BootcampApplicationSerializer,
+    SubmissionReviewSerializer,
 )
 from applications.factories import (
     BootcampApplicationFactory,
@@ -25,6 +31,8 @@ from klasses.factories import BootcampRunFactory, InstallmentFactory
 from klasses.serializers import BootcampRunSerializer
 from main.test_utils import serializer_date_format
 from main.utils import now_in_utc
+from profiles.factories import UserFactory
+from profiles.serializers import UserSerializer
 
 
 @pytest.fixture
@@ -152,3 +160,81 @@ def test_submission_serializer():
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
     }
+
+
+@pytest.mark.django_db
+def test_submission_review_serializer():
+    """Test SubmissionReviewSerializer"""
+    user = UserFactory.create()
+    run_step = BootcampRunApplicationStepFactory.create()
+    submission = ApplicationStepSubmissionFactory.create(
+        bootcamp_application__user=user, run_application_step=run_step
+    )
+    data = SubmissionReviewSerializer(instance=submission).data
+    assert data == {
+        "id": submission.id,
+        "run_application_step_id": run_step.id,
+        "submitted_date": serializer_date_format(submission.submitted_date),
+        "review_status": submission.review_status,
+        "review_status_date": serializer_date_format(submission.review_status_date),
+        "learner": UserSerializer(instance=user).data,
+        "bootcamp_application": BootcampApplicationSerializer(
+            instance=submission.bootcamp_application
+        ).data,
+    }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "review,other_submissions,other_steps,expected",
+    [
+        (REVIEW_STATUS_APPROVED, True, True, AppStates.AWAITING_USER_SUBMISSIONS.value),
+        (
+            REVIEW_STATUS_APPROVED,
+            False,
+            True,
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+        ),
+        (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
+        (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
+    ],
+)
+def test_submission_review_serializer_update(
+    review, other_submissions, other_steps, expected
+):
+    """Test SubmissionReviewSerializer update()"""
+    bootcamp_application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_SUBMISSION_REVIEW.value
+    )
+    submission = ApplicationStepSubmissionFactory.create(
+        is_pending=True,
+        bootcamp_application=bootcamp_application,
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
+    )
+    if other_submissions:
+        application_step = BootcampRunApplicationStepFactory.create(
+            bootcamp_run=bootcamp_application.bootcamp_run,
+            application_step__bootcamp=bootcamp_application.bootcamp_run.bootcamp,
+        )
+        ApplicationStepSubmissionFactory.create(
+            is_pending=True,
+            bootcamp_application=bootcamp_application,
+            run_application_step=application_step,
+        )
+    if other_steps:
+        BootcampRunApplicationStepFactory.create(
+            bootcamp_run=bootcamp_application.bootcamp_run
+        )
+
+    serializer = SubmissionReviewSerializer(submission, {"review_status": review})
+    serializer.is_valid()
+
+    assert serializer.errors == {}
+
+    serializer.save()
+
+    bootcamp_application.refresh_from_db()
+    submission.refresh_from_db()
+
+    assert submission.review_status == review
+    assert bootcamp_application.state == expected

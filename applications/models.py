@@ -17,6 +17,7 @@ from applications.constants import (
     VALID_APP_STATE_CHOICES,
     VALID_REVIEW_STATUS_CHOICES,
     REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_PENDING,
 )
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
@@ -288,7 +289,9 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
     )
     submitted_date = models.DateTimeField(null=True, blank=True)
     review_status = models.CharField(
-        max_length=20, choices=VALID_REVIEW_STATUS_CHOICES, null=True, blank=True
+        max_length=20,
+        choices=VALID_REVIEW_STATUS_CHOICES,
+        default=REVIEW_STATUS_PENDING,
     )
     review_status_date = models.DateTimeField(null=True, blank=True)
     # This limits the choice of content type to models we have specified as application submission models
