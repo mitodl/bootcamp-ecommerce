@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.44.0
+Version 0.44.0 (Released June 03, 2020)
 --------------
 
 - Fixed styling for deprecated landing page
