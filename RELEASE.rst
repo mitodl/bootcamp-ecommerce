@@ -1,6 +1,20 @@
 Release Notes
 =============
 
+Version 0.44.1
+--------------
+
+- add the repl.py
+- Pin test dependencies - #115
+- Configured dashboard link to open profile drawer
+- CMS: Bootcamp Program description
+- Moved drawer rendering to top-level and removed temp page
+- footer basic layout
+- Added rough application detail view on dashboard
+- personal price search and filter (#601)
+- product page: add learning resource section
+- Update profile page styling/layout (#575)
+
 Version 0.44.0 (Released June 03, 2020)
 --------------
 
