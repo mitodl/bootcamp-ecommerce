@@ -93,3 +93,17 @@ class TitleLinksBlock(blocks.StructBlock):
     links = blocks.RichTextBlock(
         help_text="Represent resources with the links to display. Add each link in the new line of the editor."
     )
+
+
+class TitleDescriptionBlock(blocks.StructBlock):
+    """
+    A generic custom block used to input title and description.
+    """
+
+    title = blocks.CharBlock(
+        max_length=100, help_text="Title that will highlight the main point."
+    )
+    description = blocks.RichTextBlock()
+
+    class Meta:
+        icon = "plus"
