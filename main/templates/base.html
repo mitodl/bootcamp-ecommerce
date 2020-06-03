@@ -35,6 +35,8 @@
     {% latest_notification %}
     {% block content %}
     {% endblock %}
+    {% block footer %}
+    {% endblock %}
     {% if zendesk_config.help_widget_enabled %}
       <script type="text/javascript">
         zE('webWidget', 'prefill', {

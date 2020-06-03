@@ -35,3 +35,6 @@
   {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
   {% if page.learning_resources %} {% include "partials/learning_resources_page.html" with page=page.learning_resources %} {% endif %}
 {% endblock %}
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock %}
