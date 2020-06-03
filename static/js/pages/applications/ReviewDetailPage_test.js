@@ -13,7 +13,7 @@ import {
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED
 } from "../../constants"
-import { ReviewDetailPage } from "./ReviewDetailPage"
+import ReviewDetailPage from "./ReviewDetailPage"
 
 import { shouldIf } from "../../lib/test_utils"
 import { getFilenameFromPath, isNilOrBlank } from "../../util/util"
@@ -67,7 +67,7 @@ describe("ReviewDetailPage", () => {
       {
         match: {
           params: {
-            id: fakeSubmissionReview.id
+            submissionId: fakeSubmissionReview.id
           }
         }
       },

@@ -10,6 +10,8 @@ import {
   REVIEW_STATUS_TEXT_MAP,
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
+  REVIEW_STATUS_REJECTED,
+  REVIEW_STATUS_WAITLISTED,
   SUBMISSION_QUIZ,
   SUBMISSION_VIDEO,
   SUBMISSION_STATUS_TEXT_MAP
@@ -22,7 +24,8 @@ import type {
   ApplicationRunStep,
   ApplicationSubmission,
   SubmissionReview,
-  ValidAppStepType
+  ValidAppStepType,
+  SubmissionFacetData
 } from "../flow/applicationTypes"
 
 const incr = incrementer()
@@ -62,6 +65,27 @@ export const makeApplicationSubmission = (): ApplicationSubmission => ({
   ),
   interview_url: casual.url
 })
+
+export const makeApplicationFacets = (): SubmissionFacetData => {
+  const facets = {
+    review_statuses: [
+      REVIEW_STATUS_APPROVED,
+      REVIEW_STATUS_REJECTED,
+      REVIEW_STATUS_PENDING,
+      REVIEW_STATUS_WAITLISTED
+    ].map(status => ({
+      review_status: status,
+      count:         casual.integer(1, 10)
+    })),
+    bootcamps: [1, 2, 3].map(id => ({
+      id,
+      title: casual.title,
+      count: casual.integer(1, 10)
+    }))
+  }
+
+  return facets
+}
 
 export const setSubmissionToPending = (
   submission: ApplicationSubmission

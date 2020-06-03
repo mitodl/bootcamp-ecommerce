@@ -5,12 +5,12 @@ import { nextState } from "./util"
 import { getCookie } from "../api"
 
 import { DEFAULT_POST_OPTIONS } from "../redux_query"
+import { applicationsAPI, applicationDetailAPI } from "../urls"
+
 import type {
   Application,
   ApplicationDetail,
   ApplicationDetailState,
-  SubmissionReview,
-  SubmissionReviewState,
   VideoInterviewResponse
 } from "../../flow/applicationTypes"
 
@@ -24,9 +24,6 @@ const applicationsKey = "applications"
 const applicationDetailKey = "applicationDetail"
 export const createAppQueryKey = "createApplication"
 
-const submissionDetailKey = "submissionReview"
-const submissionsApiUrl = "/api/submissions/"
-
 export const applicationsSelector = (state: any): ?Array<Application> =>
   state.entities[applicationsKey]
 
@@ -34,13 +31,9 @@ export const applicationDetailSelector = (
   state: any
 ): { [string]: ApplicationDetail } => state.entities[applicationDetailKey]
 
-export const submissionDetailSelector = (
-  state: any
-): { [string]: SubmissionReview } => state.entities[submissionDetailKey]
-
 export default {
   applicationsQuery: () => ({
-    url:       "/api/applications/",
+    url:       applicationsAPI.toString(),
     transform: objOf(applicationsKey),
     update:    {
       [applicationsKey]: nextState
@@ -66,7 +59,7 @@ export default {
     }
   }),
   applicationDetailQuery: (applicationId: string) => ({
-    url:       `/api/applications/${applicationId}/`,
+    url:       applicationDetailAPI.param({ applicationId }).toString(),
     transform: (json: ?ApplicationDetail) => {
       return {
         [applicationDetailKey]: {
@@ -82,51 +75,6 @@ export default {
         ...prev,
         ...transformed
       })
-    }
-  }),
-  submissionReviewQuery: (submissionId: number) => ({
-    url:       `${submissionsApiUrl}${submissionId}/`,
-    transform: (json: ?SubmissionReview) => {
-      return {
-        [submissionDetailKey]: {
-          [submissionId]: json
-        }
-      }
-    },
-    update: {
-      [submissionDetailKey]: (
-        prev: SubmissionReviewState,
-        transformed: SubmissionReviewState
-      ) => ({
-        ...prev,
-        ...transformed
-      })
-    }
-  }),
-  submissionReviewMutation: (submission: SubmissionReview) => ({
-    url:       `${submissionsApiUrl}${submission.id}/`,
-    body:      submission,
-    transform: (json: ?SubmissionReview) => {
-      return {
-        [submissionDetailKey]: {
-          [submission.id]: json
-        }
-      }
-    },
-    update: {
-      [submissionDetailKey]: (
-        prev: SubmissionReviewState,
-        transformed: SubmissionReviewState
-      ) => ({
-        ...prev,
-        ...transformed
-      })
-    },
-    options: {
-      method:  "PATCH",
-      headers: {
-        "X-CSRFTOKEN": getCookie("csrftoken")
-      }
     }
   }),
   createVideoInterviewMutation: (applicationId: number, stepId: number) => ({

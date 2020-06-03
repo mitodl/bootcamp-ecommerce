@@ -1,5 +1,6 @@
 // @flow
 import { include } from "named-urls"
+import UrlAssembler from "url-assembler"
 import qs from "query-string"
 
 export const getNextParam = (search: string) => qs.parse(search).next || "/"
@@ -49,7 +50,7 @@ export const routes = {
 
   review: include("/review/", {
     dashboard: "",
-    detail:    ":id/"
+    detail:    ":submissionId/"
   }),
 
   resourcePages: include("", {
@@ -57,3 +58,11 @@ export const routes = {
     terms:      "terms-and-conditions/"
   })
 }
+
+const api = UrlAssembler().prefix("/api/")
+
+export const submissionsAPI = api.segment("submissions/")
+export const submissionDetailAPI = submissionsAPI.segment(":submissionId/")
+
+export const applicationsAPI = api.segment("applications/")
+export const applicationDetailAPI = applicationsAPI.segment(":applicationId/")

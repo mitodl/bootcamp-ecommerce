@@ -1,5 +1,4 @@
 .review-card {
-
   &.review-panel-right {
     border-left: 1px solid black;
   }
@@ -27,6 +26,16 @@
       font-size: 18px;
       line-height: 35px;
       padding-left: 10px;
+    }
+  }
+}
+
+.review-dashboard-page {
+  .submission-row {
+    display: flex;
+
+    a {
+      color: black;
     }
   }
 }
