@@ -37,50 +37,53 @@ export function PaymentDisplay(props: Props) {
   const cost = sum(installments.map(installment => installment.amount))
 
   return (
-    <div className="payment-drawer">
-      <div className="drawer-title">Make Payment</div>
-      <div className="bootcamp">
-        <div className="bootcamp-title">{run.bootcamp.title}</div>
-        <div className="bootcamp-dates">
-          {run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} -{" "}
-          {run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"}
+    <div className="container">
+      <div className="payment-drawer auth-card">
+        <h2 className="drawer-title">Make Payment</h2>
+        <div className="bootcamp">
+          <div className="bootcamp-title">{run.bootcamp.title}</div>
+          <div className="bootcamp-dates">
+            {run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} -{" "}
+            {run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"}
+          </div>
         </div>
-      </div>
-      <div className="payment-deadline">
-        Full payment must be complete by{" "}
-        {formatReadableDateFromStr(application.payment_deadline)}
-      </div>
-      <div className="payment-amount">
-        You have paid {formatPrice(totalSpent)} out of {formatPrice(cost)}.
-      </div>
-      <div className="payment-input-container">
-        <input
-          type="text"
-          placeholder="Enter Amount"
-          onChange={e => setAmount(e.target.value)}
-        />
-        <button
-          onClick={() => {
-            const price = parsePrice(amount)
-            if (price === null || !price.toNumber()) {
-              return
-            }
+        <div className="payment-deadline">
+          Full payment must be complete by{" "}
+          {formatReadableDateFromStr(application.payment_deadline)}
+        </div>
+        <div className="payment-amount">
+          You have paid {formatPrice(totalSpent)} out of {formatPrice(cost)}.
+        </div>
+        <div className="payment-input-container">
+          <input
+            type="text"
+            placeholder="Enter Amount"
+            onChange={e => setAmount(e.target.value)}
+          />
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              const price = parsePrice(amount)
+              if (price === null || !price.toNumber()) {
+                return
+              }
 
-            return sendPayment({
-              application_id: application.id,
-              payment_amount: price.toString()
-            })
-          }}
-        >
-          Pay Now
-        </button>
-      </div>
-      <div className="terms-and-conditions">
-        By making a payment I certify that I agree with the MIT Bootcamps{" "}
-        <a href="/terms_and_conditions/" target="_blank">
-          Terms and Conditions
-        </a>
-        .
+              return sendPayment({
+                application_id: application.id,
+                payment_amount: price.toString()
+              })
+            }}
+          >
+            Pay Now
+          </button>
+        </div>
+        <div className="terms-and-conditions">
+          By making a payment I certify that I agree with the MIT Bootcamps{" "}
+          <a href="/terms_and_conditions/" target="_blank">
+            Terms and Conditions
+          </a>
+          .
+        </div>
       </div>
     </div>
   )

@@ -1,23 +1,24 @@
 .payment-drawer {
-  max-width: 600px;
-  padding: 25px;
-
   .drawer-title {
-    font-size: 24px;
-    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2.6px;
   }
 
   .bootcamp {
     margin-top: 20px;
-    letter-spacing: 1.95px;
     line-height: 30px;
-    font-size: 18px;
 
     .bootcamp-title {
       font-weight: 600;
     }
+  }
+
+  .payment-amount {
+    margin-top: 24px;
+  }
+
+  .bootcamp, .payment-amount {
+    letter-spacing: 1.95px;
+    font-size: 18px;
   }
 
   .payment-deadline {
@@ -28,19 +29,13 @@
     font-weight: 600;
   }
 
-  .payment-amount {
-    margin-top: 24px;
-    letter-spacing: 1.95px;
-    font-size: 18px;
-  }
-
   .payment-input-container {
     display: flex;
     flex-direction: row;
     margin-top: 29px;
 
     input {
-      width: 380px;
+      width: 100%;
       border: 1px black solid;
 
       &::placeholder {
@@ -53,11 +48,8 @@
 
     button {
       margin-left: 20px;
-      border: 0;
-      border-radius: 5px;
-      background-color: $button-red;
-      color: white;
       font-weight: 600;
+      min-width: 100px;
     }
   }
 
