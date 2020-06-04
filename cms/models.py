@@ -107,7 +107,6 @@ class BootcampPage(Page):
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "site_name": settings.SITE_NAME,
             "title": self.title,
-            "site_name": settings.SITE_NAME,
             # The context variables below are added to avoid duplicate queries within the templates
             "three_column_image_text_section": self.three_column_image_text_section,
             "program_description_section": self.program_description_section,
