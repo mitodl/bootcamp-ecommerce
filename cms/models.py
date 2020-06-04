@@ -112,11 +112,6 @@ class BootcampPage(Page):
             "program_description_section": self.program_description_section,
         }
 
-    def _get_child_page_of_type(self, cls):
-        """Gets the first child page of the given type if it exists"""
-        child = self.get_children().type(cls).live().first()
-        return child.specific if child else None
-
     @property
     def instructors(self):
         """Gets the faculty members page"""
@@ -355,9 +350,10 @@ class ResourcePage(Page):
     ]
 
     def get_context(self, request, *args, **kwargs):
-        context = super().get_context(request)
-
-        return context
+        return {
+            **super().get_context(request, *args, **kwargs),
+            "site_name": settings.SITE_NAME,
+        }
 
 
 @register_snippet
