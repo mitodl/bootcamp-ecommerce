@@ -111,7 +111,7 @@ describe("PaymentDisplay", () => {
   })
 
   describe("submitting payment", () => {
-    it("sends a payment", async () => {
+    it("does nothing if the payment textbox is empty", async () => {
       const { inner } = await renderPage()
       inner.find(".payment-input-container input").prop("onChange")({
         target: { value: "" }
@@ -119,7 +119,23 @@ describe("PaymentDisplay", () => {
       inner.find(".payment-input-container button").prop("onClick")()
     })
 
-    it("does nothing if the payment textbox is empty", async () => {
+    it("does nothing if the payment textbox is not parseable as a float", async () => {
+      const { inner } = await renderPage()
+      inner.find(".payment-input-container input").prop("onChange")({
+        target: { value: "🦀🦀🦀🦀🦀🦀🦀🦀" }
+      })
+      inner.find(".payment-input-container button").prop("onClick")()
+    })
+
+    it("does nothing if the amount is 0", async () => {
+      const { inner } = await renderPage()
+      inner.find(".payment-input-container input").prop("onChange")({
+        target: { value: "0.00000001" } // rounds to 0
+      })
+      inner.find(".payment-input-container button").prop("onClick")()
+    })
+
+    it("sends a payment", async () => {
       const submitStub = helper.sandbox.stub()
       const fakeForm = document.createElement("form")
       fakeForm.setAttribute("class", "fake-form")
@@ -139,7 +155,7 @@ describe("PaymentDisplay", () => {
           payload
         }
       })
-      const payment = "123"
+      const payment = "123.456" // will get rounded to 123.46
       inner.find(".payment-input-container input").prop("onChange")({
         target: { value: payment }
       })
@@ -157,7 +173,7 @@ describe("PaymentDisplay", () => {
         {
           body: {
             application_id: application.id,
-            payment_amount: payment
+            payment_amount: "123.46"
           },
           credentials: undefined,
           headers:     { "X-CSRFTOKEN": null }

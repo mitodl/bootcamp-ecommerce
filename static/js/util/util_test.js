@@ -14,7 +14,8 @@ import {
   formatStartEndDateStrings,
   newSetWithout,
   newSetWith,
-  timeoutPromise
+  timeoutPromise,
+  parsePrice
 } from "./util"
 
 describe("util", () => {
@@ -185,6 +186,16 @@ describe("util", () => {
     it("returns an empty string if null or undefined", () => {
       assert.equal(formatPrice(null), "")
       assert.equal(formatPrice(undefined), "")
+    })
+  })
+
+  describe("parsePrice", () => {
+    it("parses a price to a Decimal, rounding to the nearest cent", () => {
+      assert.equal(parsePrice("0.00000001").toString(), "0")
+    })
+
+    it("returns null if the string is not parsable", () => {
+      assert.isNull(parsePrice("notaprice"))
     })
   })
 })

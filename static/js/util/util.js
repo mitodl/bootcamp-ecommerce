@@ -142,3 +142,13 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
     return `$${formattedPrice}`
   }
 }
+
+export const parsePrice = (priceStr: string): Decimal => {
+  let price
+  try {
+    price = new Decimal(priceStr)
+  } catch (e) {
+    return null
+  }
+  return price.toDecimalPlaces(2)
+}

@@ -6,6 +6,7 @@ import { compose } from "redux"
 import { connect } from "react-redux"
 import { mutateAsync } from "redux-query"
 import queries from "../lib/queries"
+import { parsePrice } from "../util/util"
 
 import {
   createForm,
@@ -59,14 +60,17 @@ export function PaymentDisplay(props: Props) {
           onChange={e => setAmount(e.target.value)}
         />
         <button
-          onClick={() =>
-            amount ?
-              sendPayment({
-                application_id: application.id,
-                payment_amount: amount
-              }) :
-              null
-          }
+          onClick={() => {
+            const price = parsePrice(amount)
+            if (price === null || !price.toNumber()) {
+              return
+            }
+
+            return sendPayment({
+              application_id: application.id,
+              payment_amount: price.toString()
+            })
+          }}
         >
           Pay Now
         </button>
