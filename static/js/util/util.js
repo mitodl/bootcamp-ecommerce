@@ -143,7 +143,7 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
   }
 }
 
-export const parsePrice = (priceStr: string): Decimal => {
+export const parsePrice = (priceStr: string | number): Decimal => {
   let price
   try {
     price = new Decimal(priceStr)
