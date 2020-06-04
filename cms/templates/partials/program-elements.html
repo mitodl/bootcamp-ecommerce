@@ -1,0 +1,36 @@
+{% load image_version_url %}
+
+<section class="program-element">
+  {% if page.banner_image %}
+  <div class="banner-img">
+    <img src="{% image_version_url page.banner_image 'max-1000x500' %}" alt="Program banner image" />
+  </div>
+  {% endif %}
+  <div class="container element-content">
+      <div class="row">
+          <div class="col-md-6">
+            {% if page.image %}  
+              <div class="img-holder">
+                <img src="{% image_version_url page.image 'fill-1000x1000' %}" alt="Program description image" />
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+              <div class="content-right">
+                  <h2>{{ page.heading }}</h2>
+                  <div class="sub-title">{{ page.body | safe }}</div>
+                  <ul class="accordion" id="accordionSteps">
+                    {% for step in page.steps %}  
+                    <li class="panel-title">
+                        <a data-toggle="collapse" data-target="#collapse-{{forloop.counter}}" aria-expanded="{% if forloop.counter == 1 %}true{% else %} false {%endif%}" aria-controls="collapse-{{forloop.counter}}" href="#" class="opener">{{ step.value.title }} </a>
+                        <div id="collapse-{{forloop.counter}}" class="collapse {% if forloop.counter == 1 %} show {%endif%}"  aria-labelledby="heading-{{forloop.counter}}" data-parent="#accordionSteps" class="slide">
+                           {{ step.value.description }}
+                        </div>
+                      </li>
+                    {% endfor %}
+                    </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
