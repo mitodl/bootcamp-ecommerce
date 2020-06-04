@@ -3,11 +3,7 @@ Test end to end django views.
 """
 import json
 import pytest
-
-from django.urls import reverse
-from rest_framework.status import HTTP_302_FOUND
-
-from profiles.factories import UserFactory
+from cms import factories
 
 
 @pytest.mark.django_db
@@ -20,9 +16,11 @@ def test_index_anonymous(settings, mocker, client):
     }
 
     patched_get_bundle = mocker.patch("main.templatetags.render_bundle._get_bundle")
+    root_page = factories.HomePageFactory(parent=None)
     resp = client.get("/")
     assert resp.status_code == 200
-    assert "Pay Here for your MIT Bootcamp" in resp.content.decode("utf-8")
+    assert root_page.title in resp.content.decode("utf-8")
+    assert resp.context["page"] == root_page
 
     bundles = [bundle[0][1] for bundle in patched_get_bundle.call_args_list]
     assert set(bundles) == {"sentry_client", "style", "third_party"}
@@ -39,27 +37,6 @@ def test_index_anonymous(settings, mocker, client):
         "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
         "support_url": settings.SUPPORT_URL,
     }
-
-
-@pytest.mark.django_db
-def test_index_logged_in(client):
-    """Verify the user is redirected to pay if logged in"""
-    user = UserFactory.create()
-    client.force_login(user)
-    assert client.get(reverse("bootcamp-index")).status_code == HTTP_302_FOUND
-
-
-@pytest.mark.django_db
-def test_index_logged_in_post(client):
-    """
-    Verify the user is redirected to the applications dashboard if logged in on a POST request
-    without CSRF token and that the GET parameters are kept
-    """
-    user = UserFactory.create()
-    client.force_login(user)
-    resp = client.post(reverse("bootcamp-index") + "?foo=bar")
-    assert resp.status_code == HTTP_302_FOUND
-    assert resp.url == reverse("applications") + "?foo=bar"
 
 
 @pytest.mark.django_db

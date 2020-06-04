@@ -1,36 +1,38 @@
 // sass-lint:disable mixins-before-declarations
-.header {
-  position: relative;
-  height: 100vh;
+.product-page {
+  .header {
+    position: relative;
+    height: 100vh;
 
-  .container-fluid {
-    height: 100%;
-  }
-
-  img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-
-  .title {
-    h1, h2, h3 {
-      color: white;
+    .container-fluid {
+      height: 100%;
     }
 
-    h1 {
-      font-size: 3.5em;
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
     }
 
-    h2 {
-      font-size: 2.5em;
+    .title {
+      h1, h2, h3 {
+        color: white;
     }
 
-    h3 {
-      font-size: 1.5em;
+      h1 {
+        font-size: 3.5em;
+      }
+
+      h2 {
+        font-size: 2.5em;
+      }
+
+      h3 {
+        font-size: 1.5em;
+      }
     }
   }
 }
