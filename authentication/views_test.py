@@ -78,7 +78,7 @@ def assert_api_call(
         "redirect_url": None,
         "extra_data": {},
         "state": None,
-        "provider": EmailAuth.name,
+        "backend": EmailAuth.name,
         "flow": None,
         "partial_token": any_instance_of(str),
     }
@@ -740,7 +740,7 @@ def test_login_email_error(client, mocker):
         "errors": [],
         "field_errors": {},
         "flow": SocialAuthState.FLOW_LOGIN,
-        "provider": EmailAuth.name,
+        "backend": EmailAuth.name,
         "redirect_url": None,
         "partial_token": None,
         "state": SocialAuthState.STATE_ERROR,

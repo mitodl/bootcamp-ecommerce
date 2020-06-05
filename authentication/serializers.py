@@ -43,7 +43,7 @@ class SocialAuthSerializer(serializers.Serializer):
             (SocialAuthState.FLOW_REGISTER, "Register"),
         )
     )
-    provider = serializers.CharField(read_only=True)
+    backend = serializers.CharField(read_only=True)
     state = serializers.CharField(read_only=True)
     errors = serializers.ListField(read_only=True)
     field_errors = serializers.DictField(read_only=True)
@@ -137,8 +137,8 @@ class SocialAuthSerializer(serializers.Serializer):
             result = super().save(**kwargs)
         except RequireProviderException as exc:
             result = SocialAuthState(
-                SocialAuthState.STATE_LOGIN_PROVIDER,
-                provider=exc.social_auth.provider,
+                SocialAuthState.STATE_LOGIN_BACKEND,
+                backend=exc.social_auth.provider,
                 user=exc.social_auth.user,
             )
         except InvalidEmail:
@@ -186,8 +186,8 @@ class SocialAuthSerializer(serializers.Serializer):
         # this way they know if they're on a particular page because of an attempted registration or login
         result.flow = self.validated_data["flow"]
 
-        if result.provider is None:
-            result.provider = EmailAuth.name
+        if result.backend is None:
+            result.backend = self.context["backend"].name
 
         # update self.instance so we serialize the right object
         self.instance = result

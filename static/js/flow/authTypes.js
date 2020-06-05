@@ -10,7 +10,7 @@ export type AuthStates =
   | "error-temporary"
   | "login/email"
   | "login/password"
-  | "login/provider"
+  | "login/backend"
   | "register/email"
   | "register/confirm-sent"
   | "register/confirm"
@@ -33,6 +33,7 @@ export type AuthExtraData = {
 export type AuthResponse = {
   partial_token: ?string,
   flow:          AuthFlow,
+  backend:       string,
   state:         AuthStates,
   errors:        AuthErrors,
   field_errors:  AuthFieldErrors,

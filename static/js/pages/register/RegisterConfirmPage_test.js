@@ -4,7 +4,7 @@ import { assert } from "chai"
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import RegisterConfirmPage from "./RegisterConfirmPage"
 import {
-  STATE_REGISTER_BACKEND_EDX,
+  STATE_REGISTER_BACKEND_EMAIL,
   STATE_REGISTER_DETAILS
 } from "../../lib/auth"
 
@@ -25,6 +25,7 @@ describe("RegisterConfirmPage", () => {
         entities: {
           auth: {
             state:         STATE_REGISTER_DETAILS,
+            backend:       STATE_REGISTER_BACKEND_EMAIL,
             partial_token: token,
             extra_data:    {
               name: "name"
@@ -60,7 +61,7 @@ describe("RegisterConfirmPage", () => {
     assert.equal(helper.currentLocation.pathname, "/create-account/details/")
     assert.equal(
       helper.currentLocation.search,
-      `?backend=${STATE_REGISTER_BACKEND_EDX}&partial_token=${token}`
+      `?backend=${STATE_REGISTER_BACKEND_EMAIL}&partial_token=${token}`
     )
   })
 })

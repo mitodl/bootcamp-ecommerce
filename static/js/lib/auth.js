@@ -20,7 +20,7 @@ export const STATE_USER_BLOCKED = "user-blocked"
 
 export const STATE_LOGIN_EMAIL = "login/email"
 export const STATE_LOGIN_PASSWORD = "login/password"
-export const STATE_LOGIN_PROVIDER = "login/provider"
+export const STATE_LOGIN_BACKEND = "login/backend"
 
 export const STATE_REGISTER_EMAIL = "register/email"
 export const STATE_REGISTER_CONFIRM_SENT = "register/confirm-sent"
@@ -41,7 +41,7 @@ export const ALL_STATES = [
   STATE_USER_BLOCKED,
   STATE_LOGIN_EMAIL,
   STATE_LOGIN_PASSWORD,
-  STATE_LOGIN_PROVIDER,
+  STATE_LOGIN_BACKEND,
   STATE_REGISTER_EMAIL,
   STATE_REGISTER_CONFIRM,
   STATE_REGISTER_CONFIRM_SENT,
@@ -71,13 +71,17 @@ const getErrorQs = (errors: Array<string>) =>
 export const handleAuthResponse = (
   history: RouterHistory,
   response: AuthResponse,
-  handlers: StateHandlers,
-  backend?: string
+  handlers: StateHandlers
 ) => {
   /* eslint-disable camelcase */
-  const { state, redirect_url, partial_token, errors, field_errors } = response
-
-  backend = backend || STATE_REGISTER_BACKEND_EDX
+  const {
+    state,
+    backend,
+    redirect_url,
+    partial_token,
+    errors,
+    field_errors
+  } = response
 
   // If a specific handler function was passed in for this response state, invoke it
   if (has(state, handlers)) {

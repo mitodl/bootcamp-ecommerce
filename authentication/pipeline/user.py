@@ -95,7 +95,7 @@ def create_user_via_email(
 
     if not strategy.is_api_request():
         return strategy.redirect_with_partial(
-            reverse("signup-details"), current_partial
+            reverse("signup-details"), backend.name, current_partial
         )
 
     data = strategy.request_data().copy()
@@ -160,7 +160,9 @@ def create_profile(
         return {}
 
     if not strategy.is_api_request():
-        return strategy.redirect_with_partial(reverse("signup-extra"), current_partial)
+        return strategy.redirect_with_partial(
+            reverse("signup-extra"), backend.name, current_partial
+        )
 
     data = strategy.request_data().copy()
 
