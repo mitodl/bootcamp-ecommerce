@@ -33,8 +33,7 @@ export function PaymentDisplay(props: Props) {
   const totalSpent = sum(
     application.orders.map(order => order.total_price_paid)
   )
-  const installments = run.installments
-  const cost = sum(installments.map(installment => installment.amount))
+  const cost = application.price
 
   return (
     <div className="container">

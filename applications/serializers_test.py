@@ -86,6 +86,7 @@ def test_application_detail_serializer(app_data, has_resume):
         ).data,
         "submissions": [],
         "orders": [],
+        "price": application.price,
     }
 
 

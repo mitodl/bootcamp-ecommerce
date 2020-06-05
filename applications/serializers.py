@@ -88,6 +88,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "run_application_steps",
             "submissions",
             "orders",
+            "price",
         ]
 
 

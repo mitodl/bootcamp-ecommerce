@@ -45,7 +45,8 @@ export type ApplicationDetail = {
   run_application_steps: Array<ApplicationRunStep>,
   submissions:           Array<ApplicationSubmission>,
   orders:                Array<ApplicationOrder>,
-  created_on:            string
+  created_on:            string,
+  price:                 number,
 }
 
 export type ApplicationDetailState = {

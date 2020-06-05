@@ -99,14 +99,13 @@ describe("PaymentDisplay", () => {
   })
 
   it("should show the amount paid so far", async () => {
-    // $FlowFixMe
-    application.bootcamp_run.installments = [{ amount: 123 }, { amount: 456 }]
+    application.price = 123.456
     // $FlowFixMe
     application.orders = [{ total_price_paid: 20 }, { total_price_paid: 30 }]
     const { inner } = await renderPage()
     assert.equal(
       inner.find(".payment-amount").text(),
-      "You have paid $50 out of $579."
+      "You have paid $50 out of $123.46."
     )
   })
 
