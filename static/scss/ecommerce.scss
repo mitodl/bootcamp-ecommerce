@@ -59,3 +59,58 @@
     font-size: 16px;
   }
 }
+
+.payment-history {
+  letter-spacing: 1.73px;
+
+  .inner-container {
+    margin: 5px;
+    padding: 20px 15px;
+  }
+
+  .payment-history-header {
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+
+    h2 {
+      text-transform: uppercase;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 3.47px;
+    }
+
+    a {
+      font-size: 18px;
+      font-weight: 400;
+      margin-left: auto;
+      color: $link-blue;
+      border: 1px solid $link-blue;
+      border-radius: 5px;
+      padding: 10px 40px;
+      cursor: pointer;
+      display: inline-flex;
+
+      .material-icons {
+        width: 24px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .order-container {
+    background-color: $very-light-gray;
+  }
+
+  .key {
+    color: $trolley-gray;
+  }
+
+  .summary-key {
+    font-weight: 600;
+  }
+
+  .row {
+    margin: 10px 0;
+  }
+}

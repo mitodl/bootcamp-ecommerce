@@ -45,6 +45,7 @@ export type LegacyOrderPartial = {
 
 export type ApplicationOrder = {
   total_price_paid: number,
+  payment_method: string,
 } & LegacyOrderPartial
 
 export type ApplicationDetail = {
@@ -61,6 +62,7 @@ export type ApplicationDetail = {
   orders:                Array<ApplicationOrder>,
   created_on:            string,
   price:                 number,
+  user:                  User,
 }
 
 export type SubmissionReview = {

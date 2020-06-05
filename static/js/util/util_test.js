@@ -3,11 +3,17 @@ import sinon from "sinon"
 import moment from "moment"
 import _ from "lodash"
 
-import { generateFakePayableRuns, generateFakeInstallment } from "../factories"
+import {
+  generateFakePayableRuns,
+  generateFakeInstallment,
+  generateFakeRun,
+  generateOrder
+} from "../factories"
 import {
   createForm,
   isNilOrBlank,
   formatDollarAmount,
+  formatRunDateRange,
   getRunWithFulfilledOrder,
   getInstallmentDeadlineDates,
   formatPrice,
@@ -15,8 +21,11 @@ import {
   newSetWithout,
   newSetWith,
   timeoutPromise,
-  getFilenameFromPath
+  getFilenameFromPath,
+  parsePrice,
+  calcOrderBalances
 } from "./util"
+import { makeApplicationDetail } from "../factories/application"
 
 describe("util", () => {
   describe("createForm", () => {
@@ -194,5 +203,77 @@ describe("util", () => {
       assert.equal(formatPrice(null), "")
       assert.equal(formatPrice(undefined), "")
     })
+  })
+
+  describe("parsePrice", () => {
+    it("parses a price to a Decimal, rounding to the nearest cent", () => {
+      assert.equal(parsePrice("0.00000001").toString(), "0")
+    })
+
+    it("returns null if the string is not parsable", () => {
+      assert.isNull(parsePrice("notaprice"))
+    })
+  })
+
+  const TEST_DATE = "2020-05-01"
+  describe("start and end dates", () => {
+    [
+      [
+        moment(TEST_DATE).format(),
+        moment(TEST_DATE)
+          .add(1, "days")
+          .format(),
+        "mai 1, 2020 - mai 2, 2020"
+      ],
+      [moment(TEST_DATE).format(), null, "mai 1, 2020 - TBD"],
+      [
+        null,
+        moment(TEST_DATE)
+          .add(1, "days")
+          .format(),
+        "TBD - mai 2, 2020"
+      ],
+      [null, null, "TBD - TBD"]
+    ].forEach(([startDate, endDate, expectedText]) => {
+      it(`renders bootcamp dates where startDate=${String(
+        startDate
+      )} and endDate=${String(endDate)}`, async () => {
+        const run = {
+          ...generateFakeRun(),
+          start_date: startDate,
+          end_date:   endDate
+        }
+        assert.equal(formatRunDateRange(run), expectedText)
+      })
+    })
+  })
+
+  it("sorts orders by updated_on and balances from the application", () => {
+    const application = makeApplicationDetail()
+    application.price = 60
+    // $FlowFixMe
+    application.orders = [
+      { ...generateOrder(), total_price_paid: 20, updated_on: "2020-01-01" },
+      { ...generateOrder(), total_price_paid: 30, updated_on: "2020-02-01" }
+    ]
+    const {
+      ordersAndBalances,
+      totalPaid,
+      totalPrice,
+      balanceRemaining
+    } = calcOrderBalances(application)
+    assert.deepEqual(ordersAndBalances, [
+      {
+        order:   application.orders[0],
+        balance: 40
+      },
+      {
+        order:   application.orders[1],
+        balance: 10
+      }
+    ])
+    assert.equal(totalPaid, 50)
+    assert.equal(totalPrice, 60)
+    assert.equal(balanceRemaining, 10)
   })
 })

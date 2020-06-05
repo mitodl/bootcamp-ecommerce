@@ -41,7 +41,10 @@ export const routes = {
   }),
 
   applications: include("/applications/", {
-    dashboard: ""
+    dashboard:      "",
+    paymentHistory: include(":applicationId/payment-history/", {
+      self: ""
+    })
   }),
 
   review: include("/review/", {

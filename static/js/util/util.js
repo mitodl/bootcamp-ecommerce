@@ -5,6 +5,9 @@ import moment from "moment"
 
 import { ORDER_FULFILLED } from "../constants"
 
+import type { BootcampRun } from "../flow/bootcampTypes"
+import type { ApplicationDetail } from "../flow/applicationTypes"
+
 /**
  * Creates a POST form with hidden input fields
  * @param url the url for the form action
@@ -145,3 +148,36 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
 
 export const getFilenameFromPath = (url: string) =>
   url.substring(url.lastIndexOf("/") + 1)
+
+export const parsePrice = (priceStr: string | number): Decimal => {
+  let price
+  try {
+    price = new Decimal(priceStr)
+  } catch (e) {
+    return null
+  }
+  return price.toDecimalPlaces(2)
+}
+
+export const formatRunDateRange = (run: BootcampRun) =>
+  `${run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} - ${
+    run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"
+  }`
+
+export const calcOrderBalances = (application: ApplicationDetail) => {
+  const sortedOrders = R.sortBy(order => order.updated_on, application.orders)
+  let balance = application.price
+  const ordersAndBalances = sortedOrders.map(order => {
+    balance -= order.total_price_paid
+    return { order, balance }
+  })
+  const totalPaid = R.sum(sortedOrders.map(order => order.total_price_paid))
+  const totalPrice = application.price
+
+  return {
+    ordersAndBalances,
+    totalPaid,
+    totalPrice,
+    balanceRemaining: balance
+  }
+}

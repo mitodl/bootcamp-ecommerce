@@ -15,6 +15,7 @@ import {
   SUBMISSION_QUIZ,
   SUBMISSION_VIDEO
 } from "../constants"
+import { makeUser } from "./user"
 
 import type {
   Application,
@@ -30,9 +31,9 @@ const stepIncr = incrementer()
 
 export const makeApplication = (): Application => ({
   // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-  id:           incr.next().value,
-  state:        casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
-  created_on:   moment().format(),
+  id: incr.next().value,
+  state: casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
+  created_on: moment().format(),
   bootcamp_run: generateFakeRun()
 })
 
@@ -40,21 +41,21 @@ export const makeApplicationRunStep = (
   submissionType?: ValidAppStepType
 ): ApplicationRunStep => ({
   // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-  id:              incr.next().value,
-  due_date:        moment().format(),
+  id: incr.next().value,
+  due_date: moment().format(),
   // $FlowFixMe
-  step_order:      stepIncr.next().value,
+  step_order: stepIncr.next().value,
   submission_type:
     submissionType || casual.random_element([SUBMISSION_VIDEO, SUBMISSION_QUIZ])
 })
 
 export const makeApplicationSubmission = (): ApplicationSubmission => ({
   // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-  id:                      incr.next().value,
+  id: incr.next().value,
   // $FlowFixMe
   run_application_step_id: incr.next().value,
-  submitted_date:          moment().format(),
-  review_status:           casual.random_element([
+  submitted_date: moment().format(),
+  review_status: casual.random_element([
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_PENDING
@@ -87,19 +88,20 @@ export const makeApplicationDetail = (): ApplicationDetail => {
     sum(run.installments.map(installment => installment.amount)) * 0.9
   return {
     // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-    id:                    incr.next().value,
-    state:                 casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
-    bootcamp_run:          run,
-    resume_filepath:       casual.url,
-    linkedin_url:          casual.url,
-    resume_upload_date:    moment().format(),
-    payment_deadline:      moment().format(),
-    is_paid_in_full:       false,
+    id: incr.next().value,
+    state: casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
+    bootcamp_run: run,
+    resume_filepath: casual.url,
+    linkedin_url: casual.url,
+    resume_upload_date: moment().format(),
+    payment_deadline: moment().format(),
+    is_paid_in_full: false,
     run_application_steps: [makeApplicationRunStep(), makeApplicationRunStep()],
-    submissions:           [],
-    orders:                [generateOrder()],
-    created_on:            moment().format(),
-    price:                 price
+    submissions: [],
+    orders: [generateOrder()],
+    created_on: moment().format(),
+    price: price,
+    user: makeUser()
   }
 }
 
@@ -156,12 +158,12 @@ export const setToPaid = (appDetail: ApplicationDetail): ApplicationDetail => {
 
 export const makeSubmissionReview = (): SubmissionReview => ({
   // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-  id:                      incr.next().value,
+  id: incr.next().value,
   run_application_step_id: casual.integer,
-  submitted_date:          moment().format(),
-  review_status:           casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
-  review_status_date:      moment().format(),
-  bootcamp_application:    makeApplication(),
-  learner:                 makeUser(),
-  interview_url:           casual.url
+  submitted_date: moment().format(),
+  review_status: casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
+  review_status_date: moment().format(),
+  bootcamp_application: makeApplication(),
+  learner: makeUser(),
+  interview_url: casual.url
 })

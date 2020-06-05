@@ -46,8 +46,7 @@ export const makeUser = (username: ?string): LoggedInUser => ({
     state_or_territory: "US-MA",
     country:            "US",
     postal_code:        "02090"
-  },
-  unused_coupons: []
+  }
 })
 
 export const makeCompleteUser = (username: ?string): LoggedInUser => {

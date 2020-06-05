@@ -7,3 +7,30 @@ CYBERSOURCE_DECISION_DECLINE = "DECLINE"
 CYBERSOURCE_DECISION_REVIEW = "REVIEW"
 CYBERSOURCE_DECISION_ERROR = "ERROR"
 CYBERSOURCE_DECISION_CANCEL = "CANCEL"
+
+# from https://developer.cybersource.com/library/documentation/dev_guides/CC_Svcs_SO_API/html/Topics/app_card_types.htm
+CARD_TYPES = {
+    "001": "Visa",
+    "002": "Mastercard",  # or Eurocard
+    "003": "American Express",
+    "004": "Discover",
+    "005": "Diners Club",
+    "006": "Carte Blanche",
+    "007": "JCB",
+    "014": "EnRoute",
+    "021": "JAL",
+    "024": "Maestro",  # UK Domestic
+    "031": "Delta",
+    "033": "Visa Electron",
+    "034": "Dankort",
+    "036": "Cartes Bancaires",
+    "037": "Carta Si",
+    "039": "Encoded account number",
+    "040": "UATP",
+    "042": "Maestro",  # International
+    "050": "Hipercard",
+    "051": "Aura",
+    "054": "Elo",
+    "061": "RuPay",
+    "062": "China UnionPay",
+}

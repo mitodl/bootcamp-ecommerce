@@ -87,6 +87,7 @@ def test_application_detail_serializer(app_data, has_resume):
         "submissions": [],
         "orders": [],
         "price": application.price,
+        "user": UserSerializer(application.user).data,
     }
 
 
