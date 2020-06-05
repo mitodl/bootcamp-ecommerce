@@ -3,7 +3,7 @@ import { createSelector } from "reselect"
 import { propOr } from "ramda"
 import qs from "query-string"
 
-import { STATE_REGISTER_BACKEND_EDX } from "./auth"
+import { STATE_REGISTER_BACKEND_EMAIL } from "./auth"
 
 export const qsSelector = createSelector(
   (_, ownProps) => ownProps.location.search,
@@ -20,7 +20,7 @@ export const qsVerificationCodeSelector = createParamSelector(
 )
 export const qsBackendSelector = createParamSelector(
   "backend",
-  STATE_REGISTER_BACKEND_EDX
+  STATE_REGISTER_BACKEND_EMAIL
 )
 export const qsNextSelector = createParamSelector("next")
 export const qsErrorSelector = createParamSelector("error")

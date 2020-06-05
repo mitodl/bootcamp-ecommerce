@@ -54,9 +54,13 @@ export default {
     body: { email, recaptcha, next, flow: FLOW_REGISTER }
   }),
 
-  registerConfirmEmailMutation: (code: string, partialToken: string) => ({
+  registerConfirmMutation: (
+    code: string,
+    partialToken: string,
+    backend: string
+  ) => ({
     ...DEFAULT_OPTIONS,
-    url:  "/api/register/email/confirm/",
+    url:  `/api/register/${backend}/confirm/`,
     body: {
       verification_code: code,
       partial_token:     partialToken,

@@ -17,10 +17,13 @@ pytestmark = [pytest.mark.django_db]
     "side_effect,result",
     (
         (
-            AuthException(None, "message"),
+            AuthException(EmailAuth.name, "message"),
             SocialAuthState(SocialAuthState.STATE_ERROR, errors=["message"]),
         ),
-        (InvalidEmail(None), SocialAuthState(SocialAuthState.STATE_INVALID_EMAIL)),
+        (
+            InvalidEmail(EmailAuth.name),
+            SocialAuthState(SocialAuthState.STATE_INVALID_EMAIL),
+        ),
     ),
 )
 def test_social_auth_serializer_error(mocker, side_effect, result):
@@ -29,14 +32,16 @@ def test_social_auth_serializer_error(mocker, side_effect, result):
         "authentication.serializers.SocialAuthSerializer._authenticate"
     )
     mocked_authenticate.side_effect = side_effect
+    mock_backend = mocker.Mock()
+    mock_backend.name = EmailAuth.name
 
     result.flow = SocialAuthState.FLOW_REGISTER
-    result.provider = EmailAuth.name
+    result.backend = mock_backend.name
 
     serializer = RegisterEmailSerializer(
         data={"flow": result.flow, "email": "user@localhost"},
         context={
-            "backend": mocker.Mock(),
+            "backend": mock_backend,
             "strategy": mocker.Mock(),
             "request": mocker.Mock(),
         },

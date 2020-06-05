@@ -12,9 +12,9 @@ from profiles.models import LegalAddress, Profile
 class BootcampDjangoStrategy(DjangoStrategy):
     """Abstract strategy for botcamp app"""
 
-    def redirect_with_partial(self, url, partial_token):
+    def redirect_with_partial(self, url, backend, partial_token):
         """Redirect to the specified url with a partial token"""
-        qs = urlencode({"partial_token": partial_token.token})
+        qs = urlencode({"backend": backend, "partial_token": partial_token.token})
         return self.redirect(self.build_absolute_uri(f"{url}?{qs}"))
 
     def is_api_enabled(self):

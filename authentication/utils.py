@@ -12,7 +12,7 @@ class SocialAuthState:  # pylint: disable=too-many-instance-attributes
     # login states
     STATE_LOGIN_EMAIL = "login/email"
     STATE_LOGIN_PASSWORD = "login/password"
-    STATE_LOGIN_PROVIDER = "login/provider"
+    STATE_LOGIN_BACKEND = "login/backend"
 
     # registration states
     STATE_REGISTER_EMAIL = "register/email"
@@ -34,7 +34,7 @@ class SocialAuthState:  # pylint: disable=too-many-instance-attributes
         self,
         state,
         *,
-        provider=None,
+        backend=None,
         partial=None,
         flow=None,
         errors=None,
@@ -45,7 +45,7 @@ class SocialAuthState:  # pylint: disable=too-many-instance-attributes
         self.state = state
         self.partial = partial
         self.flow = flow
-        self.provider = provider
+        self.backend = backend
         self.errors = errors or []
         self.field_errors = field_errors or {}
         self.redirect_url = redirect_url

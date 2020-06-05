@@ -135,7 +135,7 @@ describe("RegisterDetailsPage", () => {
       ""
     ]
   ].forEach(([state, errors, pathname, backend, search]) => {
-    it(`redirects to ${pathname} when it receives auth state ${state}`, async () => {
+    it(`redirects to ${pathname} when it receives auth state ${state} for backend ${backend}`, async () => {
       const { wrapper } = await helper.configureReduxQueryRenderer(
         RegisterDetailsPage,
         {
@@ -149,6 +149,7 @@ describe("RegisterDetailsPage", () => {
         body: makeRegisterAuthResponse({
           state,
           errors,
+          backend,
           partial_token: "new_partial_token"
         })
       })

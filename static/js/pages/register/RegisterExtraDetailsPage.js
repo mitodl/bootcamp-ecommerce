@@ -59,16 +59,11 @@ export class RegisterExtraDetailsPage extends React.Component<Props> {
         backend
       )
 
-      handleAuthResponse(
-        history,
-        body,
-        {
-          // eslint-disable-next-line camelcase
-          [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-            setErrors(field_errors)
-        },
-        backend
-      )
+      handleAuthResponse(history, body, {
+        // eslint-disable-next-line camelcase
+        [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
+          setErrors(field_errors)
+      })
     } finally {
       setSubmitting(false)
     }
