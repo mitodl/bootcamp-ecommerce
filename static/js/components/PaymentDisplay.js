@@ -43,8 +43,8 @@ export function PaymentDisplay(props: Props) {
         <div className="bootcamp">
           <div className="bootcamp-title">{run.bootcamp.title}</div>
           <div className="bootcamp-dates">
-            {run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} -{" "}
-            {run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"}
+            {run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"}{" "}
+            - {run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"}
           </div>
         </div>
         <div className="payment-deadline">
