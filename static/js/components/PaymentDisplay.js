@@ -1,12 +1,14 @@
 // @flow
 import React, { useState } from "react"
-import { path, sum } from "ramda"
+import { curry, path, sum } from "ramda"
 
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { mutateAsync } from "redux-query"
+import { ErrorMessage, Field, Form, Formik } from "formik"
+import Decimal from "decimal.js-light"
+
 import queries from "../lib/queries"
-import { parsePrice } from "../util/util"
 
 import {
   createForm,
@@ -22,8 +24,34 @@ type Props = {
   sendPayment: (payload: PaymentPayload) => Promise<void>
 }
 
-export function PaymentDisplay(props: Props) {
-  const [amount, setAmount] = useState(0)
+const roundToCent = amount => new Decimal(amount).toDecimalPlaces(2).toNumber()
+
+const validate = ({ amount, balance }) => {
+  if (roundToCent(amount) > balance) {
+    return {
+      amount: "Enter a number less than the remaining balance"
+    }
+  }
+
+  return {}
+}
+
+const validateAmount = value => {
+  let price
+  try {
+    price = roundToCent(value)
+  } catch (e) {
+    return "Price must be a valid number"
+  }
+
+  if (price <= 0) {
+    return "Price must be greater than zero"
+  }
+
+  return null
+}
+
+export const PaymentDisplay = (props: Props) => {
   const { application, sendPayment } = props
   if (!application) {
     return null
@@ -54,27 +82,35 @@ export function PaymentDisplay(props: Props) {
           You have paid {formatPrice(totalSpent)} out of {formatPrice(cost)}.
         </div>
         <div className="payment-input-container">
-          <input
-            type="text"
-            placeholder="Enter Amount"
-            onChange={e => setAmount(e.target.value)}
-          />
-          <button
-            className="btn btn-danger"
-            onClick={() => {
-              const price = parsePrice(amount)
-              if (price === null || !price.toNumber()) {
-                return
-              }
-
-              return sendPayment({
+          <Formik
+            initialValues={{ amount: "", balance: cost }}
+            validate={validate}
+            onSubmit={async ({ amount }, actions) => {
+              await sendPayment({
                 application_id: application.id,
-                payment_amount: price.toString()
+                payment_amount: roundToCent(amount)
               })
+              actions.setSubmitting(false)
             }}
-          >
-            Pay Now
-          </button>
+            render={({ isSubmitting }) => (
+              <Form>
+                <ErrorMessage name="amount" />
+                <Field
+                  name="amount"
+                  type="text"
+                  placeholder="Enter Amount"
+                  validate={validateAmount}
+                />
+                <button
+                  className="btn btn-danger"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  Pay Now
+                </button>
+              </Form>
+            )}
+          />
         </div>
         <div className="terms-and-conditions">
           By making a payment I certify that I agree with the MIT Bootcamps{" "}
