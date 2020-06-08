@@ -108,15 +108,11 @@ def test_signed_payload(mocker, application, bootcamp_run):
     """
     payment = 123.45
     order = create_test_order(application, payment, fulfilled=False)
-    username = "username"
     transaction_uuid = "hex"
 
     now = datetime.now(tz=pytz.UTC)
     now_mock = mocker.MagicMock(return_value=now)
 
-    mocker.patch(
-        "ecommerce.api.get_social_username", autospec=True, return_value=username
-    )
     mocker.patch("ecommerce.api.datetime", autospec=True, now=now_mock)
     mocker.patch(
         "ecommerce.api.uuid.uuid4",
@@ -132,7 +128,7 @@ def test_signed_payload(mocker, application, bootcamp_run):
     assert payload == {
         "access_key": CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
-        "consumer_id": username,
+        "consumer_id": order.purchaser.username,
         "currency": "USD",
         "item_0_code": "klass",
         "item_0_name": "{}".format(bootcamp_run.title),

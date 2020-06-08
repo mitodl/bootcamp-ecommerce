@@ -130,7 +130,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
     payload = {
         "access_key": settings.CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
-        "consumer_id": get_social_username(order.user),
+        "consumer_id": order.user.username,
         "currency": "USD",
         "locale": "en-us",
         "item_0_code": "klass",
