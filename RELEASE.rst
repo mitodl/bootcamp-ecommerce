@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.44.1
+Version 0.44.1 (Released June 08, 2020)
 --------------
 
 - add the repl.py
