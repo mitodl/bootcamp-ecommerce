@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.45.0
+--------------
+
+- - Program Elements Home Page
+- Added admissions API for application steps
+- Define site_name in template for resource and bootcamp run pages (#607)
+- Home page base with header - #404
+
 Version 0.44.1 (Released June 08, 2020)
 --------------
 
