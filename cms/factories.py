@@ -91,6 +91,7 @@ class ProgramDescriptionPageFactory(wagtail_factories.PageFactory):
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
     body = factory.fuzzy.FuzzyText(prefix="body ")
     image = factory.SubFactory(wagtail_factories.ImageFactory)
+    banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
     steps = wagtail_factories.StreamFieldFactory(
         {"steps": TitleDescriptionBlockFactory}
     )

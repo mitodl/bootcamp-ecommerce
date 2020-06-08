@@ -56,6 +56,7 @@ def test_program_description_page():
         heading="heading of the page",
         body="body of the page",
         image__title="program-description-image",
+        banner_image__title="program-description-banner-image",
         steps=json.dumps(
             [
                 {
