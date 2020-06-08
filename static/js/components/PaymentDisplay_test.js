@@ -2,6 +2,8 @@
 import { assert } from "chai"
 import moment from "moment"
 import sinon from "sinon"
+import { Field } from "formik"
+import { shallow } from "enzyme"
 
 import PaymentDisplay, {
   PaymentDisplay as InnerPaymentDisplay
@@ -11,7 +13,6 @@ import IntegrationTestHelper from "../util/integration_test_helper"
 import { PAYMENT } from "../constants"
 import { makeApplicationDetail } from "../factories/application"
 import * as util from "../util/util"
-import wait from "waait"
 
 describe("PaymentDisplay", () => {
   let helper, renderPage, application
@@ -110,28 +111,44 @@ describe("PaymentDisplay", () => {
   })
 
   describe("submitting payment", () => {
+    const renderFormik = async (...args) => {
+      const { inner } = await renderPage(...args)
+      const formik = inner.find("Formik")
+      const rendered = shallow(formik.prop("render")({})).dive()
+      return { formik, inner: rendered }
+    }
+
     it("does nothing if the payment textbox is empty", async () => {
-      const { inner } = await renderPage()
-      inner.find(".payment-input-container input").prop("onChange")({
-        target: { value: "" }
-      })
-      inner.find(".payment-input-container button").prop("onClick")()
+      const { inner } = await renderFormik()
+      assert.deepEqual(
+        inner
+          .find(Field)
+          .filter("[name='amount']")
+          .prop("validate")(""),
+        "Price must be a valid number"
+      )
     })
 
     it("does nothing if the payment textbox is not parseable as a float", async () => {
-      const { inner } = await renderPage()
-      inner.find(".payment-input-container input").prop("onChange")({
-        target: { value: "🦀🦀🦀🦀🦀🦀🦀🦀" }
-      })
-      inner.find(".payment-input-container button").prop("onClick")()
+      const { inner } = await renderFormik()
+      assert.deepEqual(
+        inner
+          .find(Field)
+          .filter("[name='amount']")
+          .prop("validate")("abc"),
+        "Price must be a valid number"
+      )
     })
 
     it("does nothing if the amount is 0", async () => {
-      const { inner } = await renderPage()
-      inner.find(".payment-input-container input").prop("onChange")({
-        target: { value: "0.00000001" } // rounds to 0
-      })
-      inner.find(".payment-input-container button").prop("onClick")()
+      const { inner } = await renderFormik()
+      assert.deepEqual(
+        inner
+          .find(Field)
+          .filter("[name='amount']")
+          .prop("validate")("0.000001"),
+        "Price must be greater than zero"
+      )
     })
 
     it("sends a payment", async () => {
@@ -144,7 +161,7 @@ describe("PaymentDisplay", () => {
         .stub(util, "createForm")
         .returns(fakeForm)
 
-      const { inner } = await renderPage()
+      const { formik } = await renderFormik()
       const url = "url"
       const payload = { pay: "load" }
       helper.handleRequestStub.withArgs("/api/v0/payment/").returns({
@@ -155,12 +172,12 @@ describe("PaymentDisplay", () => {
         }
       })
       const payment = "123.456" // will get rounded to 123.46
-      inner.find(".payment-input-container input").prop("onChange")({
-        target: { value: payment }
-      })
-      inner.find(".payment-input-container button").prop("onClick")()
+      const setSubmittingStub = helper.sandbox.stub()
+      await formik.prop("onSubmit")(
+        { amount: payment },
+        { setSubmitting: setSubmittingStub }
+      )
 
-      await wait(50)
       assert.equal(createFormStub.callCount, 1)
       assert.deepEqual(createFormStub.args[0], [url, payload])
       assert.equal(submitStub.callCount, 1)
@@ -172,7 +189,7 @@ describe("PaymentDisplay", () => {
         {
           body: {
             application_id: application.id,
-            payment_amount: "123.46"
+            payment_amount: 123.46
           },
           credentials: undefined,
           headers:     { "X-CSRFTOKEN": null }

@@ -1,6 +1,6 @@
 // @flow
-import React, { useState } from "react"
-import { curry, path, sum } from "ramda"
+import React from "react"
+import { path, sum } from "ramda"
 
 import { compose } from "redux"
 import { connect } from "react-redux"
