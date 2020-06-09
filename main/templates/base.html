@@ -36,6 +36,7 @@
     {% block content %}
     {% endblock %}
     {% block footer %}
+      {% include "footer.html" %}
     {% endblock %}
     {% if zendesk_config.help_widget_enabled %}
       <script type="text/javascript">
