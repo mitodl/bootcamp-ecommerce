@@ -49,7 +49,7 @@ describe("NotificationContainer component", () => {
     const alerts = inner.find("Alert")
     assert.lengthOf(alerts, Object.keys(messages).length)
     assert.equal(alerts.at(0).prop("children").type, TextNotification)
-    assert.equal(alerts.at(0).prop("children").type, TextNotification)
+    assert.equal(alerts.at(1).prop("children").type, TextNotification)
   })
 
   //
@@ -90,5 +90,48 @@ describe("NotificationContainer component", () => {
     assert.deepEqual(inner.state(), {
       hiddenNotifications: new Set(["message1"])
     })
+  })
+
+  it("shows cms notification", async () => {
+    const { inner } = await render({
+      ui: {
+        userNotifications: {
+          "cms-site-wide-notification": {
+            type:  ALERT_TYPE_TEXT,
+            props: { text: "Cms Notification", persistedId: 1 }
+          }
+        }
+      }
+    })
+
+    const alerts = inner.find("Alert")
+    assert.lengthOf(alerts, 1)
+    const cmsNotificationContent = alerts.at(0).prop("children")
+    assert.equal(cmsNotificationContent.type, TextNotification)
+    assert.equal(cmsNotificationContent.props.text, "Cms Notification")
+    assert.isNotNull(cmsNotificationContent.props.persistedId)
+    assert.equal(cmsNotificationContent.props.persistedId, 1)
+    assert.isNull(window.localStorage.getItem("dismissedNotification"))
+  })
+
+  it("removes cms notifictaion, adds it in the local storage", async () => {
+    const { inner } = await render({
+      ui: {
+        userNotifications: {
+          "cms-site-wide-notification": {
+            type:  ALERT_TYPE_TEXT,
+            props: { text: "Cms Notifictaion", persistedId: 1 }
+          }
+        }
+      }
+    })
+
+    const alert = inner.find("Alert").at(0)
+    alert.prop("toggle")()
+    assert.deepEqual(inner.state(), {
+      hiddenNotifications: new Set(["cms-site-wide-notification"])
+    })
+    assert.isNotNull(window.localStorage.getItem("dismissedNotification"))
+    assert.equal(window.localStorage.getItem("dismissedNotification"), 1)
   })
 })

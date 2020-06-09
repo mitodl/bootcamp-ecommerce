@@ -42,7 +42,10 @@ const INITIAL_UI_STATE = {
   userNotifications: {}
 }
 
-export type TextNotificationProps = { text: string }
+export type TextNotificationProps = {
+  text: string,
+  persistedId?: string
+}
 
 export type UserNotificationSpec = {
   type: ALERT_TYPE_TEXT,

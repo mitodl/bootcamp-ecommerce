@@ -8,6 +8,7 @@ import { Alert } from "reactstrap"
 import { removeUserNotification } from "../actions"
 import { newSetWith, newSetWithout, timeoutPromise } from "../util/util"
 import { notificationTypeMap } from "./notifications"
+import { CMS_SITE_WIDE_NOTIFICATION } from "../constants"
 
 import type { UserNotificationMapping } from "../reducers/ui"
 
@@ -31,6 +32,17 @@ export class NotificationContainer extends React.Component<Props, State> {
   onDismiss = (notificationKey: string) => {
     const { removeUserNotification, messageRemoveDelayMs } = this.props
     const { hiddenNotifications } = this.state
+
+    // If the notification came from the CMS, set a local storage value to
+    // avoid showing again.
+    if (notificationKey === CMS_SITE_WIDE_NOTIFICATION) {
+      const { userNotifications } = this.props
+      const notification = userNotifications[notificationKey]
+      const notificationId = notification.props.persistedId
+      if (notificationId) {
+        window.localStorage.setItem("dismissedNotification", notificationId)
+      }
+    }
 
     // This sets the given message in the local state to be considered hidden, then
     // removes the message from the global state and the local hidden state after a delay.
