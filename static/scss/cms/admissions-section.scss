@@ -1,0 +1,72 @@
+// sass-lint:disable mixins-before-declarations
+
+.admissions-section {
+  .admissions-image {
+    width: 100%;
+    object-fit: cover;
+    height: 540px;
+    margin-bottom: -4rem;
+
+
+    @include media-breakpoint-down(sm) {
+      height: 240px;
+      margin-bottom: unset;
+    }
+  }
+
+  .section-heading {
+    font-weight: 800;
+    font-size: 3em;
+    color: $matterhorn;
+  }
+
+  .admissions-heading > a {
+    color: $crusta-orange;
+    font-weight: 300;
+  }
+
+  .admissions-detail {
+    border-left: 1px solid $matterhorn;
+
+    @include media-breakpoint-down(sm) {
+      border-left: unset;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+  }
+
+  .btn-apply {
+    text-transform: unset;
+    font-size: 1.25em;
+    background-color: $crusta-orange;
+    border-radius: 0.5rem 0.5rem 0.5rem 0rem;
+    border-color: $crusta-orange;
+
+    :hover {
+      background-color: $flamingo-orange;
+    }
+  }
+
+  .notes {
+    color: $med-dark-gray;
+    font-size: 1.125em;
+    font-style: italic;
+  }
+
+  .rich-text {
+    font-weight: 300;
+  }
+
+  .light-grey-bg {
+    background-color: $very-light-gray;
+  }
+
+  .text-med-dark-grey {
+    color: $med-dark-gray;
+  }
+
+  .block-title {
+    color: black;
+    font-weight: 200;
+  }
+}
