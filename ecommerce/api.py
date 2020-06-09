@@ -15,7 +15,6 @@ from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
-from backends.utils import get_social_username
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from main.utils import remove_html_tags
