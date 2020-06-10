@@ -7,10 +7,11 @@ import { Theme } from "@rmwc/theme"
 
 import { drawerSelector } from "../lib/selectors"
 import { setDrawerOpen } from "../reducers/drawer"
-import { PROFILE_EDIT, PROFILE_VIEW } from "../constants"
+import { PAYMENT, PROFILE_EDIT, PROFILE_VIEW } from "../constants"
 
 import EditProfileDisplay from "./EditProfileDisplay"
 import ViewProfileDisplay from "./ViewProfileDisplay"
+import PaymentDisplay from "./PaymentDisplay"
 
 const renderDrawerContents = (drawerState: string): ?React$Element<*> => {
   switch (drawerState) {
@@ -18,6 +19,8 @@ const renderDrawerContents = (drawerState: string): ?React$Element<*> => {
     return <EditProfileDisplay />
   case PROFILE_VIEW:
     return <ViewProfileDisplay />
+  case PAYMENT:
+    return <PaymentDisplay />
   default:
     return null
   }

@@ -23,7 +23,11 @@ from applications.serializers import (
     SubmissionReviewSerializer,
 )
 from applications.views import BootcampApplicationViewset
+from ecommerce.factories import OrderFactory
+from ecommerce.models import Order
+from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.factories import BootcampRunFactory
+from main.test_utils import assert_drf_json_equal
 from profiles.factories import UserFactory
 
 
@@ -362,3 +366,23 @@ def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_statu
 
     if has_resume:
         assert resume_file.name in bootcamp_application.resume_file.name
+
+
+@pytest.mark.django_db
+def test_application_detail_queryset_orders(client):
+    """
+    Test that the application detail queryset filters orders
+    """
+    application = BootcampApplicationFactory.create()
+    user = application.user
+    OrderFactory.create(application=application, user=user, status=Order.CREATED)
+    fulfilled_order = OrderFactory.create(
+        application=application, user=user, status=Order.FULFILLED
+    )
+
+    client.force_login(user)
+    resp = client.get(reverse("applications_api-detail", kwargs={"pk": application.id}))
+    rendered_orders = resp.json()["orders"]
+    assert_drf_json_equal(
+        rendered_orders, [ApplicationOrderSerializer(fulfilled_order).data]
+    )

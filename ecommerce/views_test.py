@@ -114,7 +114,7 @@ def test_payment(mocker, client, user, bootcamp_run, application):
     }
     assert generate_cybersource_sa_payload_mock.call_count == 1
     generate_cybersource_sa_payload_mock.assert_any_call(
-        fake_order, "http://testserver/pay/"
+        fake_order, "http://testserver/applications/"
     )
     assert create_unfulfilled_order_mock.call_count == 1
     create_unfulfilled_order_mock.assert_any_call(

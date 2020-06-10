@@ -142,5 +142,6 @@ export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard"
 
 export const PROFILE_VIEW = "profileView"
 export const PROFILE_EDIT = "profileEdit"
+export const PAYMENT = "payment"
 
 export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"

@@ -91,9 +91,17 @@ class BootcampApplicationQuerySet(models.QuerySet):
     """Custom queryset for BootcampApplication model"""
 
     def prefetch_state_data(self):
-        """Prefetches models that inform the state of bootcamp applications"""
-        return self.select_related("user__profile").prefetch_related(
-            "submissions", "orders", "bootcamp_run__application_steps__application_step"
+        """
+        Prefetches models that inform the state of bootcamp applications,
+        and filters to only include fulfilled orders.
+        """
+        return self.select_related("user__profile", "bootcamp_run").prefetch_related(
+            "submissions",
+            models.Prefetch(
+                "orders", queryset=Order.objects.filter(status=Order.FULFILLED)
+            ),
+            "bootcamp_run__application_steps__application_step",
+            "bootcamp_run__installment_set",
         )
 
 

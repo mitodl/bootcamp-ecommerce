@@ -11,6 +11,7 @@ import {
   EMPLOYMENT_EXPERIENCE,
   EMPLOYMENT_SIZE,
   GENDER_CHOICES,
+  PROFILE_EDIT,
   VIEW_PROFILE_PAGE_TITLE
 } from "../constants"
 import queries from "../lib/queries"
@@ -48,7 +49,7 @@ export function ViewProfileDisplay(props: Props) {
           <button
             type="submit"
             onClick={() => {
-              updateDrawer("profileEdit")
+              updateDrawer(PROFILE_EDIT)
             }}
             className="btn btn-danger profile-btn"
           >

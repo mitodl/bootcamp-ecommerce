@@ -59,12 +59,6 @@ export type ExtendedLegalAddress = LegalAddress & {
   email: string
 }
 
-export type UnusedCoupon = {
-  coupon_code: string,
-  product_id: number,
-  expiration_date: string
-}
-
 export type Profile = {
   name: ?string,
   gender: string,

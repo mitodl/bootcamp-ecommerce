@@ -15,7 +15,6 @@ from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
-from backends.utils import get_social_username
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from main.utils import remove_html_tags
@@ -130,7 +129,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
     payload = {
         "access_key": settings.CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
-        "consumer_id": get_social_username(order.user),
+        "consumer_id": order.user.username,
         "currency": "USD",
         "locale": "en-us",
         "item_0_code": "klass",

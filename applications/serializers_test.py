@@ -1,8 +1,10 @@
 """Tests for bootcamp application serializers"""
 # pylint: disable=redefined-outer-name
 from datetime import timedelta
+import os
 from types import SimpleNamespace
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 import factory
 
@@ -35,49 +37,66 @@ from profiles.factories import UserFactory
 from profiles.serializers import UserSerializer
 
 
+pytestmark = pytest.mark.django_db
+
+
 @pytest.fixture
 def app_data():
     """Fixture for a bootcamp application and related data"""
     bootcamp_run = BootcampRunFactory.create()
+    InstallmentFactory.create(bootcamp_run=bootcamp_run)
     run_steps = BootcampRunApplicationStepFactory.create_batch(
         2, bootcamp_run=bootcamp_run
     )
     application = BootcampApplicationFactory(bootcamp_run=bootcamp_run)
+    application.resume_file = SimpleUploadedFile(
+        "resume.txt", b"these are the file contents!"
+    )
+    application.save()
     return SimpleNamespace(application=application, run_steps=run_steps)
 
 
-@pytest.mark.django_db
-def test_application_detail_serializer(app_data):
+@pytest.mark.parametrize("has_resume", [True, False])
+def test_application_detail_serializer(app_data, has_resume):
     """
     BootcampApplicationDetailSerializer should return a serialized version of a bootcamp application
     with related data
     """
     application = app_data.application
+    if not has_resume:
+        application.resume_file = None
+        application.save()
+
     data = BootcampApplicationDetailSerializer(instance=application).data
     assert data == {
         "id": application.id,
-        "bootcamp_run_id": application.bootcamp_run_id,
+        "bootcamp_run": BootcampRunSerializer(application.bootcamp_run).data,
         "state": application.state,
-        "resume_filename": None,
-        "linkedin_url": None,
+        "resume_filename": os.path.split(application.resume_file.name)[1]
+        if has_resume
+        else None,
+        "linkedin_url": application.linkedin_url,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
-        "payment_deadline": None,
+        "payment_deadline": serializer_date_format(
+            application.bootcamp_run.installment_set.first().deadline
+        ),
         "created_on": serializer_date_format(application.created_on),
         "run_application_steps": BootcampRunStepSerializer(
             instance=app_data.run_steps, many=True
         ).data,
         "submissions": [],
         "orders": [],
+        "price": application.price,
     }
 
 
-@pytest.mark.django_db
 def test_app_detail_serializer_deadline(app_data):
     """
     BootcampApplicationDetailSerializer results should include a payment deadline based on the
     bootcamp run installments
     """
     application = app_data.application
+    application.bootcamp_run.installment_set.all().delete()
     installments = InstallmentFactory.create_batch(
         2,
         bootcamp_run=application.bootcamp_run,
@@ -87,7 +106,6 @@ def test_app_detail_serializer_deadline(app_data):
     assert data["payment_deadline"] == serializer_date_format(installments[1].deadline)
 
 
-@pytest.mark.django_db
 def test_application_detail_serializer_nested(app_data):
     """
     BootcampApplicationDetailSerializer results should include nested submission and order data
@@ -109,7 +127,6 @@ def test_application_detail_serializer_nested(app_data):
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
 
 
-@pytest.mark.django_db
 def test_application_list_serializer(app_data):
     """
     BootcampApplicationListSerializer should return serialized versions of all of a user's

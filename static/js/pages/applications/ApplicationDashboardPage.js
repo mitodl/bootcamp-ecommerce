@@ -20,9 +20,14 @@ import { formatStartEndDateStrings, formatTitle } from "../../util/util"
 import {
   APP_STATE_TEXT_MAP,
   APPLICATIONS_DASHBOARD_PAGE_TITLE,
+  PAYMENT,
   PROFILE_VIEW
 } from "../../constants"
-import { setDrawerOpen, setDrawerState } from "../../reducers/drawer"
+import {
+  setDrawerMeta,
+  setDrawerOpen,
+  setDrawerState
+} from "../../reducers/drawer"
 
 import type {
   Application,
@@ -36,7 +41,8 @@ type Props = {
   currentUser: User,
   fetchAppDetail: Function,
   setDrawerOpen: Function,
-  setDrawerState: Function
+  setDrawerState: Function,
+  setDrawerMeta: Function
 }
 
 type State = {
@@ -67,7 +73,12 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
   }
 
   renderApplicationDetail = (applicationId: number) => {
-    const { allApplicationDetail, setDrawerOpen, setDrawerState } = this.props
+    const {
+      allApplicationDetail,
+      setDrawerOpen,
+      setDrawerState,
+      setDrawerMeta
+    } = this.props
 
     if (!allApplicationDetail || !allApplicationDetail[String(applicationId)]) {
       return null
@@ -99,7 +110,18 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         </div>
         <div className="col-12">
           <h3>Payment</h3>
-          <a className="btn-link">Make a Payment</a>
+          <a
+            className="btn-link"
+            onClick={() => {
+              setDrawerState(PAYMENT)
+              setDrawerMeta({
+                applicationId
+              })
+              setDrawerOpen(true)
+            }}
+          >
+            Make a Payment
+          </a>
         </div>
       </div>
     )
@@ -202,7 +224,8 @@ const mapDispatchToProps = dispatch => ({
       )
     ),
   setDrawerOpen:  (newState: boolean) => dispatch(setDrawerOpen(newState)),
-  setDrawerState: (newState: ?string) => dispatch(setDrawerState(newState))
+  setDrawerState: (newState: ?string) => dispatch(setDrawerState(newState)),
+  setDrawerMeta:  (newMeta: ?any) => dispatch(setDrawerMeta(newMeta))
 })
 
 const mapPropsToConfigs = () => [queries.applications.applicationsQuery()]

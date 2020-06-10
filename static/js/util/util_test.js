@@ -10,6 +10,7 @@ import {
   formatDollarAmount,
   getRunWithFulfilledOrder,
   getInstallmentDeadlineDates,
+  formatPrice,
   formatStartEndDateStrings,
   newSetWithout,
   newSetWith,
@@ -169,5 +170,21 @@ describe("util", () => {
     sinon.assert.callCount(func, 0)
     await promise
     sinon.assert.callCount(func, 1)
+  })
+
+  describe("formatPrice", () => {
+    it("format price", () => {
+      assert.equal(formatPrice(20), "$20")
+      assert.equal(formatPrice(20.005), "$20.01")
+      assert.equal(formatPrice(20.1), "$20.10")
+      assert.equal(formatPrice(20.6059), "$20.61")
+      assert.equal(formatPrice(20.6959), "$20.70")
+      assert.equal(formatPrice(20.1234567), "$20.12")
+    })
+
+    it("returns an empty string if null or undefined", () => {
+      assert.equal(formatPrice(null), "")
+      assert.equal(formatPrice(undefined), "")
+    })
   })
 })
