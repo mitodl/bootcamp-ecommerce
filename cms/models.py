@@ -83,7 +83,12 @@ class HomePage(Page, CommonProperties):
             "program_description_section": self.program_description_section,
         }
 
-    subpage_types = ["ProgramDescriptionPage"]
+    @property
+    def global_alumni(self):
+        """Gets the faculty members page"""
+        return self._get_child_page_of_type(GlobalAlumniPage)
+
+    subpage_types = ["ProgramDescriptionPage", "GlobalAlumniPage"]
 
 
 class BootcampPage(Page, CommonProperties):
@@ -453,9 +458,9 @@ class SiteNotification(models.Model):
         return self.message
 
 
-class AlumniPage(BootcampRunChildPage):
+class GlobalAlumniPage(BootcampRunChildPage):
     """
-    Page that holds alumni for a product
+    Page that holds general global alumni information for a product on HomePage.
     """
 
     banner_image = models.ForeignKey(
@@ -466,9 +471,7 @@ class AlumniPage(BootcampRunChildPage):
         help_text="Image that will display as a banner at the top of the section, must be at least 750x505 pixels.",
     )
     heading = models.CharField(
-        max_length=100,
-        default="Alumni",
-        help_text="The heading to display on this section.",
+        max_length=100, help_text="The heading to display on this section."
     )
     text = RichTextField(
         blank=False,
@@ -482,19 +485,30 @@ class AlumniPage(BootcampRunChildPage):
     highlight_name = models.CharField(
         max_length=100, help_text="Name of the alumni for the highlighted quote."
     )
-    alumni_bios = StreamField(
-        [("alumni", AlumniBlock())],
-        blank=False,
-        help_text="Alumni to display in this section.",
-    )
+
     content_panels = [
         ImageChooserPanel("banner_image"),
         FieldPanel("heading"),
         FieldPanel("text"),
         FieldPanel("highlight_quote"),
         FieldPanel("highlight_name"),
-        StreamFieldPanel("alumni_bios"),
     ]
+
+    class Meta:
+        verbose_name = "Global Alumni Section"
+
+
+class AlumniPage(GlobalAlumniPage):
+    """
+    Page that holds alumni for a product
+    """
+
+    alumni_bios = StreamField(
+        [("alumni", AlumniBlock())],
+        blank=False,
+        help_text="Alumni to display in this section.",
+    )
+    content_panels = GlobalAlumniPage.content_panels + [StreamFieldPanel("alumni_bios")]
 
     class Meta:
         verbose_name = "Alumni Section"

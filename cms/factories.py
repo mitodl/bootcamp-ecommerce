@@ -119,3 +119,16 @@ class HomePageFactory(wagtail_factories.PageFactory):
             site.root_page = obj
             site.save()
         return obj
+
+
+class GlobalAlumniPageFactory(wagtail_factories.PageFactory):
+    """GlobalAlumniPageFactory factory class"""
+
+    banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    heading = factory.fuzzy.FuzzyText(prefix="heading ")
+    text = factory.fuzzy.FuzzyText(prefix="text ")
+    highlight_quote = factory.fuzzy.FuzzyText(prefix="quote ")
+    highlight_name = highlight_quote = factory.fuzzy.FuzzyText(prefix="name ")
+
+    class Meta:
+        model = models.GlobalAlumniPage

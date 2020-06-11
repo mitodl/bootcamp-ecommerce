@@ -9,6 +9,8 @@ from cms.factories import (
     ResourcePageFactory,
     LearningResourcePageFactory,
     ProgramDescriptionPageFactory,
+    GlobalAlumniPageFactory,
+    HomePageFactory,
 )
 from cms.models import LearningResourcePage
 
@@ -95,3 +97,24 @@ def test_resource_page_site_name(settings, mocker):
     settings.SITE_NAME = "a site's name"
     page = ResourcePageFactory.create()
     assert page.get_context(mocker.Mock())["site_name"] == settings.SITE_NAME
+
+
+def test_global_alumni_page():
+    """
+    Verify user can create global alumni page under HomePage.
+    """
+    home_page = HomePageFactory.create()
+    assert not home_page.global_alumni
+    global_alumni_page = GlobalAlumniPageFactory.create(
+        parent=home_page,
+        banner_image__title="program-description-image",
+        heading="heading of the page",
+        text="text of the page",
+        highlight_quote="quote of the page",
+        highlight_name="ABC",
+    )
+    assert home_page.global_alumni == global_alumni_page
+    assert global_alumni_page.heading == "heading of the page"
+    assert global_alumni_page.text == "text of the page"
+    assert global_alumni_page.highlight_quote == "quote of the page"
+    assert global_alumni_page.highlight_name == "ABC"

@@ -1,0 +1,22 @@
+{% load image_version_url wagtailcore_tags static %}
+<section class="global-community">
+  <div class="banner-img">
+    <img src="{% image_version_url page.banner_image "fill-1920x200" %}" alt="{{ page.name }}" />
+  </div>
+  <div class="container element-content">
+      <div class="row">
+          <div class="col-md-6">
+              <div class="text-holder">
+                  <h2><a href="#">{{ page.heading }}</a></h2>
+                  <p> {{page.text|richtext}}</p>
+              </div>
+          </div>
+          <div class="col-md-6">
+              <blockquote>
+                  <q>{{ page.highlight_quote }}</q>
+                  <cite class="name">-{{ page.highlight_name }}</cite>
+              </blockquote>
+          </div>
+      </div>
+  </div>
+</section>
