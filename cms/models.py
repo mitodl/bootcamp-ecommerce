@@ -8,12 +8,12 @@ from django.db import models
 from django.http.response import Http404
 from django.utils.text import slugify
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.core.blocks import StreamBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.core.utils import WAGTAIL_APPEND_SLASH
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
-from wagtail.core.blocks import StreamBlock
 from wagtail.snippets.models import register_snippet
 
 from cms.blocks import (
@@ -24,8 +24,45 @@ from cms.blocks import (
     TitleLinksBlock,
     TitleDescriptionBlock,
 )
-
+from cms.constants import BOOTCAMP_INDEX_SLUG
 from main.views import _serialize_js_settings
+
+
+class BootcampIndexPage(Page):
+    """
+    A placeholder class to group bootcamp run object pages as children.
+    This class logically acts as no more than a "folder" to organize
+    pages and add parent slug segment to the page url.
+    """
+
+    slug = BOOTCAMP_INDEX_SLUG
+
+    parent_page_types = ["HomePage"]
+    subpage_types = ["BootcampRunPage"]
+
+    @classmethod
+    def can_create_at(cls, parent):
+        """
+        You can only create one of this page under the home page.
+        The parent is limited via the `parent_page_type` list.
+        """
+        return (
+            super().can_create_at(parent)
+            and not parent.get_children().type(cls).exists()
+        )
+
+    def route(
+        self, request, path_components
+    ):  # pylint:disable=useless-super-delegation
+        """Placeholder to implement custom routing later on (based on some sort of courseware key like in xPRO)"""
+        return super().route(request, path_components)
+
+    def serve(self, request, *args, **kwargs):
+        """
+        For index page we raise a 404 because this page do not have a template
+        of their own and we do not expect a page to available at their slug.
+        """
+        raise Http404
 
 
 class CommonProperties:
@@ -88,7 +125,7 @@ class HomePage(Page, CommonProperties):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(GlobalAlumniPage)
 
-    subpage_types = ["ProgramDescriptionPage", "GlobalAlumniPage"]
+    subpage_types = ["ProgramDescriptionPage", "GlobalAlumniPage", "BootcampIndexPage"]
 
 
 class BootcampPage(Page, CommonProperties):
@@ -178,6 +215,7 @@ class BootcampRunPage(BootcampPage):
     CMS page representing a bootcamp run
     """
 
+    parent_page_types = ["BootcampIndexPage"]
     template = "product_page.html"
 
     bootcamp_run = models.OneToOneField(
