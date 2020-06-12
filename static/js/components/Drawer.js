@@ -4,6 +4,7 @@ import * as React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Drawer as RMWCDrawer, DrawerContent } from "@rmwc/drawer"
 import { Theme } from "@rmwc/theme"
+import * as R from "ramda"
 
 import { drawerSelector } from "../lib/selectors"
 import { setDrawerOpen } from "../reducers/drawer"
@@ -13,21 +14,24 @@ import EditProfileDisplay from "./EditProfileDisplay"
 import ViewProfileDisplay from "./ViewProfileDisplay"
 import PaymentDisplay from "./PaymentDisplay"
 
-const renderDrawerContents = (drawerState: string): ?React$Element<*> => {
+const renderDrawerContents = (
+  drawerState: string,
+  drawerMeta?: Object
+): ?React$Element<*> => {
   switch (drawerState) {
   case PROFILE_EDIT:
     return <EditProfileDisplay />
   case PROFILE_VIEW:
     return <ViewProfileDisplay />
   case PAYMENT:
-    return <PaymentDisplay />
+    return <PaymentDisplay application={R.prop("application", drawerMeta)} />
   default:
     return null
   }
 }
 
 export default function Drawer() {
-  const { drawerOpen, drawerState } = useSelector(drawerSelector)
+  const { drawerOpen, drawerState, drawerMeta } = useSelector(drawerSelector)
 
   const dispatch = useDispatch()
   const closeDrawer = useCallback(() => {
@@ -38,7 +42,7 @@ export default function Drawer() {
     <Theme>
       <RMWCDrawer open={drawerOpen} onClose={closeDrawer} dir="rtl" modal>
         <DrawerContent dir="ltr">
-          {renderDrawerContents(drawerState)}
+          {renderDrawerContents(drawerState, drawerMeta)}
         </DrawerContent>
       </RMWCDrawer>
     </Theme>

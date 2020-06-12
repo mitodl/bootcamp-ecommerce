@@ -6,11 +6,8 @@ import Drawer from "./Drawer"
 import { PAYMENT, PROFILE_EDIT, PROFILE_VIEW } from "../constants"
 
 import IntegrationTestHelper from "../util/integration_test_helper"
-import {
-  setDrawerOpen,
-  setDrawerState,
-  setDrawerMeta
-} from "../reducers/drawer"
+import { setDrawerOpen, setDrawerState, openDrawer } from "../reducers/drawer"
+import { makeApplicationDetail } from "../factories/application"
 
 describe("Drawer", () => {
   let helper, render
@@ -40,7 +37,7 @@ describe("Drawer", () => {
     })
   })
 
-  it("should have the drawer open if action is dispatch", async () => {
+  it("should have the drawer open if action is dispatched", async () => {
     const { wrapper } = await render({}, [setDrawerOpen(true)])
     assert.isTrue(wrapper.find(RMWCDrawer).prop("open"))
   })
@@ -51,9 +48,15 @@ describe("Drawer", () => {
     assert.isFalse(store.getState().drawer.drawerOpen)
   })
 
-  it("should set metadata for drawer", async () => {
-    const data = { meta: "data" }
-    const { store } = await render({}, [setDrawerMeta(data)])
-    assert.deepEqual(store.getState().drawer.drawerMeta, data)
+  it("should pass down metadata to an inner drawer component (if metadata exists)", async () => {
+    const meta = { application: makeApplicationDetail() }
+    const { wrapper, store } = await render({}, [
+      openDrawer({ type: PAYMENT, meta: meta })
+    ])
+    assert.isTrue(wrapper.find(RMWCDrawer).prop("open"))
+    assert.deepEqual(store.getState().drawer.drawerMeta, meta)
+    Object.keys(meta).forEach((key: string) => {
+      assert.deepEqual(wrapper.find("PaymentDisplay").prop(key), meta[key])
+    })
   })
 })

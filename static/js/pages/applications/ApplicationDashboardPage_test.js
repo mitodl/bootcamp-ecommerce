@@ -1,16 +1,39 @@
 /* global SETTINGS: false */
 import { assert } from "chai"
 import sinon from "sinon"
+import React from "react"
+import { shallow } from "enzyme"
 import wait from "waait"
 
-import ApplicationDashboardPage from "./ApplicationDashboardPage"
+import ApplicationDashboardPage, {
+  ApplicationDashboardPage as InnerAppDashboardPage
+} from "./ApplicationDashboardPage"
 import IntegrationTestHelper from "../../util/integration_test_helper"
-import { APP_STATE_TEXT_MAP, PROFILE_VIEW } from "../../constants"
+import {
+  APP_STATE_TEXT_MAP,
+  SUBMISSION_QUIZ,
+  SUBMISSION_VIDEO
+} from "../../constants"
 import {
   makeApplication,
-  makeApplicationDetail
+  makeApplicationDetail,
+  makeApplicationRunStep,
+  setToAwaitingPayment,
+  setToAwaitingResume,
+  setToAwaitingReview,
+  setToAwaitingSubmission,
+  setToPaid
 } from "../../factories/application"
-import { makeUser } from "../../factories/user"
+import {
+  makeCompleteUser,
+  makeIncompleteUser,
+  makeUser
+} from "../../factories/user"
+
+import type {
+  Application,
+  ApplicationDetail
+} from "../../flow/applicationTypes"
 
 describe("ApplicationDashboardPage", () => {
   let helper,
@@ -111,6 +134,7 @@ describe("ApplicationDashboardPage", () => {
     assert.isFalse(firstApplicationCard.find("Collapse").prop("isOpen"))
     const expandLink = firstApplicationCard.find(".expand-collapse")
     assert.include(expandLink.text(), "Expand")
+    assert.isFalse(firstApplicationCard.find(".application-detail").exists())
 
     await expandLink.simulate("click")
     await wait()
@@ -131,23 +155,178 @@ describe("ApplicationDashboardPage", () => {
         .text(),
       "Collapse"
     )
-    assert.exists(firstApplicationCard.find(".application-detail"))
+    assert.isTrue(firstApplicationCard.find(".application-detail").exists())
   })
 
-  it("opens and closes a profile view/edit drawer", async () => {
-    const applicationIndex = 0
-    const { wrapper, store } = await renderPage()
+  describe("detail view", () => {
+    let defaultProps,
+      application: Application,
+      applicationDetail: ApplicationDetail,
+      renderExpanded: Function,
+      openDrawerStub
 
-    let appCard = wrapper.find(".application-card").at(applicationIndex)
-    await appCard.find(".expand-collapse").simulate("click")
-    await wait()
-    wrapper.update()
+    beforeEach(() => {
+      openDrawerStub = sinon.stub()
+      application = makeApplication()
+      applicationDetail = makeApplicationDetail()
+      applicationDetail.id = application.id
+      applicationDetail.run_application_steps = [
+        makeApplicationRunStep(SUBMISSION_VIDEO),
+        makeApplicationRunStep(SUBMISSION_QUIZ)
+      ]
+      applicationDetail.submissions = []
+      defaultProps = {
+        applications:         [application],
+        allApplicationDetail: { [application.id]: applicationDetail },
+        currentUser:          makeCompleteUser(),
+        fetchAppDetail:       sinon.stub(),
+        openDrawer:           openDrawerStub
+      }
+      // This function renders the component then sets the state so the detail section is expanded
+      renderExpanded = async props => {
+        const wrapper = await shallow(<InnerAppDashboardPage {...props} />)
+        wrapper.setState({
+          collapseVisible: { [application.id]: true }
+        })
+        wrapper.update()
+        return wrapper
+      }
+    })
 
-    appCard = wrapper.find(".application-card").at(applicationIndex)
-    await appCard.find(".section-profile a").simulate("click")
-    await wait()
-    const state = store.getState()
-    assert.isTrue(state.drawer.drawerOpen)
-    assert.equal(state.drawer.drawerState, PROFILE_VIEW)
+    //
+    ;[
+      [false, "for user with incomplete profile"],
+      [true, "for user with complete profile"]
+    ].forEach(([isComplete, desc]) => {
+      it(`shows profile details ${desc}`, async () => {
+        const user = isComplete ? makeCompleteUser() : makeIncompleteUser()
+        const wrapper = await renderExpanded({
+          ...defaultProps,
+          currentUser: user
+        })
+
+        const profileDetail = wrapper.find("ProfileDetail")
+        assert.isTrue(profileDetail.exists())
+        assert.deepEqual(profileDetail.props(), {
+          ready:      true,
+          fulfilled:  isComplete,
+          openDrawer: openDrawerStub,
+          user:       user
+        })
+      })
+    })
+
+    //
+    ;[
+      [false, false, "incomplete profile"],
+      [true, false, "complete profile"],
+      [true, true, "submitted resume"]
+    ].forEach(([hasProfile, hasResume, desc]) => {
+      it(`shows resume details with ${desc}`, async () => {
+        let newApplicationDetail = Object.assign({}, applicationDetail)
+        newApplicationDetail =
+          hasProfile && hasResume ?
+            setToAwaitingSubmission(newApplicationDetail) :
+            setToAwaitingResume(newApplicationDetail)
+        const props = {
+          ...defaultProps,
+          allApplicationDetail: {
+            [application.id]: newApplicationDetail
+          },
+          currentUser: hasProfile ? makeCompleteUser() : makeIncompleteUser()
+        }
+        const wrapper = await renderExpanded(props)
+
+        const resumeDetail = wrapper.find("ResumeDetail")
+        assert.isTrue(resumeDetail.exists())
+        assert.deepEqual(resumeDetail.props(), {
+          ready:             hasProfile,
+          fulfilled:         hasResume,
+          openDrawer:        openDrawerStub,
+          applicationDetail: newApplicationDetail
+        })
+      })
+    })
+
+    //
+    ;[
+      [false, false, false, "before the resume has been submitted"],
+      [true, false, false, "before the user submits it"],
+      [true, true, false, "awaiting review"],
+      [true, true, true, "after approval"]
+    ].forEach(([hasResume, hasSubmission, isApproved, desc]) => {
+      it(`shows details about a video submission ${desc}`, async () => {
+        let newApplicationDetail = Object.assign({}, applicationDetail)
+        if (!hasResume) {
+          newApplicationDetail = setToAwaitingResume(newApplicationDetail)
+        } else if (!hasSubmission) {
+          newApplicationDetail = setToAwaitingSubmission(newApplicationDetail)
+        } else {
+          newApplicationDetail = isApproved ?
+            setToAwaitingPayment(newApplicationDetail) :
+            setToAwaitingReview(newApplicationDetail)
+        }
+        const props = {
+          ...defaultProps,
+          allApplicationDetail: {
+            [application.id]: newApplicationDetail
+          }
+        }
+        const wrapper = await renderExpanded(props)
+
+        const videoInterviewDetail = wrapper.find("VideoInterviewDetail")
+        assert.isTrue(videoInterviewDetail.exists())
+        const reviewDetail = wrapper.find("ReviewDetail")
+        assert.isTrue(reviewDetail.exists())
+        assert.deepEqual(videoInterviewDetail.props(), {
+          ready:      hasResume,
+          fulfilled:  hasSubmission,
+          openDrawer: openDrawerStub,
+          step:       newApplicationDetail.run_application_steps[0],
+          submission: newApplicationDetail.submissions[0]
+        })
+        assert.deepEqual(reviewDetail.first().props(), {
+          ready:      true,
+          fulfilled:  isApproved,
+          openDrawer: openDrawerStub,
+          step:       newApplicationDetail.run_application_steps[0],
+          submission: newApplicationDetail.submissions[0]
+        })
+      })
+    })
+
+    //
+    ;[
+      [false, false, "before submissions are approved"],
+      [true, false, "before the user finishes paying"],
+      [true, true, "after payment is complete"]
+    ].forEach(([submissionsComplete, hasPaid, desc]) => {
+      it(`shows details about payment status ${desc}`, async () => {
+        let newApplicationDetail = Object.assign({}, applicationDetail)
+        if (!submissionsComplete) {
+          newApplicationDetail = setToAwaitingReview(newApplicationDetail)
+        } else {
+          newApplicationDetail = hasPaid ?
+            setToPaid(newApplicationDetail) :
+            setToAwaitingPayment(newApplicationDetail)
+        }
+        const props = {
+          ...defaultProps,
+          allApplicationDetail: {
+            [application.id]: newApplicationDetail
+          }
+        }
+        const wrapper = await renderExpanded(props)
+
+        const paymentDetail = wrapper.find("PaymentDetail")
+        assert.isTrue(paymentDetail.exists())
+        assert.deepEqual(paymentDetail.props(), {
+          ready:             submissionsComplete,
+          fulfilled:         hasPaid,
+          openDrawer:        openDrawerStub,
+          applicationDetail: newApplicationDetail
+        })
+      })
+    })
   })
 })

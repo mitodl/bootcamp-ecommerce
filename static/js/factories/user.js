@@ -4,6 +4,7 @@ import casual from "casual-browserify"
 import { incrementer } from "../util/util"
 
 import type { AnonymousUser, LoggedInUser } from "../flow/authTypes"
+import moment from "moment"
 
 const incr = incrementer()
 
@@ -33,7 +34,9 @@ export const makeUser = (username: ?string): LoggedInUser => ({
     job_title:         casual.word,
     job_function:      "Administrative",
     years_experience:  20,
-    highest_education: "Doctorate"
+    highest_education: "Doctorate",
+    is_complete:       true,
+    updated_on:        casual.moment.format()
   },
   legal_address: {
     street_address:     [casual.street],
@@ -46,6 +49,24 @@ export const makeUser = (username: ?string): LoggedInUser => ({
   },
   unused_coupons: []
 })
+
+export const makeCompleteUser = (username: ?string): LoggedInUser => {
+  const fakeUser = makeUser(username)
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.name = moment().format()
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.is_complete = true
+  return fakeUser
+}
+
+export const makeIncompleteUser = (username: ?string): LoggedInUser => {
+  const fakeUser = makeUser(username)
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.name = undefined
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.is_complete = false
+  return fakeUser
+}
 
 export const makeCountries = () => [
   {

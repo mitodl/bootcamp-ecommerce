@@ -1,6 +1,6 @@
 // @flow
 import React from "react"
-import { path, sum } from "ramda"
+import { sum } from "ramda"
 
 import { compose } from "redux"
 import { connect } from "react-redux"
@@ -124,17 +124,6 @@ export const PaymentDisplay = (props: Props) => {
   )
 }
 
-const mapStateToProps = state => {
-  const applicationId = path(["drawer", "drawerMeta", "applicationId"], state)
-  const application = path(
-    ["entities", "applicationDetail", applicationId],
-    state
-  )
-
-  return {
-    application
-  }
-}
 const mapDispatchToProps = dispatch => ({
   sendPayment: async (paymentPayload: PaymentPayload) => {
     const result = await dispatch(
@@ -154,6 +143,4 @@ const mapDispatchToProps = dispatch => ({
   }
 })
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  PaymentDisplay
-)
+export default compose(connect(null, mapDispatchToProps))(PaymentDisplay)

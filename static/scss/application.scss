@@ -1,14 +1,21 @@
 $thumbnail-img-height: 132px;
+$progress-section-height: 110px;
+$progress-circle-size: 60px;
+$checkmark-size: 34px;
+$border-style: 1px solid $black;
 
 h2.name {
   margin: 25px 0;
 }
 
 .application-card {
-  border: 1px solid $black;
-  padding: 18px;
+  border: $border-style;
   margin-bottom: 20px;
   min-height: $thumbnail-img-height;
+
+  .row:before, .row:after {
+    content: none;
+  }
 
   .label {
     color: $med-dark-gray;
@@ -30,5 +37,96 @@ h2.name {
 
   .status-col * {
     white-space: nowrap;
+  }
+
+  .application-detail {
+    border-top: $border-style;
+
+    .detail-content {
+      align-items: flex-start;
+      align-content: flex-start;
+      flex-grow: 1;
+      flex-shrink: 1;
+      border-bottom: $border-style;
+
+      h3 {
+        width: 100%;
+      }
+    }
+
+    .progress-meter {
+      position: relative;
+      width: $progress-section-height;
+      min-height: $progress-section-height;
+      flex-grow: 0;
+      flex-shrink: 0;
+
+      .top-line, .bottom-line {
+        position: absolute;
+        width: 16px;
+        margin-left: -8px;
+        left: 50%;
+        z-index: 0;
+        background-color: $light-gray;
+      }
+
+      .top-line {
+        top: 0;
+        height: 33%;
+      }
+
+      .bottom-line {
+        bottom: 0;
+        height: 66%;
+      }
+
+      .check {
+        position: absolute;
+        width: $progress-circle-size;
+        height: $progress-circle-size;
+        top: 50%;
+        left: 50%;
+        margin-top: -($progress-circle-size * 0.75);
+        margin-left: -$progress-circle-size/2;
+        border-style: none;
+        border-radius: $progress-circle-size/2;
+        z-index: 1;
+        background-color: $light-gray;
+
+        i {
+          position: absolute;
+          top: ($progress-circle-size - $checkmark-size)/2;
+          left: 50%;
+          margin-left: -$checkmark-size/2;
+          font-size: $checkmark-size;
+          font-weight: 600;
+          color: $white;
+        }
+      }
+    }
+
+    .fulfilled .progress-meter {
+      .check, .bottom-line {
+        background-color: $success-green;
+      }
+    }
+
+    .fulfilled + .detail-section {
+      .progress-meter .top-line {
+        background-color: $success-green;
+      }
+    }
+
+    .detail-section:first-of-type .top-line {
+      display: none;
+    }
+
+    .detail-section:last-of-type .bottom-line {
+      display: none;
+    }
+
+    .detail-section:last-of-type .detail-content {
+      border-bottom: none;
+    }
   }
 }

@@ -199,6 +199,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "job_function",
             "years_experience",
             "highest_education",
+            "is_complete",
+            "updated_on",
         )
 
 

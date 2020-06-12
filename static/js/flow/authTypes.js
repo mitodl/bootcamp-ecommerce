@@ -69,7 +69,9 @@ export type Profile = {
   job_function: ?string,
   years_experience: ?number,
   company_size: ?number,
-  highest_education: ?string
+  highest_education: ?string,
+  is_complete: boolean,
+  updated_on: string
 }
 
 export type User = {

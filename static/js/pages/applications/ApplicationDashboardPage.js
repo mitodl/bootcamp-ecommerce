@@ -10,6 +10,15 @@ import { MetaTags } from "react-meta-tags"
 import { Collapse } from "reactstrap"
 import * as R from "ramda"
 
+import {
+  PaymentDetail,
+  ProfileDetail,
+  QuizDetail,
+  ResumeDetail,
+  ReviewDetail,
+  VideoInterviewDetail
+} from "../../components/applications/detail_sections"
+import { openDrawer } from "../../reducers/drawer"
 import queries from "../../lib/queries"
 import {
   applicationDetailSelector,
@@ -20,29 +29,45 @@ import { formatStartEndDateStrings, formatTitle } from "../../util/util"
 import {
   APP_STATE_TEXT_MAP,
   APPLICATIONS_DASHBOARD_PAGE_TITLE,
-  PAYMENT,
-  PROFILE_VIEW
+  SUBMISSION_VIDEO,
+  SUBMISSION_QUIZ,
+  REVIEW_STATUS_APPROVED
 } from "../../constants"
-import {
-  setDrawerMeta,
-  setDrawerOpen,
-  setDrawerState
-} from "../../reducers/drawer"
 
 import type {
   Application,
-  ApplicationDetailState
+  ApplicationDetailState,
+  ApplicationRunStep,
+  ApplicationSubmission,
+  ValidAppStepType
 } from "../../flow/applicationTypes"
 import type { User } from "../../flow/authTypes"
+import type { DrawerChangePayload } from "../../reducers/drawer"
+
+/*
+ * Returns an object mapping an application step id to the user's submission (if anything was submitted
+ * for that step).
+ */
+const getAppStepSubmissions = (
+  runApplicationSteps: Array<ApplicationRunStep>,
+  submissions: Array<ApplicationSubmission>
+): { [number]: ?ApplicationSubmission } =>
+  R.fromPairs(
+    runApplicationSteps.map((step: ApplicationRunStep) => [
+      step.id,
+      submissions.find(
+        (submission: ApplicationSubmission) =>
+          submission.run_application_step_id === step.id
+      )
+    ])
+  )
 
 type Props = {
   applications: Array<Application>,
   allApplicationDetail: ApplicationDetailState,
   currentUser: User,
-  fetchAppDetail: Function,
-  setDrawerOpen: Function,
-  setDrawerState: Function,
-  setDrawerMeta: Function
+  fetchAppDetail: (applicationId: number) => void,
+  openDrawer: (actionPayload: DrawerChangePayload) => void
 }
 
 type State = {
@@ -72,57 +97,102 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     this.onCollapseToggle(applicationId)
   }
 
-  renderApplicationDetail = (applicationId: number) => {
-    const {
-      allApplicationDetail,
-      setDrawerOpen,
-      setDrawerState,
-      setDrawerMeta
-    } = this.props
+  SUBMISSION_STEP_COMPONENTS: { [ValidAppStepType]: React$ComponentType<*> } = {
+    [SUBMISSION_VIDEO]: VideoInterviewDetail,
+    [SUBMISSION_QUIZ]:  QuizDetail
+  }
 
-    if (!allApplicationDetail || !allApplicationDetail[String(applicationId)]) {
+  renderApplicationDetailSection = (application: Application) => {
+    const { allApplicationDetail, currentUser, openDrawer } = this.props
+
+    if (
+      !allApplicationDetail ||
+      !allApplicationDetail[String(application.id)]
+    ) {
       return null
     }
+    const applicationDetail = allApplicationDetail[String(application.id)]
+    const appStepSubmissions = getAppStepSubmissions(
+      applicationDetail.run_application_steps,
+      applicationDetail.submissions
+    )
+
+    const profileFulfilled =
+      !!currentUser.profile && currentUser.profile.is_complete
+    const profileRow = (
+      <ProfileDetail
+        ready={true}
+        fulfilled={profileFulfilled}
+        openDrawer={openDrawer}
+        user={currentUser}
+      />
+    )
+
+    const resumeFulfilled = !!applicationDetail.resume_upload_date
+    const resumeRow = (
+      <ResumeDetail
+        ready={profileFulfilled}
+        fulfilled={resumeFulfilled}
+        openDrawer={openDrawer}
+        applicationDetail={applicationDetail}
+      />
+    )
+
+    let stepFulfilled, submissionApproved
+    const submissionStepRows = applicationDetail.run_application_steps.map(
+      (step: ApplicationRunStep) => {
+        // If this is the first required submission, the user should only be able
+        // to submit something if the resume step has been completed. Otherwise, they should
+        // only be able to submit something if their previous submission was approved.
+        const stepReady =
+          stepFulfilled === undefined ? resumeFulfilled : stepFulfilled
+        stepFulfilled = appStepSubmissions[step.id] !== undefined
+        submissionApproved =
+          !!appStepSubmissions[step.id] &&
+          appStepSubmissions[step.id].review_status === REVIEW_STATUS_APPROVED
+        const SubmissionComponent = this.SUBMISSION_STEP_COMPONENTS[
+          step.submission_type
+        ]
+        return [
+          <SubmissionComponent
+            ready={stepReady}
+            fulfilled={stepFulfilled}
+            openDrawer={openDrawer}
+            step={step}
+            submission={appStepSubmissions[step.id]}
+            key={`submission-${step.step_order}`}
+          />,
+          <ReviewDetail
+            ready={true}
+            fulfilled={submissionApproved}
+            openDrawer={openDrawer}
+            step={step}
+            submission={appStepSubmissions[step.id]}
+            key={`review-${step.step_order}`}
+          />
+        ]
+      }
+    )
+
+    // If there are no submissions required for this application, payment should be ready after the resume
+    // requirement is fulfilled. Otherwise, it should only be ready if the last submission was approved.
+    const paymentReady =
+      submissionApproved === undefined ? resumeFulfilled : submissionApproved
+    const paymentRow = (
+      <PaymentDetail
+        ready={paymentReady}
+        fulfilled={applicationDetail.is_paid_in_full}
+        openDrawer={openDrawer}
+        applicationDetail={applicationDetail}
+      />
+    )
+
     return (
-      <div className="row application-detail">
-        <div className="col-12 section-profile">
-          <h3>Profile Information</h3>
-          <a
-            className="btn-link"
-            onClick={() => {
-              setDrawerState(PROFILE_VIEW)
-              setDrawerOpen(true)
-            }}
-          >
-            View/Edit Profile
-          </a>
-        </div>
-        <div className="col-12">
-          <h3>Resume or LinkedIn Profile</h3>
-          <a className="btn-link">View/Edit Resume</a>
-        </div>
-        <div className="col-12">
-          <h3>Video interview</h3>
-          <a className="btn-link">Take Video Interview</a>
-        </div>
-        <div className="col-12">
-          <h3>Application Review</h3>
-        </div>
-        <div className="col-12">
-          <h3>Payment</h3>
-          <a
-            className="btn-link"
-            onClick={() => {
-              setDrawerState(PAYMENT)
-              setDrawerMeta({
-                applicationId
-              })
-              setDrawerOpen(true)
-            }}
-          >
-            Make a Payment
-          </a>
-        </div>
+      <div className="p-3 mt-3 application-detail">
+        {profileRow}
+        {resumeRow}
+        {submissionStepRows}
+        {paymentRow}
       </div>
     )
   }
@@ -131,62 +201,59 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     const { collapseVisible } = this.state
 
     const isOpen = collapseVisible[String(application.id)]
+    const thumbnailSrc = application.bootcamp_run.page ?
+      application.bootcamp_run.page.thumbnail_image_src :
+      null
 
     return (
-      <div className="application-card container" key={application.id}>
-        <div className="row justify-content-between">
-          <div className="col-12 col-sm-8">
+      <div className="application-card" key={application.id}>
+        <div className="p-3 d-flex flex-wrap flex-sm-nowrap">
+          {thumbnailSrc && <img src={thumbnailSrc} alt="Bootcamp thumbnail" />}
+
+          <div className="container p-0 pt-3 pt-sm-0 pl-sm-3 application-card-top">
             <div className="row">
-              {application.bootcamp_run.page &&
-              application.bootcamp_run.page.thumbnail_image_src ? (
-                  <div className="col-auto">
-                    <img
-                      src={application.bootcamp_run.page.thumbnail_image_src}
-                      alt="Bootcamp thumbnail"
-                    />
-                  </div>
-                ) : null}
-              <div className="col-12 col-sm no-padding">
+              <div className={`col-12 col-md-6 mr-auto no-padding`}>
                 <h2>{application.bootcamp_run.bootcamp.title}</h2>
-                <div className="row run-details no-gutters">
-                  <div className="col-auto col-sm-3 label">Location:</div>
-                  <div className="col text">
-                    &nbsp;<strong>Online</strong>
+                <div className="run-details">
+                  <div>
+                    <span className="label">Location:</span>{" "}
+                    <strong className="text">Online</strong>
                   </div>
-                  <div className="w-100" />
-                  <div className="col-auto col-sm-3 label">Dates:</div>
-                  <div className="col text">
-                    &nbsp;
-                    <strong>
+                  <div>
+                    <span className="label">Dates:</span>{" "}
+                    <strong className="text">
                       {formatStartEndDateStrings(
                         application.bootcamp_run.start_date,
                         application.bootcamp_run.end_date
                       )}
                     </strong>
                   </div>
-                  <div className="w-100" />
                 </div>
+              </div>
+
+              <div className="col-12 col-sm-auto text-sm-right status-col">
+                <span className="label">Application Status:</span>{" "}
+                <strong>{APP_STATE_TEXT_MAP[application.state]}</strong>
+              </div>
+            </div>
+
+            <div className="row text-right">
+              <div className="col-12 pt-2">
+                <a
+                  className="btn-text expand-collapse"
+                  onClick={R.partial(this.loadAndRevealAppDetail, [
+                    application.id
+                  ])}
+                >
+                  {isOpen ? "Collapse −" : "Expand ＋"}
+                </a>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="col-12 col-sm-4 status-col">
-            <span className="label">Application Status:</span>{" "}
-            <strong>{APP_STATE_TEXT_MAP[application.state]}</strong>
-          </div>
-        </div>
-        <div className="row text-right">
-          <div className="col-12">
-            <a
-              className="btn-text expand-collapse"
-              onClick={R.partial(this.loadAndRevealAppDetail, [application.id])}
-            >
-              {isOpen ? "Collapse −" : "Expand ＋"}
-            </a>
-          </div>
-        </div>
         <Collapse isOpen={isOpen}>
-          {this.renderApplicationDetail(application.id)}
+          {this.renderApplicationDetailSection(application)}
         </Collapse>
       </div>
     )
@@ -223,9 +290,8 @@ const mapDispatchToProps = dispatch => ({
         queries.applications.applicationDetailQuery(String(applicationId))
       )
     ),
-  setDrawerOpen:  (newState: boolean) => dispatch(setDrawerOpen(newState)),
-  setDrawerState: (newState: ?string) => dispatch(setDrawerState(newState)),
-  setDrawerMeta:  (newMeta: ?any) => dispatch(setDrawerMeta(newMeta))
+  openDrawer: (actionPayload: DrawerChangePayload) =>
+    dispatch(openDrawer(actionPayload))
 })
 
 const mapPropsToConfigs = () => [queries.applications.applicationsQuery()]

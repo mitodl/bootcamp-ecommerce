@@ -115,6 +115,13 @@ export const APP_STATE_TEXT_MAP = {
   REJECTED:                    APP_STATE_REJECTED
 }
 
+export const SUBMISSION_VIDEO = "videointerviewsubmission"
+export const SUBMISSION_QUIZ = "quizsubmission"
+
+export const REVIEW_STATUS_APPROVED = "approved"
+export const REVIEW_STATUS_REJECTED = "rejected"
+export const REVIEW_STATUS_PENDING = "pending"
+
 // HTML title for different pages
 export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
 export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE
