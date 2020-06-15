@@ -26,7 +26,7 @@ from applications.views import BootcampApplicationViewset
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
-from klasses.factories import BootcampRunFactory
+from klasses.factories import BootcampRunFactory, BootcampFactory
 from main.test_utils import assert_drf_json_equal
 from profiles.factories import UserFactory
 
@@ -161,20 +161,25 @@ def test_review_submission_list(admin_drf_client):
     """
     The review submission list view should return a list of all submissions
     """
-    submissions = [
-        ApplicationStepSubmissionFactory.create(is_pending=True),
-        ApplicationStepSubmissionFactory.create(is_approved=True),
-        ApplicationStepSubmissionFactory.create(is_rejected=True),
-    ]
-    bootcamps = [
-        submission.bootcamp_application.bootcamp_run.bootcamp
-        for submission in submissions
-    ]
+    bootcamps = BootcampFactory.create_batch(3)
+    submissions = []
+    for bootcamp in bootcamps:
+        for review_status in ALL_REVIEW_STATUSES:
+            submissions.append(
+                ApplicationStepSubmissionFactory.create(
+                    review_status=review_status,
+                    bootcamp_application__bootcamp_run__bootcamp=bootcamp,
+                )
+            )
     url = reverse("submissions_api-list")
-    resp = admin_drf_client.get(url)
+    resp = admin_drf_client.get(url, dict(limit=100))
     assert resp.status_code == status.HTTP_200_OK
-    assert resp.json() == {
-        "count": 3,
+    result = resp.json()
+    result["facets"]["review_statuses"] = sorted(
+        result["facets"]["review_statuses"], key=lambda s: s["review_status"]
+    )
+    assert result == {
+        "count": len(submissions),
         "next": None,
         "previous": None,
         "results": [
@@ -184,15 +189,15 @@ def test_review_submission_list(admin_drf_client):
         "facets": {
             "bootcamps": [
                 {
-                    "bootcamp_id": bootcamp.id,
-                    "bootcamp_title": bootcamp.title,
-                    "count": 1,
+                    "id": bootcamp.id,
+                    "title": bootcamp.title,
+                    "count": len(ALL_REVIEW_STATUSES),
                 }
                 for bootcamp in sorted(bootcamps, key=lambda b: b.id)
             ],
             "review_statuses": [
-                {"review_status": submission.review_status, "count": 1}
-                for submission in sorted(submissions, key=lambda s: s.review_status)
+                {"review_status": review_status, "count": len(bootcamps)}
+                for review_status in sorted(ALL_REVIEW_STATUSES)
             ],
         },
     }
@@ -215,13 +220,7 @@ def test_review_submission_list_query_bootcamp_id(admin_drf_client):
         "previous": None,
         "results": [SubmissionReviewSerializer(instance=submission).data],
         "facets": {
-            "bootcamps": [
-                {
-                    "bootcamp_id": bootcamp.id,
-                    "bootcamp_title": bootcamp.title,
-                    "count": 1,
-                }
-            ],
+            "bootcamps": [{"id": bootcamp.id, "title": bootcamp.title, "count": 1}],
             "review_statuses": [
                 {"review_status": submission.review_status, "count": 1}
             ],
@@ -252,13 +251,7 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
         "previous": None,
         "results": [SubmissionReviewSerializer(instance=submission).data],
         "facets": {
-            "bootcamps": [
-                {
-                    "bootcamp_id": bootcamp.id,
-                    "bootcamp_title": bootcamp.title,
-                    "count": 1,
-                }
-            ],
+            "bootcamps": [{"id": bootcamp.id, "title": bootcamp.title, "count": 1}],
             "review_statuses": [
                 {"review_status": submission.review_status, "count": 1}
             ],
@@ -312,11 +305,7 @@ def test_review_submission_list_query_review_status_in(
         ],
         "facets": {
             "bootcamps": [
-                {
-                    "bootcamp_id": bootcamp.id,
-                    "bootcamp_title": bootcamp.title,
-                    "count": 1,
-                }
+                {"id": bootcamp.id, "title": bootcamp.title, "count": 1}
                 for bootcamp in sorted(bootcamps, key=lambda b: b.id)
             ],
             "review_statuses": [
