@@ -85,6 +85,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "resume_upload_date",
             "created_on",
             "payment_deadline",
+            "is_paid_in_full",
             "run_application_steps",
             "submissions",
             "orders",

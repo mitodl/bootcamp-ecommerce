@@ -306,7 +306,7 @@ export class PaymentPage extends React.Component<Props> {
 
     return (
       <div>
-        <div className="body-row top-content-container">
+        <div className="body-row top-content-container payment-page">
           {this.renderToast()}
           {renderedPayment}
         </div>

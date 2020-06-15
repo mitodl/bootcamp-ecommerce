@@ -6,6 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from social_django.models import UserSocialAuth
 
+from main.test_utils import any_instance_of
 from main.utils import now_in_utc
 from profiles.factories import UserFactory
 from profiles.models import ChangeEmailRequest
@@ -57,6 +58,8 @@ def test_get_user_by_id(user_client, user):
             "years_experience": user.profile.years_experience,
             "highest_education": user.profile.highest_education,
             "industry": user.profile.industry,
+            "is_complete": True,
+            "updated_on": any_instance_of(str),
         },
         "is_anonymous": False,
         "is_authenticated": True,
@@ -92,6 +95,8 @@ def test_get_user_by_me(user_client, user):
             "years_experience": user.profile.years_experience,
             "highest_education": user.profile.highest_education,
             "industry": user.profile.industry,
+            "is_complete": True,
+            "updated_on": any_instance_of(str),
         },
         "is_anonymous": False,
         "is_authenticated": True,

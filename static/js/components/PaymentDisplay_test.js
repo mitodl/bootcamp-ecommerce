@@ -9,9 +9,8 @@ import PaymentDisplay, {
   PaymentDisplay as InnerPaymentDisplay
 } from "./PaymentDisplay"
 
-import IntegrationTestHelper from "../util/integration_test_helper"
-import { PAYMENT } from "../constants"
 import { makeApplicationDetail } from "../factories/application"
+import IntegrationTestHelper from "../util/integration_test_helper"
 import * as util from "../util/util"
 
 describe("PaymentDisplay", () => {
@@ -23,20 +22,8 @@ describe("PaymentDisplay", () => {
     renderPage = helper.configureHOCRenderer(
       PaymentDisplay,
       InnerPaymentDisplay,
-      {
-        drawer: {
-          drawerOpen:  true,
-          drawerState: PAYMENT,
-          drawerMeta:  {
-            applicationId: application.id
-          }
-        },
-        entities: {
-          applicationDetail: {
-            [application.id]: application
-          }
-        }
-      }
+      {},
+      { application: application }
     )
   })
 
@@ -45,9 +32,7 @@ describe("PaymentDisplay", () => {
   })
 
   it("renders nothing if there is no application (yet)", async () => {
-    const { inner } = await renderPage({
-      entities: { applicationDetail: null }
-    })
+    const { inner } = await renderPage({}, { application: null })
     assert.isNull(inner.html())
   })
 

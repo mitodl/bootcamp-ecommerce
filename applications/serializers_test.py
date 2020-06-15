@@ -32,7 +32,6 @@ from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from klasses.serializers import BootcampRunSerializer
 from main.test_utils import serializer_date_format
-from main.utils import now_in_utc
 from profiles.factories import UserFactory
 from profiles.serializers import UserSerializer
 
@@ -44,7 +43,7 @@ pytestmark = pytest.mark.django_db
 def app_data():
     """Fixture for a bootcamp application and related data"""
     bootcamp_run = BootcampRunFactory.create()
-    InstallmentFactory.create(bootcamp_run=bootcamp_run)
+    installment = InstallmentFactory.create(bootcamp_run=bootcamp_run, amount=0)
     run_steps = BootcampRunApplicationStepFactory.create_batch(
         2, bootcamp_run=bootcamp_run
     )
@@ -53,7 +52,9 @@ def app_data():
         "resume.txt", b"these are the file contents!"
     )
     application.save()
-    return SimpleNamespace(application=application, run_steps=run_steps)
+    return SimpleNamespace(
+        application=application, installment=installment, run_steps=run_steps
+    )
 
 
 @pytest.mark.parametrize("has_resume", [True, False])
@@ -77,10 +78,9 @@ def test_application_detail_serializer(app_data, has_resume):
         else None,
         "linkedin_url": application.linkedin_url,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
-        "payment_deadline": serializer_date_format(
-            application.bootcamp_run.installment_set.first().deadline
-        ),
+        "payment_deadline": serializer_date_format(app_data.installment.deadline),
         "created_on": serializer_date_format(application.created_on),
+        "is_paid_in_full": True,
         "run_application_steps": BootcampRunStepSerializer(
             instance=app_data.run_steps, many=True
         ).data,
@@ -96,14 +96,14 @@ def test_app_detail_serializer_deadline(app_data):
     bootcamp run installments
     """
     application = app_data.application
-    application.bootcamp_run.installment_set.all().delete()
-    installments = InstallmentFactory.create_batch(
-        2,
+    later_installment = InstallmentFactory.create(
         bootcamp_run=application.bootcamp_run,
-        deadline=factory.Iterator([now_in_utc(), (now_in_utc() + timedelta(days=1))]),
+        deadline=(app_data.installment.deadline + timedelta(days=1)),
     )
     data = BootcampApplicationDetailSerializer(instance=application).data
-    assert data["payment_deadline"] == serializer_date_format(installments[1].deadline)
+    assert data["payment_deadline"] == serializer_date_format(
+        later_installment.deadline
+    )
 
 
 def test_application_detail_serializer_nested(app_data):

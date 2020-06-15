@@ -1,4 +1,12 @@
 // @flow
+import {
+  SUBMISSION_VIDEO,
+  SUBMISSION_QUIZ,
+  REVIEW_STATUS_APPROVED,
+  REVIEW_STATUS_REJECTED,
+  REVIEW_STATUS_PENDING
+} from "../constants"
+
 import type { BootcampRun } from "./bootcampTypes"
 
 export type Application = {
@@ -8,18 +16,22 @@ export type Application = {
   bootcamp_run: BootcampRun
 }
 
+export type ValidAppStepType = SUBMISSION_VIDEO | SUBMISSION_QUIZ
+
 export type ApplicationRunStep = {
   id:              number,
   due_date:        string,
   step_order:      number,
-  submission_type: string
+  submission_type: ValidAppStepType
 }
+
+export type ValidReviewStatusType = REVIEW_STATUS_APPROVED | REVIEW_STATUS_REJECTED | REVIEW_STATUS_PENDING
 
 export type ApplicationSubmission = {
   id:                      number,
   run_application_step_id: number,
   submitted_date:          ?string,
-  review_status:           ?string,
+  review_status:           ValidReviewStatusType,
   review_status_date:      ?string
 }
 
@@ -42,6 +54,7 @@ export type ApplicationDetail = {
   linkedin_url:          ?string,
   resume_upload_date:    ?string,
   payment_deadline:      string,
+  is_paid_in_full:       boolean,
   run_application_steps: Array<ApplicationRunStep>,
   submissions:           Array<ApplicationSubmission>,
   orders:                Array<ApplicationOrder>,
