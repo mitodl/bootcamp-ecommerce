@@ -29,12 +29,31 @@
   }
 }
 
-a.btn {
-  display: inline-block;
-  text-decoration: none;
+.btn-red.btn-inverse {
+  color: $button-red;
+  border-color: $button-red;
+  background-color: $white;
+  border-width: 2px;
+  font-weight: 600;
 
-  &.large-cta {
-    line-height: 60px;
+  &:disabled, &[disabled] {
+    color: $med-dark-gray;
+    border-color: $med-dark-gray;
+  }
+}
+
+a.btn-text {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a.btn-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: $link-blue;
+
+  &:hover {
+    color: $link-blue;
   }
 }
 
@@ -90,6 +109,39 @@ input[type=number] {
   }
 }
 // sass-lint:enable no-vendor-prefixes
+
+.dropdown.standard-select {
+  .dropdown-toggle {
+    background-color: $white;
+    color: $default-text-color;
+    border: 1px solid $black;
+  }
+}
+
+.dropdown.full-width {
+  position: relative;
+  white-space: normal;
+
+  .dropdown-toggle {
+    width: 100%;
+    padding-right: 24px;
+  }
+
+  .dropdown-toggle::after {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    margin-top: -2.5px;
+  }
+
+  .dropdown-menu {
+    width: 100%;
+
+    .dropdown-item:first-of-type {
+      margin-top: 0;
+    }
+  }
+}
 
 // Adapted from http://codepen.io/fil_dev/pen/oZNXzw
 .styled-select-container {

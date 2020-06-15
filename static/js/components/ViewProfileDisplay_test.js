@@ -32,14 +32,14 @@ describe("ViewProfileDisplay", () => {
     assert.isTrue(wrapper.find(".profile-btn").exists())
     assert.isTrue(
       wrapper
-        .find(".auth-page")
+        .find(".view-profile")
         .text()
         // $FlowFixMe: user.legal_address is not null
         .includes(user.legal_address.street_address[0])
     )
     assert.isTrue(
       wrapper
-        .find(".auth-page")
+        .find(".view-profile")
         .text()
         // $FlowFixMe: user.profile is not null
         .includes(user.profile.company)
@@ -55,7 +55,7 @@ describe("ViewProfileDisplay", () => {
     assert.isFalse(wrapper.find(".submit-row").exists())
     assert.isTrue(
       wrapper
-        .find(".auth-page")
+        .find(".view-profile")
         .text()
         .includes("You must be logged in to view your profile.")
     )

@@ -1,10 +1,10 @@
 // @flow
 import casual from "casual-browserify"
+import moment from "moment"
 
 import { incrementer } from "../util/util"
 
 import type { AnonymousUser, LoggedInUser } from "../flow/authTypes"
-import moment from "moment"
 
 const incr = incrementer()
 
@@ -54,6 +54,8 @@ export const makeCompleteUser = (username: ?string): LoggedInUser => {
   const fakeUser = makeUser(username)
   // $FlowFixMe: Profile can't be undefined
   fakeUser.profile.name = moment().format()
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.updated_on = moment().format()
   // $FlowFixMe: Profile can't be undefined
   fakeUser.profile.is_complete = true
   return fakeUser

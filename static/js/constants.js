@@ -147,8 +147,10 @@ export const RECEIPT_PAGE_TITLE = "Receipt"
 
 export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard"
 
+export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"
+
+// Drawer content types
 export const PROFILE_VIEW = "profileView"
 export const PROFILE_EDIT = "profileEdit"
 export const PAYMENT = "payment"
-
-export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"
+export const NEW_APPLICATION = "newApplication"

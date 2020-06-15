@@ -51,4 +51,4 @@ export type PayableBootcampRun = {
   installments: Array<Installment>
 }
 
-export type BootcampRunsResponse = Array<PayableBootcampRun>
+export type PayableRunsResponse = Array<PayableBootcampRun>

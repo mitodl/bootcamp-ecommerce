@@ -64,8 +64,8 @@ export const PaymentDisplay = (props: Props) => {
   const cost = application.price
 
   return (
-    <div className="container">
-      <div className="payment-drawer auth-card">
+    <div className="container p-0">
+      <div className="payment-drawer">
         <h2 className="drawer-title">Make Payment</h2>
         <div className="bootcamp">
           <div className="bootcamp-title">{run.bootcamp.title}</div>

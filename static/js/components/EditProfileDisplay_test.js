@@ -34,7 +34,7 @@ describe("EditProfileDisplay", () => {
     assert.isTrue(wrapper.find("EditProfileForm").exists())
     assert.isFalse(
       wrapper
-        .find(".auth-page")
+        .find(".edit-profile")
         .text()
         .includes("You must be logged in to edit your profile.")
     )
@@ -48,7 +48,7 @@ describe("EditProfileDisplay", () => {
     const { wrapper } = await renderPage()
     assert.isTrue(
       wrapper
-        .find(".auth-page")
+        .find(".edit-profile")
         .text()
         .includes("You must be logged in to edit your profile.")
     )

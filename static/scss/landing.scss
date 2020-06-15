@@ -23,3 +23,12 @@
     min-height: none;
   }
 }
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+
+  &.large-cta {
+    line-height: 60px;
+  }
+}

@@ -31,7 +31,8 @@ import {
   APPLICATIONS_DASHBOARD_PAGE_TITLE,
   SUBMISSION_VIDEO,
   SUBMISSION_QUIZ,
-  REVIEW_STATUS_APPROVED
+  REVIEW_STATUS_APPROVED,
+  NEW_APPLICATION
 } from "../../constants"
 
 import type {
@@ -85,6 +86,18 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         ...this.state.collapseVisible,
         [applicationId]: !this.state.collapseVisible[applicationId]
       }
+    })
+  }
+
+  onNewApplicationClick = (): void => {
+    const { applications, openDrawer } = this.props
+
+    const appliedRunIds = applications.map(
+      (application: Application) => application.bootcamp_run.id
+    )
+    openDrawer({
+      type: NEW_APPLICATION,
+      meta: { appliedRunIds }
     })
   }
 
@@ -262,18 +275,64 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
   render() {
     const { currentUser, applications } = this.props
 
-    return applications && currentUser ? (
+    if (!applications || !currentUser) {
+      return null
+    }
+
+    const hasApplications = applications.length > 0
+
+    return (
       <div className="container applications-page">
         <MetaTags>
           <title>{formatTitle(APPLICATIONS_DASHBOARD_PAGE_TITLE)}</title>
         </MetaTags>
-        <h1>{APPLICATIONS_DASHBOARD_PAGE_TITLE}</h1>
-        {currentUser.profile && currentUser.profile.name ? (
-          <h2 className="name">{currentUser.profile.name}</h2>
-        ) : null}
-        {applications && applications.map(this.renderApplicationCard)}
+        <div className="row justify-content-between">
+          <div
+            className={`col-12 ${hasApplications ? "col-md-7 col-lg-8" : ""}`}
+          >
+            <h1 className="m-0">{APPLICATIONS_DASHBOARD_PAGE_TITLE}</h1>
+            {currentUser.profile && currentUser.profile.name ? (
+              <h2 className="mt-4 mb-0 name">{currentUser.profile.name}</h2>
+            ) : null}
+          </div>
+          {hasApplications && (
+            <div className="col-12 col-md-5 col-lg-4 mt-4 mt-md-0 text-md-right">
+              <div className="mb-1 caption">
+                Interested in another bootcamp?
+              </div>
+              <button
+                className="btn btn-red btn-inverse new-application-btn"
+                onClick={this.onNewApplicationClick}
+              >
+                Select Bootcamp
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="row mt-4">
+          <div className="col-12">
+            {hasApplications ? (
+              applications.map(this.renderApplicationCard)
+            ) : (
+              <React.Fragment>
+                <p>
+                  Thank you for registering and welcome to MIT Bootcamps.
+                  <br />
+                  Please click the button below to select the bootcamp you wish
+                  to apply to.
+                </p>
+                <button
+                  className="btn btn-red btn-inverse new-application-btn"
+                  onClick={this.onNewApplicationClick}
+                >
+                  Select Bootcamp
+                </button>
+              </React.Fragment>
+            )}
+          </div>
+        </div>
       </div>
-    ) : null
+    )
   }
 }
 
