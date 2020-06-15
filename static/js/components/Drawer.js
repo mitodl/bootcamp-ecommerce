@@ -8,15 +8,21 @@ import * as R from "ramda"
 
 import { drawerSelector } from "../lib/selectors"
 import { setDrawerOpen } from "../reducers/drawer"
-import { PAYMENT, PROFILE_EDIT, PROFILE_VIEW } from "../constants"
+import {
+  NEW_APPLICATION,
+  PAYMENT,
+  PROFILE_EDIT,
+  PROFILE_VIEW
+} from "../constants"
 
 import EditProfileDisplay from "./EditProfileDisplay"
 import ViewProfileDisplay from "./ViewProfileDisplay"
 import PaymentDisplay from "./PaymentDisplay"
+import NewApplication from "./NewApplication"
 
 const renderDrawerContents = (
   drawerState: string,
-  drawerMeta?: Object
+  drawerMeta: ?Object
 ): ?React$Element<*> => {
   switch (drawerState) {
   case PROFILE_EDIT:
@@ -25,6 +31,10 @@ const renderDrawerContents = (
     return <ViewProfileDisplay />
   case PAYMENT:
     return <PaymentDisplay application={R.prop("application", drawerMeta)} />
+  case NEW_APPLICATION:
+    return (
+      <NewApplication appliedRunIds={R.prop("appliedRunIds", drawerMeta)} />
+    )
   default:
     return null
   }

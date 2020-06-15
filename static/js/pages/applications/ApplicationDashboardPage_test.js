@@ -11,6 +11,7 @@ import ApplicationDashboardPage, {
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import {
   APP_STATE_TEXT_MAP,
+  NEW_APPLICATION,
   SUBMISSION_QUIZ,
   SUBMISSION_VIDEO
 } from "../../constants"
@@ -123,6 +124,24 @@ describe("ApplicationDashboardPage", () => {
         .find("img")
         .exists()
     )
+  })
+
+  it("shows a button to open the new application drawer", async () => {
+    const openDrawerStub = sinon.spy()
+    const { wrapper, store } = await renderPage({ openDrawer: openDrawerStub })
+
+    const newAppButton = wrapper.find("button.new-application-btn")
+    await newAppButton.simulate("click")
+    await wait()
+
+    const appliedRunIds = fakeApplications.map(
+      (application: Application) => application.bootcamp_run.id
+    )
+    assert.deepEqual(store.getState().drawer, {
+      drawerState: NEW_APPLICATION,
+      drawerOpen:  true,
+      drawerMeta:  { appliedRunIds: appliedRunIds }
+    })
   })
 
   it("loads detailed application data when the detail section is expanded", async () => {

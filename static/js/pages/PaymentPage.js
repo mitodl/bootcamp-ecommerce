@@ -29,23 +29,25 @@ import type { InputEvent } from "../flow/events"
 import type { PaymentPayload, PaymentResponse } from "../flow/ecommerceTypes"
 import type {
   PayableBootcampRun,
-  BootcampRunsResponse
+  PayableRunsResponse
 } from "../flow/bootcampTypes"
 import type { CurrentUser } from "../flow/authTypes"
+import {
+  payableRunsEntityKey,
+  payableRunsQueryKey
+} from "../lib/queries/bootcamps"
 
 type Props = {
   ui: UIState,
   clearUI: () => void,
-  fetchBootcampRuns: (
-    runKey: string
-  ) => Promise<{ body: BootcampRunsResponse }>,
+  fetchPayableRuns: (runKey: string) => Promise<{ body: PayableRunsResponse }>,
   hideDialog: (dialogKey: string) => void,
   sendPayment: (payload: PaymentPayload) => Promise<{ body: PaymentResponse }>,
-  bootcampRuns: BootcampRunsResponse,
-  bootcampRunsFinished: boolean,
-  bootcampRunsProcessing: boolean,
+  payableRuns: PayableRunsResponse,
+  payableRunsFinished: boolean,
+  payableRunsProcessing: boolean,
   paymentProcessing: boolean,
-  payableBootcampRunsData: BootcampRunsResponse,
+  payableBootcampRunsData: PayableRunsResponse,
   selectedBootcampRun: ?PayableBootcampRun,
   setPaymentAmount: (amount: string) => void,
   setSelectedBootcampRunKey: (runKey: number) => void,
@@ -57,7 +59,7 @@ type Props = {
 
 export class PaymentPage extends React.Component<Props> {
   fetchAPIdata() {
-    this.fetchBootcampRuns()
+    this.fetchPayableRuns()
   }
 
   componentDidMount() {
@@ -68,7 +70,7 @@ export class PaymentPage extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
     // This is meant to be an identity check, not a deep equality check. This shows whether we received an update
     // for enrollments based on the forceReload
-    if (prevProps.bootcampRuns !== this.props.bootcampRuns) {
+    if (prevProps.payableRuns !== this.props.payableRuns) {
       this.handleOrderStatus()
     }
   }
@@ -78,15 +80,11 @@ export class PaymentPage extends React.Component<Props> {
     clearUI()
   }
 
-  fetchBootcampRuns() {
-    const {
-      fetchBootcampRuns,
-      bootcampRunsProcessing,
-      currentUser
-    } = this.props
-    if (!bootcampRunsProcessing && currentUser) {
+  fetchPayableRuns() {
+    const { fetchPayableRuns, payableRunsProcessing, currentUser } = this.props
+    if (!payableRunsProcessing && currentUser) {
       // $FlowFixMe: an anon user shouldn't end up here
-      fetchBootcampRuns(currentUser.username)
+      fetchPayableRuns(currentUser.username)
     }
   }
 
@@ -130,9 +128,9 @@ export class PaymentPage extends React.Component<Props> {
   )
 
   handleOrderStatus = (): void => {
-    const { bootcampRuns, bootcampRunsFinished } = this.props
+    const { payableRuns, payableRunsFinished } = this.props
     let query = new URI().query(true)
-    if (!bootcampRunsFinished) {
+    if (!payableRunsFinished) {
       // wait until we have access to the bootcamp runs
       return
     }
@@ -145,7 +143,7 @@ export class PaymentPage extends React.Component<Props> {
     const status = query.status
     if (status === "receipt") {
       const orderId = parseInt(query.order)
-      const bootcampRun = getRunWithFulfilledOrder(bootcampRuns, orderId)
+      const bootcampRun = getRunWithFulfilledOrder(payableRuns, orderId)
       if (bootcampRun) {
         this.handleOrderSuccess()
       } else {
@@ -172,7 +170,7 @@ export class PaymentPage extends React.Component<Props> {
 
   handleOrderPending = (): void => {
     const {
-      fetchBootcampRuns,
+      fetchPayableRuns,
       setTimeoutActive,
       setToastMessage,
       currentUser
@@ -185,7 +183,7 @@ export class PaymentPage extends React.Component<Props> {
         const now = moment()
         // $FlowFixMe: an anon user won't end up here
         if (now.isBefore(deadline) && currentUser.username) {
-          fetchBootcampRuns(currentUser.username)
+          fetchPayableRuns(currentUser.username)
         } else {
           setToastMessage({
             message: "Order was not processed",
@@ -265,8 +263,8 @@ export class PaymentPage extends React.Component<Props> {
       hideDialog,
       ui,
       paymentProcessing,
-      bootcampRuns,
-      bootcampRunsFinished,
+      payableRuns,
+      payableRunsFinished,
       payableBootcampRunsData,
       selectedBootcampRun,
       showDialog,
@@ -276,7 +274,7 @@ export class PaymentPage extends React.Component<Props> {
     let renderedPayment = null
     let renderedPaymentHistory = null
 
-    if (bootcampRunsFinished && currentUser) {
+    if (payableRunsFinished && currentUser) {
       renderedPayment = (
         <Payment
           hideDialog={hideDialog}
@@ -293,9 +291,7 @@ export class PaymentPage extends React.Component<Props> {
         />
       )
 
-      const runDataWithPayments = this.getRunDataWithPayments(
-        bootcampRuns || []
-      )
+      const runDataWithPayments = this.getRunDataWithPayments(payableRuns || [])
       renderedPaymentHistory =
         runDataWithPayments.length > 0 ? (
           <div className="body-row">
@@ -318,7 +314,7 @@ export class PaymentPage extends React.Component<Props> {
 
 const withPayableBootcampRuns = state => ({
   ...state,
-  payableBootcampRunsData: state.bootcampRuns || []
+  payableBootcampRunsData: state.payableRuns || []
 })
 
 const withDerivedSelectedRun = state => {
@@ -350,15 +346,15 @@ const mapStateToProps = R.compose(
       ["queries", "payment", "isPending"],
       state
     ),
-    bootcampRuns:           R.pathOr([], ["entities", "bootcampRuns"], state),
-    bootcampRunsProcessing: R.pathOr(
+    payableRuns:           R.pathOr([], ["entities", payableRunsEntityKey], state),
+    payableRunsProcessing: R.pathOr(
       false,
-      ["queries", "bootcampRuns", "isPending"],
+      ["queries", payableRunsQueryKey, "isPending"],
       state
     ),
-    bootcampRunsFinished: R.pathOr(
+    payableRunsFinished: R.pathOr(
       false,
-      ["queries", "bootcampRuns", "isFinished"],
+      ["queries", payableRunsQueryKey, "isFinished"],
       state
     ),
     ui:          state.ui,
@@ -367,9 +363,11 @@ const mapStateToProps = R.compose(
 )
 
 const mapDispatchToProps = dispatch => ({
-  clearUI:           () => dispatch(clearUI()),
-  fetchBootcampRuns: (username: string) =>
-    dispatch(requestAsync(queries.bootcamps.bootcampRunQuery(username))),
+  clearUI:          () => dispatch(clearUI()),
+  fetchPayableRuns: (username: string) =>
+    dispatch(
+      requestAsync(queries.bootcamps.payableBootcampRunsQuery(username))
+    ),
   hideDialog:  (dialogKey: string) => dispatch(hideDialog(dialogKey)),
   sendPayment: (payload: PaymentPayload) =>
     dispatch(mutateAsync(queries.ecommerce.paymentMutation(payload))),

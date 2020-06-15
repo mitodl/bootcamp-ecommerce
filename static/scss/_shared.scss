@@ -21,18 +21,6 @@ h3 {
   font-weight: 600;
 }
 
-.desc {
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 300;
-  color: $default-text-color;
-
-  @include breakpoint(phone) {
-    font-size: 20px;
-    line-height: 25px;
-  }
-}
-
 h3.section-header {
   display: flex;
   align-items: center;
@@ -53,19 +41,25 @@ h3.section-header {
   }
 }
 
-a.btn-text {
-  cursor: pointer;
-  text-decoration: none;
+.desc {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 300;
+  color: $default-text-color;
+
+  @include breakpoint(phone) {
+    font-size: 20px;
+    line-height: 25px;
+  }
 }
 
-a.btn-link {
-  cursor: pointer;
-  text-decoration: none;
-  color: $link-blue;
+p, .std-text {
+  font-size: 16px;
+  letter-spacing: 1.73px;
+}
 
-  &:hover {
-    color: $link-blue;
-  }
+.caption {
+  font-size: 12px;
 }
 
 .text-info-page {

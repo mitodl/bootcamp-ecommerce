@@ -3,7 +3,12 @@ import { assert } from "chai"
 import { Drawer as RMWCDrawer } from "@rmwc/drawer"
 
 import Drawer from "./Drawer"
-import { PAYMENT, PROFILE_EDIT, PROFILE_VIEW } from "../constants"
+import {
+  NEW_APPLICATION,
+  PAYMENT,
+  PROFILE_EDIT,
+  PROFILE_VIEW
+} from "../constants"
 
 import IntegrationTestHelper from "../util/integration_test_helper"
 import { setDrawerOpen, setDrawerState, openDrawer } from "../reducers/drawer"
@@ -14,6 +19,13 @@ describe("Drawer", () => {
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
+    // Mock API response for bootcamp runs. NewApplication requests this when loading
+    helper.handleRequestStub
+      .withArgs("/api/bootcampruns/?available=true")
+      .returns({
+        status: 200,
+        body:   []
+      })
     render = helper.configureReduxQueryRenderer(Drawer)
   })
 
@@ -25,7 +37,8 @@ describe("Drawer", () => {
   ;[
     [PROFILE_EDIT, "EditProfileDisplay"],
     [PROFILE_VIEW, "ViewProfileDisplay"],
-    [PAYMENT, "PaymentDisplay"]
+    [PAYMENT, "PaymentDisplay"],
+    [NEW_APPLICATION, "NewApplication"]
   ].forEach(([drawerType, expComponent]) => {
     it(`should render a drawer component with a ${expComponent} child`, async () => {
       const { wrapper } = await render({}, [

@@ -15,7 +15,7 @@ describe("PaymentPage", () => {
   const paymentInputSelector = 'input[id="payment-amount"]'
   const paymentBtnSelector = "button.large-cta"
 
-  let helper, bootcampRunsUrl, fakeRuns, renderPage, user
+  let helper, payableRunsUrl, fakeRuns, renderPage, user
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
@@ -24,7 +24,7 @@ describe("PaymentPage", () => {
       .withArgs("/api/v0/me/")
       .returns({ status: 200, body: user })
 
-    bootcampRunsUrl = `/api/v0/bootcamps/${user.username}/`
+    payableRunsUrl = `/api/v0/bootcamps/${user.username}/`
     fakeRuns = generateFakePayableRuns(3, {
       hasInstallment: true,
       hasPayment:     true
@@ -35,12 +35,12 @@ describe("PaymentPage", () => {
       InnerPaymentPage,
       {
         entities: {
-          bootcampRuns: fakeRuns,
-          payment:      null,
-          currentUser:  user
+          payableRuns: fakeRuns,
+          payment:     null,
+          currentUser: user
         },
         queries: {
-          bootcampRuns: {
+          payableRuns: {
             isPending:  false,
             isFinished: true
           },
@@ -303,12 +303,12 @@ describe("PaymentPage", () => {
         window.location = `/pay?status=receipt&order=missing`
         await renderPage()
         assert.equal(
-          helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
+          helper.handleRequestStub.withArgs(payableRunsUrl).callCount,
           1
         )
         clock.tick(3501)
         assert.equal(
-          helper.handleRequestStub.withArgs(bootcampRunsUrl).callCount,
+          helper.handleRequestStub.withArgs(payableRunsUrl).callCount,
           2
         )
       })

@@ -39,7 +39,7 @@ export function ViewProfileDisplay(props: Props) {
   const { currentUser, countries, updateDrawer } = props
 
   return countries && currentUser ? (
-    <div className="container auth-page registration-page">
+    <div className="container p-0 view-profile">
       <MetaTags>
         <title>{formatTitle(VIEW_PROFILE_PAGE_TITLE)}</title>
       </MetaTags>
