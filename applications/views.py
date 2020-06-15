@@ -1,7 +1,7 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
-from django.db.models import Count, F
+from django.db.models import Count, Subquery, OuterRef, IntegerField
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
@@ -21,7 +21,7 @@ from applications.serializers import (
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import BootcampApplication, ApplicationStepSubmission
-from klasses.models import BootcampRun
+from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 
 
@@ -111,17 +111,20 @@ class ReviewSubmissionPagination(LimitOffsetPagination):
         """Return a dictionary of facets"""
         statuses = (
             queryset.values("review_status")
-            .order_by("review_status")
             .annotate(count=Count("review_status"))
+            .order_by("count")
+        )
+        qs = (
+            queryset.values("bootcamp_application__bootcamp_run__bootcamp")
+            .filter(bootcamp_application__bootcamp_run__bootcamp=OuterRef("pk"))
+            .order_by()
+            .annotate(count=Count("*"))
+            .values("count")
         )
         bootcamps = (
-            queryset.order_by("bootcamp_application__bootcamp_run__bootcamp__id")
-            .annotate(
-                bootcamp_id=F("bootcamp_application__bootcamp_run__bootcamp__id"),
-                bootcamp_title=F("bootcamp_application__bootcamp_run__bootcamp__title"),
-                count=Count("bootcamp_application"),
-            )
-            .values("bootcamp_id", "bootcamp_title", "count")
+            Bootcamp.objects.values("id", "title")
+            .annotate(count=Subquery(qs, output_field=IntegerField()))
+            .filter(count__gte=1)
         )
         return {"review_statuses": statuses, "bootcamps": bootcamps}
 
