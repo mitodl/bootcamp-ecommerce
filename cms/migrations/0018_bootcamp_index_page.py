@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
-        ("cms", "0017_home_page_product_global_section"),
+        ("cms", "0017_home_page_alumni_section"),
     ]
 
     operations = [

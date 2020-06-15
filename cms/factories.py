@@ -121,8 +121,8 @@ class HomePageFactory(wagtail_factories.PageFactory):
         return obj
 
 
-class GlobalAlumniPageFactory(wagtail_factories.PageFactory):
-    """GlobalAlumniPageFactory factory class"""
+class HomeAlumniPageFactory(wagtail_factories.PageFactory):
+    """HomeAlumniPageFactory factory class"""
 
     banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
@@ -131,4 +131,4 @@ class GlobalAlumniPageFactory(wagtail_factories.PageFactory):
     highlight_name = highlight_quote = factory.fuzzy.FuzzyText(prefix="name ")
 
     class Meta:
-        model = models.GlobalAlumniPage
+        model = models.HomeAlumniPage
