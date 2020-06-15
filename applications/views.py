@@ -1,6 +1,7 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
+import django_fsm
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
 from django.shortcuts import get_object_or_404
@@ -33,6 +34,7 @@ from jobma.api import create_interview_in_jobma
 from jobma.models import Interview, Job
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
+from main.utils import serializer_date_format
 
 
 class BootcampApplicationViewset(
@@ -177,6 +179,7 @@ class UploadResumeView(GenericAPIView):
     lookup_field = "pk"
     owner_field = "user"
     queryset = BootcampApplication.objects.all()
+    serializer_class = BootcampApplicationDetailSerializer
 
     def post(self, request, *args, **kwargs):
         """
@@ -185,14 +188,29 @@ class UploadResumeView(GenericAPIView):
         application = self.get_object()
         linkedin_url = request.data.get("linkedin_url")
         resume_file = request.FILES.get("file")
-        if linkedin_url is None and resume_file is None:
+        if linkedin_url is None and resume_file is None and not application.resume_file:
+
             raise ValidationError("At least one form of resume is required.")
 
-        application.add_resume(resume_file=resume_file, linkedin_url=linkedin_url)
-        # when state transition happens need to save manually
-        application.save()
+        try:
+            application.add_resume(resume_file=resume_file, linkedin_url=linkedin_url)
+            # when state transition happens need to save manually
+            application.save()
+        except django_fsm.TransitionNotAllowed:
+            return Response(
+                {"errors": "Cannot upload a resume in this application state"}
+            )
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            {
+                "resume_filepath": application.resume_file.name,
+                "linkedin_url": application.linkedin_url,
+                "resume_upload_date": serializer_date_format(
+                    application.resume_upload_date
+                ),
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class VideoInterviewsView(GenericAPIView):

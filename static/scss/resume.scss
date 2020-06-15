@@ -1,0 +1,32 @@
+
+.margin-top {
+  margin-top: 50px;
+}
+
+.drawer-wrapper {
+
+  p {
+    color: $med-dark-gray;
+    font-weight: 300;
+    font-size: 14px;
+  }
+
+  .input-label {
+    text-align: center;
+    color: black;
+
+    p {
+      margin-bottom: 5px;
+    }
+  }
+
+  .example-input {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  .uploaded-resume {
+    margin-top: 3px;
+    font-weight: 500;
+  }
+}

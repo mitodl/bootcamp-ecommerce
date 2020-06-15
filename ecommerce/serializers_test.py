@@ -1,7 +1,7 @@
 """Tests for serializers"""
 import pytest
 
-from main.test_utils import serializer_date_format
+from main.utils import serializer_date_format
 from ecommerce.factories import LineFactory, BootcampApplicationFactory, ReceiptFactory
 from ecommerce.models import Order
 from ecommerce.serializers import (

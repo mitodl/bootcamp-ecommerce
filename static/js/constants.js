@@ -175,6 +175,11 @@ export const PROFILE_EDIT = "profileEdit"
 export const PAYMENT = "payment"
 export const NEW_APPLICATION = "newApplication"
 export const TAKE_VIDEO_INTERVIEW = "TAKE_VIDEO_INTERVIEW"
+export const RESUME_UPLOAD = "resumeUpload"
 
 export const JOBMA = "Jobma"
 export const JOBMA_SITE = "jobma.com"
+
+export const ALLOWED_FILE_EXTENTIONS = {
+  pdf: "application/pdf"
+}

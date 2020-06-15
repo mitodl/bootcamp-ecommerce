@@ -72,14 +72,14 @@ export type ApplicationDetail = {
 }
 
 export type SubmissionReview = {
-  id:                      number,
+  id: number,
   run_application_step_id: number,
-  submitted_date:          ?string,
-  review_status:           ?string,
-  review_status_date:      ?string,
-  bootcamp_application:    Application,
-  learner:                 User,
-  interview_url:           ?string
+  submitted_date: ?string,
+  review_status: ?string,
+  review_status_date: ?string,
+  bootcamp_application: Application,
+  learner: User,
+  interview_url: ?string
 }
 
 export type ApplicationDetailState = {
