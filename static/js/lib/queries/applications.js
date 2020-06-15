@@ -9,7 +9,8 @@ import type {
   ApplicationDetail,
   ApplicationDetailState,
   SubmissionReview,
-  SubmissionReviewState
+  SubmissionReviewState,
+  VideoInterviewResponse
 } from "../../flow/applicationTypes"
 
 const DEFAULT_NON_GET_OPTIONS = {
@@ -126,5 +127,22 @@ export default {
         "X-CSRFTOKEN": getCookie("csrftoken")
       }
     }
+  }),
+  createVideoInterviewQuery: (applicationId: string) => ({
+    url:       `/api/applications/${applicationId}/video-interviews/`,
+    transform: (json: ?VideoInterviewResponse) => ({
+      bootcampRuns: json
+    }),
+    update: {
+      bootcampRuns: (
+        prev: VideoInterviewResponse,
+        next: VideoInterviewResponse
+      ) => next
+    },
+    options: {
+      ...DEFAULT_NON_GET_OPTIONS,
+      method: "POST"
+    },
+    force: true
   })
 }

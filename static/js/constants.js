@@ -130,6 +130,9 @@ export const REVIEW_STATUS_TEXT_MAP = {
   REVIEW_STATUS_WAITLISTED: REVIEW_STATUS_WAITLISTED
 }
 
+export const SUBMISSION_STATUS_PENDING = "pending"
+export const SUBMISSION_STATUS_SUBMITTED = "submitted"
+
 // HTML title for different pages
 export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
 export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE
@@ -166,3 +169,4 @@ export const PROFILE_VIEW = "profileView"
 export const PROFILE_EDIT = "profileEdit"
 export const PAYMENT = "payment"
 export const NEW_APPLICATION = "newApplication"
+export const TAKE_VIDEO_INTERVIEW = "TAKE_VIDEO_INTERVIEW"

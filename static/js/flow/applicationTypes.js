@@ -2,6 +2,8 @@
 import {
   SUBMISSION_VIDEO,
   SUBMISSION_QUIZ,
+  SUBMISSION_STATUS_PENDING,
+  SUBMISSION_STATUS_SUBMITTED,
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_REJECTED,
   REVIEW_STATUS_PENDING
@@ -28,13 +30,16 @@ export type ApplicationRunStep = {
 }
 
 export type ValidReviewStatusType = REVIEW_STATUS_APPROVED | REVIEW_STATUS_REJECTED | REVIEW_STATUS_PENDING
+export type ValidSubmissionStatusType = SUBMISSION_STATUS_PENDING | SUBMISSION_STATUS_SUBMITTED
 
 export type ApplicationSubmission = {
   id:                      number,
   run_application_step_id: number,
   submitted_date:          ?string,
+  submission_status:       ValidSubmissionStatusType,
   review_status:           ValidReviewStatusType,
-  review_status_date:      ?string
+  review_status_date:      ?string,
+  interview_results_url:   ?string,
 }
 
 export type LegacyOrderPartial = {
@@ -81,6 +86,10 @@ export type ApplicationDetailState = {
   [string]: ApplicationDetail
 }
 
-export type SubmissionReviewState = {
+export type SubmissionReviewState ={
   [string]: SubmissionReview
+}
+
+export type VideoInterviewResponse = {
+  interview_link: string,
 }

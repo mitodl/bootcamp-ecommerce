@@ -200,5 +200,16 @@ class Profile(TimestampedModel):
             )
         )
 
+    @property
+    def first_and_last_names(self):
+        name = self.name or ""
+        names = name.split(maxsplit=1)
+        if len(names) == 0:
+            return "", ""
+        elif len(names) == 1:
+            return names[0], ""
+        else:
+            return names
+
     def __str__(self):
         return "Profile for user {}".format(self.user)

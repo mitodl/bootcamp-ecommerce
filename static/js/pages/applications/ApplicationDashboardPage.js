@@ -33,6 +33,7 @@ import {
   APPLICATIONS_DASHBOARD_PAGE_TITLE,
   SUBMISSION_VIDEO,
   SUBMISSION_QUIZ,
+  SUBMISSION_STATUS_SUBMITTED,
   REVIEW_STATUS_APPROVED,
   NEW_APPLICATION
 } from "../../constants"
@@ -161,7 +162,10 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         // only be able to submit something if their previous submission was approved.
         const stepReady =
           stepFulfilled === undefined ? resumeFulfilled : stepFulfilled
-        stepFulfilled = appStepSubmissions[step.id] !== undefined
+        stepFulfilled =
+          appStepSubmissions[step.id] !== undefined &&
+          appStepSubmissions[step.id].submission_status ===
+            SUBMISSION_STATUS_SUBMITTED
         submissionApproved =
           !!appStepSubmissions[step.id] &&
           appStepSubmissions[step.id].review_status === REVIEW_STATUS_APPROVED
@@ -176,6 +180,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
             step={step}
             submission={appStepSubmissions[step.id]}
             key={`submission-${step.step_order}`}
+            applicationDetail={applicationDetail}
           />,
           <ReviewDetail
             ready={true}
@@ -184,6 +189,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
             step={step}
             submission={appStepSubmissions[step.id]}
             key={`review-${step.step_order}`}
+            applicationDetail={applicationDetail}
           />
         ]
       }

@@ -1,12 +1,14 @@
 """
 URLs for bootcamp applications
 """
+from django.urls import path
 from django.conf.urls import url, include
 from rest_framework import routers
 
 from applications.views import (
     BootcampApplicationViewset,
     ReviewSubmissionViewSet,
+    VideoInterviewsView,
     UploadResumeView,
 )
 
@@ -22,5 +24,10 @@ urlpatterns = [
         r"^api/applications/(?P<pk>\d+)/resume/$",
         UploadResumeView.as_view(),
         name="upload-resume",
+    ),
+    path(
+        "api/applications/<int:pk>/video-interviews/",
+        VideoInterviewsView.as_view(),
+        name="take-video-interview",
     ),
 ]

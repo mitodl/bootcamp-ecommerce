@@ -39,16 +39,31 @@ class BootcampRunStepSerializer(serializers.ModelSerializer):
 class SubmissionSerializer(serializers.ModelSerializer):
     """ApplicationStepSubmission serializer"""
 
+    interview_results_url = serializers.SerializerMethodField()
+
+    def get_interview_results_url(self, submission):
+        content_object = submission.content_object
+        if isinstance(content_object, models.VideoInterviewSubmission):
+            return content_object.interview.results_url
+
     class Meta:
         model = models.ApplicationStepSubmission
         fields = [
             "id",
             "run_application_step_id",
             "submitted_date",
+            "submission_status",
             "review_status",
             "review_status_date",
+            "interview_results_url",
         ]
-        read_only_fields = ("submitted_date", "review_status", "review_status_date")
+        read_only_fields = [
+            "submitted_date",
+            "submission_status",
+            "review_status",
+            "review_status_date",
+            "interview_results_url",
+        ]
 
 
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):

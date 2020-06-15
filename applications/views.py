@@ -1,7 +1,9 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
-from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count, F, Subquery, OuterRef, IntegerField, Prefetch
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
@@ -13,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_serializer_extensions.views import SerializerExtensionsAPIViewMixin
 
+from applications.constants import SUBMISSION_VIDEO
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
@@ -20,8 +23,16 @@ from applications.serializers import (
 )
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
-from applications.models import BootcampApplication, ApplicationStepSubmission
+from applications.models import (
+    ApplicationStep,
+    ApplicationStepSubmission,
+    BootcampApplication,
+    BootcampRunApplicationStep,
+    VideoInterviewSubmission,
+)
 from ecommerce.models import Order
+from jobma.api import create_interview
+from jobma.models import Interview, Job
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 
@@ -184,3 +195,48 @@ class UploadResumeView(GenericAPIView):
         application.save()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class VideoInterviewsView(GenericAPIView):
+    """
+    Create an interview on Jobma, then redirect the user to it
+    """
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated, UserIsOwnerPermission)
+    lookup_field = "pk"
+    owner_field = "user"
+    queryset = BootcampApplication.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create the Interview, then POST to Jobma to create it there,
+        then return a URL for the user to go to
+        """
+        user = request.user
+        application = self.get_object()
+        job = get_object_or_404(Job, run=application.bootcamp_run)
+        interview, _ = Interview.objects.get_or_create(
+            applicant=user, job=job, defaults={}
+        )
+        interview_link = create_interview(interview)
+
+        # Assuming only one video submission step per bootcamp. TODO: is this a safe assumption?
+        step = ApplicationStep.objects.get(
+            bootcamp=interview.job.run.bootcamp, submission_type=SUBMISSION_VIDEO
+        )
+        run_step = BootcampRunApplicationStep.objects.get(
+            application_step=step, bootcamp_run=interview.job.run
+        )
+
+        video_interview_submission, _ = VideoInterviewSubmission.objects.get_or_create(
+            interview=interview
+        )
+        submission, _ = ApplicationStepSubmission.objects.get_or_create(
+            bootcamp_application=application,
+            run_application_step=run_step,
+            object_id=video_interview_submission.id,
+            content_type=ContentType.objects.get_for_model(video_interview_submission),
+        )
+
+        return Response(data={"interview_link": interview_link})

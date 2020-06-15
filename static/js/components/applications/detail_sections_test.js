@@ -95,10 +95,11 @@ describe("application detail section component", () => {
   })
 
   describe("VideoInterviewDetail", () => {
-    let step, submission
+    let step, submission, application
     beforeEach(() => {
       step = makeApplicationRunStep(SUBMISSION_VIDEO)
       submission = makeApplicationSubmission()
+      application = makeApplicationDetail()
     })
 
     //
@@ -117,6 +118,7 @@ describe("application detail section component", () => {
             fulfilled={fulfilled}
             step={step}
             submission={submission}
+            applicationDetail={application}
           />
         )
         const link = wrapper.find("ProgressDetailRow a.btn-link")
@@ -129,15 +131,21 @@ describe("application detail section component", () => {
   })
 
   describe("ReviewDetail", () => {
-    let step, submission
+    let step, submission, application
     beforeEach(() => {
       step = makeApplicationRunStep(SUBMISSION_VIDEO)
       submission = makeApplicationSubmission()
+      application = makeApplicationDetail()
     })
 
     it("should show no status if the submission has no review", () => {
       const wrapper = shallow(
-        <ReviewDetail {...defaultProps} step={step} submission={null} />
+        <ReviewDetail
+          {...defaultProps}
+          step={step}
+          submission={null}
+          applicationDetail={application}
+        />
       )
 
       assert.isFalse(wrapper.find("ProgressDetailRow .status-text").exists())
@@ -155,7 +163,12 @@ describe("application detail section component", () => {
         submission.review_status = reviewStatus
         submission.review_status_date = reviewDate
         const wrapper = shallow(
-          <ReviewDetail {...defaultProps} step={step} submission={submission} />
+          <ReviewDetail
+            {...defaultProps}
+            step={step}
+            submission={submission}
+            applicationDetail={application}
+          />
         )
 
         assert.equal(
