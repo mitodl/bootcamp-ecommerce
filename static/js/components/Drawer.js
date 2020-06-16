@@ -41,6 +41,7 @@ const renderDrawerContents = (
     return (
       <TakeVideoInterviewDisplay
         application={R.prop("application", drawerMeta)}
+        stepId={R.prop("stepId", drawerMeta)}
       />
     )
   default:

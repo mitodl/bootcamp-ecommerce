@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 import pytest
 
-from jobma.api import create_interview, get_jobma_client
+from jobma.api import create_interview_in_jobma, get_jobma_client
 from jobma.factories import InterviewFactory
 
 
@@ -38,7 +38,7 @@ def test_create_interview(mocker, settings):
     token = "anaccesstoken"
     settings.JOBMA_ACCESS_TOKEN = token
 
-    create_interview(interview)
+    create_interview_in_jobma(interview)
     client_mock.return_value.post.assert_called_once_with(
         "http://theothersiteurl.org/interviews",
         json={

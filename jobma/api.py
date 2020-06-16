@@ -25,7 +25,7 @@ def get_jobma_client():
     return session
 
 
-def create_interview(interview):
+def create_interview_in_jobma(interview):
     """
     Create a new interview on Jobma
 

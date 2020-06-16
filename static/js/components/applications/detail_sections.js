@@ -129,7 +129,7 @@ export const VideoInterviewDetail = (
               onClick={R.partial(openDrawer, [
                 {
                   type: TAKE_VIDEO_INTERVIEW,
-                  meta: { application: applicationDetail, step: step }
+                  meta: { application: applicationDetail, stepId: step.id }
                 }
               ])}
             >

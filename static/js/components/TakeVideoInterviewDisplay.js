@@ -9,10 +9,12 @@ import type { ApplicationDetail } from "../flow/applicationTypes"
 
 type Props = {
   application: ApplicationDetail,
-  createVideoInterview: (applicationId: number) => Promise<*>
+  stepId: number,
+  createVideoInterview: (applicationId: number, stepId: number) => Promise<*>
 }
 export function TakeVideoInterviewDisplay({
   application,
+  stepId,
   createVideoInterview
 }: Props) {
   return (
@@ -29,7 +31,7 @@ export function TakeVideoInterviewDisplay({
           onClick={async () => {
             const {
               body: { interview_link: interviewLink }
-            } = await createVideoInterview(application.id)
+            } = await createVideoInterview(application.id, stepId)
             if (interviewLink) {
               window.location = interviewLink
             }
@@ -43,9 +45,11 @@ export function TakeVideoInterviewDisplay({
 }
 
 const mapDispatchToProps = dispatch => ({
-  createVideoInterview: (applicationId: string) =>
+  createVideoInterview: (applicationId: number, stepId: number) =>
     dispatch(
-      mutateAsync(queries.applications.createVideoInterviewQuery(applicationId))
+      mutateAsync(
+        queries.applications.createVideoInterviewMutate(applicationId, stepId)
+      )
     )
 })
 
