@@ -43,7 +43,7 @@ export function PaymentHistoryPage({ application, countries }: Props) {
   return (
     <div className="payment-history container">
       <div className="payment-history-header">
-        <h2>Payment Statement</h2>
+        <h1>Payment Statement</h1>
         <a className="print" onClick={() => window.print()}>
           <span className="material-icons">printer</span>
           <span>Print</span>
