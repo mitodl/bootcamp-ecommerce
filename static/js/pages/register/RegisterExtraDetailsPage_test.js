@@ -17,6 +17,7 @@ import {
 } from "../../lib/auth"
 import { routes } from "../../lib/urls"
 import { makeRegisterAuthResponse } from "../../factories/auth"
+import { REGISTER_EXTRA_DETAILS_PAGE_TITLE } from "../../constants"
 
 describe("RegisterExtraDetailsPage", () => {
   const profileData = {
@@ -74,6 +75,7 @@ describe("RegisterExtraDetailsPage", () => {
     const { inner } = await renderPage()
 
     assert.ok(inner.find("RegisterExtraDetailsForm").exists())
+    assert.equal(inner.find("h1").text(), REGISTER_EXTRA_DETAILS_PAGE_TITLE)
   })
 
   it("handles onSubmit for an error response", async () => {
