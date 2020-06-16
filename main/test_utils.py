@@ -1,4 +1,5 @@
 """Testing utils"""
+import sys
 import abc
 import json
 from contextlib import contextmanager
@@ -6,12 +7,17 @@ import traceback
 from unittest.mock import Mock
 import csv
 import tempfile
+from importlib import reload, import_module
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls.base import clear_url_caches
+
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 from requests.exceptions import HTTPError
+
+from main import features
 
 
 def any_instance_of(*cls):
@@ -162,3 +168,41 @@ def serializer_date_format(dt):
         Optional[str]: The string representing the datetime (or None)
     """
     return serializers.DateTimeField().to_representation(dt)
+
+
+def reload_urlconf():
+    """Reloads the Django URL configuration"""
+    from django.conf import settings
+
+    clear_url_caches()
+    urlconf = settings.ROOT_URLCONF
+    if urlconf in sys.modules:
+        reload(sys.modules[urlconf])
+    else:
+        import_module(urlconf)
+
+
+def patched_feature_enabled(patch_dict):
+    """
+    Returns a patched version of features.is_enabled. If the feature name is a key in the
+    argument dict, it returns the value in that dict. Otherwise it just returns the result
+    of features.is_enabled.
+
+    Usage: Set as the side_effect of a patch for features.is_enabled
+    mocker.patch("main.features.is_enabled", side_effect=patched_feature_enabled({MY_FEATURE: True}))
+
+    Args:
+        patch_dict (Dict[str, bool]): A dictionary containing feature names mapped to the result
+          they should return if features.is_enabled is called with that feature name
+
+    Returns:
+        bool: Value indicating whether or not the feature is enabled
+    """
+
+    def _patched(*args, **kwargs):  # pylint:disable=missing-docstring
+        feature_name = args[0]
+        if feature_name in patch_dict:
+            return patch_dict[feature_name]
+        return features.is_enabled(*args, **kwargs)
+
+    return _patched
