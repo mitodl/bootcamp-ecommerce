@@ -30,9 +30,9 @@
           </div>
       </div>
   </div>
-  {% if three_column_image_text_section %} {% include "partials/three-column-image-text-section.html" with page=three_column_image_text_section %} {% endif %}
-  {% if program_description_section %} {% include "partials/program-description.html" with page=program_description_section %} {% endif %}
-  {% if admissions_section %}{% include "partials/admissions-section.html" with page=admissions_section %}{% endif %}
+  {% if page.three_column_image_text_section %} {% include "partials/three-column-image-text-section.html" with page=page.three_column_image_text_section %} {% endif %}
+  {% if page.program_description_section %} {% include "partials/program-description.html" with page=page.program_description_section %} {% endif %}
+  {% if page.admissions_section %}{% include "partials/admissions-section.html" with page=page.admissions_section %}{% endif %}
   {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
   {% if page.alumni %} {% include "partials/alumni.html" with page=page.alumni %} {% endif %}
   {% if page.learning_resources %} {% include "partials/learning_resources_page.html" with page=page.learning_resources %} {% endif %}
