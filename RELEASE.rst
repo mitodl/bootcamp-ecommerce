@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.45.1
+--------------
+
+- Submission Review UI page (#620)
+- open social links in the new tab
+- Added new application UI
+- Fix typo in Massachusetts (#655)
+
 Version 0.45.0 (Released June 16, 2020)
 --------------
 
