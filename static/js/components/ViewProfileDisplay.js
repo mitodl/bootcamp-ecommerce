@@ -61,7 +61,7 @@ export function ViewProfileDisplay(props: Props) {
         <div className="container profile-container ">
           <div className="row">
             {currentUser.is_authenticated ? (
-              <div className="col-12 auth-form">
+              <div className="col-12 bootcamp-form">
                 <div className="row profile-row">
                   <div className="col profile-label">First Name</div>
                   <div className="col">
@@ -184,7 +184,7 @@ export function ViewProfileDisplay(props: Props) {
                 </div>
               </div>
             ) : (
-              <div className="col-12 auth-form">
+              <div className="col-12 bootcamp-form">
                 <div className="row">
                   You must be logged in to view your profile.
                 </div>

@@ -1,12 +1,18 @@
 """Serializers for bootcamp applications"""
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from applications import models
-from applications.constants import AppStates, REVIEW_STATUS_APPROVED
+from applications.constants import (
+    AppStates,
+    REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_REJECTED,
+)
 from applications.exceptions import InvalidApplicationStateException
+from applications.models import VideoInterviewSubmission
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.serializers import BootcampRunSerializer
-from main.utils import get_filename_from_path, now_in_utc
+from main.utils import now_in_utc
 from profiles.serializers import UserSerializer
 
 
@@ -47,19 +53,19 @@ class SubmissionSerializer(serializers.ModelSerializer):
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     """Detailed BootcampApplication serializer"""
 
-    resume_filename = serializers.SerializerMethodField()
+    resume_filepath = serializers.SerializerMethodField()
     payment_deadline = serializers.SerializerMethodField()
     run_application_steps = serializers.SerializerMethodField()
     submissions = SubmissionSerializer(many=True, read_only=True)
     orders = ApplicationOrderSerializer(many=True, read_only=True)
     bootcamp_run = BootcampRunSerializer(read_only=True)
 
-    def get_resume_filename(self, bootcamp_application):
+    def get_resume_filepath(self, bootcamp_application):
         """Gets the resume filename (without the path) if one exists"""
         return (
             None
             if not bootcamp_application.resume_file
-            else get_filename_from_path(bootcamp_application.resume_file.name)
+            else bootcamp_application.resume_file.name
         )
 
     def get_payment_deadline(self, bootcamp_application):
@@ -80,7 +86,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "id",
             "bootcamp_run",
             "state",
-            "resume_filename",
+            "resume_filepath",
             "linkedin_url",
             "resume_upload_date",
             "created_on",
@@ -110,6 +116,14 @@ class SubmissionReviewSerializer(SubmissionSerializer):
     learner = UserSerializer(
         source="bootcamp_application.user", required=False, read_only=True
     )
+    interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
+
+    def get_interview_url(self, submission):
+        """ Get the interview url for a video submission if of that type"""
+        if submission.content_type == ContentType.objects.get_for_model(
+            VideoInterviewSubmission
+        ):
+            return submission.content_object.interview.results_url
 
     def validate(self, attrs):
         """Validate incoming data for a write"""
@@ -135,12 +149,17 @@ class SubmissionReviewSerializer(SubmissionSerializer):
             bootcamp_application = instance.bootcamp_application
             if instance.review_status == REVIEW_STATUS_APPROVED:
                 bootcamp_application.approve_submission()
-            else:
+                bootcamp_application.save()
+            elif instance.review_status == REVIEW_STATUS_REJECTED:
                 bootcamp_application.reject_submission()
-            bootcamp_application.save()
+                bootcamp_application.save()
 
         return instance
 
     class Meta(SubmissionSerializer.Meta):
-        fields = SubmissionSerializer.Meta.fields + ["bootcamp_application", "learner"]
+        fields = SubmissionSerializer.Meta.fields + [
+            "bootcamp_application",
+            "learner",
+            "interview_url",
+        ]
         read_only_fields = ("submitted_date", "review_status_date")

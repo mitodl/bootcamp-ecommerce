@@ -14,7 +14,8 @@ import {
   formatStartEndDateStrings,
   newSetWithout,
   newSetWith,
-  timeoutPromise
+  timeoutPromise,
+  getFilenameFromPath
 } from "./util"
 
 describe("util", () => {
@@ -170,6 +171,13 @@ describe("util", () => {
     sinon.assert.callCount(func, 0)
     await promise
     sinon.assert.callCount(func, 1)
+  })
+
+  //
+  ;["https://a/b/c/de/f/g.html", "https://g.html", "g.html"].forEach(url => {
+    it(`getFilenameFromPath extracts 'g.html' from path ${url}`, () => {
+      assert.equal(getFilenameFromPath(url), "g.html")
+    })
   })
 
   describe("formatPrice", () => {

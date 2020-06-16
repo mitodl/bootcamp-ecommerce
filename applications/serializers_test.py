@@ -1,7 +1,6 @@
 """Tests for bootcamp application serializers"""
 # pylint: disable=redefined-outer-name
 from datetime import timedelta
-import os
 from types import SimpleNamespace
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -12,6 +11,7 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
     AppStates,
+    REVIEW_STATUS_WAITLISTED,
 )
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
@@ -25,10 +25,12 @@ from applications.factories import (
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     ApplicationStepFactory,
+    VideoInterviewSubmissionFactory,
 )
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
+from jobma.factories import InterviewFactory
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from klasses.serializers import BootcampRunSerializer
 from main.test_utils import serializer_date_format
@@ -73,9 +75,7 @@ def test_application_detail_serializer(app_data, has_resume):
         "id": application.id,
         "bootcamp_run": BootcampRunSerializer(application.bootcamp_run).data,
         "state": application.state,
-        "resume_filename": os.path.split(application.resume_file.name)[1]
-        if has_resume
-        else None,
+        "resume_filepath": application.resume_file.name if has_resume else None,
         "linkedin_url": application.linkedin_url,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
         "payment_deadline": serializer_date_format(app_data.installment.deadline),
@@ -180,13 +180,21 @@ def test_submission_serializer():
 
 
 @pytest.mark.django_db
-def test_submission_review_serializer():
+@pytest.mark.parametrize("has_interview", [True, False])
+def test_submission_review_serializer(has_interview):
     """Test SubmissionReviewSerializer"""
     user = UserFactory.create()
     run_step = BootcampRunApplicationStepFactory.create()
     submission = ApplicationStepSubmissionFactory.create(
-        bootcamp_application__user=user, run_application_step=run_step
+        bootcamp_application__user=user,
+        run_application_step=run_step,
+        bootcamp_application__bootcamp_run=run_step.bootcamp_run,
     )
+    interview = InterviewFactory.create()
+    if has_interview:
+        interview_submission = VideoInterviewSubmissionFactory(interview=interview)
+        submission.content_object = interview_submission
+        submission.save()
     data = SubmissionReviewSerializer(instance=submission).data
     assert data == {
         "id": submission.id,
@@ -195,6 +203,7 @@ def test_submission_review_serializer():
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
         "learner": UserSerializer(instance=user).data,
+        "interview_url": (interview.results_url if has_interview else None),
         "bootcamp_application": BootcampApplicationSerializer(
             instance=submission.bootcamp_application
         ).data,
@@ -214,6 +223,24 @@ def test_submission_review_serializer():
         ),
         (REVIEW_STATUS_APPROVED, False, False, AppStates.AWAITING_PAYMENT.value),
         (REVIEW_STATUS_REJECTED, False, False, AppStates.REJECTED.value),
+        (
+            REVIEW_STATUS_WAITLISTED,
+            False,
+            False,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ),
+        (
+            REVIEW_STATUS_WAITLISTED,
+            True,
+            True,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ),
+        (
+            REVIEW_STATUS_WAITLISTED,
+            False,
+            True,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ),
     ],
 )
 def test_submission_review_serializer_update(

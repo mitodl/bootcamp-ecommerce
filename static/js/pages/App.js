@@ -13,6 +13,8 @@ import Drawer from "../components/Drawer"
 import LoginPages from "./login/LoginPages"
 import RegisterPages from "./register/RegisterPages"
 import ApplicationPages from "./applications/ApplicationPages"
+import ReviewAdminPages from "./applications/ReviewAdminPages"
+
 import PaymentPage from "./PaymentPage"
 import EmailConfirmPage from "./settings/EmailConfirmPage"
 import AccountSettingsPage from "./settings/AccountSettingsPage"
@@ -90,6 +92,10 @@ export class App extends Component<Props> {
           <PrivateRoute
             path={urljoin(match.url, String(routes.applications))}
             component={ApplicationPages}
+          />
+          <PrivateRoute
+            path={urljoin(match.url, String(routes.review))}
+            component={ReviewAdminPages}
           />
         </Switch>
         <Drawer />

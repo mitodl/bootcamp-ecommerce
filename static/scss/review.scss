@@ -1,0 +1,32 @@
+.review-card {
+
+  &.review-panel-right {
+    border-left: 1px solid black;
+  }
+
+  .status {
+    padding-left: 25%;
+  }
+
+  .section  {
+    margin: 20px 0px;
+    padding-bottom: 10px;
+  }
+
+
+  .radio-status {
+    line-height: 24px;
+    margin-bottom: 10px;
+
+    input {
+      width: 24px;
+      height: 24px;
+    }
+
+    label {
+      font-size: 18px;
+      line-height: 35px;
+      padding-left: 10px;
+    }
+  }
+}

@@ -42,5 +42,10 @@ export const routes = {
 
   applications: include("/applications/", {
     dashboard: ""
+  }),
+
+  review: include("/review/", {
+    dashboard: "",
+    detail:    ":id/"
   })
 }

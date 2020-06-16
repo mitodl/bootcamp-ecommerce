@@ -36,6 +36,7 @@ def test_application_step_submission_filterset_review_status_exact(review_status
         ApplicationStepSubmissionFactory.create(is_pending=True),
         ApplicationStepSubmissionFactory.create(is_approved=True),
         ApplicationStepSubmissionFactory.create(is_rejected=True),
+        ApplicationStepSubmissionFactory.create(is_waitlisted=True),
     ]
 
     params = {"review_status": review_status}

@@ -118,7 +118,7 @@ export class LoginForgotPasswordPage extends React.Component<Props, State> {
             </div>
           </div>
         ) : (
-          <div className="auth-card card-shadow auth-form">
+          <div className="auth-card card-shadow bootcamp-form">
             <p>Enter your email to receive a password reset link.</p>
             <EmailForm onSubmit={this.onSubmit.bind(this)} />
           </div>

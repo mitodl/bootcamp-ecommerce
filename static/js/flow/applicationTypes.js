@@ -8,6 +8,7 @@ import {
 } from "../constants"
 
 import type { BootcampRun } from "./bootcampTypes"
+import type { User } from "./authTypes"
 
 export type Application = {
   id:           number,
@@ -50,7 +51,7 @@ export type ApplicationDetail = {
   id:                    number,
   state:                 string,
   bootcamp_run:          BootcampRun,
-  resume_filename:       ?string,
+  resume_filepath:       ?string,
   linkedin_url:          ?string,
   resume_upload_date:    ?string,
   payment_deadline:      string,
@@ -62,6 +63,21 @@ export type ApplicationDetail = {
   price:                 number,
 }
 
+export type SubmissionReview = {
+  id:                      number,
+  run_application_step_id: number,
+  submitted_date:          ?string,
+  review_status:           ?string,
+  review_status_date:      ?string,
+  bootcamp_application:    Application,
+  learner:                 User,
+  interview_url:           ?string
+}
+
 export type ApplicationDetailState = {
   [string]: ApplicationDetail
+}
+
+export type SubmissionReviewState = {
+  [string]: SubmissionReview
 }

@@ -92,7 +92,7 @@ export class LoginForgotPasswordConfirmPage extends React.Component<Props> {
         <div className="row auth-header">
           <h1 className="col-12">Forgot Password</h1>
         </div>
-        <div className="row auth-card card-shadow auth-form">
+        <div className="row auth-card card-shadow bootcamp-form">
           <div className="col-12">
             <p>Enter a new password for your account.</p>
           </div>

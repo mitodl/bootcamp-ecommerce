@@ -94,7 +94,7 @@ export class RegisterDetailsPage extends React.Component<Props> {
         <div className="row auth-header">
           <h1 className="col-12">Create Account</h1>
         </div>
-        <div className="auth-form auth-card card-shadow row">
+        <div className="bootcamp-form auth-card card-shadow row">
           <div className="col-12 auth-step">Steps 1 of 2</div>
           <div className="col-12">
             <RegisterDetailsForm
