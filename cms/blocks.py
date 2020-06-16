@@ -107,3 +107,19 @@ class TitleDescriptionBlock(blocks.StructBlock):
 
     class Meta:
         icon = "plus"
+
+
+class CatalogSectionBootcampBlock(blocks.StructBlock):
+    """
+    Block that encapsulates a bootcamp run to be shown on the home page in catalog section.
+    """
+
+    page = blocks.PageChooserBlock(
+        "cms.BootcampRunPage", help_text="The bootcamp run to display"
+    )
+    format = blocks.CharBlock(
+        max_length=128, help_text="The bootcamp format to display, e.g. Online Bootcamp"
+    )
+    application_deadline = blocks.DateTimeBlock(
+        help_text="The application deadline to display for this bootcamp run"
+    )

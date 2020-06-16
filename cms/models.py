@@ -23,6 +23,7 @@ from cms.blocks import (
     AlumniBlock,
     TitleLinksBlock,
     TitleDescriptionBlock,
+    CatalogSectionBootcampBlock,
 )
 from cms.constants import BOOTCAMP_INDEX_SLUG
 from main.views import _serialize_js_settings
@@ -124,6 +125,11 @@ class HomePage(Page, CommonProperties):
         """Gets the alumni section page"""
         return self._get_child_page_of_type(HomeAlumniPage)
 
+    @property
+    def catalog(self):
+        """Gets the catalog section page"""
+        return self._get_child_page_of_type(CatalogGridPage)
+
     subpage_types = [
         "ProgramDescriptionPage",
         "ThreeColumnImageTextPage",
@@ -131,6 +137,7 @@ class HomePage(Page, CommonProperties):
         "BootcampIndexPage",
         "LearningResourcePage",
         "ResourcePage",
+        "CatalogGridPage",
     ]
 
 
@@ -604,3 +611,18 @@ class LearningResourcePage(BootcampRunChildPage):
 
     class Meta:
         verbose_name = "Learning Resources Section"
+
+
+class CatalogGridPage(BootcampRunChildPage):
+    """
+    Page that represents the catalog section on the home page
+    """
+
+    parent_page_types = ["HomePage"]
+
+    contents = StreamField(
+        [("bootcamp_run", CatalogSectionBootcampBlock())],
+        help_text="The bootcamps to display in this catalog section",
+        blank=True,
+    )
+    content_panels = [StreamFieldPanel("contents")]

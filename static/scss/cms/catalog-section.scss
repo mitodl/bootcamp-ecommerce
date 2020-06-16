@@ -1,0 +1,64 @@
+// sass-lint:disable mixins-before-declarations
+.catalog-section {
+  .col-sm-6 {
+    margin-bottom: 90px;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 0 28px;
+  }
+
+  .info {
+    position: relative;
+    padding: 0 15px 0 60px;
+    color: $dark-gray;
+    font-size: 20px;
+    line-height: 25px;
+
+    @include media-breakpoint-down(sm) {
+      padding: 0 15px;
+      font-size: 15px;
+    }
+
+    h2 {
+      font-size: 30px;
+      line-height: 30px;
+      margin: 0 0 40px;
+      color: $matterhorn;
+      font-weight: 700;
+
+      @include media-breakpoint-down(sm) {
+        font-size: 20px;
+        margin: unset;
+      }
+    }
+
+    p {
+      font-weight: 300;
+      margin: 0 0 28px;
+    }
+
+    .dates {
+      color: $med-dark-gray;
+      display: block;
+      margin: 0 0 40px;
+
+      @include media-breakpoint-down(sm) {
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+    }
+
+    .deadline-text {
+      color: $tundora;
+      display: block;
+
+      @include media-breakpoint-down(sm) {
+        font-size: 12px;
+      }
+    }
+  }
+}
