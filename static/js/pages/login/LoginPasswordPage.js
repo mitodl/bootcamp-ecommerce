@@ -97,7 +97,7 @@ export class LoginPasswordPage extends React.Component<Props> {
         <div className="row auth-header">
           <h1 className="col-12">Sign in</h1>
         </div>
-        <div className="row auth-card card-shadow auth-form">
+        <div className="row auth-card card-shadow bootcamp-form">
           {name && (
             <div className="col-12">
               <p>Logging in as {name}</p>

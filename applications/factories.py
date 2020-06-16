@@ -15,6 +15,7 @@ from applications.constants import (
     REVIEW_STATUS_PENDING,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
+    REVIEW_STATUS_WAITLISTED,
 )
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
@@ -98,6 +99,7 @@ class ApplicationStepSubmissionFactory(DjangoModelFactory):
         is_pending = Trait(review_status=REVIEW_STATUS_PENDING)
         is_rejected = Trait(review_status=REVIEW_STATUS_REJECTED)
         is_approved = Trait(review_status=REVIEW_STATUS_APPROVED)
+        is_waitlisted = Trait(review_status=REVIEW_STATUS_WAITLISTED)
 
     class Meta:
         model = models.ApplicationStepSubmission

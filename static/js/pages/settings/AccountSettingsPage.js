@@ -126,7 +126,7 @@ export class AccountSettingsPage extends React.Component<Props> {
           <h1>User Settings</h1>
         </div>
 
-        <div className="auth-card card-shadow auth-form">
+        <div className="auth-card card-shadow bootcamp-form">
           <h3>Basic Account Information</h3>
           <ChangeEmailForm
             user={currentUser}

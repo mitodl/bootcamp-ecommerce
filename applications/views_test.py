@@ -239,6 +239,7 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
         ApplicationStepSubmissionFactory.create(is_pending=True),
         ApplicationStepSubmissionFactory.create(is_approved=True),
         ApplicationStepSubmissionFactory.create(is_rejected=True),
+        ApplicationStepSubmissionFactory.create(is_waitlisted=True),
     ]
     submission = next(filter(lambda s: s.review_status == review_status, submissions))
     bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp

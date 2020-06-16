@@ -7,7 +7,9 @@ import { getCookie } from "../api"
 import type {
   Application,
   ApplicationDetail,
-  ApplicationDetailState
+  ApplicationDetailState,
+  SubmissionReview,
+  SubmissionReviewState
 } from "../../flow/applicationTypes"
 
 const DEFAULT_NON_GET_OPTIONS = {
@@ -20,12 +22,19 @@ const applicationsKey = "applications"
 const applicationDetailKey = "applicationDetail"
 export const createAppQueryKey = "createApplication"
 
+const submissionDetailKey = "submissionReview"
+const submissionsApiUrl = "/api/submissions/"
+
 export const applicationsSelector = (state: any): ?Array<Application> =>
   state.entities[applicationsKey]
 
 export const applicationDetailSelector = (
   state: any
 ): { [string]: ApplicationDetail } => state.entities[applicationDetailKey]
+
+export const submissionDetailSelector = (
+  state: any
+): { [string]: SubmissionReview } => state.entities[submissionDetailKey]
 
 export default {
   applicationsQuery: () => ({
@@ -71,6 +80,51 @@ export default {
         ...prev,
         ...transformed
       })
+    }
+  }),
+  submissionReviewQuery: (submissionId: number) => ({
+    url:       `${submissionsApiUrl}${submissionId}/`,
+    transform: (json: ?SubmissionReview) => {
+      return {
+        [submissionDetailKey]: {
+          [submissionId]: json
+        }
+      }
+    },
+    update: {
+      [submissionDetailKey]: (
+        prev: SubmissionReviewState,
+        transformed: SubmissionReviewState
+      ) => ({
+        ...prev,
+        ...transformed
+      })
+    }
+  }),
+  submissionReviewMutation: (submission: SubmissionReview) => ({
+    url:       `${submissionsApiUrl}${submission.id}/`,
+    body:      submission,
+    transform: (json: ?SubmissionReview) => {
+      return {
+        [submissionDetailKey]: {
+          [submission.id]: json
+        }
+      }
+    },
+    update: {
+      [submissionDetailKey]: (
+        prev: SubmissionReviewState,
+        transformed: SubmissionReviewState
+      ) => ({
+        ...prev,
+        ...transformed
+      })
+    },
+    options: {
+      method:  "PATCH",
+      headers: {
+        "X-CSRFTOKEN": getCookie("csrftoken")
+      }
     }
   })
 }

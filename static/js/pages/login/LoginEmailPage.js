@@ -69,7 +69,7 @@ export class LoginEmailPage extends React.Component<Props> {
         <div className="row auth-header">
           <h1 className="col-12">Sign in</h1>
         </div>
-        <div className="row auth-card card-shadow auth-form">
+        <div className="row auth-card card-shadow bootcamp-form">
           <div className="col-12">
             <EmailForm onSubmit={this.onSubmit.bind(this)}>
               <React.Fragment>

@@ -4,9 +4,11 @@ import moment from "moment"
 import { sum } from "ramda"
 
 import { generateFakeRun, generateOrder } from "./index"
+import { makeUser } from "./user"
 import { incrementer } from "../util/util"
 import {
   APP_STATE_TEXT_MAP,
+  REVIEW_STATUS_TEXT_MAP,
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED,
@@ -19,6 +21,7 @@ import type {
   ApplicationDetail,
   ApplicationRunStep,
   ApplicationSubmission,
+  SubmissionReview,
   ValidAppStepType
 } from "../flow/applicationTypes"
 
@@ -87,7 +90,7 @@ export const makeApplicationDetail = (): ApplicationDetail => {
     id:                    incr.next().value,
     state:                 casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
     bootcamp_run:          run,
-    resume_filename:       `${casual.word}.${casual.file_extension}`,
+    resume_filepath:       casual.url,
     linkedin_url:          casual.url,
     resume_upload_date:    moment().format(),
     payment_deadline:      moment().format(),
@@ -104,7 +107,7 @@ export const setToAwaitingResume = (
   appDetail: ApplicationDetail
 ): ApplicationDetail => {
   appDetail.resume_upload_date = undefined
-  appDetail.resume_filename = undefined
+  appDetail.resume_filepath = undefined
   appDetail.linkedin_url = undefined
   appDetail.submissions = []
   return appDetail
@@ -115,7 +118,7 @@ export const setToAwaitingSubmission = (
 ): ApplicationDetail => {
   appDetail = setToAwaitingResume(appDetail)
   appDetail.resume_upload_date = moment().format()
-  appDetail.resume_filename = `${casual.word}.${casual.file_extension}`
+  appDetail.resume_filepath = casual.url
   appDetail.submissions = []
   return appDetail
 }
@@ -150,3 +153,15 @@ export const setToPaid = (appDetail: ApplicationDetail): ApplicationDetail => {
   appDetail.is_paid_in_full = true
   return appDetail
 }
+
+export const makeSubmissionReview = (): SubmissionReview => ({
+  // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
+  id:                      incr.next().value,
+  run_application_step_id: casual.integer,
+  submitted_date:          moment().format(),
+  review_status:           casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
+  review_status_date:      moment().format(),
+  bootcamp_application:    makeApplication(),
+  learner:                 makeUser(),
+  interview_url:           casual.url
+})

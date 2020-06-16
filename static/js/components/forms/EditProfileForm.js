@@ -58,7 +58,7 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
           <div className="container">
             <div className="row">
               {user.is_authenticated ? (
-                <div className="col-12 auth-form">
+                <div className="col-12 bootcamp-form">
                   <LegalAddressFields
                     countries={countries}
                     setFieldValue={setFieldValue}

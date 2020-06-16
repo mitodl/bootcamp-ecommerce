@@ -142,3 +142,6 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
     return `$${formattedPrice}`
   }
 }
+
+export const getFilenameFromPath = (url: string) =>
+  url.substring(url.lastIndexOf("/") + 1)

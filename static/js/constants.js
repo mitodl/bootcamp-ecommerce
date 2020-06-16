@@ -121,6 +121,14 @@ export const SUBMISSION_QUIZ = "quizsubmission"
 export const REVIEW_STATUS_APPROVED = "approved"
 export const REVIEW_STATUS_REJECTED = "rejected"
 export const REVIEW_STATUS_PENDING = "pending"
+export const REVIEW_STATUS_WAITLISTED = "waitlisted"
+
+export const REVIEW_STATUS_TEXT_MAP = {
+  REVIEW_STATUS_APPROVED:   REVIEW_STATUS_APPROVED,
+  REVIEW_STATUS_REJECTED:   REVIEW_STATUS_REJECTED,
+  REVIEW_STATUS_PENDING:    REVIEW_STATUS_PENDING,
+  REVIEW_STATUS_WAITLISTED: REVIEW_STATUS_WAITLISTED
+}
 
 // HTML title for different pages
 export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
@@ -146,6 +154,7 @@ export const EMAIL_CONFIRM_PAGE_TITLE = "Confirm Email Change"
 export const RECEIPT_PAGE_TITLE = "Receipt"
 
 export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard"
+export const REVIEW_DETAIL_TITLE = "Admission"
 
 export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"
 

@@ -81,32 +81,7 @@
   }
 }
 
-.auth-form {
-
-  .form-control {
-    font-size: inherit;
-    font-weight: inherit;
-  }
-
-  .form-error {
-    font-size: 1rem;
-    font-weight: 400;
-  }
-
-  .errored {
-    border: 2px solid $red;
-  }
-
-  label {
-    font-weight: 600;
-  }
-
-  .submit-row {
-    margin-top: 25px;
-  }
-}
-
-.registration-page .auth-form {
+.registration-page .bootcamp-form {
   .row-inner {
     margin-top: 20px;
   }
