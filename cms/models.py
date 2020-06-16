@@ -130,6 +130,7 @@ class HomePage(Page, CommonProperties):
         "HomeAlumniPage",
         "BootcampIndexPage",
         "LearningResourcePage",
+        "ResourcePage",
     ]
 
 
@@ -456,6 +457,7 @@ class ResourcePage(Page):
     """
 
     template = "resource_template.html"
+    parent_page_types = ["HomePage"]
 
     sub_heading = models.CharField(
         max_length=250,
