@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.45.1
+Version 0.45.1 (Released June 16, 2020)
 --------------
 
 - Added feature flag for root/home page view
