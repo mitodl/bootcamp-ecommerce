@@ -1,6 +1,26 @@
 Release Notes
 =============
 
+Version 0.45.0 (Released June 16, 2020)
+--------------
+
+- Fix for migration on homepage alumni section - #183
+- Finished application detail UI in dashboard
+- resource page structure
+- Bootcamp index page and routing - #170
+- Removed repeated footers
+- Bump django from 2.2.10 to 2.2.13 (#628)
+- Payment drawer (#618)
+- reorder section
+- Fix login state
+- Global Alumni Section
+- render cms site wide notifications in react
+- Admissions section - #485
+- - Program Elements Home Page
+- Added admissions API for application steps
+- Define site_name in template for resource and bootcamp run pages (#607)
+- Home page base with header - #404
+
 Version 0.44.1 (Released June 08, 2020)
 --------------
 
