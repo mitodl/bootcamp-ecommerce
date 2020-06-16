@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.45.0
+Version 0.45.0 (Released June 16, 2020)
 --------------
 
 - Fix for migration on homepage alumni section - #183
