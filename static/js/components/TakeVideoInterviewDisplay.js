@@ -3,6 +3,7 @@ import React from "react"
 import { connect } from "react-redux"
 import { mutateAsync } from "redux-query"
 
+import { JOBMA, JOBMA_SITE } from "../constants"
 import queries from "../lib/queries"
 
 import type { ApplicationDetail } from "../flow/applicationTypes"
@@ -18,12 +19,12 @@ export function TakeVideoInterviewDisplay({
   createVideoInterview
 }: Props) {
   return (
-    <div className="container take-video-interview auth-card">
+    <div className="take-video-interview auth-card">
       <h2 className="text-uppercase">Take Video Interview</h2>
       <p>
         Thank you for taking the video interview. To make your experience better
-        we are collaborating with Jobma and you will be taking this interview on
-        their platform at jobma.com.
+        we are collaborating with {JOBMA} and you will be taking this interview
+        on their platform at {JOBMA_SITE}.
       </p>
 
       <div className="link">
@@ -37,7 +38,7 @@ export function TakeVideoInterviewDisplay({
             }
           }}
         >
-          Take Interview at videoplatform.com
+          Take Interview at {JOBMA_SITE}
         </a>
       </div>
     </div>
