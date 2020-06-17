@@ -117,7 +117,6 @@ class HomePage(Page, CommonProperties):
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "site_name": settings.SITE_NAME,
             "title": self.title,
-            "program_description_section": self.program_description_section,
         }
 
     @property
@@ -125,7 +124,13 @@ class HomePage(Page, CommonProperties):
         """Gets the alumni section page"""
         return self._get_child_page_of_type(HomeAlumniPage)
 
-    subpage_types = ["ProgramDescriptionPage", "HomeAlumniPage", "BootcampIndexPage"]
+    subpage_types = [
+        "ProgramDescriptionPage",
+        "ThreeColumnImageTextPage",
+        "HomeAlumniPage",
+        "BootcampIndexPage",
+        "LearningResourcePage",
+    ]
 
 
 class BootcampPage(Page, CommonProperties):
@@ -173,11 +178,6 @@ class BootcampPage(Page, CommonProperties):
             "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "site_name": settings.SITE_NAME,
             "title": self.title,
-            # The context variables below are added to avoid duplicate queries within the templates
-            "three_column_image_text_section": self.three_column_image_text_section,
-            "program_description_section": self.program_description_section,
-            "instructors": self.instructors,
-            "admissions_section": self.admissions_section,
         }
 
     @property
