@@ -128,7 +128,7 @@ export default {
       }
     }
   }),
-  createVideoInterviewMutate: (applicationId: number, stepId: number) => ({
+  createVideoInterviewMutation: (applicationId: number, stepId: number) => ({
     url:       `/api/applications/${String(applicationId)}/video-interviews/`,
     transform: (json: ?VideoInterviewResponse) => ({
       bootcampRuns: json

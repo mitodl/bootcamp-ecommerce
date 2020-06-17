@@ -48,7 +48,7 @@ const mapDispatchToProps = dispatch => ({
   createVideoInterview: (applicationId: number, stepId: number) =>
     dispatch(
       mutateAsync(
-        queries.applications.createVideoInterviewMutate(applicationId, stepId)
+        queries.applications.createVideoInterviewMutation(applicationId, stepId)
       )
     )
 })
