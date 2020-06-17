@@ -51,10 +51,10 @@ def test_create_interview(mocker, settings):
                 reverse("jobma-webhook", kwargs={"pk": interview.id}),
             ),
             "candidate": {
-                "first_name": interview.candidate_first_name,
-                "last_name": interview.candidate_last_name,
-                "phone": interview.candidate_phone,
-                "email": interview.candidate_email,
+                "first_name": interview.applicant.profile.first_and_last_names[0],
+                "last_name": interview.applicant.profile.first_and_last_names[1],
+                "phone": "",
+                "email": interview.applicant.email,
             },
         },
     )

@@ -162,13 +162,15 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         // only be able to submit something if their previous submission was approved.
         const stepReady =
           stepFulfilled === undefined ? resumeFulfilled : stepFulfilled
-        stepFulfilled =
-          appStepSubmissions[step.id] !== undefined &&
+        stepFulfilled = !!(
+          appStepSubmissions[step.id] &&
           appStepSubmissions[step.id].submission_status ===
             SUBMISSION_STATUS_SUBMITTED
-        submissionApproved =
-          !!appStepSubmissions[step.id] &&
+        )
+        submissionApproved = !!(
+          appStepSubmissions[step.id] &&
           appStepSubmissions[step.id].review_status === REVIEW_STATUS_APPROVED
+        )
         const SubmissionComponent = this.SUBMISSION_STEP_COMPONENTS[
           step.submission_type
         ]

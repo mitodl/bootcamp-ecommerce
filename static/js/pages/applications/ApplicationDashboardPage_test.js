@@ -13,6 +13,8 @@ import {
   APP_STATE_TEXT_MAP,
   NEW_APPLICATION,
   SUBMISSION_QUIZ,
+  SUBMISSION_STATUS_PENDING,
+  SUBMISSION_STATUS_SUBMITTED,
   SUBMISSION_VIDEO
 } from "../../constants"
 import {
@@ -270,11 +272,12 @@ describe("ApplicationDashboardPage", () => {
 
     //
     ;[
-      [false, false, false, "before the resume has been submitted"],
-      [true, false, false, "before the user submits it"],
-      [true, true, false, "awaiting review"],
-      [true, true, true, "after approval"]
-    ].forEach(([hasResume, hasSubmission, isApproved, desc]) => {
+      //[false, false, false, false, "before the resume has been submitted"],
+      //[true, false, false, false, "before the user submits it"],
+      //[true, true, false, false, "clicked take interview link"],
+      //[true, true, true, false, "finished interview, awaiting review"],
+      [true, true, true, true, "after approval"]
+    ].forEach(([hasResume, hasSubmission, hasSubmitted, isApproved, desc]) => {
       it(`shows details about a video submission ${desc}`, async () => {
         let newApplicationDetail = Object.assign({}, applicationDetail)
         if (!hasResume) {
@@ -285,6 +288,11 @@ describe("ApplicationDashboardPage", () => {
           newApplicationDetail = isApproved ?
             setToAwaitingPayment(newApplicationDetail) :
             setToAwaitingReview(newApplicationDetail)
+          newApplicationDetail.submissions.forEach(submission => {
+            submission.submission_status = hasSubmitted ?
+              SUBMISSION_STATUS_SUBMITTED :
+              SUBMISSION_STATUS_PENDING
+          })
         }
         const props = {
           ...defaultProps,
@@ -299,18 +307,20 @@ describe("ApplicationDashboardPage", () => {
         const reviewDetail = wrapper.find("ReviewDetail")
         assert.isTrue(reviewDetail.exists())
         assert.deepEqual(videoInterviewDetail.props(), {
-          ready:      hasResume,
-          fulfilled:  hasSubmission,
-          openDrawer: openDrawerStub,
-          step:       newApplicationDetail.run_application_steps[0],
-          submission: newApplicationDetail.submissions[0]
+          ready:             hasResume,
+          fulfilled:         hasSubmission,
+          openDrawer:        openDrawerStub,
+          step:              newApplicationDetail.run_application_steps[0],
+          submission:        newApplicationDetail.submissions[0],
+          applicationDetail: newApplicationDetail
         })
         assert.deepEqual(reviewDetail.first().props(), {
-          ready:      true,
-          fulfilled:  isApproved,
-          openDrawer: openDrawerStub,
-          step:       newApplicationDetail.run_application_steps[0],
-          submission: newApplicationDetail.submissions[0]
+          ready:             true,
+          fulfilled:         isApproved,
+          openDrawer:        openDrawerStub,
+          step:              newApplicationDetail.run_application_steps[0],
+          submission:        newApplicationDetail.submissions[0],
+          applicationDetail: newApplicationDetail
         })
       })
     })

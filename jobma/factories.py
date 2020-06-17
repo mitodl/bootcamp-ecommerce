@@ -26,10 +26,7 @@ class InterviewFactory(DjangoModelFactory):
 
     job = SubFactory(JobFactory)
     interview_url = Faker("url")
-    candidate_first_name = FuzzyText()
-    candidate_last_name = FuzzyText()
-    candidate_phone = Faker("phone_number")
-    candidate_email = Faker("email")
+    applicant = SubFactory("profiles.factories.UserFactory")
 
     class Meta:
         model = Interview
