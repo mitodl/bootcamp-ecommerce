@@ -2,7 +2,7 @@
 Factories for bootcamp application models
 """
 import operator as op
-from factory import Faker, Sequence, SubFactory, fuzzy, Trait
+from factory import Faker, LazyAttribute, Sequence, SubFactory, fuzzy, Trait
 from factory.django import DjangoModelFactory
 import faker
 import pytz
@@ -90,7 +90,11 @@ class ApplicationStepSubmissionFactory(DjangoModelFactory):
 
     content_object = SubFactory(VideoInterviewSubmissionFactory)
     bootcamp_application = SubFactory(BootcampApplicationFactory)
-    run_application_step = SubFactory(BootcampRunApplicationStepFactory)
+    run_application_step = LazyAttribute(
+        lambda _self: BootcampRunApplicationStepFactory(
+            bootcamp_run=_self.bootcamp_application.bootcamp_run
+        )
+    )
     submitted_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())
     review_status = fuzzy.FuzzyChoice(choices=ALL_REVIEW_STATUSES)
     review_status_date = fuzzy.FuzzyDateTime(start_dt=now_in_utc())

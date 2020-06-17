@@ -25,6 +25,7 @@ from applications.factories import (
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     ApplicationStepFactory,
+    QuizSubmissionFactory,
     VideoInterviewSubmissionFactory,
 )
 from ecommerce.factories import OrderFactory
@@ -169,12 +170,19 @@ def test_bootcamp_run_step_serializer():
     }
 
 
-def test_submission_serializer():
+@pytest.mark.parametrize(
+    "content_object_factory",
+    [VideoInterviewSubmissionFactory, QuizSubmissionFactory, None],
+)
+def test_submission_serializer(content_object_factory):
     """
     SubmissionSerializer should serialize an application submission with expected fields
     """
     run_step = BootcampRunApplicationStepFactory.build(id=123)
     submission = ApplicationStepSubmissionFactory.build(run_application_step=run_step)
+    submission.content_object = (
+        content_object_factory.create() if content_object_factory else None
+    )
     data = SubmissionSerializer(instance=submission).data
     assert data == {
         "id": None,
@@ -182,6 +190,10 @@ def test_submission_serializer():
         "submitted_date": serializer_date_format(submission.submitted_date),
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
+        "submission_status": submission.submission_status,
+        "interview_results_url": submission.content_object.interview.results_url
+        if content_object_factory is VideoInterviewSubmissionFactory
+        else None,
     }
 
 
@@ -208,6 +220,10 @@ def test_submission_review_serializer(has_interview):
         "submitted_date": serializer_date_format(submission.submitted_date),
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
+        "submission_status": submission.submission_status,
+        "interview_results_url": submission.content_object.interview.results_url
+        if has_interview
+        else None,
         "learner": UserSerializer(instance=user).data,
         "interview_url": (interview.results_url if has_interview else None),
         "bootcamp_application": BootcampApplicationSerializer(
