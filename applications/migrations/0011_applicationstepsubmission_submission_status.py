@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [("applications", "0009_add_step_default_status")]
+    dependencies = [("applications", "0010_add_waitlisted_status")]
 
     operations = [
         migrations.AddField(
