@@ -1,6 +1,5 @@
 // @flow
 import { assert } from "chai"
-import moment from "moment"
 import sinon from "sinon"
 import { Field } from "formik"
 import { shallow } from "enzyme"
@@ -44,35 +43,14 @@ describe("PaymentDisplay", () => {
     )
   })
 
-  const TEST_DATE = "2020-05-01"
-  describe("start and end dates", () => {
-    [
-      [
-        moment(TEST_DATE).format(),
-        moment(TEST_DATE)
-          .add(1, "days")
-          .format(),
-        "mai 1, 2020 - mai 2, 2020"
-      ],
-      [moment(TEST_DATE).format(), null, "mai 1, 2020 - TBD"],
-      [
-        null,
-        moment(TEST_DATE)
-          .add(1, "days")
-          .format(),
-        "TBD - mai 2, 2020"
-      ],
-      [null, null, "TBD - TBD"]
-    ].forEach(([startDate, endDate, expectedText]) => {
-      it(`renders bootcamp dates where startDate=${String(
-        startDate
-      )} and endDate=${String(endDate)}`, async () => {
-        application.bootcamp_run.start_date = startDate
-        application.bootcamp_run.end_date = endDate
-        const { inner } = await renderPage()
-        assert.equal(inner.find(".bootcamp-dates").text(), expectedText)
-      })
-    })
+  it("renders bootcamp dates", async () => {
+    const dateRangeText = "date range text"
+    const rangeStub = helper.sandbox
+      .stub(util, "formatRunDateRange")
+      .returns(dateRangeText)
+    const { inner } = await renderPage()
+    assert.equal(inner.find(".bootcamp-dates").text(), dateRangeText)
+    sinon.assert.calledWith(rangeStub, application.bootcamp_run)
   })
 
   it("should show the final payment deadline", async () => {

@@ -348,4 +348,14 @@ describe("ApplicationDashboardPage", () => {
       })
     })
   })
+
+  it("renders a view statement link", async () => {
+    const { wrapper } = await renderPage()
+
+    const link = wrapper.find(".view-statement a").at(0)
+    assert.equal(
+      link.prop("href"),
+      `/applications/${fakeApplicationDetail.id}/payment-history/`
+    )
+  })
 })

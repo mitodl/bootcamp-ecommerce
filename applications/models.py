@@ -98,7 +98,10 @@ class BootcampApplicationQuerySet(models.QuerySet):
         return self.select_related("user__profile", "bootcamp_run").prefetch_related(
             "submissions",
             models.Prefetch(
-                "orders", queryset=Order.objects.filter(status=Order.FULFILLED)
+                "orders",
+                queryset=Order.objects.filter(status=Order.FULFILLED).select_related(
+                    "user__profile"
+                ),
             ),
             "bootcamp_run__application_steps__application_step",
             "bootcamp_run__installment_set",

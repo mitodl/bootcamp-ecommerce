@@ -9,6 +9,7 @@ import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
 import { Collapse } from "reactstrap"
 import * as R from "ramda"
+import { reverse } from "named-urls"
 
 import {
   PaymentDetail,
@@ -26,6 +27,7 @@ import {
 } from "../../lib/queries/applications"
 import { currentUserSelector } from "../../lib/queries/users"
 import { formatStartEndDateStrings, formatTitle } from "../../util/util"
+import { routes } from "../../lib/urls"
 import {
   APP_STATE_TEXT_MAP,
   APPLICATIONS_DASHBOARD_PAGE_TITLE,
@@ -249,9 +251,21 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 <strong>{APP_STATE_TEXT_MAP[application.state]}</strong>
               </div>
             </div>
-
-            <div className="row text-right">
-              <div className="col-12 pt-2">
+            <div className="row">
+              <div className="col-5" />
+              <div className="col-3 view-statement">
+                <a
+                  className="btn-link"
+                  href={reverse(routes.applications.paymentHistory.self, {
+                    applicationId: application.id
+                  })}
+                >
+                  <span className="material-icons">printer</span>
+                  View Statement
+                </a>
+              </div>
+              <div className="col-2" />
+              <div className="col-2 collapse-link">
                 <a
                   className="btn-text expand-collapse"
                   onClick={R.partial(this.loadAndRevealAppDetail, [

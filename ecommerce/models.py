@@ -12,7 +12,7 @@ from django.db.models import (
     Sum,
 )
 
-
+from ecommerce.constants import CARD_TYPES
 from main.models import AuditableModel, AuditModel, TimestampedModel
 from main.utils import serialize_model_object
 from klasses.models import BootcampRun
@@ -161,6 +161,19 @@ class Receipt(TimestampedModel):
 
     order = ForeignKey(Order, null=True, on_delete=CASCADE)
     data = JSONField()
+
+    @property
+    def payment_method(self):
+        """Try to guess the payment source based on the Cybersource receipt"""
+        payment_method = self.data.get("req_payment_method")
+        if payment_method == "card":
+            card_type = self.data.get("req_card_type")
+            card_type_description = CARD_TYPES.get(card_type, "")
+            card_number = self.data.get("req_card_number", "")
+
+            return f"{card_type_description} | {card_number}"
+        elif payment_method == "paypal":
+            return "PayPal"
 
     def __str__(self):
         """Description of Receipt"""

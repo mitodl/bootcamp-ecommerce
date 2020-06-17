@@ -59,6 +59,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     submissions = SubmissionSerializer(many=True, read_only=True)
     orders = ApplicationOrderSerializer(many=True, read_only=True)
     bootcamp_run = BootcampRunSerializer(read_only=True)
+    user = UserSerializer()
 
     def get_resume_filepath(self, bootcamp_application):
         """Gets the resume filename (without the path) if one exists"""
@@ -96,6 +97,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "submissions",
             "orders",
             "price",
+            "user",
         ]
 
 

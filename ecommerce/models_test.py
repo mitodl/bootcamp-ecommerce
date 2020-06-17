@@ -143,3 +143,28 @@ def test_total_paid_for_bootcamp_run(lines_fulfilled):
         Line.total_paid_for_bootcamp_run(user, run_key).get("total")
         == line_fulfilled_1.price
     )
+
+
+@pytest.mark.parametrize(
+    "payment_method, card_type, card_number, expected",
+    [
+        ["card", "001", "xxxxxxxxxxxx1111", "Visa | xxxxxxxxxxxx1111"],
+        ["paypal", "", "", "PayPal"],
+    ],
+)
+def test_payment_method(payment_method, card_type, card_number, expected):
+    """
+    The payment_method property should calculate a description of the payment method from receipt data
+    """
+    receipt = ReceiptFactory.create()
+    receipt_data = {
+        **receipt.data,
+        "req_payment_method": payment_method,
+        "req_card_type": card_type,
+        "req_card_number": card_number,
+    }
+    receipt.data = receipt_data
+    receipt.save()
+    receipt.refresh_from_db()
+
+    assert receipt.payment_method == expected

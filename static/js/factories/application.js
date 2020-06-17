@@ -4,7 +4,6 @@ import moment from "moment"
 import { sum } from "ramda"
 
 import { generateFakeRun, generateOrder } from "./index"
-import { makeUser } from "./user"
 import { incrementer } from "../util/util"
 import {
   APP_STATE_TEXT_MAP,
@@ -15,6 +14,7 @@ import {
   SUBMISSION_QUIZ,
   SUBMISSION_VIDEO
 } from "../constants"
+import { makeUser } from "./user"
 
 import type {
   Application,
@@ -99,7 +99,8 @@ export const makeApplicationDetail = (): ApplicationDetail => {
     submissions:           [],
     orders:                [generateOrder()],
     created_on:            moment().format(),
-    price:                 price
+    price:                 price,
+    user:                  makeUser()
   }
 }
 

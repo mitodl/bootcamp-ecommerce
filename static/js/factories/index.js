@@ -79,7 +79,8 @@ export const generateLegacyOrderPartial = (): LegacyOrderPartial => ({
 
 export const generateOrder = (): ApplicationOrder => ({
   ...generateLegacyOrderPartial(),
-  total_price_paid: 10
+  total_price_paid: 10,
+  payment_method:   "Doofbux | xxxxxxxxxxxx1111"
 })
 
 export const generateFakePayment = ({

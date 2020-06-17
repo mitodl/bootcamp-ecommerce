@@ -9,6 +9,7 @@ import { ErrorMessage, Field, Form, Formik } from "formik"
 import Decimal from "decimal.js-light"
 
 import queries from "../lib/queries"
+import { formatRunDateRange } from "../util/util"
 
 import {
   createForm,
@@ -69,10 +70,7 @@ export const PaymentDisplay = (props: Props) => {
         <h2 className="drawer-title">Make Payment</h2>
         <div className="bootcamp">
           <div className="bootcamp-title">{run.bootcamp.title}</div>
-          <div className="bootcamp-dates">
-            {run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"}{" "}
-            - {run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"}
-          </div>
+          <div className="bootcamp-dates">{formatRunDateRange(run)}</div>
         </div>
         <div className="payment-deadline">
           Full payment must be complete by{" "}
