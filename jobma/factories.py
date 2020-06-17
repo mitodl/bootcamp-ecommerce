@@ -26,6 +26,7 @@ class InterviewFactory(DjangoModelFactory):
 
     job = SubFactory(JobFactory)
     interview_url = Faker("url")
+    results_url = Faker("url")
     applicant = SubFactory("profiles.factories.UserFactory")
 
     class Meta:
