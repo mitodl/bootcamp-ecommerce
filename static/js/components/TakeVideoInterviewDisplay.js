@@ -19,7 +19,7 @@ export function TakeVideoInterviewDisplay({
 }: Props) {
   return (
     <div className="container take-video-interview auth-card">
-      <h2>Take Video Interview</h2>
+      <h2 className="text-uppercase">Take Video Interview</h2>
       <p>
         Thank you for taking the video interview. To make your experience better
         we are collaborating with Jobma and you will be taking this interview on
