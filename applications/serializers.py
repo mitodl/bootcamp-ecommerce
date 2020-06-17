@@ -42,6 +42,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
     interview_results_url = serializers.SerializerMethodField()
 
     def get_interview_results_url(self, submission):
+        """Get results_url from the VideoInterviewSubmission if it exists and it's the right type"""
         content_object = submission.content_object
         if isinstance(content_object, models.VideoInterviewSubmission):
             return content_object.interview.results_url

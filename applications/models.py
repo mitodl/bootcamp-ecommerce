@@ -20,7 +20,6 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
     SUBMISSION_STATUS_PENDING,
-    SUBMISSION_STATUS_SUBMITTED,
 )
 from applications.utils import validate_file_extension
 from ecommerce.models import Order

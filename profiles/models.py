@@ -202,6 +202,7 @@ class Profile(TimestampedModel):
 
     @property
     def first_and_last_names(self):
+        """Calculate first and last name from the full name"""
         name = self.name or ""
         names = name.split(maxsplit=1)
         if len(names) == 0:

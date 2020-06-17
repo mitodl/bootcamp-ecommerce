@@ -2,7 +2,7 @@
 from collections import OrderedDict
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, F, Subquery, OuterRef, IntegerField, Prefetch
+from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
@@ -15,7 +15,6 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_serializer_extensions.views import SerializerExtensionsAPIViewMixin
 
-from applications.constants import SUBMISSION_VIDEO
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
@@ -24,7 +23,6 @@ from applications.serializers import (
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import (
-    ApplicationStep,
     ApplicationStepSubmission,
     BootcampApplication,
     BootcampRunApplicationStep,
@@ -208,6 +206,7 @@ class VideoInterviewsView(GenericAPIView):
     owner_field = "user"
     queryset = BootcampApplication.objects.all()
 
+    # pylint: disable=too-many-locals
     def post(self, request, *args, **kwargs):
         """
         Create the Interview, then POST to Jobma to create it there,
@@ -236,7 +235,7 @@ class VideoInterviewsView(GenericAPIView):
             video_interview_submission, _ = VideoInterviewSubmission.objects.get_or_create(
                 interview=interview
             )
-            submission, _ = ApplicationStepSubmission.objects.get_or_create(
+            ApplicationStepSubmission.objects.get_or_create(
                 bootcamp_application=application,
                 run_application_step=run_step,
                 object_id=video_interview_submission.id,

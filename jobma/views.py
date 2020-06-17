@@ -8,13 +8,6 @@ from applications.constants import (
     SUBMISSION_STATUS_PENDING,
     SUBMISSION_STATUS_SUBMITTED,
 )
-from applications.models import (
-    ApplicationStepSubmission,
-    ApplicationStep,
-    BootcampApplication,
-    BootcampRunApplicationStep,
-    VideoInterviewSubmission,
-)
 from jobma.constants import JOBMA_COMPLETED_INTERVIEW_STATUSES
 from jobma.models import Interview
 from jobma.permissions import JobmaWebhookPermission
