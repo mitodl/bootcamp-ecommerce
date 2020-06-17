@@ -219,6 +219,18 @@ class BootcampApplication(TimestampedModel):
     def reject_submission(self):
         """Reject application submission"""
 
+    @transition(
+        field=state,
+        source=[
+            AppStates.REJECTED.value,
+            AppStates.AWAITING_PAYMENT.value,
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+        ],
+        target=AppStates.AWAITING_SUBMISSION_REVIEW.value,
+    )
+    def revert_decision(self):
+        """Revert previous submission decision"""
+
     def all_application_steps_submitted(self):
         """
         Check if the user has submissions for all application steps.

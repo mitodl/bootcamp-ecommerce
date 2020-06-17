@@ -7,6 +7,7 @@ from applications.constants import (
     AppStates,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
+    REVIEW_STATUS_WAITLISTED,
 )
 from applications.exceptions import InvalidApplicationStateException
 from applications.models import VideoInterviewSubmission
@@ -130,7 +131,12 @@ class SubmissionReviewSerializer(SubmissionSerializer):
         bootcamp_application = self.instance.bootcamp_application
 
         if "review_status" in attrs:
-            if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
+            if bootcamp_application.state not in (
+                AppStates.AWAITING_SUBMISSION_REVIEW.value,
+                AppStates.AWAITING_USER_SUBMISSIONS.value,
+                AppStates.AWAITING_PAYMENT.value,
+                AppStates.REJECTED.value,
+            ):
                 # HTTP 409 error
                 raise InvalidApplicationStateException(
                     detail="The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
@@ -147,6 +153,10 @@ class SubmissionReviewSerializer(SubmissionSerializer):
 
         if "review_status" in validated_data:
             bootcamp_application = instance.bootcamp_application
+            if bootcamp_application.state != AppStates.AWAITING_SUBMISSION_REVIEW.value:
+                bootcamp_application.revert_decision()
+                if instance.review_status == REVIEW_STATUS_WAITLISTED:
+                    bootcamp_application.save()
             if instance.review_status == REVIEW_STATUS_APPROVED:
                 bootcamp_application.approve_submission()
                 bootcamp_application.save()
