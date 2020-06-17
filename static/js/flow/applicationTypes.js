@@ -39,7 +39,7 @@ export type ApplicationSubmission = {
   submission_status:       ValidSubmissionStatusType,
   review_status:           ValidReviewStatusType,
   review_status_date:      ?string,
-  interview_results_url:   ?string,
+  interview_url:           ?string
 }
 
 export type LegacyOrderPartial = {

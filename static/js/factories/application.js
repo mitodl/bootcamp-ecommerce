@@ -60,7 +60,7 @@ export const makeApplicationSubmission = (): ApplicationSubmission => ({
   submission_status:       casual.random_element(
     Object.keys(SUBMISSION_STATUS_TEXT_MAP)
   ),
-  interview_results_url: casual.url
+  interview_url: casual.url
 })
 
 export const setSubmissionToPending = (
