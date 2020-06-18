@@ -18,8 +18,6 @@ import {
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED,
-  SUBMISSION_STATUS_PENDING,
-  SUBMISSION_STATUS_SUBMITTED,
   SUBMISSION_VIDEO
 } from "../../constants"
 import * as utils from "../../util/util"
