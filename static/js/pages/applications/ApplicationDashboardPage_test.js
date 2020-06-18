@@ -35,6 +35,7 @@ import type {
   Application,
   ApplicationDetail
 } from "../../flow/applicationTypes"
+import { shouldIf } from "../../lib/test_utils"
 
 describe("ApplicationDashboardPage", () => {
   let helper,
@@ -349,9 +350,9 @@ describe("ApplicationDashboardPage", () => {
     })
   })
   ;[true, false].forEach(hasPayments => {
-    it(`${
-      hasPayments ? "has" : "doesn't have"
-    } a view statement link if hasPayments=${String(
+    it(`${shouldIf(
+      hasPayments
+    )} have a view statement link if hasPayments=${String(
       hasPayments
     )}`, async () => {
       fakeApplications.forEach(application => {

@@ -253,7 +253,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
             </div>
             <div className="row mt-2">
               <div className="col-7 text-left text-sm-right view-statement">
-                {application.has_payments ? (
+                {application.has_payments && (
                   <a
                     className="btn-link"
                     href={reverse(routes.applications.paymentHistory.self, {
@@ -263,7 +263,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                     <span className="material-icons">printer</span>
                     View Statement
                   </a>
-                ) : null}
+                )}
               </div>
               <div className="col-5 text-right collapse-link">
                 <a
