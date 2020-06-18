@@ -148,7 +148,7 @@ def test_application_list_serializer(app_data, has_payments):
             "bootcamp_run": BootcampRunSerializer(
                 instance=application.bootcamp_run
             ).data,
-            "has_payments": has_payments
+            "has_payments": has_payments,
         }
         for application in user_applications
     ]
