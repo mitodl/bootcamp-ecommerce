@@ -117,10 +117,14 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  outline: none;
+  outline: none !important;
   box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.1);
-  margin: -75px 0 0;
+  margin: -85px 0 0;
   cursor: pointer;
+
+  @include media-breakpoint-down(lg) {
+    margin: -70px 0 0;
+  }
 
   @include media-breakpoint-up(md) {
     left: -25px;
@@ -138,7 +142,7 @@
   }
 
   &:hover {
-    color: white;
+    color: $primary;
     background: black;
   }
 
