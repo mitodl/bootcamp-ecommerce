@@ -110,11 +110,14 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
 
     def get_has_payments(self, application):
         """Return true if the user has any fulfilled orders for this application"""
-        # IMPORTANT: orders has already been prefetched and filtered status=Order.FULFILLED
-        # If you are using this outside of BootcampApplicationViewset, you will need to
-        # use prefetch_state_data() or similarly prefetch orders with status=Order.FULFILLED.
-        # If you don't, this will count all orders instead of just the fulfilled ones.
-        return bool(application.orders.all())
+        filtered_orders = self.context.get("filtered_orders", False)
+        if filtered_orders:
+            # orders has already been prefetched and filtered status=Order.FULFILLED.
+            # To avoid a duplicate query we need to use all() here to ensure the prefetched
+            # result is used.
+            return bool(application.orders.all())
+        else:
+            return application.orders.filter(status=Order.FULFILLED).exists()
 
     class Meta:
         model = models.BootcampApplication

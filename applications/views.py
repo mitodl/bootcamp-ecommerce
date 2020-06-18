@@ -47,7 +47,6 @@ class BootcampApplicationViewset(
             return (
                 BootcampApplication.objects.prefetch_state_data()
                 .filter(user=self.request.user)
-                .annotate(num_orders=Count("orders", status=Order.FULFILLED))
                 .select_related("bootcamp_run__bootcamprunpage")
                 .order_by("-created_on")
             )
@@ -55,7 +54,7 @@ class BootcampApplicationViewset(
     def get_serializer_context(self):
         added_context = {}
         if self.action == "list":
-            added_context = {"include_page": True}
+            added_context = {"include_page": True, "filtered_orders": True}
         return {**super().get_serializer_context(), **added_context}
 
     def get_serializer_class(self):
