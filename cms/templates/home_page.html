@@ -23,6 +23,7 @@
         </div>
     </div>
   </div>
+  {% if page.catalog %} {% include "partials/home-page-catalog.html" with page=page.catalog %} {% endif %}
   {% if page.program_description_section %} {% include "partials/program-elements.html" with page=page.program_description_section %} {% endif %}
   {% if page.three_column_image_text_section %} {% include "partials/three-column-image-text-section.html" with page=page.three_column_image_text_section %} {% endif %}
   {% if page.alumni %} {% include "partials/homepage-alumni.html" with page=page.alumni %} {% endif %}

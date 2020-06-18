@@ -11,6 +11,7 @@ from cms.factories import (
     ProgramDescriptionPageFactory,
     HomeAlumniPageFactory,
     HomePageFactory,
+    CatalogGridPageFactory,
 )
 from cms.models import LearningResourcePage
 
@@ -118,3 +119,13 @@ def test_home_alumni_page():
     assert home_alumni_page.text == "text of the page"
     assert home_alumni_page.highlight_quote == "quote of the page"
     assert home_alumni_page.highlight_name == "ABC"
+
+
+def test_home_catalog():
+    """
+    Verify user can create catalog grid under home page
+    """
+    home = HomePageFactory()
+    assert not home.catalog
+    catalog = CatalogGridPageFactory(parent=home)
+    assert home.catalog == catalog

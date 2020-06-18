@@ -1,0 +1,28 @@
+{% load static wagtailimages_tags image_version_url wagtailcore_tags %}
+<div class="catalog-section">
+    <div class="container">
+        <div class="row">
+            {% for page_block in page.contents %}
+                {% with block=page_block.value %}
+                    <div class="col-sm-6 col-lg-4 p-0 d-flex flex-column">
+                        {% if block.page.thumbnail_image %}
+                            <img src="{% image_version_url block.page.thumbnail_image "fill-475x300" %}" alt="{{ block.page.title }}">
+                        {% else %}
+                            <img src="{% static 'images/mit-dome.png' %}" alt="{{ block.page.title }}">
+                        {% endif %}
+                        <div class="info d-flex flex-column flex-grow-1">
+                            <h2>{{ block.page.title }}</h2>
+                            <span class="dates">
+                                {{ block.format }} <br>{{ block.page.bootcamp_run.start_date|date:"M, j" }} - {{ block.page.bootcamp_run.end_date|date }}
+                            </span>
+                            <div class="flex-grow-1">
+                                {{ block.page.description|richtext }}
+                            </div>
+                            <strong class="deadline-text">Application Deadline {{ block.application_deadline|date }}</strong>
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@ from wagtail.core.models import Page, Site
 
 HOME_PAGE_SLUG = "home"
 DEFAULT_WAGTAIL_HOMEPAGE_PROPS = dict(
-    title="Welcome to your new Wagtail site!", depth=2, path="00010001"
+    title="Welcome to your new Wagtail site!", depth=2
 )
 DEFAULT_HOMEPAGE_PROPS = dict(
     title="MIT Bootcamps", tagline="Learn Innovation and Entrepreneurship from MIT"
@@ -32,9 +32,13 @@ def create_home_page(apps, schema_editor):
             **DEFAULT_HOMEPAGE_PROPS, content_type_id=home_page_content_type.id
         )
         root.add_child(instance=valid_home_page)
-        valid_home_page = Page.objects.filter(
-            content_type_id=home_page_content_type.id
-        ).get()
+        valid_home_page = (
+            Page.objects.filter(content_type_id=home_page_content_type.id)
+            .get()
+            .specific
+        )
+    else:
+        valid_home_page = valid_home_page.specific
     site, _ = Site.objects.get_or_create(
         is_default_site=True,
         defaults=dict(
@@ -50,15 +54,13 @@ def create_home_page(apps, schema_editor):
         depth=2, content_type=ContentType.objects.get_for_model(Page)
     ).first()
     if wagtail_default_home_page is not None:
-        descendants = wagtail_default_home_page.get_descendants()
+        descendants = wagtail_default_home_page.get_children()
         for descendant in descendants:
-            if descendant.depth == valid_home_page.depth + 1:
-                descendant.move(valid_home_page, pos="last-child")
-        wagtail_default_home_page.delete()
-    # Set the home page slug so that Wagtail routing works correctly
-    if valid_home_page.slug != HOME_PAGE_SLUG:
-        valid_home_page.slug = HOME_PAGE_SLUG
-        valid_home_page.save()
+            Page.objects.get(id=descendant.id).move(valid_home_page, "last-child")
+        # Only unpublishing here because if we have other models that haven't run their migrations yet
+        # TreeBeard also tries to delete those and results in an exception.
+        wagtail_default_home_page.unpublish()
+    valid_home_page.save_revision().publish()
 
 
 def remove_home_page(apps, schema_editor):
@@ -70,22 +72,28 @@ def remove_home_page(apps, schema_editor):
     home_page = Page.objects.filter(
         content_type=ContentType.objects.get_for_model(HomePage)
     ).first()
-    default_wagtail_home_page = Page(**DEFAULT_WAGTAIL_HOMEPAGE_PROPS)
-    root = Page.objects.get(depth=1)
-    root.add_child(instance=default_wagtail_home_page)
+    default_wagtail_home_page = Page.objects.filter(
+        **DEFAULT_WAGTAIL_HOMEPAGE_PROPS
+    ).first()
+    if not default_wagtail_home_page:
+        default_wagtail_home_page = Page(**DEFAULT_WAGTAIL_HOMEPAGE_PROPS)
+        root = Page.objects.get(depth=1)
+        root.add_child(instance=default_wagtail_home_page)
 
-    descendants = home_page.get_descendants()
-    for descendant in descendants:
-        if descendant.depth == default_wagtail_home_page.depth + 1:
-            descendant.move(default_wagtail_home_page, pos="last-child")
+    if home_page:
+        descendants = home_page.get_children()
+        for descendant in descendants:
+            Page.objects.get(id=descendant.id).move(
+                default_wagtail_home_page, "last-child"
+            )
+        # Only unpublishing here because if we have other models that haven't run their migrations yet
+        # TreeBeard also tries to delete those and results in an exception.
+        home_page.specific.unpublish()
     site = Site.objects.filter(is_default_site=True).first()
     if site:
         site.root_page = default_wagtail_home_page
         site.save()
-    home_page.delete()
-    # Set the home page slug so that Wagtail routing works correctly
-    default_wagtail_home_page.slug = HOME_PAGE_SLUG
-    default_wagtail_home_page.save()
+    default_wagtail_home_page.save_revision().publish()
 
 
 class Migration(migrations.Migration):

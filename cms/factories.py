@@ -3,12 +3,17 @@
 import factory
 from factory.django import DjangoModelFactory
 import faker
-from wagtail.core.models import Page, Site
+import pytz
+from wagtail.core.models import Site
 from wagtail.core.rich_text import RichText
 import wagtail_factories
 
 from cms import models
-from cms.blocks import TitleLinksBlock, TitleDescriptionBlock
+from cms.blocks import (
+    TitleLinksBlock,
+    TitleDescriptionBlock,
+    CatalogSectionBootcampBlock,
+)
 from klasses.factories import BootcampRunFactory
 
 
@@ -41,8 +46,8 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
         """Post-generation hook"""
         if create:
             # Move the created page to be a child of the home page
-            home_page = Page.objects.get(depth=2)
-            obj.move(home_page, "last-child")
+            site = Site.objects.get(is_default_site=True)
+            obj.move(site.root_page, "last-child")
             obj.refresh_from_db()
         return obj
 
@@ -132,3 +137,25 @@ class HomeAlumniPageFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.HomeAlumniPage
+
+
+class CatalogSectionBootcampBlockFactory(wagtail_factories.StructBlockFactory):
+    """CatalogSectionBootcampBlock factory class"""
+
+    page = factory.SubFactory(BootcampRunPageFactory)
+    format = factory.fuzzy.FuzzyText(prefix="format ", length=24)
+    application_deadline = FAKE.date_time_this_month(before_now=False, tzinfo=pytz.utc)
+
+    class Meta:
+        model = CatalogSectionBootcampBlock
+
+
+class CatalogGridPageFactory(wagtail_factories.PageFactory):
+    """CatalogGridPage factory class"""
+
+    contents = wagtail_factories.StreamFieldFactory(
+        {"bootcamp_run": CatalogSectionBootcampBlockFactory}
+    )
+
+    class Meta:
+        model = models.CatalogGridPage
