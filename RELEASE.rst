@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.45.2
+Version 0.45.2 (Released June 18, 2020)
 --------------
 
 - Payment history page (#627)
