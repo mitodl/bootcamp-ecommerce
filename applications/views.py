@@ -21,7 +21,6 @@ from applications.serializers import (
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import BootcampApplication, ApplicationStepSubmission
-from ecommerce.models import Order
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 
