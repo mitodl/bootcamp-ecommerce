@@ -66,12 +66,11 @@ body .standard-layout.deprecated-styling {
 .navbar {
   background-color: $white;
   border-radius: 0;
-  border-bottom: 1px solid $black;
   min-height: $toolbar-height;
-  padding: 3px 27px 3px 33px;
+  padding: 3px 0px 3px 0px;
 
   @include breakpoint(phone) {
-    padding: 3px 18px;
+    padding: 3px 0px;
   }
 }
 

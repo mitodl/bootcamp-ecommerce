@@ -9,10 +9,10 @@
   <div class="product-page">
     <div class="header">
       {% image page.header_image fill-1920x1080 %}
-      <div class="d-flex flex-column container-fluid">
+      <div class="d-flex flex-column container min-vh-100">
           <div class="row flex-grow-1"></div>
           <div class="row">
-              <div class="col-md-10 offset-md-2 title">
+              <div class="col-md-10 title">
                   <h1>{{ page.title }}</h1>
                   <h2>{{ page.subhead }}</h2>
                   <h3>{{ page.bootcamp_run.start_date|date }} - {{ page.bootcamp_run.end_date|date }}</h3>
@@ -20,9 +20,9 @@
           </div>
           <div class="row flex-grow-1"></div>
           <div class="row">
-              <div class="col-md-8 col-sm-12 bg-white py-5">
+              <div class="col-md-8 col-sm-12 bg-white py-5 left-screen">
                   <div class="row">
-                      <div class="col-md-10 offset-md-2 col-sm-12 border-left">
+                      <div class="col-sm-12 border-left">
                           {{ page.description|richtext }}
                       </div>
                   </div>
