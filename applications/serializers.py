@@ -10,6 +10,7 @@ from applications.constants import (
 )
 from applications.exceptions import InvalidApplicationStateException
 from applications.models import VideoInterviewSubmission
+from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.serializers import BootcampRunSerializer
 from main.utils import now_in_utc
@@ -105,10 +106,19 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
     """BootcampApplication serializer"""
 
     bootcamp_run = BootcampRunSerializer()
+    has_payments = serializers.SerializerMethodField()
+
+    def get_has_payments(self, application):
+        """Return true if the user has any fulfilled orders for this application"""
+        # IMPORTANT: orders has already been prefetched and filtered status=Order.FULFILLED
+        # If you are using this outside of BootcampApplicationViewset, you will need to
+        # use prefetch_state_data() or similarly prefetch orders with status=Order.FULFILLED.
+        # If you don't, this will count all orders instead of just the fulfilled ones.
+        return bool(application.orders.all())
 
     class Meta:
         model = models.BootcampApplication
-        fields = ["id", "state", "created_on", "bootcamp_run"]
+        fields = ["id", "state", "created_on", "bootcamp_run", "has_payments"]
 
 
 class SubmissionReviewSerializer(SubmissionSerializer):

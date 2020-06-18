@@ -21,6 +21,7 @@ from applications.serializers import (
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import BootcampApplication, ApplicationStepSubmission
+from ecommerce.models import Order
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 
@@ -44,7 +45,9 @@ class BootcampApplicationViewset(
             return BootcampApplication.objects.prefetch_state_data()
         else:
             return (
-                BootcampApplication.objects.filter(user=self.request.user)
+                BootcampApplication.objects.prefetch_state_data()
+                .filter(user=self.request.user)
+                .annotate(num_orders=Count("orders", status=Order.FULFILLED))
                 .select_related("bootcamp_run__bootcamprunpage")
                 .order_by("-created_on")
             )

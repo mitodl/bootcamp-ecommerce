@@ -33,7 +33,8 @@ export const makeApplication = (): Application => ({
   id:           incr.next().value,
   state:        casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
   created_on:   moment().format(),
-  bootcamp_run: generateFakeRun()
+  bootcamp_run: generateFakeRun(),
+  has_payments: casual.boolean
 })
 
 export const makeApplicationRunStep = (
