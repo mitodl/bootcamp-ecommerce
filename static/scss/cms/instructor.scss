@@ -12,7 +12,6 @@
     flex-wrap: wrap;
     flex-direction: column;
     padding-bottom: 140px;
-    margin: 0 -15px;
     position: relative;
     z-index: 1;
 
@@ -129,6 +128,7 @@
 
 .instructor-container {
   @include media-breakpoint-down(sm) {
+    margin-top: unset;
     padding: 15px;
   }
 

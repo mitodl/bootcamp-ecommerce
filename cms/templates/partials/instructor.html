@@ -1,7 +1,11 @@
 {% load wagtailcore_tags image_version_url %}
 <div id="faculty-block" class="instructor-block">
-  <div class="banner">
-    <img src="{% image_version_url page.banner_image "fill-1920x200" %}" alt="{{ page.name }}" />
+  <div class="container-fluid px-0">
+      <div class="row no-gutters">
+          <div class="col banner">
+            <img src="{% image_version_url page.banner_image "fill-1920x350" %}" alt="{{ page.name }}" />
+          </div>
+      </div>
   </div>
   <div class="container instructor-container">
     <div class="row instructors-header">
