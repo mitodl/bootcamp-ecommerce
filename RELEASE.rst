@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Version 0.45.2 (Released June 18, 2020)
+--------------
+
+- Payment history page (#627)
+- moved resource pages under homepage
+- Added remaining stuff for HomePage
+- add migration for home page setup
+- Fix the facet responses to avoid duplicate entries
+
 Version 0.45.1 (Released June 16, 2020)
 --------------
 
