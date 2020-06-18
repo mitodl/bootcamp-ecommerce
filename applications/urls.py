@@ -28,6 +28,6 @@ urlpatterns = [
     path(
         "api/applications/<int:pk>/video-interviews/",
         VideoInterviewsView.as_view(),
-        name="take-video-interview",
+        name="video-interviews",
     ),
 ]

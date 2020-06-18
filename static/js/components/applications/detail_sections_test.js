@@ -18,6 +18,8 @@ import {
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED,
+  SUBMISSION_STATUS_PENDING,
+  SUBMISSION_STATUS_SUBMITTED,
   SUBMISSION_VIDEO
 } from "../../constants"
 import * as utils from "../../util/util"
@@ -104,13 +106,17 @@ describe("application detail section component", () => {
 
     //
     ;[
-      [false, false, undefined],
-      [true, false, "Take Video Interview"],
-      [true, true, undefined]
-    ].forEach(([ready, fulfilled, expLinkText]) => {
+      [false, false, false, undefined],
+      [true, false, false, "Take Video Interview"],
+      [true, true, true, "View Your Interview"],
+      [true, true, false, undefined]
+    ].forEach(([ready, fulfilled, submitted, expLinkText]) => {
       it(`should show correct link if ready === ${String(
         ready
       )}, fulfilled === ${String(fulfilled)}`, () => {
+        if (!submitted) {
+          submission.interview_url = null
+        }
         const wrapper = shallow(
           <VideoInterviewDetail
             {...defaultProps}
@@ -125,6 +131,9 @@ describe("application detail section component", () => {
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
           assert.equal(link.text(), expLinkText)
+        }
+        if (submitted) {
+          assert.equal(link.prop("href"), submission.interview_url)
         }
       })
     })

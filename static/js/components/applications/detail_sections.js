@@ -138,7 +138,9 @@ export const VideoInterviewDetail = (
           </div>
         ) : submission && submission.interview_url ? (
           <div className="col-12 col-sm-5 text-sm-right">
-            <a href={submission.interview_url}>View Your Interview</a>
+            <a className="btn-link" href={submission.interview_url}>
+              View Your Interview
+            </a>
           </div>
         ) : null
       ) : null}
