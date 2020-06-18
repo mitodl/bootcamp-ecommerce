@@ -17,7 +17,6 @@ from applications.factories import (
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
-    VideoInterviewSubmissionFactory,
 )
 from applications.models import ApplicationStepSubmission, VideoInterviewSubmission
 from applications.serializers import (
@@ -55,6 +54,7 @@ def test_view_serializer(mocker, action, exp_serializer):
     assert serializer_cls == exp_serializer
 
 
+# pylint: disable=redefined-outer-name, too-many-arguments
 def test_view_serializer_context(mocker):
     """
     The bootcamp application view should add context to the serializer in the list view
