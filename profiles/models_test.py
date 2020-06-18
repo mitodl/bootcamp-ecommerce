@@ -62,11 +62,10 @@ def test_profile_is_complete(empty_field):
     [
         ["Onename", ["Onename", ""]],
         ["Two names", ["Two", "names"]],
-        ["Three names or more"],
-        ["Three", "names or more"],
+        ["Three names or more", ["Three", "names or more"]],
     ],
 )
 def test_profile_first_and_last_names(name, expected):
     """Profile.first_and_last_names should properly split the name"""
     profile = ProfileFactory.create(name=name)
-    assert profile.first_and_last_names == expected
+    assert list(profile.first_and_last_names) == expected
