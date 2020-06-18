@@ -347,16 +347,22 @@ def test_submission_review_serializer_reverse_decision(
 
 
 @pytest.mark.parametrize(
-    "app_state",
+    "app_state,total_paid",
     [
-        AppStates.AWAITING_RESUME,
-        AppStates.COMPLETE,
-        AppStates.AWAITING_PROFILE_COMPLETION,
+        [AppStates.AWAITING_RESUME, 0],
+        [AppStates.COMPLETE, 0],
+        [AppStates.AWAITING_PROFILE_COMPLETION, 0],
+        [AppStates.AWAITING_SUBMISSION_REVIEW, 40],
     ],
 )
-def test_submission_review_serializer_validation(app_state):
+def test_submission_review_serializer_validation(app_state, total_paid):
     """Test that status changes are invalidated if the application state is incorrect"""
     bootcamp_application = BootcampApplicationFactory.create(state=app_state)
+    if total_paid > 0:
+        OrderFactory.create(
+            application=bootcamp_application, total_price_paid=total_paid
+        )
+
     submission = ApplicationStepSubmissionFactory.create(
         review_status=REVIEW_STATUS_PENDING,
         bootcamp_application=bootcamp_application,

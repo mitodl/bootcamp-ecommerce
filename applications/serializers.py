@@ -131,11 +131,15 @@ class SubmissionReviewSerializer(SubmissionSerializer):
         bootcamp_application = self.instance.bootcamp_application
 
         if "review_status" in attrs:
-            if bootcamp_application.state not in (
-                AppStates.AWAITING_SUBMISSION_REVIEW.value,
-                AppStates.AWAITING_USER_SUBMISSIONS.value,
-                AppStates.AWAITING_PAYMENT.value,
-                AppStates.REJECTED.value,
+            if (
+                bootcamp_application.state
+                not in (
+                    AppStates.AWAITING_SUBMISSION_REVIEW.value,
+                    AppStates.AWAITING_USER_SUBMISSIONS.value,
+                    AppStates.AWAITING_PAYMENT.value,
+                    AppStates.REJECTED.value,
+                )
+                or bootcamp_application.total_paid > 0
             ):
                 # HTTP 409 error
                 raise InvalidApplicationStateException(
