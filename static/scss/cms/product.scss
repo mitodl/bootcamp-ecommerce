@@ -34,5 +34,17 @@
         font-size: 1.5em;
       }
     }
+
+    .rich-text p {
+
+      a {
+        color: black;
+        text-decoration: underline;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
   }
 }

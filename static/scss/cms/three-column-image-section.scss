@@ -9,7 +9,21 @@ html {
   padding-left: 15px;
 
   .section-row {
+
+    padding-bottom: 40px;
+
     .col-sm-4 {
+
+      .col-border-padding {
+        padding-left: 30px;
+        padding-right: 30px;
+
+        @include media-breakpoint-down(sm) {
+          padding-right: 10px;
+          padding-left: 10px;
+        }
+      }
+
       &:first-child {
         .col-border-padding {
           margin-left: 80px;
