@@ -1,7 +1,6 @@
 h1 {
   font-size: 32px;
   font-weight: 600;
-  letter-spacing: 3.5px;
   text-transform: uppercase;
 
   @include breakpoint(phone) {
@@ -11,13 +10,11 @@ h1 {
 
 h2 {
   font-size: 24px;
-  letter-spacing: 1.22px;
   font-weight: 600;
 }
 
 h3 {
   font-size: 20px;
-  letter-spacing: 1.1px;
   font-weight: 600;
 }
 
@@ -29,7 +26,6 @@ h3.section-header {
   font: bold 15px $sans-serif-font;
   text-transform: uppercase;
   white-space: nowrap;
-  letter-spacing: 1px;
 
   hr {
     display: inline-block;
@@ -55,7 +51,6 @@ h3.section-header {
 
 p, .std-text {
   font-size: 16px;
-  letter-spacing: 1.73px;
 }
 
 .caption {
