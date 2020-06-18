@@ -125,6 +125,7 @@ class ReviewSubmissionPagination(LimitOffsetPagination):
             Bootcamp.objects.values("id", "title")
             .annotate(count=Subquery(qs, output_field=IntegerField()))
             .filter(count__gte=1)
+            .distinct()
         )
         return {"review_statuses": statuses, "bootcamps": bootcamps}
 

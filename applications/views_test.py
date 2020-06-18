@@ -295,6 +295,12 @@ def test_review_submission_list_query_review_status_in(
     assert resp.status_code == status.HTTP_200_OK
     json = resp.json()
     json["results"] = sorted(json["results"], key=lambda s: s["id"])
+    json["facets"]["bootcamps"] = sorted(
+        json["facets"]["bootcamps"], key=lambda b: b["id"]
+    )
+    json["facets"]["review_statuses"] = sorted(
+        json["facets"]["review_statuses"], key=lambda s: s["review_status"]
+    )
     assert json == {
         "count": len(review_statuses),
         "next": None,
