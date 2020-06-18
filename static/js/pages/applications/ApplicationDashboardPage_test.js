@@ -30,12 +30,12 @@ import {
   makeIncompleteUser,
   makeUser
 } from "../../factories/user"
+import { shouldIf } from "../../lib/test_utils"
 
 import type {
   Application,
   ApplicationDetail
 } from "../../flow/applicationTypes"
-import { shouldIf } from "../../lib/test_utils"
 
 describe("ApplicationDashboardPage", () => {
   let helper,
