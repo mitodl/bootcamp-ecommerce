@@ -21,9 +21,6 @@
   <div class="container instructors-container">
   {% for section in page.sections %}
     <div class="container">
-      {% if forloop.counter > 1 %}
-        <hr>
-      {% endif%}
       <div class="slider slider-{{ forloop.counter }}">
         {% for member in section.value.members %}
           <div class="slide instructor">
