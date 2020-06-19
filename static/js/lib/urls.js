@@ -50,5 +50,10 @@ export const routes = {
   review: include("/review/", {
     dashboard: "",
     detail:    ":id/"
+  }),
+
+  resourcePages: include("", {
+    howToApply: "apply/",
+    terms:      "terms-and-conditions/"
   })
 }

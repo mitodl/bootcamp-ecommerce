@@ -5,7 +5,11 @@ import NotificationContainer, {
   NotificationContainer as InnerNotificationContainer
 } from "./NotificationContainer"
 import { TextNotification } from "./notifications"
-import { ALERT_TYPE_TEXT } from "../constants"
+import {
+  ALERT_TYPE_TEXT,
+  CMS_NOTIFICATION_LCL_STORAGE_ID,
+  CMS_SITE_WIDE_NOTIFICATION
+} from "../constants"
 import IntegrationTestHelper from "../util/integration_test_helper"
 
 describe("NotificationContainer component", () => {
@@ -96,7 +100,7 @@ describe("NotificationContainer component", () => {
     const { inner } = await render({
       ui: {
         userNotifications: {
-          "cms-site-wide-notification": {
+          [CMS_SITE_WIDE_NOTIFICATION]: {
             type:  ALERT_TYPE_TEXT,
             props: { text: "Cms Notification", persistedId: 1 }
           }
@@ -111,14 +115,14 @@ describe("NotificationContainer component", () => {
     assert.equal(cmsNotificationContent.props.text, "Cms Notification")
     assert.isNotNull(cmsNotificationContent.props.persistedId)
     assert.equal(cmsNotificationContent.props.persistedId, 1)
-    assert.isNull(window.localStorage.getItem("dismissedNotification"))
+    assert.isNull(window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID))
   })
 
   it("removes cms notifictaion, adds it in the local storage", async () => {
     const { inner } = await render({
       ui: {
         userNotifications: {
-          "cms-site-wide-notification": {
+          [CMS_SITE_WIDE_NOTIFICATION]: {
             type:  ALERT_TYPE_TEXT,
             props: { text: "Cms Notifictaion", persistedId: 1 }
           }
@@ -129,9 +133,14 @@ describe("NotificationContainer component", () => {
     const alert = inner.find("Alert").at(0)
     alert.prop("toggle")()
     assert.deepEqual(inner.state(), {
-      hiddenNotifications: new Set(["cms-site-wide-notification"])
+      hiddenNotifications: new Set([CMS_SITE_WIDE_NOTIFICATION])
     })
-    assert.isNotNull(window.localStorage.getItem("dismissedNotification"))
-    assert.equal(window.localStorage.getItem("dismissedNotification"), 1)
+    assert.isNotNull(
+      window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID)
+    )
+    assert.equal(
+      window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID),
+      1
+    )
   })
 })

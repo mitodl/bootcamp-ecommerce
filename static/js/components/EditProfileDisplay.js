@@ -72,7 +72,7 @@ export class EditProfileDisplay extends React.Component<Props> {
   render() {
     const { countries, currentUser } = this.props
     return countries && currentUser ? (
-      <div className="container p-0 edit-profile">
+      <div className="container p-0 edit-profile profile-display">
         <MetaTags>
           <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
         </MetaTags>

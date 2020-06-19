@@ -8,7 +8,10 @@ import { Alert } from "reactstrap"
 import { removeUserNotification } from "../actions"
 import { newSetWith, newSetWithout, timeoutPromise } from "../util/util"
 import { notificationTypeMap } from "./notifications"
-import { CMS_SITE_WIDE_NOTIFICATION } from "../constants"
+import {
+  CMS_SITE_WIDE_NOTIFICATION,
+  CMS_NOTIFICATION_LCL_STORAGE_ID
+} from "../constants"
 
 import type { UserNotificationMapping } from "../reducers/ui"
 
@@ -40,7 +43,10 @@ export class NotificationContainer extends React.Component<Props, State> {
       const notification = userNotifications[notificationKey]
       const notificationId = notification.props.persistedId
       if (notificationId) {
-        window.localStorage.setItem("dismissedNotification", notificationId)
+        window.localStorage.setItem(
+          CMS_NOTIFICATION_LCL_STORAGE_ID,
+          notificationId
+        )
       }
     }
 
@@ -65,7 +71,7 @@ export class NotificationContainer extends React.Component<Props, State> {
 
     return (
       <div className="notifications">
-        {Object.keys(userNotifications).map((notificationKey, i) => {
+        {Object.keys(userNotifications || {}).map((notificationKey, i) => {
           const dismiss = partial(this.onDismiss, [notificationKey])
           const notification = userNotifications[notificationKey]
           const AlertBodyComponent = notificationTypeMap[notification.type]

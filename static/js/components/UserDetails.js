@@ -15,7 +15,7 @@ type Props = {
 export default function UserDetails(props: Props) {
   const { user } = props
   return (
-    <div>
+    <div className="profile-display">
       <div className="row profile-row">
         <div className="col profile-label">First Name</div>
         <div className="col">{user.legal_address.first_name}</div>

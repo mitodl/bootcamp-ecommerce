@@ -1,20 +1,22 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n render_bundle %}
 
 {% block title %}MIT Bootcamps - Page Not Found{% endblock %}
 
+{% block headercontent %}
+<div id="header"></div>
+{% render_bundle 'header' %}
+{% endblock %}
+
 {% block content %}
-{% include "navbar.html" %}
-<div class="body-rows standard-layout">
-  <div class="body-row">
-    <div class="photo-bg photo-2 top-content-container">
-      <div id="error" class="text-info-page">
-        <h1>Page not found</h1>
-        <p class="desc">
-          Whatever you were looking for isn't here. <br/>
-          Please <a href="{{ support_url }}" target="_blank" rel="noopener noreferrer">contact us</a> if you need support.
-        </p>
-      </div>
+<div class="body-content">
+  <div class="photo-bg photo-2 top-content-container">
+    <div id="error" class="text-info-page">
+      <h1>Page not found</h1>
+      <p class="desc">
+        Whatever you were looking for isn't here. <br/>
+        Please <a href="{{ support_url }}" target="_blank" rel="noopener noreferrer">contact us</a> if you need support.
+      </p>
     </div>
   </div>
 </div>

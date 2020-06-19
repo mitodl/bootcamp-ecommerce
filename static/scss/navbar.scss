@@ -1,0 +1,67 @@
+$inner-toolbar-height: 30px;
+$horizontal-spacing: 10px;
+$vertical-spacing: 7px;
+
+.nav-wrapper {
+  border-bottom: 1px solid $black;
+}
+
+.navbar {
+  padding: $vertical-spacing $horizontal-spacing;
+  // Negative margin allows children to have a positive top margin to add space when items wrap
+  margin-top: -$vertical-spacing;
+  background-color: $white;
+  border-radius: 0;
+
+  .navbar-brand, ul, button.navbar-toggler {
+    margin-top: $vertical-spacing;
+    white-space: nowrap;
+  }
+
+  .navbar-brand, ul {
+    height: $inner-toolbar-height;
+  }
+
+  .navbar-brand {
+    padding: 0;
+    margin-right: 0;
+
+    > * {
+      margin-right: $horizontal-spacing;
+    }
+
+    .brand-logo {
+      display: inline-block;
+    }
+
+    img {
+      height: 27px;
+      width: 51px;
+      display: inline-block;
+    }
+
+    .divider {
+      display: inline-block;
+      width: 1px;
+      border-left: 1px solid $default-text-color;
+    }
+  }
+
+  ul {
+    margin-right: -$horizontal-spacing;
+    margin-bottom: 0;
+    margin-left: 0;
+
+    li {
+      margin: 0 $horizontal-spacing 0 0;
+    }
+  }
+
+  a.text-link {
+    line-height: $inner-toolbar-height;
+    color: $default-text-color;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+}
