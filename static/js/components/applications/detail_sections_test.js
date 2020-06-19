@@ -111,7 +111,9 @@ describe("application detail section component", () => {
     ].forEach(([ready, fulfilled, submitted, expLinkText]) => {
       it(`should show correct link if ready === ${String(
         ready
-      )}, fulfilled === ${String(fulfilled)}`, () => {
+      )}, fulfilled === ${String(fulfilled)}, and submitted = ${String(
+        submitted
+      )}`, () => {
         if (!submitted) {
           submission.interview_url = null
         }
