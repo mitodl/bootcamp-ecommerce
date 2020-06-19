@@ -1,10 +1,14 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n render_bundle %}
 
 {% block title %}MIT Bootcamps - Terms and Conditions{% endblock %}
 
+{% block headercontent %}
+<div id="header"></div>
+{% render_bundle 'header' %}
+{% endblock %}
+
 {% block content %}
-{% include "navbar.html" %}
 <div id="tos" class="text-info-page">
   <h2>TERMS AND CONDITIONS FOR OPEN ENROLLMENT</h2>
   <strong>Fees</strong>

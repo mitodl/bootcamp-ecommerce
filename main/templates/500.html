@@ -1,17 +1,19 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n render_bundle %}
 
 {% block title %}MIT Bootcamps - Error{% endblock %}
 
+{% block headercontent %}
+<div id="header"></div>
+{% render_bundle 'header' %}
+{% endblock %}
+
 {% block content %}
-{% include "navbar.html" %}
-<div class="body-rows standard-layout">
-  <div class="body-row">
-    <div class="photo-bg photo-2 top-content-container">
-      <div id="error" class="text-info-page">
-        <h1>There has been an error (500).</h1>
-        <p class="desc">Please <a href="{{ support_url }}" target="_blank" rel="noopener noreferrer">contact us</a> if this continues to happen</p>
-      </div>
+<div class="body-content">
+  <div class="photo-bg photo-2 top-content-container">
+    <div id="error" class="text-info-page">
+      <h1>There has been an error (500).</h1>
+      <p class="desc">Please <a href="{{ support_url }}" target="_blank" rel="noopener noreferrer">contact us</a> if this continues to happen</p>
     </div>
   </div>
 </div>

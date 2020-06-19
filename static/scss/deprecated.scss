@@ -24,11 +24,21 @@
   }
 }
 
-a.btn {
-  display: inline-block;
-  text-decoration: none;
+.deprecated-styling {
+  a.btn {
+    display: inline-block;
+    text-decoration: none;
 
-  &.large-cta {
-    line-height: 60px;
+    &.large-cta {
+      line-height: 60px;
+    }
   }
+}
+
+.top-content-container {
+  padding: 20px 30px 0 30px;
+}
+
+button.btn.large-cta {
+  line-height: 53px;
 }

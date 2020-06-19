@@ -8,6 +8,7 @@ import urljoin from "url-join"
 import { createStructuredSelector } from "reselect"
 
 import PrivateRoute from "../components/PrivateRoute"
+import SiteNavbar from "../components/SiteNavbar"
 import NotificationContainer from "../components/NotificationContainer"
 import Drawer from "../components/Drawer"
 import LoginPages from "./login/LoginPages"
@@ -22,7 +23,13 @@ import AccountSettingsPage from "./settings/AccountSettingsPage"
 import users, { currentUserSelector } from "../lib/queries/users"
 import { routes } from "../lib/urls"
 
-import { ALERT_TYPE_TEXT } from "../constants"
+import {
+  ALERT_TYPE_TEXT,
+  CMS_NOTIFICATION_SELECTOR,
+  CMS_SITE_WIDE_NOTIFICATION,
+  CMS_NOTIFICATION_LCL_STORAGE_ID,
+  CMS_NOTIFICATION_ID_ATTR
+} from "../constants"
 import type { Match } from "react-router"
 
 import { addUserNotification } from "../actions"
@@ -38,17 +45,18 @@ type Props = {
 export class App extends Component<Props> {
   componentDidMount() {
     const { addUserNotification } = this.props
-    const cmsNotification = document.querySelector(".site-wide")
+    const cmsNotification = document.querySelector(CMS_NOTIFICATION_SELECTOR)
     if (cmsNotification) {
       const notificationId = cmsNotification.getAttribute(
-        "data-notification-id"
+        CMS_NOTIFICATION_ID_ATTR
       )
       const notificationMessage = cmsNotification.textContent
       if (
-        window.localStorage.getItem("dismissedNotification") !== notificationId
+        window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID) !==
+        notificationId
       ) {
         addUserNotification({
-          "cms-site-wide-notification": {
+          [CMS_SITE_WIDE_NOTIFICATION]: {
             type:  ALERT_TYPE_TEXT,
             props: {
               text:        notificationMessage,
@@ -70,34 +78,37 @@ export class App extends Component<Props> {
 
     return (
       <div className="app">
+        <SiteNavbar />
         <NotificationContainer />
-        <Switch>
-          <Route path={`${match.url}pay/`} component={PaymentPage} />
-          <Route
-            path={urljoin(match.url, String(routes.login))}
-            component={LoginPages}
-          />
-          <Route
-            path={urljoin(match.url, String(routes.register))}
-            component={RegisterPages}
-          />
-          <Route
-            path={urljoin(match.url, String(routes.account.confirmEmail))}
-            component={EmailConfirmPage}
-          />
-          <PrivateRoute
-            path={urljoin(match.url, String(routes.accountSettings))}
-            component={AccountSettingsPage}
-          />
-          <PrivateRoute
-            path={urljoin(match.url, String(routes.applications))}
-            component={ApplicationPages}
-          />
-          <PrivateRoute
-            path={urljoin(match.url, String(routes.review))}
-            component={ReviewAdminPages}
-          />
-        </Switch>
+        <div className="body-content">
+          <Switch>
+            <Route path={`${match.url}pay/`} component={PaymentPage} />
+            <Route
+              path={urljoin(match.url, String(routes.login))}
+              component={LoginPages}
+            />
+            <Route
+              path={urljoin(match.url, String(routes.register))}
+              component={RegisterPages}
+            />
+            <Route
+              path={urljoin(match.url, String(routes.account.confirmEmail))}
+              component={EmailConfirmPage}
+            />
+            <PrivateRoute
+              path={urljoin(match.url, String(routes.accountSettings))}
+              component={AccountSettingsPage}
+            />
+            <PrivateRoute
+              path={urljoin(match.url, String(routes.applications))}
+              component={ApplicationPages}
+            />
+            <PrivateRoute
+              path={urljoin(match.url, String(routes.review))}
+              component={ReviewAdminPages}
+            />
+          </Switch>
+        </div>
         <Drawer />
       </div>
     )

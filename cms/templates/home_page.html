@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% load static wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags render_bundle %}
 
-
 {% block title %}{{ site_name }} | {{ page.title }}{% endblock %}
 
+{% block headercontent %}
+<div id="header"></div>
+{% render_bundle 'header' %}
+{% endblock %}
+
 {% block content %}
-  {% include "top_nav.html" %}
   <div class="home-page">
     <div class="header">
         <div class="container">

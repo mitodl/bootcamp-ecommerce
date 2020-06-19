@@ -109,7 +109,7 @@ export class NewApplication extends React.Component<Props, State> {
         </Dropdown>
         <div className="d-flex justify-content-end">
           <button
-            className="btn btn-red btn-inverse"
+            className="btn-red btn-inverse"
             onClick={this.handleSubmit}
             disabled={createAppIsPending || !selectedBootcamp}
           >

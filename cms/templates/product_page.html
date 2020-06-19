@@ -1,11 +1,14 @@
 {% extends "base.html" %}
-{% load static wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags render_bundle %}
-
+{% load static render_bundle wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags %}
 
 {% block title %}{{ site_name }} | {{ page.title }}{% endblock %}
 
+{% block headercontent %}
+<div id="header"></div>
+{% render_bundle 'header' %}
+{% endblock %}
+
 {% block content %}
-  {% include "top_nav.html" %}
   <div class="product-page">
     <div class="header">
       {% image page.header_image fill-1920x1080 %}
@@ -35,6 +38,6 @@
   {% if page.admissions_section %}{% include "partials/admissions-section.html" with page=page.admissions_section %}{% endif %}
   {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
   {% if page.alumni %} {% include "partials/alumni.html" with page=page.alumni %} {% endif %}
-  {% if page.learning_resources %} {% include "partials/learning_resources_page.html" with page=page.learning_resources %} {% endif %}
+  {% if page.learning_resources %} {% include "partials/learning-resources.html" with page=page.learning_resources %} {% endif %}
   </div>
 {% endblock %}

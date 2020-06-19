@@ -157,6 +157,9 @@ export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard"
 export const REVIEW_DETAIL_TITLE = "Admission"
 
 export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"
+export const CMS_NOTIFICATION_SELECTOR = ".site-wide"
+export const CMS_NOTIFICATION_ID_ATTR = "data-notification-id"
+export const CMS_NOTIFICATION_LCL_STORAGE_ID = "dismissedNotification"
 
 // Drawer content types
 export const PROFILE_VIEW = "profileView"

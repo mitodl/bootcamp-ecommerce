@@ -23,7 +23,7 @@ def test_index_anonymous(settings, mocker, client):
     assert resp.context["page"] == root_page
 
     bundles = [bundle[0][1] for bundle in patched_get_bundle.call_args_list]
-    assert set(bundles) == {"sentry_client", "style", "third_party"}
+    assert set(bundles) == {"header", "sentry_client", "style", "third_party"}
     js_settings = json.loads(resp.context["js_settings_json"])
     assert js_settings == {
         "environment": settings.ENVIRONMENT,

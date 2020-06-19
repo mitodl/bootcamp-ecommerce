@@ -39,7 +39,7 @@ export function ViewProfileDisplay(props: Props) {
   const { currentUser, countries, updateDrawer } = props
 
   return countries && currentUser ? (
-    <div className="container p-0 view-profile">
+    <div className="container p-0 view-profile profile-display">
       <MetaTags>
         <title>{formatTitle(VIEW_PROFILE_PAGE_TITLE)}</title>
       </MetaTags>
@@ -58,7 +58,7 @@ export function ViewProfileDisplay(props: Props) {
         </div>
       </div>
       <div className="auth-card card-shadow row">
-        <div className="container profile-container ">
+        <div className="container profile-container">
           <div className="row">
             {currentUser.is_authenticated ? (
               <div className="col-12 bootcamp-form">

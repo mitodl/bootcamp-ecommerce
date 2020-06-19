@@ -251,9 +251,8 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 <strong>{APP_STATE_TEXT_MAP[application.state]}</strong>
               </div>
             </div>
-            <div className="row">
-              <div className="col-5" />
-              <div className="col-3 view-statement">
+            <div className="row mt-2">
+              <div className="col-7 text-left text-sm-right view-statement">
                 <a
                   className="btn-link"
                   href={reverse(routes.applications.paymentHistory.self, {
@@ -264,8 +263,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                   View Statement
                 </a>
               </div>
-              <div className="col-2" />
-              <div className="col-2 collapse-link">
+              <div className="col-5 text-right collapse-link">
                 <a
                   className="btn-text expand-collapse"
                   onClick={R.partial(this.loadAndRevealAppDetail, [
@@ -315,7 +313,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 Interested in another bootcamp?
               </div>
               <button
-                className="btn btn-red btn-inverse new-application-btn"
+                className="btn-red btn-inverse new-application-btn"
                 onClick={this.onNewApplicationClick}
               >
                 Select Bootcamp
@@ -336,7 +334,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                   to apply to.
                 </p>
                 <button
-                  className="btn btn-red btn-inverse new-application-btn"
+                  className="btn-red btn-inverse new-application-btn"
                   onClick={this.onNewApplicationClick}
                 >
                   Select Bootcamp

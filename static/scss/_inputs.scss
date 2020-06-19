@@ -28,16 +28,63 @@
   }
 }
 
-.btn-red.btn-inverse {
-  color: $button-red;
-  border-color: $button-red;
-  background-color: $white;
-  border-width: 2px;
+button, .btn-styled {
+  border-radius: 5px;
   font-weight: 600;
+  border-width: 2px;
+  border-style: solid;
+  padding: 6px 12px;
 
   &:disabled, &[disabled] {
-    color: $med-dark-gray;
-    border-color: $med-dark-gray;
+    color: $med-gray !important;
+    border-color: $med-gray !important;
+  }
+
+  &.size-1 {
+    padding: 2px 6px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+a.btn-styled {
+  display: inline-block;
+  color: $white;
+  text-decoration: none;
+
+  &:hover {
+    color: $white;
+    text-decoration: none;
+  }
+}
+
+.btn-red {
+  color: $white;
+  background-color: $button-red;
+  border-color: $button-red;
+
+  &.btn-inverse {
+    color: $button-red;
+    background-color: $white;
+
+    &:hover {
+      color: $button-red;
+    }
+  }
+}
+
+.btn-dk-grey {
+  color: $white;
+  background-color: $button-dk-grey;
+  border-color: $button-dk-grey;
+
+  &.btn-inverse {
+    color: $button-dk-grey;
+    background-color: $white;
+
+    &:hover {
+      color: $button-dk-grey;
+    }
   }
 }
 
@@ -54,10 +101,6 @@ a.btn-link {
   &:hover {
     color: $link-blue;
   }
-}
-
-button.btn.large-cta {
-  line-height: 53px;
 }
 
 label {

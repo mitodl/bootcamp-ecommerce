@@ -261,6 +261,11 @@ def get_field_names(model):
     ]
 
 
+def filter_dict_by_key_set(dict_to_filter, key_set):
+    """Takes a dictionary and returns a copy with only the keys that exist in the given set"""
+    return {key: dict_to_filter[key] for key in dict_to_filter.keys() if key in key_set}
+
+
 def get_filename_from_path(filepath):
     """
     Returns a filename without a directory path

@@ -27,6 +27,7 @@ from main.utils import (
     all_equal,
     has_all_keys,
     group_into_dict,
+    filter_dict_by_key_set,
 )
 from main.test_utils import MockResponse, format_as_iso8601
 
@@ -151,6 +152,16 @@ def test_group_into_dict():
     assert grouped_nums.keys() == {True, False}
     assert set(grouped_nums[True]) == {2, 4, 6}
     assert set(grouped_nums[False]) == {1, 3, 5}
+
+
+def test_filter_dict_by_key_set():
+    """
+    Test that filter_dict_by_key_set returns a dict with only the given keys
+    """
+    d = {"a": 1, "b": 2, "c": 3, "d": 4}
+    assert filter_dict_by_key_set(d, {"a", "c"}) == {"a": 1, "c": 3}
+    assert filter_dict_by_key_set(d, {"a", "c", "nonsense"}) == {"a": 1, "c": 3}
+    assert filter_dict_by_key_set(d, {"nonsense"}) == {}
 
 
 @pytest.mark.parametrize(
