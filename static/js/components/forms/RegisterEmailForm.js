@@ -47,7 +47,7 @@ const RegisterEmailForm = ({ onSubmit }: Props) => (
           <ErrorMessage name="email" component={FormError} />
         </div>
         {SETTINGS.recaptchaKey ? (
-          <div className="form-group recaptcha-container">
+          <div className="form-group">
             <ScaledRecaptcha
               onRecaptcha={value => setFieldValue("recaptcha", value)}
               recaptchaKey={SETTINGS.recaptchaKey}
