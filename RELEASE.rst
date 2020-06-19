@@ -1,6 +1,20 @@
 Release Notes
 =============
 
+Version 0.45.3
+--------------
+
+- admission section title should be h2
+- remove gray backgroun from social media icons
+- Add link to bootcamp page on catalog card - #191
+- Enable slugs on product page - #687
+- Fixed flaky test
+- Horizontal scroll on mobile width - fixes #674
+- Catalog grid section - #163
+- ProductPage: Fix styling issue
+- product page feedback: carousel fixes
+- Product page feedback: hero section updates
+
 Version 0.45.2 (Released June 18, 2020)
 --------------
 
