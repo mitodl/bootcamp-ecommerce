@@ -137,10 +137,7 @@ export default {
       step_id: stepId
     },
     update: {
-      bootcampRuns: (
-        prev: VideoInterviewResponse,
-        next: VideoInterviewResponse
-      ) => next
+      bootcampRuns: nextState
     },
     options: {
       ...DEFAULT_NON_GET_OPTIONS,
