@@ -272,58 +272,66 @@ describe("ApplicationDashboardPage", () => {
 
     //
     ;[
-      //[false, false, false, false, "before the resume has been submitted"],
-      //[true, false, false, false, "before the user submits it"],
-      //[true, true, false, false, "clicked take interview link"],
-      //[true, true, true, false, "finished interview, awaiting review"],
+      [false, false, false, false, "before the resume has been submitted"],
+      [true, false, false, false, "before the user submits it"],
+      [true, true, false, false, "after the user begins the interview"],
+      [true, true, true, false, "awaiting review"],
       [true, true, true, true, "after approval"]
-    ].forEach(([hasResume, hasSubmission, hasSubmitted, isApproved, desc]) => {
-      it(`shows details about a video submission ${desc}`, async () => {
-        let newApplicationDetail = Object.assign({}, applicationDetail)
-        if (!hasResume) {
-          newApplicationDetail = setToAwaitingResume(newApplicationDetail)
-        } else if (!hasSubmission) {
-          newApplicationDetail = setToAwaitingSubmission(newApplicationDetail)
-        } else {
-          newApplicationDetail = isApproved ?
-            setToAwaitingPayment(newApplicationDetail) :
-            setToAwaitingReview(newApplicationDetail)
+    ].forEach(
+      ([
+        hasResume,
+        startedSubmission,
+        finishedSubmission,
+        isApproved,
+        desc
+      ]) => {
+        it(`shows details about a video submission ${desc}`, async () => {
+          let newApplicationDetail = Object.assign({}, applicationDetail)
+          if (!hasResume) {
+            newApplicationDetail = setToAwaitingResume(newApplicationDetail)
+          } else if (!startedSubmission) {
+            newApplicationDetail = setToAwaitingSubmission(newApplicationDetail)
+          } else {
+            newApplicationDetail = isApproved ?
+              setToAwaitingPayment(newApplicationDetail) :
+              setToAwaitingReview(newApplicationDetail)
+          }
           newApplicationDetail.submissions.forEach(submission => {
-            submission.submission_status = hasSubmitted ?
+            submission.submission_status = finishedSubmission ?
               SUBMISSION_STATUS_SUBMITTED :
               SUBMISSION_STATUS_PENDING
           })
-        }
-        const props = {
-          ...defaultProps,
-          allApplicationDetail: {
-            [application.id]: newApplicationDetail
+          const props = {
+            ...defaultProps,
+            allApplicationDetail: {
+              [application.id]: newApplicationDetail
+            }
           }
-        }
-        const wrapper = await renderExpanded(props)
+          const wrapper = await renderExpanded(props)
 
-        const videoInterviewDetail = wrapper.find("VideoInterviewDetail")
-        assert.isTrue(videoInterviewDetail.exists())
-        const reviewDetail = wrapper.find("ReviewDetail")
-        assert.isTrue(reviewDetail.exists())
-        assert.deepEqual(videoInterviewDetail.props(), {
-          ready:             hasResume,
-          fulfilled:         hasSubmission,
-          openDrawer:        openDrawerStub,
-          step:              newApplicationDetail.run_application_steps[0],
-          submission:        newApplicationDetail.submissions[0],
-          applicationDetail: newApplicationDetail
+          const videoInterviewDetail = wrapper.find("VideoInterviewDetail")
+          assert.isTrue(videoInterviewDetail.exists())
+          const reviewDetail = wrapper.find("ReviewDetail")
+          assert.isTrue(reviewDetail.exists())
+          assert.deepEqual(videoInterviewDetail.props(), {
+            ready:             hasResume,
+            fulfilled:         finishedSubmission,
+            openDrawer:        openDrawerStub,
+            step:              newApplicationDetail.run_application_steps[0],
+            submission:        newApplicationDetail.submissions[0],
+            applicationDetail: newApplicationDetail
+          })
+          assert.deepEqual(reviewDetail.first().props(), {
+            ready:             true,
+            fulfilled:         isApproved,
+            openDrawer:        openDrawerStub,
+            step:              newApplicationDetail.run_application_steps[0],
+            submission:        newApplicationDetail.submissions[0],
+            applicationDetail: newApplicationDetail
+          })
         })
-        assert.deepEqual(reviewDetail.first().props(), {
-          ready:             true,
-          fulfilled:         isApproved,
-          openDrawer:        openDrawerStub,
-          step:              newApplicationDetail.run_application_steps[0],
-          submission:        newApplicationDetail.submissions[0],
-          applicationDetail: newApplicationDetail
-        })
-      })
-    })
+      }
+    )
 
     //
     ;[
