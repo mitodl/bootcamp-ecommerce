@@ -47,10 +47,7 @@ class BootcampApplicationViewset(
             return (
                 BootcampApplication.objects.prefetch_related(
                     Prefetch(
-                        "orders",
-                        queryset=Order.objects.filter(
-                            status=Order.FULFILLED
-                        ).select_related("user__profile"),
+                        "orders", queryset=Order.objects.filter(status=Order.FULFILLED)
                     )
                 )
                 .filter(user=self.request.user)
