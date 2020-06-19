@@ -129,7 +129,7 @@ export default {
     }
   }),
   createVideoInterviewMutation: (applicationId: number, stepId: number) => ({
-    url:       `/api/applications/${String(applicationId)}/video-interviews/`,
+    url:  `/api/applications/${String(applicationId)}/video-interviews/`,
     body: {
       step_id: stepId
     },
