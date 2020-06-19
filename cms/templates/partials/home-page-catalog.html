@@ -11,7 +11,7 @@
                             <img src="{% static 'images/mit-dome.png' %}" alt="{{ block.page.title }}">
                         {% endif %}
                         <div class="info d-flex flex-column flex-grow-1">
-                            <h2>{{ block.page.title }}</h2>
+                            <a href="{% pageurl block.page %}"><h2>{{ block.page.title }}</h2></a>
                             <span class="dates">
                                 {{ block.format }} <br>{{ block.page.bootcamp_run.start_date|date:"M, j" }} - {{ block.page.bootcamp_run.end_date|date }}
                             </span>
