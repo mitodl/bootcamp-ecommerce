@@ -92,7 +92,7 @@ export class RegisterDetailsPage extends React.Component<Props> {
           <title>{formatTitle(REGISTER_DETAILS_PAGE_TITLE)}</title>
         </MetaTags>
         <div className="row auth-header">
-          <h1 className="col-12">Create Account</h1>
+          <h1 className="col-12">{REGISTER_DETAILS_PAGE_TITLE}</h1>
         </div>
         <div className="bootcamp-form auth-card card-shadow row">
           <div className="col-12 auth-step">Steps 1 of 2</div>

@@ -8,8 +8,8 @@
               <tr>
                   <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
                       <h1 style="margin: 0 0 10px; font-size: 25px; line-height: 30px; color: #03152d; font-weight: bold;">Verify your email</h1>
-                      <p style="margin: 0 0 10px;">Thank you for creating an account with {{ site_name }}. Please complete the account verification process by verifying your email.</p>
-                      <p style="margin: 0 0 10px;">To verify your email, please click this link:</p>
+                      <p style="margin: 0 0 10px;">Thank you for creating an account with {{ site_name }}.</p>
+                      <p style="margin: 0 0 10px;">To complete the account creation process, please verify your email by clicking this button:</p>
                   </td>
               </tr>
               <tr>
@@ -34,9 +34,15 @@
               <tr>
                   <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
                       <p style="margin: 0 0 10px;">
-                        Welcome and thanks!
+                        Welcome and thank you!
                         <br/>
-                        The {{ site_name }} Team
+                        The {{ site_name }} Admissions Team
+                        <br/>
+                        MIT Bootcamps, 77 Massachusetts Avenue, Cambridge, MA 02139
+                        <br/>
+                        © 2020 MIT Bootcamps, All Rights Reserved.
+                          <a href="{{ base_url }}{% url 'bootcamp-tos' %}">Terms of Service</a> and
+                          <a href="{{ base_url }}/privacy-policy">Privacy Policy</a>
                       </p>
                   </td>
               </tr>

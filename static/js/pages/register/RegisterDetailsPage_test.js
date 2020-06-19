@@ -16,6 +16,7 @@ import {
 import { routes } from "../../lib/urls"
 import { makeRegisterAuthResponse } from "../../factories/auth"
 import { makeCountries } from "../../factories/user"
+import { REGISTER_DETAILS_PAGE_TITLE } from "../../constants"
 
 describe("RegisterDetailsPage", () => {
   const countries = makeCountries()
@@ -61,6 +62,7 @@ describe("RegisterDetailsPage", () => {
     const { wrapper } = await renderPage()
 
     assert.ok(wrapper.find("RegisterDetailsForm").exists())
+    assert.equal(wrapper.find("h1").text(), REGISTER_DETAILS_PAGE_TITLE)
   })
 
   it("handles onSubmit for an error response", async () => {
