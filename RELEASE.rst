@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.45.3
+Version 0.45.3 (Released June 19, 2020)
 --------------
 
 - admission section title should be h2
