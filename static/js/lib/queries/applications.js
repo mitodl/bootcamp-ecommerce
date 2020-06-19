@@ -130,18 +130,18 @@ export default {
   }),
   createVideoInterviewMutation: (applicationId: number, stepId: number) => ({
     url:       `/api/applications/${String(applicationId)}/video-interviews/`,
-    transform: (json: ?VideoInterviewResponse) => ({
-      bootcampRuns: json
-    }),
     body: {
       step_id: stepId
-    },
-    update: {
-      bootcampRuns: nextState
     },
     options: {
       ...DEFAULT_NON_GET_OPTIONS,
       method: "POST"
+    },
+    transform: (json: ?VideoInterviewResponse) => ({
+      bootcampRuns: json
+    }),
+    update: {
+      bootcampRuns: nextState
     },
     force: true
   })
