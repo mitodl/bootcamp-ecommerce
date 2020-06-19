@@ -373,6 +373,4 @@ def test_submission_review_serializer_validation(app_state, total_paid):
     )
     with pytest.raises(InvalidApplicationStateException) as ex:
         serializer.is_valid()
-    assert (
-        "The BootcampApplication is not awaiting submission review" in ex.value.detail
-    )
+    assert ex.value.detail == "Bootcamp application is in invalid state"

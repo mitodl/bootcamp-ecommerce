@@ -142,11 +142,7 @@ class SubmissionReviewSerializer(SubmissionSerializer):
                 or bootcamp_application.total_paid > 0
             ):
                 # HTTP 409 error
-                raise InvalidApplicationStateException(
-                    detail="The BootcampApplication is not awaiting submission review (id: {}, state: {})".format(
-                        bootcamp_application.id, bootcamp_application.state
-                    )
-                )
+                raise InvalidApplicationStateException()
             attrs["review_status_date"] = now_in_utc()
 
         return attrs
