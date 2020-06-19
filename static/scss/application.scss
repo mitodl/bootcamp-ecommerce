@@ -145,3 +145,29 @@ $border-style: 1px solid $black;
     text-align: right;
   }
 }
+
+.take-video-interview {
+  p {
+    font-size: 18px;
+    line-height: 30px;
+    margin-top: 50px;
+  }
+
+  .link {
+    display: flex;
+    margin-top: 50px;
+
+    a {
+      display: inline-block;
+      margin-left: auto;
+      margin-right: 30px;
+      border: 2px solid $outline-red;
+      border-radius: 5px;
+      padding: 10px 48px;
+      width: 260px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 22px;
+    }
+  }
+}

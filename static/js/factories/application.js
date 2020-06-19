@@ -10,9 +10,9 @@ import {
   REVIEW_STATUS_TEXT_MAP,
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
-  REVIEW_STATUS_REJECTED,
   SUBMISSION_QUIZ,
-  SUBMISSION_VIDEO
+  SUBMISSION_VIDEO,
+  SUBMISSION_STATUS_TEXT_MAP
 } from "../constants"
 import { makeUser } from "./user"
 
@@ -55,12 +55,12 @@ export const makeApplicationSubmission = (): ApplicationSubmission => ({
   // $FlowFixMe
   run_application_step_id: incr.next().value,
   submitted_date:          moment().format(),
-  review_status:           casual.random_element([
-    REVIEW_STATUS_APPROVED,
-    REVIEW_STATUS_REJECTED,
-    REVIEW_STATUS_PENDING
-  ]),
-  review_status_date: moment().format()
+  review_status:           casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
+  review_status_date:      moment().format(),
+  submission_status:       casual.random_element(
+    Object.keys(SUBMISSION_STATUS_TEXT_MAP)
+  ),
+  interview_url: casual.url
 })
 
 export const setSubmissionToPending = (
@@ -163,7 +163,10 @@ export const makeSubmissionReview = (): SubmissionReview => ({
   submitted_date:          moment().format(),
   review_status:           casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
   review_status_date:      moment().format(),
-  bootcamp_application:    makeApplication(),
-  learner:                 makeUser(),
-  interview_url:           casual.url
+  submission_status:       casual.random_element(
+    Object.keys(SUBMISSION_STATUS_TEXT_MAP)
+  ),
+  bootcamp_application: makeApplication(),
+  learner:              makeUser(),
+  interview_url:        casual.url
 })

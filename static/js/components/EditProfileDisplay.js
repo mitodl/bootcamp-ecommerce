@@ -8,12 +8,13 @@ import { mutateAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
 
+import EditProfileForm from "./forms/EditProfileForm"
+
 import { EDIT_PROFILE_PAGE_TITLE, PROFILE_VIEW } from "../constants"
 import users, { currentUserSelector } from "../lib/queries/users"
 import queries from "../lib/queries"
 import { formatTitle } from "../util/util"
-
-import EditProfileForm from "./forms/EditProfileForm"
+import { setDrawerState } from "../reducers/drawer"
 
 import type {
   Country,
@@ -21,7 +22,6 @@ import type {
   User,
   HttpAuthResponse
 } from "../flow/authTypes"
-import { setDrawerState } from "../reducers/drawer"
 
 type StateProps = {|
   countries: ?Array<Country>,

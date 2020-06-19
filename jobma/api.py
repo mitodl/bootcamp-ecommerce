@@ -25,7 +25,7 @@ def get_jobma_client():
     return session
 
 
-def create_interview(interview):
+def create_interview_in_jobma(interview):
     """
     Create a new interview on Jobma
 
@@ -34,31 +34,34 @@ def create_interview(interview):
     """
     client = get_jobma_client()
     url = urljoin(settings.JOBMA_BASE_URL, "interviews")
+    job = interview.job
+    first_name, last_name = interview.applicant.profile.first_and_last_names
     response = client.post(
         url,
         json={
-            "interview_template_id": str(interview.job.interview_template_id),
-            "job_id": str(interview.job.job_id),
-            "job_code": interview.job.job_code,
-            "job_title": interview.job.job_title,
+            "interview_template_id": str(job.interview_template_id),
+            "job_id": str(job.job_id),
+            "job_code": job.job_code,
+            "job_title": job.job_title,
             "callback_url": urljoin(
                 settings.SITE_BASE_URL,
                 reverse("jobma-webhook", kwargs={"pk": interview.id}),
             ),
             "candidate": {
-                "first_name": interview.candidate_first_name,
-                "last_name": interview.candidate_last_name,
-                "phone": interview.candidate_phone,
-                "email": interview.candidate_email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "phone": "",
+                "email": interview.applicant.email,
             },
         },
     )
     response.raise_for_status()
     result = response.json()
-    if "interview_link" in result:
+    interview_link = result.get("interview_link")
+    if interview_link is not None:
         interview.interview_url = result["interview_link"]
         interview.save_and_log(None)
     else:
         log.error("Interview link not found in payload - %s", result)
 
-    # Now we wait for the postback
+    return interview_link

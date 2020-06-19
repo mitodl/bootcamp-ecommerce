@@ -1,4 +1,5 @@
 """jobma models"""
+from django.conf import settings
 from django.db import models
 
 from jobma.constants import JOBMA_INTERVIEW_STATUSES, PENDING
@@ -41,13 +42,10 @@ class Interview(AuditableModel):
     """An interview for a job which has been created on Jobma"""
 
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     interview_url = models.TextField(blank=True, null=True)
     results_url = models.TextField(blank=True, null=True)
-    candidate_first_name = models.TextField()
-    candidate_last_name = models.TextField()
-    candidate_phone = models.TextField()
-    candidate_email = models.TextField()
     status = models.TextField(
         default=PENDING,
         choices=[(status, status) for status in JOBMA_INTERVIEW_STATUSES],
@@ -61,7 +59,7 @@ class Interview(AuditableModel):
         return serialize_model_object(self)
 
     def __str__(self):
-        return f"Interview for {self.job} by {self.candidate_email}"
+        return f"Interview for {self.job} by {self.applicant}"
 
 
 class InterviewAudit(AuditModel):

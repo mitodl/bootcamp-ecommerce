@@ -39,16 +39,33 @@ class BootcampRunStepSerializer(serializers.ModelSerializer):
 class SubmissionSerializer(serializers.ModelSerializer):
     """ApplicationStepSubmission serializer"""
 
+    interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
+
+    def get_interview_url(self, submission):
+        """ Get the interview url for a video submission if of that type"""
+        if submission.content_type == ContentType.objects.get_for_model(
+            VideoInterviewSubmission
+        ):
+            return submission.content_object.interview.results_url
+
     class Meta:
         model = models.ApplicationStepSubmission
         fields = [
             "id",
             "run_application_step_id",
             "submitted_date",
+            "submission_status",
             "review_status",
             "review_status_date",
+            "interview_url",
         ]
-        read_only_fields = ("submitted_date", "review_status", "review_status_date")
+        read_only_fields = [
+            "submitted_date",
+            "submission_status",
+            "review_status",
+            "review_status_date",
+            "interview_url",
+        ]
 
 
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
@@ -131,14 +148,6 @@ class SubmissionReviewSerializer(SubmissionSerializer):
     learner = UserSerializer(
         source="bootcamp_application.user", required=False, read_only=True
     )
-    interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
-
-    def get_interview_url(self, submission):
-        """ Get the interview url for a video submission if of that type"""
-        if submission.content_type == ContentType.objects.get_for_model(
-            VideoInterviewSubmission
-        ):
-            return submission.content_object.interview.results_url
 
     def validate(self, attrs):
         """Validate incoming data for a write"""
@@ -172,9 +181,5 @@ class SubmissionReviewSerializer(SubmissionSerializer):
         return instance
 
     class Meta(SubmissionSerializer.Meta):
-        fields = SubmissionSerializer.Meta.fields + [
-            "bootcamp_application",
-            "learner",
-            "interview_url",
-        ]
+        fields = SubmissionSerializer.Meta.fields + ["bootcamp_application", "learner"]
         read_only_fields = ("submitted_date", "review_status_date")

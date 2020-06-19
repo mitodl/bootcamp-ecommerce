@@ -5,7 +5,12 @@ import * as R from "ramda"
 
 import ProgressDetailRow from "./ProgressDetailRow"
 import { formatReadableDateFromStr } from "../../util/util"
-import { PAYMENT, PROFILE_VIEW, REVIEW_STATUS_REJECTED } from "../../constants"
+import {
+  PAYMENT,
+  PROFILE_VIEW,
+  REVIEW_STATUS_REJECTED,
+  TAKE_VIDEO_INTERVIEW
+} from "../../constants"
 
 import type { DrawerChangePayload } from "../../reducers/drawer"
 import type {
@@ -84,13 +89,21 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
 
 type SubmissionDetailProps = DetailSectionProps & {
   step: ApplicationRunStep,
-  submission: ?ApplicationSubmission
+  submission: ?ApplicationSubmission,
+  applicationDetail: ApplicationDetail
 }
 
 export const VideoInterviewDetail = (
   props: SubmissionDetailProps
 ): React$Element<*> => {
-  const { ready, fulfilled, step, submission } = props
+  const {
+    ready,
+    fulfilled,
+    step,
+    submission,
+    openDrawer,
+    applicationDetail
+  } = props
 
   return (
     <ProgressDetailRow className="submission" fulfilled={fulfilled}>
@@ -108,10 +121,28 @@ export const VideoInterviewDetail = (
           </div>
         )}
       </div>
-      {ready && !fulfilled ? (
-        <div className="col-12 col-sm-5 text-sm-right">
-          <a className="btn-link">Take Video Interview</a>
-        </div>
+      {ready ? (
+        !fulfilled ? (
+          <div className="col-12 col-sm-5 text-sm-right">
+            <a
+              className="btn-link"
+              onClick={R.partial(openDrawer, [
+                {
+                  type: TAKE_VIDEO_INTERVIEW,
+                  meta: { application: applicationDetail, stepId: step.id }
+                }
+              ])}
+            >
+              Take Video Interview
+            </a>
+          </div>
+        ) : submission && submission.interview_url ? (
+          <div className="col-12 col-sm-5 text-sm-right">
+            <a className="btn-link" href={submission.interview_url}>
+              View Your Interview
+            </a>
+          </div>
+        ) : null
       ) : null}
     </ProgressDetailRow>
   )

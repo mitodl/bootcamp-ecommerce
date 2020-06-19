@@ -16,10 +16,10 @@ import {
 } from "../constants"
 import queries from "../lib/queries"
 import { currentUserSelector } from "../lib/queries/users"
+import { setDrawerState } from "../reducers/drawer"
 import { formatTitle } from "../util/util"
 
 import type { Country, CurrentUser } from "../flow/authTypes"
-import { setDrawerState } from "../reducers/drawer"
 
 type StateProps = {|
   currentUser: ?CurrentUser,

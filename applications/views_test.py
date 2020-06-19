@@ -15,8 +15,10 @@ from applications.constants import (
 )
 from applications.factories import (
     BootcampApplicationFactory,
+    BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
 )
+from applications.models import ApplicationStepSubmission, VideoInterviewSubmission
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
@@ -27,8 +29,13 @@ from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.factories import BootcampRunFactory, BootcampFactory
+from jobma.factories import InterviewFactory, JobFactory
+from jobma.models import Interview
 from main.test_utils import assert_drf_json_equal
 from profiles.factories import UserFactory
+
+
+pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
@@ -47,7 +54,7 @@ def test_view_serializer(mocker, action, exp_serializer):
     assert serializer_cls == exp_serializer
 
 
-@pytest.mark.django_db
+# pylint: disable=redefined-outer-name, too-many-arguments
 def test_view_serializer_context(mocker):
     """
     The bootcamp application view should add context to the serializer in the list view
@@ -67,7 +74,6 @@ def test_view_serializer_context(mocker):
     assert serializer_context["include_page"] is True
 
 
-@pytest.mark.django_db
 def test_app_detail_view(client):
     """The bootcamp application detail view should return a successful response"""
     application = BootcampApplicationFactory.create()
@@ -78,7 +84,6 @@ def test_app_detail_view(client):
     assert resp.json()["id"] == application.id
 
 
-@pytest.mark.django_db
 def test_app_list_view(client):
     """
     The bootcamp application list view should return a successful response, and should not include
@@ -94,7 +99,6 @@ def test_app_list_view(client):
     assert resp_json[0]["id"] == applications[0].id
 
 
-@pytest.mark.django_db
 def test_app_create_view(client):
     """The bootcamp application create view should return a successful response"""
     bootcamp_run = BootcampRunFactory.create()
@@ -110,7 +114,6 @@ def test_app_create_view(client):
     assert resp.json()["id"] == application_id
 
 
-@pytest.mark.django_db
 def test_app_detail_view_permissions(client):
     """
     The bootcamp application detail view should return an error if the user is not logged in or
@@ -135,7 +138,6 @@ def test_app_detail_view_permissions(client):
         (REVIEW_STATUS_REJECTED, AppStates.REJECTED.value),
     ],
 )
-@pytest.mark.django_db
 def test_review_submission_update(admin_drf_client, review_status, application_state):
     """
     The review submission view should return successful response, and update review_status and application
@@ -156,7 +158,6 @@ def test_review_submission_update(admin_drf_client, review_status, application_s
     assert submission.bootcamp_application.state == application_state
 
 
-@pytest.mark.django_db
 def test_review_submission_list(admin_drf_client):
     """
     The review submission list view should return a list of all submissions
@@ -203,7 +204,6 @@ def test_review_submission_list(admin_drf_client):
     }
 
 
-@pytest.mark.django_db
 def test_review_submission_list_query_bootcamp_id(admin_drf_client):
     """
     The review submission list view should return a list of submissions filtered by bootcamp id
@@ -228,7 +228,6 @@ def test_review_submission_list_query_bootcamp_id(admin_drf_client):
     }
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize("review_status", ALL_REVIEW_STATUSES)
 def test_review_submission_list_query_review_status(admin_drf_client, review_status):
     """
@@ -259,7 +258,6 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
     }
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     "review_statuses",
     [
@@ -331,7 +329,6 @@ def test_review_submission_list_query_review_status_in(
         [False, False, status.HTTP_400_BAD_REQUEST],
     ],
 )
-@pytest.mark.django_db
 def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_status):
     """
     Upload resume view should return successful response, and update application state
@@ -364,7 +361,6 @@ def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_statu
         assert resume_file.name in bootcamp_application.resume_file.name
 
 
-@pytest.mark.django_db
 def test_application_detail_queryset_orders(client):
     """
     Test that the application detail queryset filters orders
@@ -382,3 +378,97 @@ def test_application_detail_queryset_orders(client):
     assert_drf_json_equal(
         rendered_orders, [ApplicationOrderSerializer(fulfilled_order).data]
     )
+
+
+@pytest.fixture
+def application():
+    """Application for a user"""
+    yield BootcampApplicationFactory.create()
+
+
+@pytest.fixture
+def job(application):
+    """Make a job"""
+    yield JobFactory.create(run=application.bootcamp_run)
+
+
+@pytest.fixture
+def step(application):
+    """Make an ApplicationStepSubmission"""
+    yield BootcampRunApplicationStepFactory.create(
+        bootcamp_run=application.bootcamp_run
+    )
+
+
+@pytest.mark.parametrize("already_interviewed", [True, False])
+def test_take_interview(already_interviewed, mocker, client, application, step, job):
+    """Start the interview process and return a URL to redirect the user to"""
+    client.force_login(application.user)
+    new_interview_link = "http://fake.interview.link"
+    create_interview = mocker.patch(
+        "applications.views.create_interview_in_jobma", return_value=new_interview_link
+    )
+
+    if already_interviewed:
+        interview = InterviewFactory.create(job=job, applicant=application.user)
+
+    resp = client.post(
+        reverse("video-interviews", kwargs={"pk": application.id}),
+        data={"step_id": step.id},
+    )
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json() == {
+        "interview_link": interview.interview_url
+        if already_interviewed
+        else new_interview_link
+    }
+    if not already_interviewed:
+        interview = Interview.objects.get(job=job, applicant=application.user)
+        create_interview.assert_called_once_with(interview)
+
+        video_submission = VideoInterviewSubmission.objects.filter(
+            interview=interview
+        ).get()
+        submission = ApplicationStepSubmission.objects.filter(
+            bootcamp_application=application, run_application_step=step
+        ).get()
+        assert submission.content_object == video_submission
+
+
+def test_take_interview_missing_step_id(client, application):
+    """Should raise a validation error if the step_id parameter is missing"""
+    client.force_login(application.user)
+    resp = client.post(
+        reverse("video-interviews", kwargs={"pk": application.id}), data={}
+    )
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert resp.json() == ["Missing step_id"]
+
+
+def test_take_interview_wrong_step_id(client, application):
+    """If the step_id is not related to the application, the user should get a 404"""
+    client.force_login(application.user)
+    step = BootcampRunApplicationStepFactory.create()
+    resp = client.post(
+        reverse("video-interviews", kwargs={"pk": application.id}),
+        data={"step_id": step.id},
+    )
+    assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_take_interview_anonymous(client, application):
+    """Anonymous access is not allowed"""
+    resp = client.post(
+        reverse("video-interviews", kwargs={"pk": application.id}), data={}
+    )
+    assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_take_interview_different_user(client, application, step):
+    """Users cannot modify another user's application"""
+    client.force_login(UserFactory.create())
+    resp = client.post(
+        reverse("video-interviews", kwargs={"pk": application.id}),
+        data={"step_id": step.id},
+    )
+    assert resp.status_code == status.HTTP_403_FORBIDDEN

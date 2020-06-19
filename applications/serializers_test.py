@@ -25,6 +25,7 @@ from applications.factories import (
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     ApplicationStepFactory,
+    QuizSubmissionFactory,
     VideoInterviewSubmissionFactory,
 )
 from ecommerce.factories import OrderFactory
@@ -169,19 +170,27 @@ def test_bootcamp_run_step_serializer():
     }
 
 
-def test_submission_serializer():
+@pytest.mark.parametrize(
+    "content_object_factory", [VideoInterviewSubmissionFactory, QuizSubmissionFactory]
+)
+def test_submission_serializer(content_object_factory):
     """
     SubmissionSerializer should serialize an application submission with expected fields
     """
-    run_step = BootcampRunApplicationStepFactory.build(id=123)
-    submission = ApplicationStepSubmissionFactory.build(run_application_step=run_step)
+    submission = ApplicationStepSubmissionFactory.create(
+        content_object=content_object_factory.create()
+    )
     data = SubmissionSerializer(instance=submission).data
     assert data == {
-        "id": None,
-        "run_application_step_id": 123,
+        "id": submission.id,
+        "run_application_step_id": submission.run_application_step.id,
         "submitted_date": serializer_date_format(submission.submitted_date),
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
+        "submission_status": submission.submission_status,
+        "interview_url": submission.content_object.interview.results_url
+        if content_object_factory is VideoInterviewSubmissionFactory
+        else None,
     }
 
 
@@ -196,11 +205,15 @@ def test_submission_review_serializer(has_interview):
         run_application_step=run_step,
         bootcamp_application__bootcamp_run=run_step.bootcamp_run,
     )
-    interview = InterviewFactory.create()
     if has_interview:
+        interview = InterviewFactory.create()
         interview_submission = VideoInterviewSubmissionFactory(interview=interview)
         submission.content_object = interview_submission
         submission.save()
+    else:
+        submission.content_object = QuizSubmissionFactory.create()
+        submission.save()
+
     data = SubmissionReviewSerializer(instance=submission).data
     assert data == {
         "id": submission.id,
@@ -208,8 +221,9 @@ def test_submission_review_serializer(has_interview):
         "submitted_date": serializer_date_format(submission.submitted_date),
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
+        "submission_status": submission.submission_status,
+        "interview_url": interview.results_url if has_interview else None,
         "learner": UserSerializer(instance=user).data,
-        "interview_url": (interview.results_url if has_interview else None),
         "bootcamp_application": BootcampApplicationSerializer(
             instance=submission.bootcamp_application
         ).data,

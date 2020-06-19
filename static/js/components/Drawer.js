@@ -12,13 +12,15 @@ import {
   NEW_APPLICATION,
   PAYMENT,
   PROFILE_EDIT,
-  PROFILE_VIEW
+  PROFILE_VIEW,
+  TAKE_VIDEO_INTERVIEW
 } from "../constants"
 
 import EditProfileDisplay from "./EditProfileDisplay"
 import ViewProfileDisplay from "./ViewProfileDisplay"
 import PaymentDisplay from "./PaymentDisplay"
 import NewApplication from "./NewApplication"
+import TakeVideoInterviewDisplay from "./TakeVideoInterviewDisplay"
 
 const renderDrawerContents = (
   drawerState: string,
@@ -34,6 +36,13 @@ const renderDrawerContents = (
   case NEW_APPLICATION:
     return (
       <NewApplication appliedRunIds={R.prop("appliedRunIds", drawerMeta)} />
+    )
+  case TAKE_VIDEO_INTERVIEW:
+    return (
+      <TakeVideoInterviewDisplay
+        application={R.prop("application", drawerMeta)}
+        stepId={R.prop("stepId", drawerMeta)}
+      />
     )
   default:
     return null
