@@ -14,7 +14,8 @@ export type Application = {
   id:           number,
   state:        string,
   created_on:   any,
-  bootcamp_run: BootcampRun
+  bootcamp_run: BootcampRun,
+  has_payments: boolean,
 }
 
 export type ValidAppStepType = SUBMISSION_VIDEO | SUBMISSION_QUIZ

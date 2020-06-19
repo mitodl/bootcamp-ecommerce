@@ -128,13 +128,17 @@ def test_application_detail_serializer_nested(app_data):
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
 
 
-def test_application_list_serializer(app_data):
+@pytest.mark.parametrize("has_payments", [True, False])
+def test_application_list_serializer(app_data, has_payments):
     """
     BootcampApplicationListSerializer should return serialized versions of all of a user's
     bootcamp applications
     """
     other_app = BootcampApplicationFactory.create(user=app_data.application.user)
     user_applications = [app_data.application, other_app]
+    if has_payments:
+        for app in user_applications:
+            OrderFactory.create(application=app, status=Order.FULFILLED)
     data = BootcampApplicationSerializer(instance=user_applications, many=True).data
     assert data == [
         {
@@ -144,6 +148,7 @@ def test_application_list_serializer(app_data):
             "bootcamp_run": BootcampRunSerializer(
                 instance=application.bootcamp_run
             ).data,
+            "has_payments": has_payments,
         }
         for application in user_applications
     ]

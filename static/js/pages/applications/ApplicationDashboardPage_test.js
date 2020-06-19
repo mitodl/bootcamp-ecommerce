@@ -30,6 +30,7 @@ import {
   makeIncompleteUser,
   makeUser
 } from "../../factories/user"
+import { shouldIf } from "../../lib/test_utils"
 
 import type {
   Application,
@@ -348,14 +349,26 @@ describe("ApplicationDashboardPage", () => {
       })
     })
   })
+  ;[true, false].forEach(hasPayments => {
+    it(`${shouldIf(
+      hasPayments
+    )} have a view statement link if hasPayments=${String(
+      hasPayments
+    )}`, async () => {
+      fakeApplications.forEach(application => {
+        application.has_payments = hasPayments
+      })
+      const { wrapper } = await renderPage()
 
-  it("renders a view statement link", async () => {
-    const { wrapper } = await renderPage()
-
-    const link = wrapper.find(".view-statement a").at(0)
-    assert.equal(
-      link.prop("href"),
-      `/applications/${fakeApplicationDetail.id}/payment-history/`
-    )
+      const link = wrapper.find(".view-statement a").at(0)
+      if (hasPayments) {
+        assert.equal(
+          link.prop("href"),
+          `/applications/${fakeApplicationDetail.id}/payment-history/`
+        )
+      } else {
+        assert.isFalse(link.exists())
+      }
+    })
   })
 })

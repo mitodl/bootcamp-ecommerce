@@ -1,7 +1,7 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
-from django.db.models import Count, Subquery, OuterRef, IntegerField
+from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
@@ -21,6 +21,7 @@ from applications.serializers import (
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import BootcampApplication, ApplicationStepSubmission
+from ecommerce.models import Order
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 
@@ -44,7 +45,12 @@ class BootcampApplicationViewset(
             return BootcampApplication.objects.prefetch_state_data()
         else:
             return (
-                BootcampApplication.objects.filter(user=self.request.user)
+                BootcampApplication.objects.prefetch_related(
+                    Prefetch(
+                        "orders", queryset=Order.objects.filter(status=Order.FULFILLED)
+                    )
+                )
+                .filter(user=self.request.user)
                 .select_related("bootcamp_run__bootcamprunpage")
                 .order_by("-created_on")
             )
@@ -52,7 +58,7 @@ class BootcampApplicationViewset(
     def get_serializer_context(self):
         added_context = {}
         if self.action == "list":
-            added_context = {"include_page": True}
+            added_context = {"include_page": True, "filtered_orders": True}
         return {**super().get_serializer_context(), **added_context}
 
     def get_serializer_class(self):
