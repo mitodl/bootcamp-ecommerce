@@ -10,6 +10,7 @@ import type {
   ApplicationDetail,
   VideoInterviewResponse
 } from "../flow/applicationTypes"
+import type { HttpAuthResponse } from "../flow/authTypes"
 
 type Props = {
   application: ApplicationDetail,
@@ -17,7 +18,7 @@ type Props = {
   createVideoInterview: (
     applicationId: number,
     stepId: number
-  ) => Promise<{ body: VideoInterviewResponse }>
+  ) => Promise<HttpAuthResponse<VideoInterviewResponse>>
 }
 export function TakeVideoInterviewDisplay({
   application,
@@ -38,7 +39,10 @@ export function TakeVideoInterviewDisplay({
           onClick={async () => {
             const {
               body: { interview_link: interviewLink }
-            } = await createVideoInterview(application.id, stepId)
+            }: HttpAuthResponse<VideoInterviewResponse> = await createVideoInterview(
+              application.id,
+              stepId
+            )
             if (interviewLink) {
               window.location = interviewLink
             }
