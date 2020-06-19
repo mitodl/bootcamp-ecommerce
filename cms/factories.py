@@ -33,6 +33,7 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
     """BootcampRunPage factory class"""
 
     bootcamp_run = factory.SubFactory(BootcampRunFactory)
+    title = factory.fuzzy.FuzzyText(prefix="Bootcamp: ", length=64)
     description = factory.fuzzy.FuzzyText()
     subhead = factory.fuzzy.FuzzyText(prefix="Sub-heading - ")
     header_image = factory.SubFactory(wagtail_factories.ImageFactory)

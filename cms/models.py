@@ -242,13 +242,6 @@ class BootcampRunPage(BootcampPage):
         context = super().get_context(request)
         return context
 
-    def save(self, *args, **kwargs):
-        # autogenerate a unique slug so we don't hit a ValidationError
-        if not self.title:
-            self.title = self.__class__._meta.verbose_name.title()
-        self.slug = slugify("bootcamp-{}".format(self.bootcamp_run.run_key))
-        super().save(*args, **kwargs)
-
 
 class BootcampRunChildPage(Page):
     """
