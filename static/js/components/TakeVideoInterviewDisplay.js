@@ -6,12 +6,18 @@ import { mutateAsync } from "redux-query"
 import { JOBMA, JOBMA_SITE } from "../constants"
 import queries from "../lib/queries"
 
-import type { ApplicationDetail } from "../flow/applicationTypes"
+import type {
+  ApplicationDetail,
+  VideoInterviewResponse
+} from "../flow/applicationTypes"
 
 type Props = {
   application: ApplicationDetail,
   stepId: number,
-  createVideoInterview: (applicationId: number, stepId: number) => Promise<*>
+  createVideoInterview: (
+    applicationId: number,
+    stepId: number
+  ) => Promise<{ body: VideoInterviewResponse }>
 }
 export function TakeVideoInterviewDisplay({
   application,
