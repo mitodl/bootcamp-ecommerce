@@ -55,5 +55,17 @@
       top: 0;
       right: 100%;
     }
+
+    .rich-text p {
+
+      a {
+        color: black;
+        text-decoration: underline;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
   }
 }
