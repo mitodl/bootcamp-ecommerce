@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Version 0.46.0
+--------------
+
+- Get rid of recaptcha flex style (#705)
+- Implement take video link (#659)
+- View statement link should only show up if the user has made a payment (#692)
+- Finalized nav bar
+- Update validation email and create profile title (#663)
+
 Version 0.45.3 (Released June 19, 2020)
 --------------
 
