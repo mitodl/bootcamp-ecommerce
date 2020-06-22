@@ -79,17 +79,17 @@ class CommonProperties:
     @property
     def program_description_section(self):
         """Gets the program description page"""
-        return self._get_child_page_of_type(ProgramDescriptionPage)
+        return self._get_child_page_of_type(ProgramDescriptionSection)
 
     @property
     def three_column_image_text_section(self):
         """Gets the three column image text section child page"""
-        return self._get_child_page_of_type(ThreeColumnImageTextPage)
+        return self._get_child_page_of_type(ThreeColumnImageTextSection)
 
     @property
     def learning_resources(self):
         """Get the learning resources page"""
-        return self._get_child_page_of_type(LearningResourcePage)
+        return self._get_child_page_of_type(LearningResourceSection)
 
 
 class HomePage(Page, CommonProperties):
@@ -123,21 +123,21 @@ class HomePage(Page, CommonProperties):
     @property
     def alumni(self):
         """Gets the alumni section page"""
-        return self._get_child_page_of_type(HomeAlumniPage)
+        return self._get_child_page_of_type(HomeAlumniSection)
 
     @property
     def catalog(self):
         """Gets the catalog section page"""
-        return self._get_child_page_of_type(CatalogGridPage)
+        return self._get_child_page_of_type(CatalogGridSection)
 
     subpage_types = [
-        "ProgramDescriptionPage",
-        "ThreeColumnImageTextPage",
-        "HomeAlumniPage",
+        "ProgramDescriptionSection",
+        "ThreeColumnImageTextSection",
+        "HomeAlumniSection",
         "BootcampIndexPage",
-        "LearningResourcePage",
+        "LearningResourceSection",
         "ResourcePage",
-        "CatalogGridPage",
+        "CatalogGridSection",
     ]
 
 
@@ -191,17 +191,17 @@ class BootcampPage(Page, CommonProperties):
     @property
     def instructors(self):
         """Gets the faculty members page"""
-        return self._get_child_page_of_type(InstructorsPage)
+        return self._get_child_page_of_type(InstructorsSection)
 
     @property
     def alumni(self):
         """Gets the faculty members page"""
-        return self._get_child_page_of_type(AlumniPage)
+        return self._get_child_page_of_type(AlumniSection)
 
     @property
     def admissions_section(self):
         """Gets the admissions section child page"""
-        return self._get_child_page_of_type(AdmissionsSectionPage)
+        return self._get_child_page_of_type(AdmissionsSection)
 
     @property
     def admissions_link(self):
@@ -209,12 +209,12 @@ class BootcampPage(Page, CommonProperties):
         return "/admissions"
 
     subpage_types = [
-        "ThreeColumnImageTextPage",
-        "ProgramDescriptionPage",
-        "InstructorsPage",
-        "AlumniPage",
-        "LearningResourcePage",
-        "AdmissionsSectionPage",
+        "ThreeColumnImageTextSection",
+        "ProgramDescriptionSection",
+        "InstructorsSection",
+        "AlumniSection",
+        "LearningResourceSection",
+        "AdmissionsSection",
     ]
 
 
@@ -305,7 +305,7 @@ class BootcampRunChildPage(Page):
         raise Http404
 
 
-class ThreeColumnImageTextPage(BootcampRunChildPage):
+class ThreeColumnImageTextSection(BootcampRunChildPage):
     """
     Represents a three column section along with images on the top (in each column) and text fields.
     Have a limit of maximum and minimum of three blocks.
@@ -325,7 +325,7 @@ class ThreeColumnImageTextPage(BootcampRunChildPage):
     content_panels = [StreamFieldPanel("column_image_text_section")]
 
 
-class ProgramDescriptionPage(BootcampRunChildPage):
+class ProgramDescriptionSection(BootcampRunChildPage):
     """
     Describe the bootcamp program.
     """
@@ -375,7 +375,7 @@ class ProgramDescriptionPage(BootcampRunChildPage):
     ]
 
 
-class InstructorsPage(BootcampRunChildPage):
+class InstructorsSection(BootcampRunChildPage):
     """
     InstructorsPage representing a "Your MIT Instructors" section on a product page
     """
@@ -403,7 +403,7 @@ class InstructorsPage(BootcampRunChildPage):
     ]
 
 
-class AdmissionsSectionPage(BootcampRunChildPage):
+class AdmissionsSection(BootcampRunChildPage):
     """
     Page that represents the admissions section on a bootcamp run page
     """
@@ -498,7 +498,7 @@ class SiteNotification(models.Model):
         return self.message
 
 
-class HomeAlumniPage(BootcampRunChildPage):
+class HomeAlumniSection(BootcampRunChildPage):
     """
     Page that holds general alumni information on HomePage.
     """
@@ -538,7 +538,7 @@ class HomeAlumniPage(BootcampRunChildPage):
         verbose_name = "Homepage Alumni Section"
 
 
-class AlumniPage(BootcampRunChildPage):
+class AlumniSection(BootcampRunChildPage):
     """
     Page that holds alumni for a product
     """
@@ -585,7 +585,7 @@ class AlumniPage(BootcampRunChildPage):
         verbose_name = "Alumni Section"
 
 
-class LearningResourcePage(BootcampRunChildPage):
+class LearningResourceSection(BootcampRunChildPage):
     """
     Page that holds the learning resources for a product
     """
@@ -606,7 +606,7 @@ class LearningResourcePage(BootcampRunChildPage):
         verbose_name = "Learning Resources Section"
 
 
-class CatalogGridPage(BootcampRunChildPage):
+class CatalogGridSection(BootcampRunChildPage):
     """
     Page that represents the catalog section on the home page
     """

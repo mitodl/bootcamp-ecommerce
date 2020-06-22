@@ -70,14 +70,14 @@ class TitleLinksBlockFactory(wagtail_factories.StructBlockFactory):
         model = TitleLinksBlock
 
 
-class LearningResourcePageFactory(wagtail_factories.PageFactory):
-    """LearningResourcePage factory class"""
+class LearningResourceSectionFactory(wagtail_factories.PageFactory):
+    """LearningResourceSection factory class"""
 
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
     items = wagtail_factories.StreamFieldFactory({"item": TitleLinksBlockFactory})
 
     class Meta:
-        model = models.LearningResourcePage
+        model = models.LearningResourceSection
 
 
 class TitleDescriptionBlockFactory(wagtail_factories.StructBlockFactory):
@@ -90,8 +90,8 @@ class TitleDescriptionBlockFactory(wagtail_factories.StructBlockFactory):
         model = TitleDescriptionBlock
 
 
-class ProgramDescriptionPageFactory(wagtail_factories.PageFactory):
-    """ProgramDescriptionPage factory class"""
+class ProgramDescriptionSectionFactory(wagtail_factories.PageFactory):
+    """ProgramDescriptionSection factory class"""
 
     statement = factory.fuzzy.FuzzyText(prefix="statement ")
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
@@ -103,7 +103,7 @@ class ProgramDescriptionPageFactory(wagtail_factories.PageFactory):
     )
 
     class Meta:
-        model = models.ProgramDescriptionPage
+        model = models.ProgramDescriptionSection
 
 
 class HomePageFactory(wagtail_factories.PageFactory):
@@ -127,8 +127,8 @@ class HomePageFactory(wagtail_factories.PageFactory):
         return obj
 
 
-class HomeAlumniPageFactory(wagtail_factories.PageFactory):
-    """HomeAlumniPageFactory factory class"""
+class HomeAlumniSectionFactory(wagtail_factories.PageFactory):
+    """HomeAlumniSectionFactory factory class"""
 
     banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
@@ -137,7 +137,7 @@ class HomeAlumniPageFactory(wagtail_factories.PageFactory):
     highlight_name = highlight_quote = factory.fuzzy.FuzzyText(prefix="name ")
 
     class Meta:
-        model = models.HomeAlumniPage
+        model = models.HomeAlumniSection
 
 
 class CatalogSectionBootcampBlockFactory(wagtail_factories.StructBlockFactory):
@@ -151,12 +151,12 @@ class CatalogSectionBootcampBlockFactory(wagtail_factories.StructBlockFactory):
         model = CatalogSectionBootcampBlock
 
 
-class CatalogGridPageFactory(wagtail_factories.PageFactory):
-    """CatalogGridPage factory class"""
+class CatalogGridSectionFactory(wagtail_factories.PageFactory):
+    """CatalogGridSection factory class"""
 
     contents = wagtail_factories.StreamFieldFactory(
         {"bootcamp_run": CatalogSectionBootcampBlockFactory}
     )
 
     class Meta:
-        model = models.CatalogGridPage
+        model = models.CatalogGridSection
