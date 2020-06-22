@@ -18,7 +18,7 @@ class BootcampViewSet(ListModelMixin, GenericViewSet):
         """Make a queryset which optionally shows what runs are available for enrollment"""
         queryset = BootcampRun.objects.all().select_related("bootcamp")
         if self.request.query_params.get("available") == "true":
-            queryset = queryset.filter(start_date__lt=Now()).exclude(
+            queryset = queryset.filter(start_date__gt=Now()).exclude(
                 applications__user=self.request.user
             )
         return queryset.order_by("id")
