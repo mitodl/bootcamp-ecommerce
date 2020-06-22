@@ -12,7 +12,9 @@ from applications.constants import (
     REVIEW_STATUS_REJECTED,
     AppStates,
     REVIEW_STATUS_WAITLISTED,
+    REVIEW_STATUS_PENDING,
 )
+from applications.exceptions import InvalidApplicationStateException
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampRunStepSerializer,
@@ -291,9 +293,7 @@ def test_submission_review_serializer_update(
         )
 
     serializer = SubmissionReviewSerializer(submission, {"review_status": review})
-    serializer.is_valid()
-
-    assert serializer.errors == {}
+    assert serializer.is_valid() is True
 
     serializer.save()
 
@@ -302,3 +302,91 @@ def test_submission_review_serializer_update(
 
     assert submission.review_status == review
     assert bootcamp_application.state == expected
+
+
+@pytest.mark.parametrize(
+    "prior_status, new_status, prior_state, expected_state",
+    [
+        [
+            REVIEW_STATUS_APPROVED,
+            REVIEW_STATUS_REJECTED,
+            AppStates.AWAITING_PAYMENT.value,
+            AppStates.REJECTED.value,
+        ],
+        [
+            REVIEW_STATUS_APPROVED,
+            REVIEW_STATUS_REJECTED,
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+            AppStates.REJECTED.value,
+        ],
+        [
+            REVIEW_STATUS_APPROVED,
+            REVIEW_STATUS_WAITLISTED,
+            AppStates.AWAITING_PAYMENT.value,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ],
+        [
+            REVIEW_STATUS_REJECTED,
+            REVIEW_STATUS_APPROVED,
+            AppStates.REJECTED.value,
+            AppStates.AWAITING_PAYMENT.value,
+        ],
+        [
+            REVIEW_STATUS_REJECTED,
+            REVIEW_STATUS_WAITLISTED,
+            AppStates.REJECTED.value,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ],
+    ],
+)
+def test_submission_review_serializer_reverse_decision(
+    prior_status, new_status, prior_state, expected_state
+):
+    """Test that submission decisions can be reversed"""
+    bootcamp_application = BootcampApplicationFactory.create(state=prior_state)
+    submission = ApplicationStepSubmissionFactory.create(
+        review_status=prior_status,
+        bootcamp_application=bootcamp_application,
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
+    )
+
+    serializer = SubmissionReviewSerializer(submission, {"review_status": new_status})
+    assert serializer.is_valid() is True
+
+    serializer.save()
+
+    bootcamp_application.refresh_from_db()
+    submission.refresh_from_db()
+
+    assert submission.review_status == new_status
+    assert bootcamp_application.state == expected_state
+
+
+@pytest.mark.parametrize(
+    "app_state,total_paid",
+    [
+        [AppStates.AWAITING_RESUME, 0],
+        [AppStates.COMPLETE, 0],
+        [AppStates.AWAITING_PROFILE_COMPLETION, 0],
+        [AppStates.AWAITING_SUBMISSION_REVIEW, 40],
+    ],
+)
+def test_submission_review_serializer_validation(app_state, total_paid):
+    """Test that status changes are invalidated if the application state is incorrect"""
+    bootcamp_application = BootcampApplicationFactory.create(state=app_state)
+    if total_paid > 0:
+        OrderFactory.create(
+            application=bootcamp_application, total_price_paid=total_paid
+        )
+
+    submission = ApplicationStepSubmissionFactory.create(
+        review_status=REVIEW_STATUS_PENDING,
+        bootcamp_application=bootcamp_application,
+        run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
+    )
+    serializer = SubmissionReviewSerializer(
+        submission, {"review_status": REVIEW_STATUS_APPROVED}
+    )
+    with pytest.raises(InvalidApplicationStateException) as ex:
+        serializer.is_valid()
+    assert ex.value.detail == "Bootcamp application is in invalid state"
