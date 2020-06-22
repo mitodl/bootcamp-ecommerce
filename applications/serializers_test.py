@@ -273,9 +273,7 @@ def test_submission_review_serializer_update(
         )
 
     serializer = SubmissionReviewSerializer(submission, {"review_status": review})
-    serializer.is_valid()
-
-    assert serializer.errors == {}
+    assert serializer.is_valid() is True
 
     serializer.save()
 
@@ -333,9 +331,7 @@ def test_submission_review_serializer_reverse_decision(
     )
 
     serializer = SubmissionReviewSerializer(submission, {"review_status": new_status})
-    serializer.is_valid()
-
-    assert serializer.errors == {}
+    assert serializer.is_valid() is True
 
     serializer.save()
 
