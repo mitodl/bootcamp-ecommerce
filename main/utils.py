@@ -11,6 +11,7 @@ import pytz
 
 from django.conf import settings
 from django.core.serializers import serialize
+from rest_framework import serializers
 
 
 log = logging.getLogger(__name__)
@@ -322,3 +323,16 @@ def get_error_response_summary(response):
         summary_dict = {"content": response.text}
     summary_dict_str = ", ".join([f"{k}: {v}" for k, v in summary_dict.items()])
     return f"Response - code: {response.status_code}, {summary_dict_str}"
+
+
+def serializer_date_format(dt):
+    """
+    Helper function to return a date formatted in the same way that our serializers
+
+    Args:
+        dt (Optional[datetime.datetime]): The datetime object (or None)
+
+    Returns:
+        Optional[str]: The string representing the datetime (or None)
+    """
+    return serializers.DateTimeField().to_representation(dt)

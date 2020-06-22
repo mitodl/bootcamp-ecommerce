@@ -13,3 +13,35 @@
     padding: 25px;
   }
 }
+
+.drawer-wrapper {
+
+  @include media-breakpoint-down(sm) {
+    padding: 20px;
+  }
+
+  @include media-breakpoint-down(xs) {
+    padding: 15px 0;
+  }
+
+  padding: 40px;
+
+  .drawer-title {
+    text-transform: uppercase;
+  }
+
+  input {
+    &::placeholder {
+      color: $label-gray;
+      line-height: 22px;
+      letter-spacing: 1.95px;
+      font-size: 18px;
+    }
+  }
+
+  button {
+    font-weight: 600;
+    min-width: 100px;
+  }
+
+}

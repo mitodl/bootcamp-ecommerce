@@ -1,9 +1,10 @@
 // @flow
-import { objOf } from "ramda"
+import { objOf, mergeDeepRight } from "ramda"
 
 import { nextState } from "./util"
 import { getCookie } from "../api"
 
+import { DEFAULT_POST_OPTIONS } from "../redux_query"
 import type {
   Application,
   ApplicationDetail,
@@ -144,5 +145,31 @@ export default {
       bootcampRuns: nextState
     },
     force: true
+  }),
+  applicationUploadResumeMutation: (
+    linkedinUrl: string,
+    applicationId: number
+  ) => ({
+    queryKey: "resume",
+    url:      `/api/applications/${applicationId}/resume/`,
+    body:     {
+      linkedin_url: linkedinUrl
+    },
+    options: {
+      ...DEFAULT_POST_OPTIONS
+    },
+    transform: (json: Object) => {
+      return {
+        [applicationDetailKey]: {
+          [applicationId]: json
+        }
+      }
+    },
+    update: {
+      [applicationDetailKey]: (
+        prev: ApplicationDetailState,
+        transformed: Object
+      ) => mergeDeepRight(prev, transformed)
+    }
   })
 }

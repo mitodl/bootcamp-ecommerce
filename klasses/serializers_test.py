@@ -11,7 +11,7 @@ from klasses.serializers import (
     BootcampRunSerializer,
     InstallmentSerializer,
 )
-from main.test_utils import serializer_date_format
+from main.utils import serializer_date_format
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 

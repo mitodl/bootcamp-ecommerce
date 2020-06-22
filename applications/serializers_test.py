@@ -34,7 +34,7 @@ from ecommerce.serializers import ApplicationOrderSerializer
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from klasses.serializers import BootcampRunSerializer
-from main.test_utils import serializer_date_format
+from main.utils import serializer_date_format
 from profiles.factories import UserFactory
 from profiles.serializers import UserSerializer
 

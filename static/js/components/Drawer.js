@@ -13,7 +13,8 @@ import {
   PAYMENT,
   PROFILE_EDIT,
   PROFILE_VIEW,
-  TAKE_VIDEO_INTERVIEW
+  TAKE_VIDEO_INTERVIEW,
+  RESUME_UPLOAD
 } from "../constants"
 
 import EditProfileDisplay from "./EditProfileDisplay"
@@ -21,6 +22,7 @@ import ViewProfileDisplay from "./ViewProfileDisplay"
 import PaymentDisplay from "./PaymentDisplay"
 import NewApplication from "./NewApplication"
 import TakeVideoInterviewDisplay from "./TakeVideoInterviewDisplay"
+import UploadResumeView from "./UploadResumeView"
 
 const renderDrawerContents = (
   drawerState: string,
@@ -43,6 +45,10 @@ const renderDrawerContents = (
         application={R.prop("application", drawerMeta)}
         stepId={R.prop("stepId", drawerMeta)}
       />
+    )
+  case RESUME_UPLOAD:
+    return (
+      <UploadResumeView application={R.prop("application", drawerMeta)} />
     )
   default:
     return null

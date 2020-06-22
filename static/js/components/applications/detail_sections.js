@@ -9,7 +9,8 @@ import {
   PAYMENT,
   PROFILE_VIEW,
   REVIEW_STATUS_REJECTED,
-  TAKE_VIDEO_INTERVIEW
+  TAKE_VIDEO_INTERVIEW,
+  RESUME_UPLOAD
 } from "../../constants"
 
 import type { DrawerChangePayload } from "../../reducers/drawer"
@@ -61,7 +62,7 @@ type ResumeDetailProps = DetailSectionProps & {
 }
 
 export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
-  const { ready, fulfilled, applicationDetail } = props
+  const { ready, fulfilled, openDrawer, applicationDetail } = props
 
   return (
     <ProgressDetailRow className="resume" fulfilled={fulfilled}>
@@ -76,7 +77,12 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
       </div>
       {ready && (
         <div className="col-12 col-sm-5 text-sm-right">
-          <a className="btn-link">
+          <a
+            className="btn-link"
+            onClick={R.partial(openDrawer, [
+              { type: RESUME_UPLOAD, meta: { application: applicationDetail } }
+            ])}
+          >
             {fulfilled ?
               "View/Edit Resume or LinkedIn Profile" :
               "Add Resume or LinkedIn Profile"}
