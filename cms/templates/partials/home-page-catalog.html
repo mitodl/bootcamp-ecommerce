@@ -1,15 +1,18 @@
 {% load static wagtailimages_tags image_version_url wagtailcore_tags %}
 <div class="catalog-section">
     <div class="container">
-        <div class="row">
+        <div class="row justify-content-center">
             {% for page_block in page.contents %}
                 {% with block=page_block.value %}
-                    <div class="col-sm-6 col-lg-4 p-0 d-flex flex-column">
-                        {% if block.page.thumbnail_image %}
-                            <img src="{% image_version_url block.page.thumbnail_image "fill-475x300" %}" alt="{{ block.page.title }}">
-                        {% else %}
-                            <img src="{% static 'images/mit-dome.png' %}" alt="{{ block.page.title }}">
-                        {% endif %}
+                    <div class="col-sm-6 col-lg-6 d-flex flex-column catalog-card">
+                        <div class="image-holder position-relative">
+                            {% if block.page.thumbnail_image %}
+                                <img class="w-100" src="{% image_version_url block.page.thumbnail_image "fill-475x300" %}" alt="{{ block.page.title }}">
+                            {% else %}
+                                <img class="w-100" src="{% static 'images/mit-dome.png' %}" alt="{{ block.page.title }}">
+                            {% endif %}
+                            <div class="bg-white image-notch position-absolute"></div>
+                        </div>
                         <div class="info d-flex flex-column flex-grow-1">
                             <a href="{% pageurl block.page %}"><h2>{{ block.page.title }}</h2></a>
                             <span class="dates">
