@@ -10,6 +10,7 @@ import { makeUser } from "../factories/user"
 import { generateFakeRun } from "../factories"
 
 describe("NewApplication", () => {
+  const getBootcampsUrl = "/api/bootcampruns/?available=true"
   let helper, fakeUser, fakeBootcampRuns, fakeAppliedId, renderPage
 
   beforeEach(() => {
@@ -19,12 +20,10 @@ describe("NewApplication", () => {
     // Get the id of the last created run and include it in the list of ids that are already applied
     fakeAppliedId = prop("id", last(fakeBootcampRuns))
 
-    helper.handleRequestStub
-      .withArgs("/api/bootcampruns/?available=true")
-      .returns({
-        status: 200,
-        body:   fakeBootcampRuns
-      })
+    helper.handleRequestStub.withArgs(getBootcampsUrl).returns({
+      status: 200,
+      body:   fakeBootcampRuns
+    })
 
     renderPage = helper.configureReduxQueryRenderer(
       NewApplication,
@@ -58,6 +57,21 @@ describe("NewApplication", () => {
         .find("button")
         .last()
         .prop("disabled")
+    )
+  })
+
+  it("shows a message if no bootcamps are available for application", async () => {
+    helper.handleRequestStub.withArgs(getBootcampsUrl).returns({
+      status: 200,
+      body:   []
+    })
+
+    const { wrapper } = await renderPage()
+    assert.isFalse(wrapper.find("Dropdown").exists())
+    const message = wrapper.find("p")
+    assert.equal(
+      message.text(),
+      "There are no bootcamps that are currently open for application."
     )
   })
 

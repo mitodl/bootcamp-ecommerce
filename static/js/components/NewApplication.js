@@ -22,6 +22,9 @@ import { isQueryPending } from "../lib/queries/util"
 import type { User } from "../flow/authTypes"
 import type { BootcampRun } from "../flow/bootcampTypes"
 
+const noAvailableBootcampsMsg =
+  "There are no bootcamps that are currently open for application."
+
 type Props = {
   currentUser: User,
   bootcampRuns: ?Array<BootcampRun>,
@@ -94,28 +97,34 @@ export class NewApplication extends React.Component<Props, State> {
     return (
       <div className="container p-0">
         <h1 className="mb-3">Select Bootcamp</h1>
-        <p className="mb-3">
-          To apply to a bootcamp, please select from the list below and click
-          Continue.
-        </p>
-        <label className="d-block font-weight-bold">Bootcamps</label>
-        <Dropdown
-          isOpen={dropdownOpen}
-          toggle={() => this.setState({ dropdownOpen: !dropdownOpen })}
-          className="mb-3 standard-select full-width"
-        >
-          <DropdownToggle caret>{dropdownText}</DropdownToggle>
-          <DropdownMenu>{items}</DropdownMenu>
-        </Dropdown>
-        <div className="d-flex justify-content-end">
-          <button
-            className="btn-red btn-inverse"
-            onClick={this.handleSubmit}
-            disabled={createAppIsPending || !selectedBootcamp}
-          >
-            Continue
-          </button>
-        </div>
+        {unappliedBootcampRuns.length === 0 ? (
+          <p className="mb-3">{noAvailableBootcampsMsg}</p>
+        ) : (
+          <React.Fragment>
+            <p className="mb-3">
+              To apply to a bootcamp, please select from the list below and
+              click Continue.
+            </p>
+            <label className="d-block font-weight-bold">Bootcamps</label>
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => this.setState({ dropdownOpen: !dropdownOpen })}
+              className="mb-3 standard-select full-width"
+            >
+              <DropdownToggle caret>{dropdownText}</DropdownToggle>
+              <DropdownMenu>{items}</DropdownMenu>
+            </Dropdown>
+            <div className="d-flex justify-content-end">
+              <button
+                className="btn-red btn-inverse"
+                onClick={this.handleSubmit}
+                disabled={createAppIsPending || !selectedBootcamp}
+              >
+                Continue
+              </button>
+            </div>
+          </React.Fragment>
+        )}
       </div>
     )
   }
