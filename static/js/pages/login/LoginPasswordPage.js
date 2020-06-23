@@ -13,6 +13,7 @@ import users from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
 import { STATE_ERROR, handleAuthResponse } from "../../lib/auth"
 import { formatTitle } from "../../util/util"
+import { removeUserNotification } from "../../actions"
 
 import LoginPasswordForm from "../../components/forms/LoginPasswordForm"
 
@@ -32,7 +33,8 @@ type Props = {
     password: string,
     partialToken: string
   ) => Promise<HttpAuthResponse<AuthResponse>>,
-  getCurrentUser: () => Promise<HttpAuthResponse<User>>
+  getCurrentUser: () => Promise<HttpAuthResponse<User>>,
+  removeUserNotification: Function
 }
 
 export class LoginPasswordPage extends React.Component<Props> {
@@ -44,6 +46,11 @@ export class LoginPasswordPage extends React.Component<Props> {
       // this page was navigated to directly and login needs to be started over
       history.push(routes.login.begin)
     }
+  }
+
+  componentWillUnmount() {
+    const { removeUserNotification } = this.props
+    removeUserNotification("account-exists")
   }
 
   async onSubmit(
@@ -128,7 +135,8 @@ const getCurrentUser = () =>
 
 const mapDispatchToProps = {
   loginPassword,
-  getCurrentUser
+  getCurrentUser,
+  removeUserNotification
 }
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(
