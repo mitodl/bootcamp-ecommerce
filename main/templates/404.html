@@ -1,22 +1,25 @@
 {% extends "base.html" %}
 {% load i18n render_bundle %}
 
-{% block title %}MIT Bootcamps - Page Not Found{% endblock %}
+{% block title %}{{ site_name }} - Page Not Found{% endblock %}
 
 {% block headercontent %}
 <div id="header"></div>
 {% render_bundle 'header' %}
 {% endblock %}
 
+
 {% block content %}
 <div class="body-content">
-  <div class="photo-bg photo-2 top-content-container">
-    <div id="error" class="text-info-page">
-      <h1>Page not found</h1>
-      <p class="desc">
-        Whatever you were looking for isn't here. <br/>
-        Please <a href="{{ support_url }}" target="_blank" rel="noopener noreferrer">contact us</a> if you need support.
-      </p>
+  <div class="container text-center">
+    <h1 class="text-capitalize">Oops!</h1>
+      <h3 class="text-uppercase">
+          It looks like you have encountered an error. We are unable to find the page you are looking for.
+      </h3>
+    <div class="errorcode">404</div>
+    <div class="bottom-holder">
+      <h3 class="text-uppercase">Here's a helpful link to get you back on track:</h3>
+      <p><a href="{% url 'wagtail_serve' '' %}" class="btn btn-danger large-font">Home</a></p>
     </div>
   </div>
 </div>

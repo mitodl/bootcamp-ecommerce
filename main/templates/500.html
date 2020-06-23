@@ -10,10 +10,15 @@
 
 {% block content %}
 <div class="body-content">
-  <div class="photo-bg photo-2 top-content-container">
-    <div id="error" class="text-info-page">
-      <h1>There has been an error (500).</h1>
-      <p class="desc">Please <a href="{{ support_url }}" target="_blank" rel="noopener noreferrer">contact us</a> if this continues to happen</p>
+  <div class="container text-center">
+    <h1 class="text-capitalize">Oops!</h1>
+    <h3 class="text-uppercase">Internal Server Error</h3>
+    <div class="errorcode">500</div>
+    <div class="bottom-holder">
+      <h3 class="text-uppercase">Here's a helpful link to get you back on track:</h3>
+      <a class="text-capitalize" href="{{ support_url }}" target="_blank" rel="noopener noreferrer">
+          Contact customer support
+      </a>
     </div>
   </div>
 </div>
