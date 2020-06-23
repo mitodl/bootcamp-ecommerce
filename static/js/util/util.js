@@ -149,6 +149,19 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
 export const getFilenameFromPath = (url: string) =>
   url.substring(url.lastIndexOf("/") + 1)
 
+/*
+ * Our uploaded filenames begin with a media path. Until we start saving the
+ * raw file names for uploaded files, this utility function can be used to
+ * extract the file name.
+ * Ex: "media/1/abcde-12345_some_resume.pdf" -> "some_resume.pdf"
+ */
+export const getFilenameFromMediaPath = R.compose(
+  R.join("_"),
+  R.tail(),
+  R.split("_"),
+  R.defaultTo("")
+)
+
 export const parsePrice = (priceStr: string | number): Decimal => {
   let price
   try {

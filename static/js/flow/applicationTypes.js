@@ -111,3 +111,9 @@ export type SubmissionFacetData = {
 export type VideoInterviewResponse = {
   interview_link: string,
 }
+
+export type ResumeLinkedInResponse = {
+  body: {
+    errors?: Array<string>
+  }
+}

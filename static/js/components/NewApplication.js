@@ -95,7 +95,7 @@ export class NewApplication extends React.Component<Props, State> {
       "Select..."
 
     return (
-      <div className="container p-0">
+      <div className="container drawer-wrapper new-application-drawer">
         <h1 className="mb-3">Select Bootcamp</h1>
         {unappliedBootcampRuns.length === 0 ? (
           <p className="mb-3">{noAvailableBootcampsMsg}</p>

@@ -2,11 +2,14 @@
 import { objOf, mergeDeepRight } from "ramda"
 
 import { nextState } from "./util"
-import { getCookie } from "../api"
 
-import { DEFAULT_POST_OPTIONS } from "../redux_query"
-import { applicationsAPI, applicationDetailAPI } from "../urls"
-
+import {
+  applicationsAPI,
+  applicationDetailAPI,
+  appVideoInterviewAPI,
+  appResumeAPI
+} from "../urls"
+import { DEFAULT_NON_GET_OPTIONS } from "../redux_query"
 import type {
   Application,
   ApplicationDetail,
@@ -14,25 +17,28 @@ import type {
   VideoInterviewResponse
 } from "../../flow/applicationTypes"
 
-const DEFAULT_NON_GET_OPTIONS = {
-  headers: {
-    "X-CSRFTOKEN": getCookie("csrftoken")
-  }
-}
-
 const applicationsKey = "applications"
-const applicationDetailKey = "applicationDetail"
+export const applicationDetailKey = "applicationDetail"
 export const createAppQueryKey = "createApplication"
+export const appQueryKey = applicationsKey
+export const appDetailQueryKey = applicationDetailKey
 
 export const applicationsSelector = (state: any): ?Array<Application> =>
   state.entities[applicationsKey]
 
-export const applicationDetailSelector = (
+export const allApplicationDetailSelector = (
   state: any
 ): { [string]: ApplicationDetail } => state.entities[applicationDetailKey]
 
+export const applicationDetailSelector = (
+  applicationId: number,
+  state: any
+): ApplicationDetail =>
+  state.entities[applicationDetailKey][String(applicationId)]
+
 export default {
   applicationsQuery: () => ({
+    queryKey:  appQueryKey,
     url:       applicationsAPI.toString(),
     transform: objOf(applicationsKey),
     update:    {
@@ -41,7 +47,7 @@ export default {
   }),
   createApplicationMutation: (bootcampRunId: number) => ({
     queryKey: createAppQueryKey,
-    url:      "/api/applications/",
+    url:      applicationsAPI.toString(),
     options:  {
       ...DEFAULT_NON_GET_OPTIONS,
       method: "POST"
@@ -58,7 +64,8 @@ export default {
       ) => [...(prev || []), newApplication]
     }
   }),
-  applicationDetailQuery: (applicationId: string) => ({
+  applicationDetailQuery: (applicationId: string, force?: boolean) => ({
+    queryKey:  appDetailQueryKey,
     url:       applicationDetailAPI.param({ applicationId }).toString(),
     transform: (json: ?ApplicationDetail) => {
       return {
@@ -75,10 +82,11 @@ export default {
         ...prev,
         ...transformed
       })
-    }
+    },
+    force: !!force
   }),
   createVideoInterviewMutation: (applicationId: number, stepId: number) => ({
-    url:  `/api/applications/${String(applicationId)}/video-interviews/`,
+    url:  appVideoInterviewAPI.param({ applicationId }).toString(),
     body: {
       step_id: stepId
     },
@@ -94,18 +102,16 @@ export default {
     },
     force: true
   }),
-  applicationUploadResumeMutation: (
-    linkedinUrl: string,
-    applicationId: number
+  applicationLinkedInUrlMutation: (
+    applicationId: number,
+    linkedinUrl: string
   ) => ({
     queryKey: "resume",
-    url:      `/api/applications/${applicationId}/resume/`,
+    url:      appResumeAPI.param({ applicationId }).toString(),
     body:     {
       linkedin_url: linkedinUrl
     },
-    options: {
-      ...DEFAULT_POST_OPTIONS
-    },
+    options:   DEFAULT_NON_GET_OPTIONS,
     transform: (json: Object) => {
       return {
         [applicationDetailKey]: {
