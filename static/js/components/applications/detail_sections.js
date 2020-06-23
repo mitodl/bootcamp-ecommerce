@@ -80,7 +80,10 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
           <a
             className="btn-link"
             onClick={R.partial(openDrawer, [
-              { type: RESUME_UPLOAD, meta: { application: applicationDetail } }
+              {
+                type: RESUME_UPLOAD,
+                meta: { applicationId: applicationDetail.id }
+              }
             ])}
           >
             {fulfilled ?

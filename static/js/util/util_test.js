@@ -22,6 +22,7 @@ import {
   newSetWith,
   timeoutPromise,
   getFilenameFromPath,
+  getFilenameFromMediaPath,
   parsePrice,
   calcOrderBalances
 } from "./util"
@@ -186,6 +187,18 @@ describe("util", () => {
   ;["https://a/b/c/de/f/g.html", "https://g.html", "g.html"].forEach(url => {
     it(`getFilenameFromPath extracts 'g.html' from path ${url}`, () => {
       assert.equal(getFilenameFromPath(url), "g.html")
+    })
+  })
+
+  //
+  ;[
+    ["media/1/1-2-3-4_resume_1_2_3.pdf", "resume_1_2_3.pdf"],
+    ["media/1/1-2-3-4_resume.pdf", "resume.pdf"],
+    ["", ""],
+    [undefined, ""]
+  ].forEach(([path, expResult]) => {
+    it(`getFilenameFromMediaPath extracts file name from media path ${path}`, () => {
+      assert.equal(getFilenameFromMediaPath(path), expResult)
     })
   })
 

@@ -60,6 +60,10 @@ p, .std-text {
 
 .caption {
   font-size: 12px;
+
+  &.bottom {
+    margin-top: 3px;
+  }
 }
 
 .text-info-page {
@@ -81,13 +85,13 @@ p, .std-text {
   }
 }
 
+.form-control {
+  border: 1px solid $input-border-color;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 .bootcamp-form {
-
-  .form-control {
-    font-size: inherit;
-    font-weight: inherit;
-  }
-
   .form-error {
     font-size: 1rem;
     font-weight: 400;

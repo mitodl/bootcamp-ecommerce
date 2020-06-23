@@ -66,3 +66,7 @@ export const submissionDetailAPI = submissionsAPI.segment(":submissionId/")
 
 export const applicationsAPI = api.segment("applications/")
 export const applicationDetailAPI = applicationsAPI.segment(":applicationId/")
+export const appResumeAPI = applicationDetailAPI.segment("resume/")
+export const appVideoInterviewAPI = applicationDetailAPI.segment(
+  "video-interviews/"
+)

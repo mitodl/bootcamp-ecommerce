@@ -6,7 +6,7 @@ import { useRequest, useMutation } from "redux-query-react"
 import { MetaTags } from "react-meta-tags"
 
 import queries from "../../lib/queries"
-import { applicationDetailSelector } from "../../lib/queries/applications"
+import { allApplicationDetailSelector } from "../../lib/queries/applications"
 import {
   submissionQuery,
   submissionReviewMutation,
@@ -260,10 +260,10 @@ export default function ReviewDetailPage(props: PageProps) {
       null
   )
 
-  const applications = useSelector(applicationDetailSelector)
+  const applicationDetails = useSelector(allApplicationDetailSelector)
   const application =
-    applications && submission ?
-      applications[submission.bootcamp_application.id] :
+    applicationDetails && submission ?
+      applicationDetails[submission.bootcamp_application.id] :
       null
   const user = submission ? submission.learner : null
 

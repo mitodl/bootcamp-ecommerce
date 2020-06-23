@@ -1,7 +1,7 @@
 // @flow
 import { getCookie } from "./api"
 
-export const DEFAULT_POST_OPTIONS = {
+export const DEFAULT_NON_GET_OPTIONS = {
   headers: {
     "X-CSRFTOKEN": getCookie("csrftoken")
   }

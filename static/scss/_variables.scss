@@ -6,12 +6,14 @@ $default-subtext-color: rgba(255, 255, 255, 0.9);
 $input-color: #333;
 $placeholder-color: #bbb;
 $input-font-size: 16px;
+$input-radius: 5px;
 
 $primary: #a31f34;
 $button-red: #ec654d;
 $button-dk-grey: #4b4b4b;
 $medium-soft-light-gray: #e6e6e6;
 $med-gray: #b1b1b1;
+$btn-disabled-gray: $med-gray;
 $med-dark-gray: #707070;
 $dark-gray: #202020;
 $red-fade-to: #d22843;
@@ -24,6 +26,7 @@ $crusta-orange: #f56650;
 $flamingo-orange: #e5604b;
 
 $light-gray: #c2c0bf;
+$input-border-color: $light-gray;
 $dusty-gray: #979797;
 $very-light-gray: #f5f5f5;
 $soft-light-gray: #d8d8d8;

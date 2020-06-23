@@ -36,8 +36,8 @@ button, .btn-styled {
   padding: 6px 12px;
 
   &:disabled, &[disabled] {
-    color: $med-gray !important;
-    border-color: $med-gray !important;
+    color: $btn-disabled-gray !important;
+    border-color: $btn-disabled-gray !important;
   }
 
   &.size-1 {
@@ -112,8 +112,8 @@ input {
   padding: 8px;
   color: $input-color;
   font-size: $input-font-size;
-  border: 1px solid $light-gray;
-  border-radius: 5px;
+  border: 1px solid $input-border-color;
+  border-radius: $input-radius;
 }
 
 ::placeholder {

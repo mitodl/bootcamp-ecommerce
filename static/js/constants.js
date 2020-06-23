@@ -187,7 +187,7 @@ export const RESUME_UPLOAD = "resumeUpload"
 export const JOBMA = "Jobma"
 export const JOBMA_SITE = "jobma.com"
 
-export const ALLOWED_FILE_EXTENTIONS = {
+export const ALLOWED_FILE_EXTENSIONS = {
   pdf: "application/pdf"
 }
 
