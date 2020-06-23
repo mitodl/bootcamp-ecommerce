@@ -10,8 +10,20 @@ from django.views.decorators.csrf import csrf_exempt
 from mail.v2 import api
 from mail.v2.constants import EMAIL_RECEIPT, EMAIL_PW_RESET, EMAIL_VERIFICATION
 from mail.forms import EmailDebuggerForm
-from main.test_utils import drf_datetime
 from main.utils import now_in_utc
+
+
+def drf_datetime(dt):
+    """
+    Returns a datetime formatted as a DRF DateTimeField formats it
+
+    Args:
+        dt(datetime): datetime to format
+
+    Returns:
+        str: ISO 8601 formatted datetime
+    """
+    return dt.isoformat().replace("+00:00", "Z")
 
 
 def _render_email(email_type):
