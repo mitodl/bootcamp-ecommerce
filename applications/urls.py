@@ -9,6 +9,7 @@ from applications.views import (
     BootcampApplicationViewset,
     ReviewSubmissionViewSet,
     VideoInterviewsView,
+    LettersView,
     UploadResumeView,
 )
 
@@ -30,4 +31,5 @@ urlpatterns = [
         VideoInterviewsView.as_view(),
         name="video-interviews",
     ),
+    path("letters/<uuid:hash>/", LettersView.as_view(), name="letters"),
 ]

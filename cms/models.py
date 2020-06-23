@@ -1,11 +1,15 @@
 """
 Page models for the CMS
 """
+import json
+import logging
+
 from django.conf import settings
 from django.db import models
 from django.http.response import Http404
 from django.urls import reverse
 from django.utils.text import slugify
+from django.shortcuts import render
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.core.blocks import StreamBlock
 from wagtail.core.fields import RichTextField, StreamField
@@ -15,6 +19,7 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import Image
 from wagtail.snippets.models import register_snippet
 
+from cms.api import render_template
 from cms.blocks import (
     ResourceBlock,
     InstructorSectionBlock,
@@ -24,8 +29,17 @@ from cms.blocks import (
     TitleDescriptionBlock,
     CatalogSectionBootcampBlock,
 )
-from cms.constants import BOOTCAMP_INDEX_SLUG
-from main.views import get_base_context
+from cms.constants import (
+    ACCEPTANCE_DEFAULT_LETTER_TEXT,
+    BOOTCAMP_INDEX_SLUG,
+    REJECTION_DEFAULT_LETTER_TEXT,
+    SAMPLE_VARIABLES,
+)
+from cms.forms import LetterTemplatePageForm
+from main.views import get_base_context, serialize_js_settings
+
+
+log = logging.getLogger(__name__)
 
 
 class BootcampIndexPage(Page):
@@ -137,6 +151,7 @@ class HomePage(Page, CommonProperties):
         "LearningResourceSection",
         "ResourcePage",
         "CatalogGridSection",
+        "LetterTemplatePage",
     ]
 
 
@@ -610,3 +625,47 @@ class CatalogGridSection(BootcampRunChildPage):
         blank=True,
     )
     content_panels = [StreamFieldPanel("contents")]
+
+
+class LetterTemplatePage(Page):
+    """Page that represents an acceptance or rejection letter to be displayed and sent to a user"""
+
+    max_count = 1  # make this a singleton
+    acceptance_text = RichTextField(
+        default=ACCEPTANCE_DEFAULT_LETTER_TEXT.replace("\n", "<br />\n")
+    )
+    rejection_text = RichTextField(
+        default=REJECTION_DEFAULT_LETTER_TEXT.replace("\n", "<br />\n")
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("acceptance_text"),
+        FieldPanel("rejection_text"),
+    ]
+
+    base_form_class = LetterTemplatePageForm
+
+    def serve_preview(self, request, *args, **kwargs):
+        """
+        Show a sample letter for testing
+        """
+        content = f"""
+<h2>Acceptance letter:</h2><br />
+{render_template(text=self.acceptance_text, context=SAMPLE_VARIABLES)}<br />
+<br />
+<h2>Rejection letter:</h2><br />
+{render_template(text=self.rejection_text, context=SAMPLE_VARIABLES)}
+"""
+        return render(
+            request,
+            "letter_template_page.html",
+            context={
+                "preview": True,
+                "content": content,
+                "js_settings_json": json.dumps(serialize_js_settings(request)),
+            },
+        )
+
+    def serve(self, request, *args, **kwargs):
+        """Applicants should use LettersView to see their letters"""
+        raise Http404

@@ -1,10 +1,12 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
+import json
 
 import django_fsm
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
 from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import SessionAuthentication
@@ -24,6 +26,7 @@ from applications.serializers import (
 from applications.api import get_or_create_bootcamp_application
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import (
+    ApplicantLetter,
     ApplicationStepSubmission,
     BootcampApplication,
     BootcampRunApplicationStep,
@@ -35,6 +38,7 @@ from jobma.models import Interview, Job
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 from main.utils import serializer_date_format
+from main.views import serialize_js_settings
 
 
 class BootcampApplicationViewset(
@@ -265,3 +269,22 @@ class VideoInterviewsView(GenericAPIView):
             )
 
         return Response(data={"interview_link": interview_link})
+
+
+class LettersView(TemplateView):
+    """
+    Render a letter sent to an applicant
+    """
+
+    template_name = "letter_template_page.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Fill in variables in the letter template
+        """
+        hash_code = kwargs.get("hash")
+        letter = get_object_or_404(ApplicantLetter, hash=hash_code)
+        return {
+            "content": letter.letter_text,
+            "js_settings_json": json.dumps(serialize_js_settings(self.request)),
+        }

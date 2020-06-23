@@ -1,0 +1,21 @@
+.letter-template-page {
+  .preview {
+    width: 100%;
+    background-color: #579cf9;
+    font-size: 32px;
+    text-align: center;
+  }
+
+  .print-button {
+    display: inline-flex;
+
+    &:hover {
+      text-decoration: none;  // this looks weird to me when it's not disabled
+    }
+
+    .material-icons {
+      width: 24px;
+      margin-right: 10px;
+    }
+  }
+}

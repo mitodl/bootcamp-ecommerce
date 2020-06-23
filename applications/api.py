@@ -1,4 +1,7 @@
 """API for bootcamp applications app"""
+from anymail.message import AnymailMessage
+from django.conf import settings
+from django.core import mail
 from django.db import transaction
 
 from applications.constants import (
@@ -6,7 +9,10 @@ from applications.constants import (
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_PENDING,
 )
-from applications.models import BootcampApplication
+from applications.models import BootcampApplication, ApplicantLetter
+from cms.api import render_template
+from cms.models import LetterTemplatePage
+from mail.v2.api import render_email_templates, send_message
 
 
 @transaction.atomic
@@ -89,3 +95,87 @@ def get_required_submission_type(application):
         .values_list("application_step__submission_type", flat=True)
         .first()
     )
+
+
+def email_letter(applicant_letter):
+    """
+    Email the applicant letter
+
+    Args:
+        applicant_letter (ApplicantLetter): The rendered applicant letter in the database
+    """
+
+    # TODO: where does the link to our own site go?
+    subject, text_body, html_body = render_email_templates(
+        "applicant_letter",
+        {
+            "content": applicant_letter.letter_text,
+            "subject": applicant_letter.letter_subject,
+            "base_url": settings.SITE_BASE_URL,
+        },
+    )
+    with mail.get_connection(settings.NOTIFICATION_EMAIL_BACKEND) as connection:
+        msg = AnymailMessage(
+            subject=subject,
+            body=text_body,
+            to=[applicant_letter.application.user.email],
+            from_email=settings.MAILGUN_FROM_EMAIL,
+            connection=connection,
+            headers={"Reply-To": settings.BOOTCAMP_REPLY_TO_ADDRESS},
+        )
+        msg.attach_alternative(html_body, "text/html")
+        send_message(msg)
+
+
+def render_applicant_letter_text(application, *, is_acceptance):
+    """
+    Render the text for the applicant letter
+
+    Args:
+        application (BootcampApplication): The application
+        is_acceptance (bool): If true, send an acceptance letter. If false, send a rejection letter.
+
+    Returns:
+        (str, str): The subject and text
+    """
+    # Should be created beforehand, and should be limited to one by wagtail
+    page = LetterTemplatePage.objects.get()
+
+    profile = application.user.profile
+    first_name, last_name = profile.first_and_last_names
+    rendered_text = render_template(
+        text=page.acceptance_text if is_acceptance else page.rejection_text,
+        context={
+            "first_name": first_name,
+            "last_name": last_name,
+            "bootcamp_name": application.bootcamp_run.bootcamp.title,
+            "bootcamp_start_date": application.bootcamp_run.start_date.strftime(
+                "%b %d, %Y"
+            ),
+            "price": "${:,.2f}".format(application.price),
+        },
+    )
+
+    # TODO: what should we do for the subject?
+    subject = "Welcome!" if is_acceptance else "Regarding your application"
+    return subject, rendered_text
+
+
+def create_and_send_applicant_letter(application, *, is_acceptance):
+    """
+    Email the applicant about their admission status, and store the text to be viewed via LettersView.
+
+    Args:
+        application (BootcampApplication): The application
+        is_acceptance (bool): If true, send an acceptance letter. If false, send a rejection letter.
+    """
+    subject, text = render_applicant_letter_text(
+        application, is_acceptance=is_acceptance
+    )
+    letter = ApplicantLetter.objects.create(
+        application=application,
+        letter_text=text,
+        letter_subject=subject,
+        is_acceptance=is_acceptance,
+    )
+    email_letter(letter)

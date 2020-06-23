@@ -2,6 +2,7 @@
 from decimal import Decimal
 from uuid import uuid4
 from functools import reduce
+import logging
 from operator import or_
 
 from django.core.exceptions import ValidationError
@@ -10,7 +11,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django_fsm import FSMField, transition, RETURN_VALUE
+from wagtail.core.fields import RichTextField
 
+from applications.api import create_and_send_applicant_letter
 from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
     AppStates,
@@ -27,6 +30,9 @@ from ecommerce.models import Order
 from jobma.models import Interview
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
+
+
+log = logging.getLogger(__name__)
 
 
 class ApplicationStep(models.Model):
@@ -198,11 +204,14 @@ class BootcampApplication(TimestampedModel):
     )
     def approve_submission(self):
         """Approve application submission"""
-        return (
-            AppStates.AWAITING_PAYMENT.value
-            if self.is_ready_for_payment()
-            else AppStates.AWAITING_USER_SUBMISSIONS.value
-        )
+        if self.is_ready_for_payment():
+            try:
+                create_and_send_applicant_letter(application=self, is_acceptance=True)
+            except:
+                log.exception(f"Unable to send applicant approval letter for {self}")
+            return AppStates.AWAITING_PAYMENT.value
+        else:
+            return AppStates.AWAITING_USER_SUBMISSIONS.value
 
     @transition(
         field=state,
@@ -219,6 +228,10 @@ class BootcampApplication(TimestampedModel):
     )
     def reject_submission(self):
         """Reject application submission"""
+        try:
+            create_and_send_applicant_letter(application=self, is_acceptance=False)
+        except:
+            log.exception(f"Unable to send applicant rejection letter for {self}")
 
     @transition(
         field=state,
@@ -359,3 +372,16 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
             f"user='{self.bootcamp_application.user.email}', run='{self.bootcamp_application.bootcamp_run.title}', "
             f"contenttype={self.content_type}, object={self.object_id}"
         )
+
+
+class ApplicantLetter(TimestampedModel):
+    """Represents a letter sent to an applicant, with a hash so the user can view the letter afterwards"""
+
+    is_acceptance = models.BooleanField()
+    letter_subject = models.TextField()
+    letter_text = RichTextField()
+    application = models.ForeignKey(BootcampApplication, on_delete=models.CASCADE)
+    hash = models.UUIDField(unique=True, default=uuid4)
+
+    def __str__(self):
+        return f"{'Admission' if self.is_acceptance else 'Rejection'} letter for {self.application}"
