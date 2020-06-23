@@ -63,12 +63,12 @@
 
       p {
         margin: 0;
+        font-size: 25px;
       }
     }
   }
 
   .program-content {
-
     .img-holder {
       max-width: 575px;
       margin: 0 0 20px;
@@ -111,7 +111,7 @@
 
           &[aria-expanded="true"] {
             font-weight: bold;
-         }
+          }
         }
 
         .slide {
@@ -124,7 +124,6 @@
 }
 
 .program-element {
-
   .banner-img {
     min-height: 270px;
     position: relative;
@@ -221,7 +220,7 @@
           &[aria-expanded="true"] {
             font-weight: bold;
             color: $dodger-blue;
-         }
+          }
         }
 
         .rich-text {
