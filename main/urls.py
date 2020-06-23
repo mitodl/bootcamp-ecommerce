@@ -41,6 +41,7 @@ urlpatterns = (
         url("", include("ecommerce.urls")),
         url("", include("social_django.urls", namespace="social")),
         path("", include("authentication.urls")),
+        path("", include("mail.urls")),
         path("", include("profiles.urls")),
         path("", include("klasses.urls")),
         url("", include("jobma.urls")),

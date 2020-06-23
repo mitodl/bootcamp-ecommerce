@@ -1,0 +1,141 @@
+{% extends "email_base.html" %}
+{% load collections dollar_format countries mathfilters parse_date %}
+
+{% block styles %}
+  <style type="text/css">
+    table.receipt-table td {
+      padding: 10px;
+      vertical-align: top;
+    }
+    tr.row-dark {
+      background: #f5f5f5;
+    }
+    td.row-value {
+      color: #000000;
+    }
+    td.total-label {
+      font-weight: bold;
+      color: #000000;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<!-- 1 Column Text + Button : BEGIN -->
+  <tr>
+      <td style="background-color: #ffffff;">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+              <tr>
+                  <td class="row-text">
+                      <p>Dear {{ application.user.profile.name }},</p>
+                      <p>
+                        You have been accepted into the {{ application.bootcamp_run.title }} Bootcamp,
+                        {{ application.bootcamp_run.start_date|date:"F j, Y" }} - {{ application.bootcamp_run.end_date|date:"F j, Y" }}.
+                        You can access your payment statements here on your <a href="{% url "applications" %}">{{ site_name }} Dashboard</a>.
+                      </p>
+                      <p>Below you will find a copy of your receipt:</p>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="row-text">
+                    <h1>Receipt</h1>
+                  </td>
+              </tr>
+              <tr>
+                <td class="row-text">
+                  <table width="100%" class="receipt-table">
+                    <tr>
+                      <td colspan="2">
+                        <h3>Order Information</h3>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Bootcamp:</td>
+                      <td class="row-value">{{ application.bootcamp_run.title }}</td>
+                    </tr>
+                    <tr>
+                      <td>Dates:</td>
+                      <td class="row-value">
+                        {{ application.bootcamp_run.start_date|parse_iso_datetime|date:"F j, Y" }} -
+                        {{ application.bootcamp_run.end_date|parse_iso_datetime|date:"F j, Y" }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td colspan="2">
+                        <h3>Order Information</h3>
+                      </td>
+                    </tr>
+                    {% for order in application.orders %}
+                    {% cumulative_field_total application.orders "total_price_paid" forloop.counter as running_total %}
+                    <tr class="row-dark">
+                      <td>Payment Date:</td>
+                      <td class="row-value">{{ order.updated_on|parse_iso_datetime|date:"F j, Y" }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td>Amount Paid:</td>
+                      <td class="row-value">{{ order.total_price_paid|dollar_format }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td>Balance:</td>
+                      <td class="row-value">{{ application.price|sub:running_total|dollar_format }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td>Payment Method:</td>
+                      <td class="row-value">{{ order.payment_method }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td colspan="2"><hr/></td>
+                    </tr>
+                    {% endfor %}
+
+                    {% cumulative_field_total application.orders "total_price_paid" as total_paid %}
+
+                    <tr class="row-dark">
+                      <td class="total-label">Total Amount Paid:</td>
+                      <td class="row-value">{{ total_paid|dollar_format }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td class="total-label">Balance Due:</td>
+                      <td class="row-value">{{ application.price|sub:total_paid|dollar_format }}</td>
+                    </tr>
+                    <tr class="row-dark">
+                      <td class="total-label">Total Amount Due:</td>
+                      <td class="row-value">{{ application.price|dollar_format }}</td>
+                    </tr>
+
+                    <tr>
+                      <td colspan="2">
+                        <h3>Customer Information</h3>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Name:</td>
+                      <td class="row-value">{{ application.user.profile.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>Email:</td>
+                      <td class="row-value">{{ application.user.email }}</td>
+                    </tr>
+                    <tr>
+                      <td>Address:</td>
+                      <td class="row-value">
+                        {% for line in application.user.legal_address.street_address %}
+                        {{ line }}<br/>
+                        {% endfor %}
+                        {% if application.user.legal_address.state_or_territory %}
+                          {{ application.user.legal_address.city }}, {{ application.user.legal_address.state_or_territory|state_or_territory_name }}
+                          {% if application.user.legal_address.postal_code %}{{ application.user.legal_address.postal_code }}{% endif %}
+                        {% else %}
+                          {{ application.user.legal_address.city }}
+                        {% endif %}<br/>
+                        {{ application.user.legal_address.country|country_name }}<br/>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+          </table>
+      </td>
+  </tr>
+<!-- 1 Column Text + Button : END -->
+{% endblock %}

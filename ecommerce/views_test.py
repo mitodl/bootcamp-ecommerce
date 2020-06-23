@@ -170,6 +170,7 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
         "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
     )
     send_email = mocker.patch("ecommerce.api.MailgunClient.send_individual_email")
+    mock_tasks = mocker.patch("ecommerce.api.tasks")
     paid_in_full_mock = mocker.patch(
         "applications.models.BootcampApplication.is_paid_in_full",
         new_callable=PropertyMock,
@@ -200,6 +201,8 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
     assert BootcampRunEnrollment.objects.filter(
         bootcamp_run=bootcamp_run, user=user
     ).count() == (1 if has_paid else 0)
+
+    mock_tasks.send_receipt_email.delay.assert_called_once_with(order.application.id)
 
 
 def test_missing_fields(client, mocker):
