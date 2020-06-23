@@ -66,12 +66,15 @@ def test_render_email_templates(user):
     assert subject == "Welcome Jane Smith"
     assert text_body == "html link (http://example.com)"
     assert html_body == (
+        "<html><head>"
         '<style type="text/css">\n'
-        "a {\n"
-        "  color: red;\n"
+        "p {\n"
+        "  color: blue;\n"
         "}\n"
         "</style>\n"
-        '<a href="http://example.com">html link</a>\n'
+        "</head><body>"
+        '<a href="http://example.com" style="color:red">html link</a>'
+        "</body></html>"
     )
 
 
