@@ -33,7 +33,7 @@ from ecommerce.exceptions import EcommerceException
 from ecommerce.models import Line, Order, Receipt
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
-from hubspot.task_helpers import sync_hubspot_deal_from_order
+from hubspot.task_helpers import sync_hubspot_application_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
 from main.serializers import serialize_maybe_user
@@ -77,7 +77,7 @@ class PaymentView(CreateAPIView):
         )
 
         # Sync order data with hubspot
-        sync_hubspot_deal_from_order(order)
+        sync_hubspot_application_from_order(order)
 
         redirect_url = self.request.build_absolute_uri(reverse("applications"))
 
@@ -127,7 +127,7 @@ class OrderFulfillmentView(APIView):
             complete_successful_order(order)
 
         # Sync order data with hubspot
-        sync_hubspot_deal_from_order(order)
+        sync_hubspot_application_from_order(order)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)

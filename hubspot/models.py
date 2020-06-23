@@ -1,7 +1,7 @@
 """ Hubspot models """
 from django.db import models
 
-from klasses.models import PersonalPrice
+from applications.models import BootcampApplication
 
 
 class HubspotErrorCheck(models.Model):
@@ -17,4 +17,6 @@ class HubspotLineResync(models.Model):
     Indicates that hubspot tried to sync a line before it's deal and needs to be resynced
     """
 
-    personal_price = models.ForeignKey(PersonalPrice, on_delete=models.CASCADE)
+    application = models.ForeignKey(
+        BootcampApplication, null=True, on_delete=models.CASCADE
+    )

@@ -16,9 +16,9 @@ from hubspot.api import (
     make_deal_sync_message,
     make_line_sync_message,
 )
-from hubspot.conftest import TIMESTAMPS
-from hubspot.factories import HubspotErrorCheckFactory
-from hubspot.models import HubspotErrorCheck
+from hubspot.conftest import TIMESTAMPS, FAKE_OBJECT_ID
+from hubspot.factories import HubspotErrorCheckFactory, HubspotLineResyncFactory
+from hubspot.models import HubspotErrorCheck, HubspotLineResync
 from hubspot.tasks import (
     sync_contact_with_hubspot,
     HUBSPOT_SYNC_URL,
@@ -27,6 +27,8 @@ from hubspot.tasks import (
     sync_deal_with_hubspot,
     sync_line_with_hubspot,
     sync_bulk_with_hubspot,
+    sync_application_with_hubspot,
+    retry_invalid_line_associations,
 )
 from klasses.factories import BootcampFactory, PersonalPriceFactory, InstallmentFactory
 from profiles.factories import ProfileFactory, UserFactory
@@ -71,6 +73,17 @@ def test_sync_product_with_hubspot(mock_hubspot_request):
     )
 
 
+def test_sync_application_with_hubspot(mocker):
+    """Test that both sync_deal and sync_line tasks are called from sync_application"""
+    mock_deal_sync = mocker.patch("hubspot.tasks.sync_deal_with_hubspot.si")
+    mock_line_sync = mocker.patch("hubspot.tasks.sync_line_with_hubspot.si")
+    application = BootcampApplicationFactory.create()
+    InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
+    sync_application_with_hubspot(application.id)
+    mock_deal_sync.assert_called_once_with(application.id)
+    mock_line_sync.assert_called_once_with(application.id)
+
+
 def test_sync_deal_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a DEAL sync"""
     application = BootcampApplicationFactory.create()
@@ -110,24 +123,58 @@ def test_sync_errors_first_run(settings, mock_hubspot_errors, mock_logger):
 
 
 @pytest.mark.parametrize(
-    "last_check_dt,expected_errors,call_count",
-    [[TIMESTAMPS[0], 4, 3], [TIMESTAMPS[6], 1, 1]],
+    "last_check_dt,expected_errors,call_count,application_exists",
+    [
+        [TIMESTAMPS[0], 4, 3, True],
+        [TIMESTAMPS[0], 5, 3, False],
+        [TIMESTAMPS[6], 1, 1, False],
+    ],
 )
 def test_sync_errors_new_errors(
     settings,
+    mocker,
     mock_hubspot_errors,
     mock_logger,
     last_check_dt,
     expected_errors,
     call_count,
+    application_exists,
 ):  # pylint: disable=too-many-arguments
     """Test that errors more recent than last checked_on date are logged"""
-    settings.HUBSPOT_API_KEY = "dkfjKJ2jfd"
+    mock_retry = mocker.patch("hubspot.tasks.retry_invalid_line_associations")
     last_check = HubspotErrorCheckFactory.create(checked_on=last_check_dt)
+    if application_exists:
+        BootcampApplicationFactory.create(id=FAKE_OBJECT_ID)
+    settings.HUBSPOT_API_KEY = "dkfjKJ2jfd"
     check_hubspot_api_errors()
     assert mock_hubspot_errors.call_count == call_count
     assert mock_logger.call_count == expected_errors
     assert HubspotErrorCheck.objects.first().checked_on > last_check.checked_on
+    assert HubspotLineResync.objects.count() == (1 if application_exists else 0)
+    assert mock_retry.call_count == 1
+
+
+@pytest.mark.parametrize("deal_exists", [True, False])
+@pytest.mark.parametrize("line_exists", [True, False])
+def test_retry_invalid_line_associations(mocker, deal_exists, line_exists):
+    """
+    Test that a HubspotLineResync is deleted if the line exists on Hubspot,
+    and sync_line_with_hubspot otherwise if the deal is on hubspot
+    """
+    mock_line_task = mocker.patch("hubspot.tasks.sync_line_with_hubspot")
+    mock_application_task = mocker.patch("hubspot.tasks.sync_application_with_hubspot")
+    mocker.patch(
+        "hubspot.tasks.exists_in_hubspot", side_effect=[line_exists, deal_exists]
+    )
+    resync = HubspotLineResyncFactory.create()
+    retry_invalid_line_associations()
+    assert HubspotLineResync.objects.filter(application=resync.application).count() == (
+        1 if not line_exists else 0
+    )
+    assert mock_line_task.call_count == (1 if (deal_exists and not line_exists) else 0)
+    assert mock_application_task.call_count == (
+        1 if (not line_exists and not deal_exists) else 0
+    )
 
 
 def test_skip_error_checks(settings, mock_hubspot_errors):
@@ -151,7 +198,7 @@ def test_sync_bulk_logs_errors(mocker):
         f"hubspot.api.requests.put",
         return_value=Mock(raise_for_status=Mock(side_effect=HTTPError())),
     )
-    mock_log = mocker.patch("hubspot.api.log.exception")
+    mock_log = mocker.patch("hubspot.tasks.log.exception")
 
     profile = ProfileFactory.create()
     sync_bulk_with_hubspot([profile.user], make_contact_sync_message, "CONTACT")
