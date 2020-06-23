@@ -72,11 +72,13 @@ export class RegisterConfirmPage extends React.Component<Props> {
         <div className="row">
           <div className="col">
             {auth && auth.state === STATE_INVALID_EMAIL ? (
-              <React.Fragment>
-                <p>No confirmation code was provided or it has expired.</p>
-                <Link to={routes.register.begin}>Click here</Link> to register
-                again.
-              </React.Fragment>
+              <p>
+                This email has already been verified. If you completed your
+                profile, you can{" "}
+                <Link to={routes.login.begin}>sign in now</Link>. If you have
+                not, you will need to{" "}
+                <Link to={routes.register.begin}>register again</Link>.
+              </p>
             ) : (
               <p>Confirming...</p>
             )}

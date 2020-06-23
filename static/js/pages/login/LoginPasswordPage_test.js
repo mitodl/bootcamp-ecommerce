@@ -33,6 +33,11 @@ describe("LoginPasswordPage", () => {
       {
         entities: {
           auth
+        },
+        ui: {
+          userNotifications: {
+            "account-exists": "your account exists"
+          }
         }
       },
       {}
@@ -47,6 +52,12 @@ describe("LoginPasswordPage", () => {
     const { inner } = await renderPage()
 
     assert.ok(inner.find("LoginPasswordForm").exists())
+  })
+
+  it("removes notification for existing account to enter password", async () => {
+    const { inner, store } = await renderPage()
+    inner.unmount()
+    assert.deepEqual(store.getState().ui.userNotifications, {})
   })
 
   it("handles onSubmit for an error response", async () => {
