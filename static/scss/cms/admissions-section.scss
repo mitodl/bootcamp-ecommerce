@@ -7,7 +7,6 @@
     height: 540px;
     margin-bottom: -4rem;
 
-
     @include media-breakpoint-down(sm) {
       height: 240px;
       margin-bottom: unset;
@@ -27,6 +26,10 @@
 
   .admissions-detail {
     border-left: 1px solid $matterhorn;
+
+    p {
+      margin-bottom: 30px;
+    }
 
     @include media-breakpoint-down(sm) {
       border-left: unset;
