@@ -13,12 +13,12 @@
                         <div class="info d-flex flex-column flex-grow-1">
                             <a href="{% pageurl block.page %}"><h2>{{ block.page.title }}</h2></a>
                             <span class="dates">
-                                {{ block.format }} <br>{{ block.page.bootcamp_run.start_date|date:"M, j" }} - {{ block.page.bootcamp_run.end_date|date }}
+                                {{ block.format }} <br>{{ block.page.bootcamp_run.start_date|date:"F, Y" }} - {{ block.page.bootcamp_run.end_date|date:"F, Y" }}
                             </span>
                             <div class="flex-grow-1">
                                 {{ block.page.description|richtext }}
                             </div>
-                            <strong class="deadline-text">Application Deadline {{ block.application_deadline|date }}</strong>
+                            <strong class="deadline-text">Application Deadline {{ block.application_deadline|date:"F d, Y" }}</strong>
                         </div>
                     </div>
                 {% endwith %}
