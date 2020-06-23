@@ -213,7 +213,7 @@ def test_get_sync_errors(mock_hubspot_errors, offset):
     """Test that paging works for get_sync_errors"""
     limit = 2
     errors = list(api.get_sync_errors(limit, offset))
-    assert len(errors) == 4
+    assert len(errors) == 5
     mock_hubspot_errors.assert_any_call(limit, offset)
     mock_hubspot_errors.assert_any_call(limit, offset + limit)
     mock_hubspot_errors.assert_any_call(limit, offset + limit * 2)
