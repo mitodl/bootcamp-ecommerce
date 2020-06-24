@@ -21,7 +21,6 @@ const applicationsKey = "applications"
 export const applicationDetailKey = "applicationDetail"
 export const createAppQueryKey = "createApplication"
 export const appQueryKey = applicationsKey
-export const appDetailQueryKey = applicationDetailKey
 
 export const applicationsSelector = (state: any): ?Array<Application> =>
   state.entities[applicationsKey]
@@ -65,7 +64,6 @@ export default {
     }
   }),
   applicationDetailQuery: (applicationId: string, force?: boolean) => ({
-    queryKey:  appDetailQueryKey,
     url:       applicationDetailAPI.param({ applicationId }).toString(),
     transform: (json: ?ApplicationDetail) => {
       return {
