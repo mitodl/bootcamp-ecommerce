@@ -108,3 +108,15 @@ p, .std-text {
 .form-error {
   color: red;
 }
+
+.errorcode {
+  color: $placeholder-color;
+  font-family: Helvetica;
+  font-size: 200px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.bottom-holder {
+  margin-bottom: 50px;
+}
