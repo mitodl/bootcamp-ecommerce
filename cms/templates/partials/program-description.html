@@ -20,7 +20,7 @@
         <ul class="accordion" id="accordionSteps">
           {% for step in page.steps %}
           <li class="panel-title">
-            <a data-toggle="collapse" data-target="#collapse-{{forloop.counter}}" aria-expanded="{% if forloop.counter == 1 %}true{% else %} false {%endif%}" aria-controls="collapse-{{forloop.counter}}" href="#" class="opener"><span>{{forloop.counter}}. </span> {{ step.value.title }} </a>
+            <a data-toggle="collapse" data-target="#collapse-{{forloop.counter}}" aria-expanded="{% if forloop.counter == 1 %}true{% else %} false {%endif%}" aria-controls="collapse-{{forloop.counter}}" href="#" class="opener"><span> &gt; </span> {{ step.value.title }} </a>
             <div id="collapse-{{forloop.counter}}" class="collapse {% if forloop.counter == 1 %} show {%endif%}" aria-labelledby="heading-{{forloop.counter}}" data-parent="#accordionSteps" class="slide">
               <p> {{ step.value.description }} </p>
             </div>
