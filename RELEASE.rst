@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.46.0
+Version 0.46.0 (Released June 24, 2020)
 --------------
 
 - Allow submission review decisions to be reversed (#676)
