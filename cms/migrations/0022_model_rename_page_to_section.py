@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ("wagtailredirects", "0006_redirect_increase_max_length"),
         ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
         ("contenttypes", "0002_remove_content_type_name"),
-        ("cms", "0020_home_catalog_section"),
+        ("cms", "0021_remove_subheading_resource_page"),
     ]
 
     operations = [
