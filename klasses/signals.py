@@ -1,4 +1,5 @@
 """Signals for ecommerce models"""
+from django.db.transaction import on_commit
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -12,4 +13,4 @@ def sync_bootcamp_run(
 ):  # pylint:disable=unused-argument
 
     """Sync bootcamp to hubspot"""
-    sync_hubspot_product(instance)
+    on_commit(lambda: sync_hubspot_product(instance))
