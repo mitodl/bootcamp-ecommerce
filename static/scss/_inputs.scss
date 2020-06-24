@@ -2,7 +2,6 @@
   margin: 0;
   text-align: center;
   vertical-align: middle;
-  letter-spacing: normal;
   cursor: pointer;
 
   &.large-cta {
@@ -10,7 +9,6 @@
     border-radius: 3px;
     font-size: 16px;
     font-weight: 400;
-    letter-spacing: 2px;
   }
 
   &:hover {
@@ -104,7 +102,6 @@ a.btn-link {
 }
 
 label {
-  letter-spacing: 1.04px;
   font-size: 18px;
 }
 
