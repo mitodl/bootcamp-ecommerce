@@ -7,13 +7,13 @@ from cms.factories import (
     SiteNotificationFactory,
     BootcampRunPageFactory,
     ResourcePageFactory,
-    LearningResourcePageFactory,
-    ProgramDescriptionPageFactory,
-    HomeAlumniPageFactory,
+    LearningResourceSectionFactory,
+    ProgramDescriptionSectionFactory,
+    HomeAlumniSectionFactory,
     HomePageFactory,
-    CatalogGridPageFactory,
+    CatalogGridSectionFactory,
 )
-from cms.models import LearningResourcePage
+from cms.models import LearningResourceSection
 
 pytestmark = [pytest.mark.django_db]
 
@@ -34,8 +34,8 @@ def test_bootcamp_run_learning_resources():
     """
     bootcamp_run_page = BootcampRunPageFactory.create()
     assert bootcamp_run_page.learning_resources is None
-    assert LearningResourcePage.can_create_at(bootcamp_run_page)
-    learning_resources_page = LearningResourcePageFactory.create(
+    assert LearningResourceSection.can_create_at(bootcamp_run_page)
+    learning_resources_page = LearningResourceSectionFactory.create(
         parent=bootcamp_run_page,
         heading="heading",
         items=json.dumps(
@@ -54,7 +54,7 @@ def test_program_description_page():
     """
     Verify user can create program description page.
     """
-    page = ProgramDescriptionPageFactory.create(
+    page = ProgramDescriptionSectionFactory.create(
         statement="statement of the page",
         heading="heading of the page",
         body="body of the page",
@@ -106,7 +106,7 @@ def test_home_alumni_page():
     """
     home_page = HomePageFactory.create()
     assert not home_page.alumni
-    home_alumni_page = HomeAlumniPageFactory.create(
+    home_alumni_page = HomeAlumniSectionFactory.create(
         parent=home_page,
         banner_image__title="program-description-image",
         heading="heading of the page",
@@ -127,5 +127,5 @@ def test_home_catalog():
     """
     home = HomePageFactory()
     assert not home.catalog
-    catalog = CatalogGridPageFactory(parent=home)
+    catalog = CatalogGridSectionFactory(parent=home)
     assert home.catalog == catalog
