@@ -11,7 +11,7 @@ import {
 } from "../constants"
 
 import IntegrationTestHelper from "../util/integration_test_helper"
-import { setDrawerOpen, setDrawerState, openDrawer } from "../reducers/drawer"
+import { closeDrawer, openDrawer } from "../reducers/drawer"
 import { makeApplicationDetail } from "../factories/application"
 
 describe("Drawer", () => {
@@ -39,24 +39,21 @@ describe("Drawer", () => {
     [PROFILE_VIEW, "ViewProfileDisplay"],
     [PAYMENT, "PaymentDisplay"],
     [NEW_APPLICATION, "NewApplication"]
-  ].forEach(([drawerType, expComponent]) => {
+  ].forEach(([type, expComponent]) => {
     it(`should render a drawer component with a ${expComponent} child`, async () => {
-      const { wrapper } = await render({}, [
-        setDrawerState(drawerType),
-        setDrawerOpen(true)
-      ])
+      const { wrapper } = await render({}, [openDrawer({ type })])
       assert.ok(wrapper.find(RMWCDrawer).exists())
       assert.isTrue(wrapper.find(expComponent).exists())
     })
   })
 
   it("should have the drawer open if action is dispatched", async () => {
-    const { wrapper } = await render({}, [setDrawerOpen(true)])
+    const { wrapper } = await render({}, [openDrawer({ type: PAYMENT })])
     assert.isTrue(wrapper.find(RMWCDrawer).prop("open"))
   })
 
   it("should pass down a close function to drawer", async () => {
-    const { wrapper, store } = await render({}, [setDrawerOpen(false)])
+    const { wrapper, store } = await render({}, [closeDrawer()])
     wrapper.find(RMWCDrawer).prop("onClose")()
     assert.isFalse(store.getState().drawer.drawerOpen)
   })

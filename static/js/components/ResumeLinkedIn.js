@@ -11,7 +11,7 @@ import * as yup from "yup"
 
 import { DrawerCloseHeader } from "./Drawer"
 import FormError from "./forms/elements/FormError"
-import { setDrawerOpen } from "../reducers/drawer"
+import { closeDrawer } from "../reducers/drawer"
 import applications, {
   applicationDetailSelector
 } from "../lib/queries/applications"
@@ -225,7 +225,7 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  closeDrawer:    () => dispatch(setDrawerOpen(false)),
+  closeDrawer:    () => dispatch(closeDrawer()),
   addLinkedInUrl: async (
     applicationId: number,
     linkedInUrl: string

@@ -400,8 +400,11 @@ def step(application):
     )
 
 
-@pytest.mark.parametrize("already_interviewed", [True, False])
-def test_take_interview(already_interviewed, mocker, client, application, step, job):
+@pytest.mark.parametrize("interview_exists", [True, False])
+@pytest.mark.parametrize("has_interview_link", [True, False])
+def test_take_interview(
+    interview_exists, has_interview_link, mocker, client, application, step, job
+):
     """Start the interview process and return a URL to redirect the user to"""
     client.force_login(application.user)
     new_interview_link = "http://fake.interview.link"
@@ -409,8 +412,11 @@ def test_take_interview(already_interviewed, mocker, client, application, step, 
         "applications.views.create_interview_in_jobma", return_value=new_interview_link
     )
 
-    if already_interviewed:
+    if interview_exists:
         interview = InterviewFactory.create(job=job, applicant=application.user)
+        if not has_interview_link:
+            interview.interview_url = None
+            interview.save()
 
     resp = client.post(
         reverse("video-interviews", kwargs={"pk": application.id}),
@@ -419,10 +425,10 @@ def test_take_interview(already_interviewed, mocker, client, application, step, 
     assert resp.status_code == status.HTTP_200_OK
     assert resp.json() == {
         "interview_link": interview.interview_url
-        if already_interviewed
+        if interview_exists and has_interview_link
         else new_interview_link
     }
-    if not already_interviewed:
+    if not interview_exists or not has_interview_link:
         interview = Interview.objects.get(job=job, applicant=application.user)
         create_interview.assert_called_once_with(interview)
 
@@ -433,6 +439,8 @@ def test_take_interview(already_interviewed, mocker, client, application, step, 
             bootcamp_application=application, run_application_step=step
         ).get()
         assert submission.content_object == video_submission
+    else:
+        create_interview.assert_not_called()
 
 
 def test_take_interview_missing_step_id(client, application):

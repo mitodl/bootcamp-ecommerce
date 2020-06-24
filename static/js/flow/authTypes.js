@@ -98,7 +98,8 @@ export type LoggedInUser = {
 export type CurrentUser = AnonymousUser | LoggedInUser
 
 export type HttpAuthResponse<T> = {
-  body: T | Object
+  body: T | Object,
+  status: number
 }
 
 export type StateOrTerritory = {

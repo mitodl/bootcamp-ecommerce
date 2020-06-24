@@ -38,6 +38,7 @@ describe("TakeVideoInterviewDisplay", () => {
     await wrapper
       .find(".take-video-interview button.btn-external-link")
       .prop("onClick")()
+    wrapper.update() // needed to assert the error message doesn't render
     sinon.assert.calledWith(
       helper.handleRequestStub,
       videoInterviewsUrl,
@@ -53,5 +54,21 @@ describe("TakeVideoInterviewDisplay", () => {
       }
     )
     assert.equal(window.location.toString(), interviewLink)
+    assert.notOk(wrapper.find(".form-error").exists())
+  })
+
+  it("displays an error message if no link returned", async () => {
+    helper.handleRequestStub.withArgs(videoInterviewsUrl).returns({
+      status: 200,
+      body:   {
+        interview_link: null
+      }
+    })
+    const { wrapper } = await renderPage()
+    await wrapper
+      .find(".take-video-interview button.btn-external-link")
+      .prop("onClick")()
+    wrapper.update()
+    assert.ok(wrapper.find(".form-error").exists())
   })
 })

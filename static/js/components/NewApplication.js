@@ -14,7 +14,7 @@ import {
 import { partial } from "ramda"
 
 import { DrawerCloseHeader } from "./Drawer"
-import { setDrawerOpen } from "../reducers/drawer"
+import { closeDrawer } from "../reducers/drawer"
 import users, { currentUserSelector } from "../lib/queries/users"
 import bootcamps, { bootcampRunsSelector } from "../lib/queries/bootcamps"
 import applications, { createAppQueryKey } from "../lib/queries/applications"
@@ -32,7 +32,7 @@ type Props = {
   appliedRunIds: Array<number>,
   createAppIsPending: boolean,
   createNewApplication: (bootcampRunId: number) => void,
-  setDrawerOpen: (newState: boolean) => void
+  closeDrawer: () => void
 }
 
 type State = {
@@ -55,7 +55,7 @@ export class NewApplication extends React.Component<Props, State> {
   }
 
   handleSubmit = async () => {
-    const { createNewApplication, setDrawerOpen } = this.props
+    const { createNewApplication, closeDrawer } = this.props
     const { selectedBootcamp } = this.state
 
     if (!selectedBootcamp) {
@@ -63,7 +63,7 @@ export class NewApplication extends React.Component<Props, State> {
     }
     await createNewApplication(selectedBootcamp.id)
     this.setState({ ...INITIAL_STATE })
-    setDrawerOpen(false)
+    closeDrawer()
   }
 
   render() {
@@ -148,7 +148,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       mutateAsync(applications.createApplicationMutation(bootcampRunId))
     ),
-  setDrawerOpen: (newState: boolean) => dispatch(setDrawerOpen(newState))
+  closeDrawer: () => dispatch(closeDrawer())
 })
 
 export default compose(
