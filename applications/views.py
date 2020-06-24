@@ -246,8 +246,8 @@ class VideoInterviewsView(GenericAPIView):
         )
         # Job should be created by admin beforehand
         job = Job.objects.get(run=application.bootcamp_run)
-        interview, created = Interview.objects.get_or_create(applicant=user, job=job)
-        if not created:
+        interview, _ = Interview.objects.get_or_create(applicant=user, job=job)
+        if interview.interview_url:
             interview_link = interview.interview_url
         else:
             interview_link = create_interview_in_jobma(interview)

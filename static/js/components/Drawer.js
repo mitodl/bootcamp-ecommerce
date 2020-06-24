@@ -7,7 +7,7 @@ import { Theme } from "@rmwc/theme"
 import * as R from "ramda"
 
 import { drawerSelector } from "../lib/selectors"
-import { setDrawerOpen } from "../reducers/drawer"
+import { closeDrawer } from "../reducers/drawer"
 import {
   NEW_APPLICATION,
   PAYMENT,
@@ -26,13 +26,13 @@ import ResumeLinkedIn from "./ResumeLinkedIn"
 
 export const DrawerCloseHeader = (): React$Element<*> => {
   const dispatch = useDispatch()
-  const closeDrawer = useCallback(() => {
-    dispatch(setDrawerOpen(false))
+  const onClick = useCallback(() => {
+    dispatch(closeDrawer(false))
   }, [dispatch])
 
   return (
     <div className="drawer-close">
-      <button onClick={closeDrawer} className="btn-plain d-flex">
+      <button onClick={onClick} className="btn-plain d-flex">
         <i className="material-icons">close</i>
       </button>
     </div>
@@ -74,13 +74,13 @@ export default function Drawer() {
   const { drawerOpen, drawerState, drawerMeta } = useSelector(drawerSelector)
 
   const dispatch = useDispatch()
-  const closeDrawer = useCallback(() => {
-    dispatch(setDrawerOpen(false))
+  const onClose = useCallback(() => {
+    dispatch(closeDrawer())
   }, [dispatch])
 
   return (
     <Theme>
-      <RMWCDrawer open={drawerOpen} onClose={closeDrawer} dir="rtl" modal>
+      <RMWCDrawer open={drawerOpen} onClose={onClose} dir="rtl" modal>
         <DrawerContent dir="ltr">
           {renderDrawerContents(drawerState, drawerMeta)}
         </DrawerContent>
