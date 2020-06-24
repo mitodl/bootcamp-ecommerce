@@ -459,11 +459,12 @@ class ResourcePage(Page):
     template = "resource_template.html"
     parent_page_types = ["HomePage"]
 
-    sub_heading = models.CharField(
-        max_length=250,
+    header_image = models.ForeignKey(
+        Image,
         null=True,
-        blank=True,
-        help_text="Sub heading of the resource page.",
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Upload a header image that will render in the resource page.",
     )
 
     content = StreamField(
@@ -473,13 +474,14 @@ class ResourcePage(Page):
     )
 
     content_panels = Page.content_panels + [
-        FieldPanel("sub_heading"),
+        ImageChooserPanel("header_image"),
         StreamFieldPanel("content"),
     ]
 
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
+            "js_settings_json": json.dumps(_serialize_js_settings(request)),
             "site_name": settings.SITE_NAME,
         }
 

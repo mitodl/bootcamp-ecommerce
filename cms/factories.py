@@ -56,6 +56,8 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
 class ResourcePageFactory(wagtail_factories.PageFactory):
     """ResourcePage factory"""
 
+    header_image = factory.SubFactory(wagtail_factories.ImageFactory)
+
     class Meta:
         model = models.ResourcePage
 
