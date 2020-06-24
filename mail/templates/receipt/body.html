@@ -30,8 +30,8 @@
                       <p>Dear {{ application.user.profile.name }},</p>
                       <p>
                         You have been accepted into the {{ application.bootcamp_run.title }} Bootcamp,
-                        {{ application.bootcamp_run.start_date|date:"F j, Y" }} - {{ application.bootcamp_run.end_date|date:"F j, Y" }}.
-                        You can access your payment statements here on your <a href="{% url "applications" %}">{{ site_name }} Dashboard</a>.
+                        {{ application.bootcamp_run.start_date|parse_iso_datetime|date:"F j, Y" }} - {{ application.bootcamp_run.end_date|parse_iso_datetime|date:"F j, Y" }}.
+                        You can access your payment statements here on your <a href="{{ base_url }}{% url "applications" %}">{{ site_name }} Dashboard</a>.
                       </p>
                       <p>Below you will find a copy of your receipt:</p>
                   </td>
