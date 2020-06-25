@@ -1,6 +1,35 @@
 Release Notes
 =============
 
+Version 0.46.1
+--------------
+
+- hero image optional resource page
+- Catalog grid spacing, alignment and notches - #718 #709
+- product page feedback: insturctor carousel title fixes
+- product page feedback: the margins between sections should be consistent, and larger
+- Fixed app dashboard regression that prevented cards from expanding
+- Migration conflict fix on master
+- 404 and 500 page design (#742)
+- Addressed Resource Page Feedback
+- Remove CSS that changes letter spacing - #686
+- update the favicon
+- home page feedback, show full date, rather than its abbreviations
+- home page feedback: add global community link
+- product page: minor changes
+- Fixed resume form to update correctly after upload
+- Inline drf_datetime as a quick fix
+- Limit to one Job per BootcampRun (#738)
+- Fix miscellaneous account login/registration issues
+- add review dashboard page
+- Added receipt email
+- Fix hubspot sync issues (#680)
+- and  headers should be the same size (and same element) as the  header.
+- add minor changes in program, alumni and admission section
+- Fixed new application issues (available runs, empty message)
+- Fixed learning resources template name
+- Change page to section in CMS
+
 Version 0.46.0 (Released June 24, 2020)
 --------------
 
