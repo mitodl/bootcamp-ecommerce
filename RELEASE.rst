@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.46.2
+--------------
+
+- Fix resume link (#746)
+- Add customer_account_id (#775)
+- Fix a few small issues with the receipt email
+
 Version 0.46.1 (Released June 25, 2020)
 --------------
 
