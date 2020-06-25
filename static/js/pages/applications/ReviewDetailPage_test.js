@@ -95,18 +95,22 @@ describe("ReviewDetailPage", () => {
     )} render the resume section if resume_file is ${String(
       resumeFile
     )}`, async () => {
-      fakeApplicationDetail.resume_filepath = resumeFile
+      fakeApplicationDetail.resume_url = resumeFile
       const { wrapper } = await renderPage()
       const resumeDiv = wrapper.find(".resume")
       assert.equal(resumeDiv.exists(), !isNilOrBlank(resumeFile))
       if (!isNilOrBlank(resumeFile)) {
         assert.equal(
           resumeDiv.find("a").prop("href"),
-          fakeApplicationDetail.resume_filepath
+          fakeApplicationDetail.resume_url
+        )
+        assert.equal(
+          resumeDiv.find("embed").prop("src"),
+          fakeApplicationDetail.resume_url
         )
         assert.equal(
           resumeDiv.find("a").text(),
-          getFilenameFromPath(fakeApplicationDetail.resume_filepath)
+          getFilenameFromPath(fakeApplicationDetail.resume_url)
         )
       }
     })
@@ -193,7 +197,7 @@ describe("ReviewDetailPage", () => {
         helper.handleRequestStub,
         `/api/submissions/${fakeSubmissionReview.id}/`,
         "PATCH",
-        { body, credentials: undefined, headers: { "X-CSRFTOKEN": "" } }
+        { body, credentials: undefined, headers: sinon.match.any }
       )
       assert.equal(wrapper.find("Alert").text(), `Submission ${status}`)
     })

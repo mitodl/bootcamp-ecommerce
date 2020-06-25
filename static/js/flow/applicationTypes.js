@@ -58,7 +58,7 @@ export type ApplicationDetail = {
   id:                    number,
   state:                 string,
   bootcamp_run:          BootcampRun,
-  resume_filepath:       ?string,
+  resume_url:            ?string,
   linkedin_url:          ?string,
   resume_upload_date:    ?string,
   payment_deadline:      string,

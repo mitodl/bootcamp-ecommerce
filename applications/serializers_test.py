@@ -78,7 +78,7 @@ def test_application_detail_serializer(app_data, has_resume):
         "id": application.id,
         "bootcamp_run": BootcampRunSerializer(application.bootcamp_run).data,
         "state": application.state,
-        "resume_filepath": application.resume_file.name if has_resume else None,
+        "resume_url": application.resume_file.url if has_resume else None,
         "linkedin_url": application.linkedin_url,
         "resume_upload_date": serializer_date_format(application.resume_upload_date),
         "payment_deadline": serializer_date_format(app_data.installment.deadline),

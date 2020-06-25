@@ -203,7 +203,9 @@ class UploadResumeView(GenericAPIView):
 
         return Response(
             {
-                "resume_filepath": application.resume_file.name,
+                "resume_url": (
+                    application.resume_file.url if application.resume_file else None
+                ),
                 "linkedin_url": application.linkedin_url,
                 "resume_upload_date": serializer_date_format(
                     application.resume_upload_date

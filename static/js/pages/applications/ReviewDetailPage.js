@@ -91,7 +91,7 @@ const ReviewPanelRight = (props: FormProps) => {
   const currentSelection = selection || submission.review_status
 
   return (
-    <div className="col-4 review-card review-panel-right">
+    <div className="col-3 review-card review-panel-right">
       <div className="status">
         <h3>STATUS</h3>
         <div className="form-check radio-status">
@@ -208,16 +208,26 @@ const ReviewPanelLeft = (props: DetailProps) => {
       <div className="row section">
         <UserDetails user={user} />
       </div>
-      {application.resume_filepath ? (
+      {application.resume_url ? (
         <div className="row section resume">
           <div className="col">
             <div className="row">
               <h3>Resume</h3>
             </div>
             <div className="row">
-              <a href={application.resume_filepath}>
-                {getFilenameFromPath(application.resume_filepath)}
+              <a
+                href={application.resume_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {getFilenameFromPath(application.resume_url)}
               </a>
+              <embed
+                type="application/pdf"
+                src={application.resume_url}
+                width="100%"
+                height="375"
+              />
             </div>
           </div>
         </div>
