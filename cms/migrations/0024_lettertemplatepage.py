@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
-        ("cms", "0022_model_rename_page_to_section"),
+        ("cms", "0023_resource_page_optional_hero_image"),
     ]
 
     operations = [
