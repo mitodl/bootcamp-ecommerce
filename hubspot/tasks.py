@@ -45,9 +45,9 @@ def sync_contact_with_hubspot(user_id):
 
 
 @app.task
-def sync_product_with_hubspot(bootcamp_id):
-    """Send a sync-message to sync a Bootcamp with a hubspot product"""
-    body = make_product_sync_message(bootcamp_id)
+def sync_product_with_hubspot(bootcamp_run_id):
+    """Send a sync-message to sync a BootcampRun with a hubspot product"""
+    body = make_product_sync_message(bootcamp_run_id)
     response = send_hubspot_request("PRODUCT", HUBSPOT_SYNC_URL, "PUT", body=body)
     response.raise_for_status()
 

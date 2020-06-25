@@ -110,7 +110,7 @@ class HubspotLineSerializer(serializers.ModelSerializer):
         return format_hubspot_id(instance.integration_id)
 
     def get_product(self, instance):
-        """Get the id of the associated Bootcamp"""
+        """Get the id of the associated BootcampRun"""
         from hubspot.api import format_hubspot_id
 
         return format_hubspot_id(instance.bootcamp_run.integration_id)

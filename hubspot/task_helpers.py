@@ -44,12 +44,12 @@ def sync_hubspot_application_from_order(order):
         log.error("No matching BootcampApplication found for order %s", order.id)
 
 
-def sync_hubspot_product(bootcamp):
+def sync_hubspot_product(bootcamp_run):
     """
     Trigger celery task to sync a Bootcamp to Hubspot
 
     Args:
-        bootcamp (Bootcamp): The Bootcamp to sync
+        bootcamp_run (BootcampRun): The BootcampRun to sync
     """
     if settings.HUBSPOT_API_KEY:
-        tasks.sync_product_with_hubspot.delay(bootcamp.id)
+        tasks.sync_product_with_hubspot.delay(bootcamp_run.id)

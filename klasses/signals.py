@@ -12,5 +12,5 @@ def sync_bootcamp_run(
     sender, instance, created, **kwargs
 ):  # pylint:disable=unused-argument
 
-    """Sync bootcamp to hubspot"""
+    """Sync bootcamp run to hubspot"""
     on_commit(lambda: sync_hubspot_product(instance))
