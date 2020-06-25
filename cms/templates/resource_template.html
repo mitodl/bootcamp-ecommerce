@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="resource-container">
+<section class="resource-container {% if not page.header_image %} without-banner {% endif %}" >
   {% if page.header_image %}
   <div class="banner-holder">
     <img class="resource-image" src="{% image_version_url page.header_image 'fill-1920x540' %}" alt="Resource Page" />
@@ -18,7 +18,7 @@
   {% if page.content|length == 1 %}
   <div class="resource-content single-child">
     {% for block in page.content %}
-    <h1 class="text-uppercase" id="{{ block.value.heading|slugify }}">{{ block.value.heading }}</h1>
+    <h1 id="{{ block.value.heading|slugify }}">{{ block.value.heading }}</h1>
     <p>{{ block.value.detail }}</p>
     {% endfor %}
   </div>
