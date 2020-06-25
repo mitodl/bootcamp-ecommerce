@@ -13,6 +13,10 @@
     }
   }
 
+  .adminssion-header {
+    margin-bottom: 60px;
+  }
+
   .section-heading {
     font-weight: 800;
     font-size: 36px;
@@ -62,6 +66,7 @@
 
   .light-grey-bg {
     background-color: $very-light-gray;
+    padding-bottom: 60px !important;
   }
 
   .text-med-dark-grey {
