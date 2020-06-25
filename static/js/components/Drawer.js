@@ -22,7 +22,7 @@ import ViewProfileDisplay from "./ViewProfileDisplay"
 import PaymentDisplay from "./PaymentDisplay"
 import NewApplication from "./NewApplication"
 import TakeVideoInterviewDisplay from "./TakeVideoInterviewDisplay"
-import UploadResumeView from "./UploadResumeView"
+import ResumeLinkedIn from "./ResumeLinkedIn"
 
 const renderDrawerContents = (
   drawerState: string,
@@ -39,16 +39,16 @@ const renderDrawerContents = (
     return (
       <NewApplication appliedRunIds={R.prop("appliedRunIds", drawerMeta)} />
     )
+  case RESUME_UPLOAD:
+    return (
+      <ResumeLinkedIn applicationId={R.prop("applicationId", drawerMeta)} />
+    )
   case TAKE_VIDEO_INTERVIEW:
     return (
       <TakeVideoInterviewDisplay
         application={R.prop("application", drawerMeta)}
         stepId={R.prop("stepId", drawerMeta)}
       />
-    )
-  case RESUME_UPLOAD:
-    return (
-      <UploadResumeView application={R.prop("application", drawerMeta)} />
     )
   default:
     return null

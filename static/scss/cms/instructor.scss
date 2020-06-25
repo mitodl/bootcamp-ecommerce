@@ -1,5 +1,6 @@
 .instructor-block {
   color: $matterhorn;
+  padding-bottom: 60px;
 
   .subheading {
     margin: 10px 0;
@@ -99,19 +100,19 @@
   }
 
   .text-holder {
-    overflow-y: auto;
-    height: 78px;
     padding: 0 10px;
     word-wrap: break-word;
     text-align: left;
 
-    span, strong {
+    span,
+    strong {
       display: block;
     }
 
     .title {
       font-size: 14px;
-      margin: -5px 0 5px;
+      margin: 0 0 5px;
+      line-height: 18px;
     }
   }
 
@@ -148,13 +149,18 @@
 
     h2 {
       margin-bottom: 10px;
-      font-weight: 700;
+      font-weight: 800;
+      font-size: 36px;
     }
 
     .rich-text {
       margin-bottom: 25px;
 
-      h1, h2, h3, h4, h5 {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5 {
         a {
           text-decoration: underline;
           color: $wewak;
@@ -185,9 +191,7 @@
 }
 
 .instructors-container {
-  hr {
-    display: block;
-    margin: 10px 0 30px 0;
-    border-top: 3px solid $matterhorn;
+  .slider {
+    margin-bottom: 20px;
   }
 }

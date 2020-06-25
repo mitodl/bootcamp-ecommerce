@@ -22,7 +22,7 @@ import {
 import { openDrawer } from "../../reducers/drawer"
 import queries from "../../lib/queries"
 import {
-  applicationDetailSelector,
+  allApplicationDetailSelector,
   applicationsSelector
 } from "../../lib/queries/applications"
 import { currentUserSelector } from "../../lib/queries/users"
@@ -360,7 +360,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
 
 const mapStateToProps = createStructuredSelector({
   applications:         applicationsSelector,
-  allApplicationDetail: applicationDetailSelector,
+  allApplicationDetail: allApplicationDetailSelector,
   currentUser:          currentUserSelector
 })
 

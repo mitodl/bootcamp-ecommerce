@@ -6,7 +6,7 @@ services:
       - .:/src
       - django_media:/var/media
     environment:
-      DEBUG: 'True'
+      DEBUG: ${DEBUG:-True}
       NODE_ENV: 'development'
       BOOTCAMP_USE_WEBPACK_DEV_SERVER: 'True'
 

@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from applications.constants import INTEGRATION_PREFIX
 from applications.models import BootcampApplication
 from hubspot.decorators import try_again
 from hubspot.serializers import (
@@ -53,7 +54,7 @@ def format_hubspot_id(object_id):
     return "{}-{}".format(settings.HUBSPOT_ID_PREFIX, object_id)
 
 
-def parse_hubspot_id(hubspot_id):
+def parse_hubspot_deal_id(hubspot_id):
     """
     Return an object ID parsed from a hubspot ID
     Args:
@@ -62,7 +63,9 @@ def parse_hubspot_id(hubspot_id):
     Returns:
         int: The object ID or None
     """
-    match = re.compile(fr"{settings.HUBSPOT_ID_PREFIX}-(\d+)").match(hubspot_id)
+    match = re.compile(
+        fr"{settings.HUBSPOT_ID_PREFIX}-{INTEGRATION_PREFIX}(\d+)"
+    ).match(hubspot_id)
     return int(match.group(1)) if match else None
 
 

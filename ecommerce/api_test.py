@@ -7,6 +7,7 @@ from decimal import Decimal
 import hashlib
 import hmac
 
+from django.core.mail import EmailMessage
 import pytest
 import pytz
 from rest_framework.exceptions import ValidationError
@@ -21,6 +22,7 @@ from ecommerce.api import (
     make_reference_id,
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
+    send_receipt_email,
 )
 from ecommerce.exceptions import EcommerceException, ParseException
 from ecommerce.factories import LineFactory, OrderFactory
@@ -29,6 +31,7 @@ from ecommerce.serializers import LineSerializer
 from ecommerce.test_utils import create_test_application, create_test_order
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from klasses.serializers import InstallmentSerializer
+from main.test_utils import any_instance_of
 from profiles.factories import ProfileFactory
 
 
@@ -356,3 +359,20 @@ def test_serialize_user_bootcamp_runs(test_data):
     assert sorted(
         expected_ret, key=lambda x: x["run_key"]
     ) == serialize_user_bootcamp_runs(user)
+
+
+def test_send_verify_email_change_email(mocker, user):
+    """Test send_receipt_email sends a receipt email"""
+    application = BootcampApplicationFactory.create()
+    OrderFactory.create(
+        application=application, user=application.user, status=Order.FULFILLED
+    )
+
+    send_messages_mock = mocker.patch("mail.v2.api.send_messages")
+
+    send_receipt_email(application.id)
+
+    send_messages_mock.assert_called_once_with([any_instance_of(EmailMessage)])
+
+    email = send_messages_mock.call_args[0][0][0]
+    assert application.bootcamp_run.title in email.body

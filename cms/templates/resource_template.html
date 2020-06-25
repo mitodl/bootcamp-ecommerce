@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load render_bundle wagtailcore_tags %}
+{% load image_version_url render_bundle wagtailcore_tags %}
 
 {% block title %}{{ site_name }} | {{ page.title }}{% endblock %}
 
@@ -9,32 +9,40 @@
 {% endblock %}
 
 {% block content %}
-<section class="container resource-container">
-  <h1> {{ page.title }} </h1>
+<section class="resource-container {% if not page.header_image %} without-banner {% endif %}" >
+  {% if page.header_image %}
+  <div class="banner-holder">
+    <img class="resource-image" src="{% image_version_url page.header_image 'fill-1920x540' %}" alt="Resource Page" />
+  </div>
+  {% endif %}
   {% if page.content|length == 1 %}
-    {% for block in page.content %}    
-    <h2 class="text-uppercase" id="{{ block.value.heading|slugify }}">{{ block.value.heading }}</h2>
+  <div class="resource-content single-child">
+    {% for block in page.content %}
+    <h1 id="{{ block.value.heading|slugify }}">{{ block.value.heading }}</h1>
     <p>{{ block.value.detail }}</p>
     {% endfor %}
+  </div>
   {% else %}
-    <div class="row">
-      <div class="col-md-3">
-        <ul class="resource-list">
-          {% for block in page.content %}
-          <li class="item">
-            <a class="text-capitalize" href="#{{ block.value.heading|slugify }}">{{ block.value.heading }}</a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="col-md-9">
-      {% for block in page.content %}
-        <h2 class="text-uppercase" id="{{ block.value.heading|slugify }}">{{ block.value.heading }}</h2>
-        <p>{{ block.value.detail }}</p>
-        <a href="#" class="back-to-top">Back to top</a>
-      {% endfor %}
-      </div>
+  <div class="resource-content" id="top">
+    <div class="links-area">
+      <ul class="resource-list">
+        {% for block in page.content %}
+        <li class="item">
+          <a class="text-capitalize" href="#{{ block.value.heading|slugify }}">{{ block.value.heading }}</a>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
+    <div class="content-area">
+    {% for block in page.content %}
+      <div class="text-holder">
+        <h1 id="{{ block.value.heading|slugify }}">{{ block.value.heading }}</h1>
+        <p>{{ block.value.detail }}</p>
+      </div>
+      <a href="#" class="back-top">Back to top</a>
+    {% endfor %}
+    </div>
+  </div>
   {% endif %}
 </section>
 {% endblock %}

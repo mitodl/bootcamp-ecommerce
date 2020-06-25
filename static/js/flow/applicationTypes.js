@@ -43,15 +43,15 @@ export type ApplicationSubmission = {
 }
 
 export type LegacyOrderPartial = {
-  id:               number,
-  status:           string,
-  created_on:       string,
-  updated_on:       string
+  id:         number,
+  status:     string,
+  created_on: string,
+  updated_on: string
 }
 
 export type ApplicationOrder = {
   total_price_paid: number,
-  payment_method: string,
+  payment_method:   string
 } & LegacyOrderPartial
 
 export type ApplicationDetail = {
@@ -68,7 +68,7 @@ export type ApplicationDetail = {
   orders:                Array<ApplicationOrder>,
   created_on:            string,
   price:                 number,
-  user:                  User,
+  user:                  User
 }
 
 export type SubmissionReview = {
@@ -90,6 +90,30 @@ export type SubmissionReviewState ={
   [string]: SubmissionReview
 }
 
+type BootcampFacetOption = {
+  id:    number,
+  title: string,
+  count: number
+}
+
+type ReviewStatusFacetOption = {
+  review_status: string,
+  count:         number
+}
+
+export type FacetOption = BootcampFacetOption | ReviewStatusFacetOption
+
+export type SubmissionFacetData = {
+  bootcamps:       Array<BootcampFacetOption>,
+  review_statuses: Array<ReviewStatusFacetOption>
+}
+
 export type VideoInterviewResponse = {
   interview_link: string,
+}
+
+export type ResumeLinkedInResponse = {
+  body: {
+    errors?: Array<string>
+  }
 }

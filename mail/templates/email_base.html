@@ -29,7 +29,7 @@
     <!-- Web Font / @font-face : END -->
 
     <!-- CSS Reset : BEGIN -->
-    <style>
+    <style data-premailer="ignore">
 
         /* What it does: Remove spaces around the email design added by some email clients. */
         /* Beware: It can remove the padding / margin and add a background color to the compose a reply window. */
@@ -148,7 +148,7 @@
 	<![endif]-->
 
     <!-- Progressive Enhancements : BEGIN -->
-    <style>
+    <style data-premailer="ignore">
 
 	    /* What it does: Hover styles for buttons */
 	    .button-td,
@@ -217,6 +217,45 @@
     </xml>
     <![endif]-->
 
+    <style>
+      /* these styles get inlined via premailer */
+      .row {
+        padding: 0 10px 10px;
+      }
+
+      .row-text {
+        padding: 5px 20px;
+        font-family: sans-serif;
+        font-size: 15px;
+        line-height: 20px;
+        color: #555555;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+          margin: 0 0 10px;
+          color: #03152d;
+          font-weight: bold;
+      }
+
+      h1 {
+        font-size: 25px;
+        line-height: 30px;
+      }
+      h2 {
+        font-size: 22px;
+        line-height: 25px;
+      }
+      h3 {
+        font-size: 16px;
+        line-height: 18px;
+      }
+
+      p {
+        margin: 10px 0;
+      }
+    </style>
+
+    {% block styles %}{% endblock %}
 </head>
 <body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #ffffff;">
 	<center style="width: 100%; background-color: #ffffff;">
@@ -266,15 +305,6 @@
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 680px;">
                 <tr>
                     <td style="padding: 20px; font-family: sans-serif; font-size: 12px; line-height: 15px; color: #b0b0b0;">
-                        {% block footer %}
-                        {% if anon_token %}
-                        If you don't want to receive these emails in the future, you can
-                        <a href="{{ base_url }}{% url 'settings-anon' token=anon_token %}" style="color: #b0b0b0; text-decoration: underline;">edit your settings</a>
-                        or
-                        <a href="{{ base_url }}{% url 'settings-anon' token=anon_token %}" style="color: #b0b0b0; text-decoration: underline;">unsubscribe</a>.
-                        <br><br>
-                        {% endif %}
-                        {% endblock %}
                         {% block footer-address %}
                         MIT Open Learning, 77 Massachusetts Avenue, Cambridge, MA 02139
                         <br>

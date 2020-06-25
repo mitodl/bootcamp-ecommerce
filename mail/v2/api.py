@@ -30,6 +30,7 @@ from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
+import premailer
 
 from mail.v2.exceptions import MultiEmailValidationError
 
@@ -137,9 +138,19 @@ def render_email_templates(template_name, context):
     context.update({"subject": subject_text})
     html_text = render_to_string("{}/body.html".format(template_name), context)
 
+    # inline css styles
+    html_text = premailer.transform(html_text)
+
     # pynliner internally uses bs4, which we can now modify the inlined version into a plaintext version
     # this avoids parsing the body twice in bs4
     soup = BeautifulSoup(html_text, "html5lib")
+
+    # remove newlines within text tags
+    for text in soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "span", "a"]):
+        if text.string:
+            text.string = text.string.replace("\n", " ")
+
+    # anchor tags get the value of their href added
     for link in soup.find_all("a"):
         link.replace_with("{} ({})".format(link.string, link.attrs["href"]))
 
@@ -154,6 +165,8 @@ def render_email_templates(template_name, context):
     fallback_text = re.sub(
         r"^([ ]+)([\s\\X])", r"\2", fallback_text, flags=re.MULTILINE
     )
+    # trim each line
+    fallback_text = "\n".join([line.strip() for line in fallback_text.splitlines()])
 
     return subject_text, fallback_text, html_text
 

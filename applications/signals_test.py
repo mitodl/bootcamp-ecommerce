@@ -13,8 +13,8 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def mock_hubspot(mocker):
-    """ Mock sync_hubspot_deal"""
-    return mocker.patch("applications.signals.sync_hubspot_deal")
+    """ Mock sync_hubspot_application"""
+    return mocker.patch("applications.signals.sync_hubspot_application")
 
 
 def test_application_signal(mock_hubspot):
@@ -23,7 +23,7 @@ def test_application_signal(mock_hubspot):
     application = BootcampApplicationFactory.create()
     application.save()
     application.save()
-    assert mock_hubspot.call_count == 3  # Once for creation, twice for updates
+    assert mock_hubspot.call_count == 2  # None for creation, twice for updates
     mock_hubspot.assert_any_call(application)
 
 
@@ -36,7 +36,5 @@ def test_submission_signal(mock_hubspot):
     )
     submission.save()
     submission.save()
-    assert (
-        mock_hubspot.call_count == 2
-    )  # Once for application creation, once for submission creation
+    assert mock_hubspot.call_count == 1  # Once for submission creation
     mock_hubspot.assert_any_call(submission.bootcamp_application)

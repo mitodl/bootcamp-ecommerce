@@ -21,6 +21,7 @@ from applications.constants import (
     REVIEW_STATUS_PENDING,
     SUBMISSION_STATUS_PENDING,
 )
+from applications.constants import INTEGRATION_PREFIX
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
 from jobma.models import Interview
@@ -264,7 +265,7 @@ class BootcampApplication(TimestampedModel):
         Returns:
             str: the integration id
         """
-        return f"BootcampApplication-{self.id}"
+        return f"{INTEGRATION_PREFIX}{self.id}"
 
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"

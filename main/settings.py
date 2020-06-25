@@ -22,7 +22,7 @@ from main.envs import get_string, get_bool, get_int, get_list, get_any
 from main.sentry import init_sentry
 
 
-VERSION = "0.46.0"
+VERSION = "0.46.1"
 
 ENVIRONMENT = get_string(
     "BOOTCAMP_ENVIRONMENT",
@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     "rest_framework.authtoken",
     "server_status",
     "social_django",
+    "mathfilters",
     # Hijack
     "hijack",
     "compat",

@@ -1,15 +1,21 @@
 // @flow
 import React from "react"
-import { Switch, Route } from "react-router-dom"
+import { Route } from "react-router-dom"
 
 import { routes } from "../../lib/urls"
 
-import { ReviewDetailPage } from "./ReviewDetailPage"
+import ReviewDetailPage from "./ReviewDetailPage"
+import ReviewDashboardPage from "./ReviewDashboardPage"
 
-const ReviewAdminPages = () => (
-  <Switch>
-    <Route exact path={routes.review.detail} component={ReviewDetailPage} />
-  </Switch>
-)
-
-export default ReviewAdminPages
+export default function ReviewAdminPages() {
+  return (
+    <>
+      <Route
+        exact
+        path={routes.review.dashboard}
+        component={ReviewDashboardPage}
+      />
+      <Route exact path={routes.review.detail} component={ReviewDetailPage} />
+    </>
+  )
+}

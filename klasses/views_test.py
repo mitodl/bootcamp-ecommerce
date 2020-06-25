@@ -15,23 +15,27 @@ from main.utils import now_in_utc
 pytestmark = pytest.mark.django_db
 
 
-RunInfo = namedtuple("RunInfo", ["run", "unavailable_run", "submitted_application_run"])
+RunInfo = namedtuple(
+    "RunInfo", ["available_run", "unavailable_run", "submitted_application_run"]
+)
 
 
 @pytest.fixture
 def runs(user):
     """Make some test runs"""
-    run = BootcampRunFactory.create()
-    unavailable_run = BootcampRunFactory.create(
+    available_run = BootcampRunFactory.create(
         start_date=now_in_utc() + timedelta(days=1)
+    )
+    unavailable_run = BootcampRunFactory.create(
+        start_date=now_in_utc() - timedelta(days=1)
     )
     submitted_application_run = BootcampRunFactory.create()
     BootcampApplicationFactory.create(user=user, bootcamp_run=submitted_application_run)
     # Applications by other users should not affect whether the run is available
-    BootcampApplicationFactory.create(bootcamp_run=run)
+    BootcampApplicationFactory.create(bootcamp_run=available_run)
 
     yield RunInfo(
-        run=run,
+        available_run=available_run,
         unavailable_run=unavailable_run,
         submitted_application_run=submitted_application_run,
     )
@@ -47,7 +51,11 @@ def test_bootcamp_runs(client, user, runs):
     assert (
         full_list_resp.json()
         == BootcampRunSerializer(
-            instance=[runs.run, runs.unavailable_run, runs.submitted_application_run],
+            instance=[
+                runs.available_run,
+                runs.unavailable_run,
+                runs.submitted_application_run,
+            ],
             many=True,
         ).data
     )
@@ -56,7 +64,7 @@ def test_bootcamp_runs(client, user, runs):
     assert available_resp.status_code == HTTP_200_OK
     assert (
         available_resp.json()
-        == BootcampRunSerializer(instance=[runs.run], many=True).data
+        == BootcampRunSerializer(instance=[runs.available_run], many=True).data
     )
 
 

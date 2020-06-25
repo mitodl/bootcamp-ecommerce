@@ -15,13 +15,18 @@ from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
-from klasses.models import BootcampRun, BootcampRunEnrollment
-from klasses.serializers import InstallmentSerializer
-from main.utils import remove_html_tags
+from applications.models import BootcampApplication
+from applications.serializers import BootcampApplicationDetailSerializer
+from ecommerce import tasks
 from ecommerce.constants import CYBERSOURCE_DECISION_CANCEL
 from ecommerce.exceptions import EcommerceException, ParseException
 from ecommerce.models import Line, Order
+from klasses.models import BootcampRun, BootcampRunEnrollment
+from klasses.serializers import InstallmentSerializer
 from mail.api import MailgunClient
+from mail.v2 import api as mail_api
+from mail.v2.constants import EMAIL_RECEIPT
+from main.utils import remove_html_tags
 
 
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -249,6 +254,8 @@ def complete_successful_order(order):
                 order.id,
             )
 
+    tasks.send_receipt_email.delay(application.id)
+
 
 def handle_rejected_order(*, order, decision):
     """
@@ -332,3 +339,42 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
             bootcamp_run.installment_set.order_by("deadline"), many=True
         ).data,
     }
+
+
+def send_receipt_email(application_id):
+    """
+    Send a receipt email
+
+    Args:
+        application_id(str): the application id to send an email for
+    """
+    # NOTE: this receipt email includes a whole payment history so it'd more of a snapshot
+    try:
+        application = BootcampApplication.objects.prefetch_state_data().get(
+            id=application_id
+        )
+    except BootcampApplication.DoesNotExist:
+        log.exception(
+            "Tried to send receipt email for application id=%s, but it doesn't exist",
+            application_id,
+        )
+        return
+
+    if not application.orders.exists():
+        log.error(
+            "Tried to send receipt email for application with id=%s, but it has no fulfilled orders",
+            application_id,
+        )
+        return
+
+    extra_context = {
+        "application": BootcampApplicationDetailSerializer(instance=application).data
+    }
+
+    mail_api.send_message(
+        mail_api.message_for_recipient(
+            application.user.email,
+            mail_api.context_for_user(extra_context=extra_context),
+            EMAIL_RECEIPT,
+        )
+    )

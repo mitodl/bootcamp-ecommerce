@@ -5,11 +5,186 @@ html {
 }
 
 .resource-container {
-  padding-top: 30px;
+
   padding-bottom: 30px;
   color: #000000;
   font-size: 16px;
   line-height: 28px;
+  position: relative;
+
+  &.without-banner {
+
+    .resource-content {
+      padding: 30px 30px 15px;
+      margin: 0;
+
+      @include media-breakpoint-down(sm) {
+        padding: 15px 15px 15px;
+      }
+    }
+  }
+
+  .banner-holder {
+    position: relative;
+    height: 270px;
+
+    @include media-breakpoint-down(sm) {
+      height: 200px;
+    }
+
+    img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .resource-content {
+    overflow: hidden;
+    padding: 70px 30px 15px;
+    position: relative;
+    z-index: 1;
+    margin-top: -60px;
+
+    @include media-breakpoint-down(sm) {
+      margin-top: -30px;
+      padding: 30px 15px 15px;
+    }
+
+    &:after {
+      position: absolute;
+      left: 200px;
+      top: 0;
+      right: 0;
+      height: 100%;
+      background: $white;
+      content: "";
+
+      @include media-breakpoint-down(sm) {
+        left: 5px;
+        right: 5px;
+      }
+    }
+
+    &.single-child {
+      padding-left: 170px;
+
+      .rich-text {
+        position: relative;
+        z-index: 2;
+      }
+
+      @include media-breakpoint-down(sm) {
+        padding-left: 15px;
+      }
+
+      &:after {
+        left: 160px;
+        @include media-breakpoint-down(sm) {
+          left: 5px;
+        }
+      }
+    }
+
+    a {
+      color: $tundora;
+      text-decoration: none;​
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 36px;
+      margin: 0 0 30px;
+      position: relative;
+      z-index: 2;
+      text-transform: none;
+
+      @include media-breakpoint-down(sm) {
+        margin: 0 0 10px;
+      }
+    }
+  }
+
+  .links-area {
+    float: left;
+    width: 300px;
+    margin: 0 30px 0 0;
+    position: relative;
+    z-index: 1;
+    padding: 42px 0 0;
+
+    @include media-breakpoint-down(md) {
+      width: 250px;
+    }
+
+    @include media-breakpoint-down(sm) {
+      float: none;
+      width: auto;
+      padding: 0;
+      margin: 0;
+    }
+
+    .resource-list {
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+
+      li {
+        padding: 16px 0;
+        border-top: 1px solid $dusty-gray;
+        margin: 0;
+        font-size: 20px;
+        line-height: 24px;
+        font-weight: 700;
+
+        &:first-child {
+          border: none;
+        }
+      }
+    }
+  }
+
+  .content-area {
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    line-height: 30px;
+    color: $tundora;
+
+    .text-holder {
+      padding-top: 30px;
+    }
+
+    a {
+      color: $tundora;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    .back-top {
+      text-decoration: none;
+      font-weight: 700;
+
+      &:after {
+        content: "\e905";
+        font-family: icomoon;
+        margin-left: 10px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+  }
 
   h1 {
     font-size: 32px;
@@ -23,16 +198,21 @@ html {
       font-size: 25px;
       line-height: 30px;
     }
+
   }
 
   h2 {
     font-size: 18px;
     font-weight: 700;
     margin: 0 0 5px;
+    position: relative;
+    z-index: 2;
   }
 
   p {
-    margin: 0 0 30px;
+    margin: 0 0 10px;
+    position: relative;
+    z-index: 2;
   }
 
   .resource-list {
@@ -42,27 +222,11 @@ html {
 
     li {
       margin: 0 0 50px;
+
       @include media-breakpoint-down(sm) {
         margin: 0 0 15px;
       }
     }
 
-    a {
-      color: black;
-      font-weight: 600;
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .col-md-3 {
-    border-right: 1px solid black;
-
-    @include media-breakpoint-down(sm) {
-      border: none;
-    }
   }
 }

@@ -17,12 +17,10 @@
   }
 
   .bootcamp, .payment-amount {
-    letter-spacing: 1.95px;
     font-size: 18px;
   }
 
   .payment-deadline {
-    letter-spacing: 1.73px;
     font-size: 16px;
     line-height: 29px;
     margin-top: 20px;
@@ -40,7 +38,6 @@
       &::placeholder {
         color: $label-gray;
         line-height: 22px;
-        letter-spacing: 1.95px;
         font-size: 18px;
       }
     }
@@ -54,14 +51,12 @@
 
   .terms-and-conditions {
     margin-top: 24px;
-    letter-spacing: 1.73px;
     line-height: 29px;
     font-size: 16px;
   }
 }
 
 .payment-history {
-  letter-spacing: 1.73px;
 
   .inner-container {
     margin: 5px;

@@ -2,7 +2,6 @@
   margin: 0;
   text-align: center;
   vertical-align: middle;
-  letter-spacing: normal;
   cursor: pointer;
 
   &.large-cta {
@@ -10,7 +9,6 @@
     border-radius: 3px;
     font-size: 16px;
     font-weight: 400;
-    letter-spacing: 2px;
   }
 
   &:hover {
@@ -36,8 +34,8 @@ button, .btn-styled {
   padding: 6px 12px;
 
   &:disabled, &[disabled] {
-    color: $med-gray !important;
-    border-color: $med-gray !important;
+    color: $btn-disabled-gray !important;
+    border-color: $btn-disabled-gray !important;
   }
 
   &.size-1 {
@@ -104,7 +102,6 @@ a.btn-link {
 }
 
 label {
-  letter-spacing: 1.04px;
   font-size: 18px;
 }
 
@@ -112,8 +109,8 @@ input {
   padding: 8px;
   color: $input-color;
   font-size: $input-font-size;
-  border: 1px solid $light-gray;
-  border-radius: 5px;
+  border: 1px solid $input-border-color;
+  border-radius: $input-radius;
 }
 
 ::placeholder {

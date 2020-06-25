@@ -7,16 +7,19 @@
     height: 540px;
     margin-bottom: -4rem;
 
-
     @include media-breakpoint-down(sm) {
       height: 240px;
       margin-bottom: unset;
     }
   }
 
+  .adminssion-header {
+    margin-bottom: 60px;
+  }
+
   .section-heading {
     font-weight: 800;
-    font-size: 3em;
+    font-size: 36px;
     color: $matterhorn;
   }
 
@@ -27,6 +30,10 @@
 
   .admissions-detail {
     border-left: 1px solid $matterhorn;
+
+    p {
+      margin-bottom: 30px;
+    }
 
     @include media-breakpoint-down(sm) {
       border-left: unset;
@@ -59,6 +66,7 @@
 
   .light-grey-bg {
     background-color: $very-light-gray;
+    padding-bottom: 60px !important;
   }
 
   .text-med-dark-grey {

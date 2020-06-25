@@ -5,13 +5,10 @@ html {
 }
 
 .three-column-image-text-section {
-
   .section-row {
-
-    padding-bottom: 40px;
+    padding-bottom: 60px;
 
     .col-sm-4 {
-
       .col-border-padding {
         padding-left: 30px;
         padding-right: 30px;
@@ -42,7 +39,8 @@ html {
     }
   }
 
-  h5, p {
+  h5,
+  p {
     color: dimgray;
   }
 

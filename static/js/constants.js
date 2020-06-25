@@ -123,11 +123,18 @@ export const REVIEW_STATUS_REJECTED = "rejected"
 export const REVIEW_STATUS_PENDING = "pending"
 export const REVIEW_STATUS_WAITLISTED = "waitlisted"
 
+export const REVIEW_STATUS_DISPLAY_MAP = {
+  [REVIEW_STATUS_APPROVED]:   ["Approved", "text-primary"],
+  [REVIEW_STATUS_REJECTED]:   ["Rejected", "text-warning"],
+  [REVIEW_STATUS_PENDING]:    ["Not Reviewed", "text-secondary"],
+  [REVIEW_STATUS_WAITLISTED]: ["Waitlisted", "text-secondary"]
+}
+
 export const REVIEW_STATUS_TEXT_MAP = {
-  REVIEW_STATUS_APPROVED:   REVIEW_STATUS_APPROVED,
-  REVIEW_STATUS_REJECTED:   REVIEW_STATUS_REJECTED,
-  REVIEW_STATUS_PENDING:    REVIEW_STATUS_PENDING,
-  REVIEW_STATUS_WAITLISTED: REVIEW_STATUS_WAITLISTED
+  [REVIEW_STATUS_APPROVED]:   REVIEW_STATUS_APPROVED,
+  [REVIEW_STATUS_REJECTED]:   REVIEW_STATUS_REJECTED,
+  [REVIEW_STATUS_PENDING]:    REVIEW_STATUS_PENDING,
+  [REVIEW_STATUS_WAITLISTED]: REVIEW_STATUS_WAITLISTED
 }
 
 export const SUBMISSION_STATUS_PENDING = "pending"
@@ -180,6 +187,22 @@ export const RESUME_UPLOAD = "resumeUpload"
 export const JOBMA = "Jobma"
 export const JOBMA_SITE = "jobma.com"
 
-export const ALLOWED_FILE_EXTENTIONS = {
+export const ALLOWED_FILE_EXTENSIONS = {
   pdf: "application/pdf"
 }
+
+// Submission facets
+export const STATUS_FACET_KEY = "review_statuses"
+export const BOOTCAMP_FACET_KEY = "bootcamps"
+
+export const FACET_DISPLAY_NAMES = {
+  [STATUS_FACET_KEY]:   "Application Status",
+  [BOOTCAMP_FACET_KEY]: "Bootcamp"
+}
+
+export const FACET_OPTION_LABEL_KEYS = {
+  [STATUS_FACET_KEY]:   "review_status",
+  [BOOTCAMP_FACET_KEY]: "title"
+}
+
+export const FACET_ORDER = [BOOTCAMP_FACET_KEY, STATUS_FACET_KEY]

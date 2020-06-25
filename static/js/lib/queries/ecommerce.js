@@ -1,13 +1,7 @@
 // @flow
-import { getCookie } from "../api"
+import { DEFAULT_NON_GET_OPTIONS } from "../redux_query"
 
 import type { PaymentPayload } from "../../flow/ecommerceTypes"
-
-const DEFAULT_POST_OPTIONS = {
-  headers: {
-    "X-CSRFTOKEN": getCookie("csrftoken")
-  }
-}
 
 export default {
   paymentMutation: (payload: PaymentPayload) => ({
@@ -20,7 +14,7 @@ export default {
       ...payload
     },
     options: {
-      ...DEFAULT_POST_OPTIONS
+      ...DEFAULT_NON_GET_OPTIONS
     }
   })
 }

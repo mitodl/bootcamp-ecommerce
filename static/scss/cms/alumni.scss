@@ -38,7 +38,7 @@
     background: white;
     padding: 50px;
     margin-top: -90px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     position: relative;
     z-index: 2;
 
@@ -51,7 +51,8 @@
 
       h2 {
         margin-bottom: 10px;
-        font-weight: 700;
+        font-weight: 800;
+        font-size: 36px;
       }
 
       .rich-text {
@@ -74,11 +75,11 @@
       }
 
       .name {
-        font-size: 20px;
+        font-size: 25px;
       }
 
       .title {
-        font-size: 12px;
+        font-size: 17px;
       }
     }
   }
@@ -124,7 +125,11 @@
         padding: 0;
       }
 
-      padding: 0 30px;
+      @include media-breakpoint-down(lg) {
+        padding: 0 8px 0 7px;
+      }
+
+      padding: 0 38px 0 37px;
 
       img {
         display: block;

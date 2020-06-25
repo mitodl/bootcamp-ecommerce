@@ -4,11 +4,13 @@ Hubspot tasks
 import logging
 import re
 
+import celery
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from requests import HTTPError
 
+from applications.models import BootcampApplication
 from main.celery import app
 
 from hubspot.api import (
@@ -16,16 +18,16 @@ from hubspot.api import (
     make_contact_sync_message,
     get_sync_errors,
     hubspot_timestamp,
-    parse_hubspot_id,
+    parse_hubspot_deal_id,
     make_product_sync_message,
     make_deal_sync_message,
     make_line_sync_message,
     exists_in_hubspot,
+    format_hubspot_id,
 )
 from hubspot.models import HubspotErrorCheck, HubspotLineResync
-from klasses.models import PersonalPrice
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 HUBSPOT_SYNC_URL = "/extensions/ecomm/v1/sync-messages"
 ASSOCIATED_DEAL_RE = re.compile(fr"\[hs_assoc__deal_id: (.+)\]")
@@ -50,6 +52,18 @@ def sync_product_with_hubspot(bootcamp_id):
     response.raise_for_status()
 
 
+@app.task(
+    autoretry_for=(ObjectDoesNotExist,), retry_kwargs={"max_retries": 3, "countdown": 5}
+)
+def sync_application_with_hubspot(application_id):
+    """ Sync the application to a hubspot deal and line"""
+    tasks = [
+        sync_deal_with_hubspot.si(application_id),
+        sync_line_with_hubspot.si(application_id),
+    ]
+    return celery.chain(tasks)()
+
+
 @app.task
 def sync_deal_with_hubspot(application_id):
     """Send a sync-message to sync a personal price with a hubspot deal"""
@@ -59,9 +73,9 @@ def sync_deal_with_hubspot(application_id):
 
 
 @app.task
-def sync_line_with_hubspot(personal_price_id):
+def sync_line_with_hubspot(application_id):
     """Send a sync-message to sync a personal price with a hubspot line"""
-    body = make_line_sync_message(personal_price_id)
+    body = make_line_sync_message(application_id)
     response = send_hubspot_request("LINE_ITEM", HUBSPOT_SYNC_URL, "PUT", body=body)
     response.raise_for_status()
 
@@ -81,7 +95,7 @@ def check_hubspot_api_errors():
         error_timestamp = error.get("errorTimestamp")
         if error_timestamp > last_timestamp:
             obj_type = (error.get("objectType", "N/A"),)
-            obj_id = parse_hubspot_id(error.get("integratorObjectId", ""))
+            obj_id = parse_hubspot_deal_id(error.get("integratorObjectId", ""))
             error_type = error.get("type", "N/A")
             details = error.get("details", "")
 
@@ -92,13 +106,11 @@ def check_hubspot_api_errors():
                 and ASSOCIATED_DEAL_RE.search(details) is not None
             ):
                 try:
-                    personal_price = PersonalPrice.objects.get(id=obj_id)
+                    application = BootcampApplication.objects.get(id=obj_id)
                 except ObjectDoesNotExist:
                     pass
                 else:
-                    HubspotLineResync.objects.get_or_create(
-                        personal_price=personal_price
-                    )
+                    HubspotLineResync.objects.get_or_create(application=application)
                     continue
 
             log.error(
@@ -121,12 +133,17 @@ def retry_invalid_line_associations():
     Check lines that have errored and retry them if their orders have synced
     """
     for hubspot_line_resync in HubspotLineResync.objects.all():
-        if exists_in_hubspot("LINE_ITEM", hubspot_line_resync.personal_price.id):
+        integrationId = format_hubspot_id(
+            hubspot_line_resync.application.integration_id
+        )
+        if exists_in_hubspot("LINE_ITEM", integrationId):
             hubspot_line_resync.delete()
             continue
 
-        if exists_in_hubspot("DEAL", hubspot_line_resync.personal_price.id):
-            sync_line_with_hubspot(hubspot_line_resync.personal_price.id)
+        if exists_in_hubspot("DEAL", integrationId):
+            sync_line_with_hubspot(hubspot_line_resync.application.id)
+        else:
+            sync_application_with_hubspot(hubspot_line_resync.application.id)
 
 
 def sync_bulk_with_hubspot(

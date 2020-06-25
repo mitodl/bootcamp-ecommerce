@@ -6,10 +6,12 @@ import { useRequest, useMutation } from "redux-query-react"
 import { MetaTags } from "react-meta-tags"
 
 import queries from "../../lib/queries"
+import { allApplicationDetailSelector } from "../../lib/queries/applications"
 import {
-  applicationDetailSelector,
-  submissionDetailSelector
-} from "../../lib/queries/applications"
+  submissionQuery,
+  submissionReviewMutation,
+  submissionsSelector
+} from "../../lib/queries/submissions"
 import { formatTitle, getFilenameFromPath, isNilOrBlank } from "../../util/util"
 
 import {
@@ -62,7 +64,7 @@ const ReviewPanelRight = (props: FormProps) => {
 
   const [{ isPending }, updateStatus] = useMutation(status =>
     // $FlowFixMe
-    queries.applications.submissionReviewMutation({
+    submissionReviewMutation({
       ...submission,
       review_status: status
     })
@@ -120,7 +122,6 @@ const ReviewPanelRight = (props: FormProps) => {
             Reject
           </label>
         </div>
-
         <div className="form-check radio-status">
           <input
             className="form-check-input"
@@ -135,7 +136,6 @@ const ReviewPanelRight = (props: FormProps) => {
             Waitlist
           </label>
         </div>
-
         <div className="form-check radio-status">
           <input
             className="form-check-input"
@@ -244,21 +244,14 @@ const ReviewPanelLeft = (props: DetailProps) => {
   )
 }
 
-export const ReviewDetailPage = (props: PageProps) => {
+export default function ReviewDetailPage(props: PageProps) {
   const { match } = props
-  const submissionId = match.params.id
+  const { submissionId } = match.params
 
-  const submissions = useSelector(submissionDetailSelector)
+  useRequest(submissionQuery(submissionId))
+  const submissions = useSelector(submissionsSelector)
   const submission = submissions ? submissions[submissionId] : null
 
-  const applications = useSelector(applicationDetailSelector)
-  const application =
-    applications && submission ?
-      applications[submission.bootcamp_application.id] :
-      null
-  const user = submission ? submission.learner : null
-
-  useRequest(queries.applications.submissionReviewQuery(submissionId))
   useRequest(
     submission ?
       queries.applications.applicationDetailQuery(
@@ -266,6 +259,13 @@ export const ReviewDetailPage = (props: PageProps) => {
       ) :
       null
   )
+
+  const applicationDetails = useSelector(allApplicationDetailSelector)
+  const application =
+    applicationDetails && submission ?
+      applicationDetails[submission.bootcamp_application.id] :
+      null
+  const user = submission ? submission.learner : null
 
   if (!submission || !application || !user) {
     return null

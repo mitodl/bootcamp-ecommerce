@@ -1,10 +1,10 @@
 """ Factories for Hubspot """
 from datetime import timezone
 
-from factory import Faker
+from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
 
-from hubspot.models import HubspotErrorCheck
+from hubspot.models import HubspotErrorCheck, HubspotLineResync
 
 
 class HubspotErrorCheckFactory(DjangoModelFactory):
@@ -16,3 +16,12 @@ class HubspotErrorCheckFactory(DjangoModelFactory):
 
     class Meta:
         model = HubspotErrorCheck
+
+
+class HubspotLineResyncFactory(DjangoModelFactory):
+    """Factory for HubspotLineResync"""
+
+    application = SubFactory("applications.factories.BootcampApplicationFactory")
+
+    class Meta:
+        model = HubspotLineResync
