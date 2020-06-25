@@ -36,7 +36,7 @@ from cms.constants import (
     SAMPLE_VARIABLES,
 )
 from cms.forms import LetterTemplatePageForm
-from main.views import get_base_context, serialize_js_settings
+from main.views import get_base_context
 
 
 log = logging.getLogger(__name__)
@@ -660,9 +660,9 @@ class LetterTemplatePage(Page):
             request,
             "letter_template_page.html",
             context={
+                **get_base_context(request),
                 "preview": True,
                 "content": content,
-                "js_settings_json": json.dumps(serialize_js_settings(request)),
             },
         )
 
