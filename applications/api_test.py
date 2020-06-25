@@ -75,6 +75,7 @@ def test_derive_application_state():
         order__status=Order.FULFILLED,
         order__user=app.user,
         order__application=app,
+        order__total_price_paid=installment.amount,
         run_key=app.bootcamp_run.run_key,
         price=installment.amount,
     )

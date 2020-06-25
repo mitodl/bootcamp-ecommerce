@@ -30,15 +30,15 @@
           <div class="row">
             <div class="col-6">
               <ul class="list-unstyled links">
-                <li><a href="/about-us">About MIT Bootcamps</a></li>
-                <li><a href="/admissions">Admissions</a></li>
-                <li><a href="/bootcamps-programs">Bootcamps Programs</a></li>
+                <li><a href="{{ resource_page_urls.about_us }}">About MIT Bootcamps</a></li>
+                <li><a href="{{ resource_page_urls.how_to_apply }}">Admissions</a></li>
+                <li><a href="{{ resource_page_urls.bootcamps_programs }}">Bootcamps Programs</a></li>
               </ul>
             </div>
             <div class="col-6">
               <ul class="list-unstyled links">
                 <li><a href="{% url "bootcamp-tos" %}">Terms of Service</a></li>
-                <li><a href="/privacy-policy">Privacy Policy</a></li>
+                <li><a href="{{ resource_page_urls.privacy_policy }}">Privacy Policy</a></li>
               </ul>
             </div>
           </div>

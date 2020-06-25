@@ -1,11 +1,10 @@
 """
 Page models for the CMS
 """
-import json
-
 from django.conf import settings
 from django.db import models
 from django.http.response import Http404
+from django.urls import reverse
 from django.utils.text import slugify
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.core.blocks import StreamBlock
@@ -26,7 +25,7 @@ from cms.blocks import (
     CatalogSectionBootcampBlock,
 )
 from cms.constants import BOOTCAMP_INDEX_SLUG
-from main.views import _serialize_js_settings
+from main.views import get_base_context
 
 
 class BootcampIndexPage(Page):
@@ -115,7 +114,7 @@ class HomePage(Page, CommonProperties):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
-            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            **get_base_context(request),
             "site_name": settings.SITE_NAME,
             "title": self.title,
         }
@@ -183,9 +182,10 @@ class BootcampPage(Page, CommonProperties):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
-            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            **get_base_context(request),
             "site_name": settings.SITE_NAME,
             "title": self.title,
+            "apply_url": reverse("applications"),
         }
 
     @property
@@ -202,11 +202,6 @@ class BootcampPage(Page, CommonProperties):
     def admissions_section(self):
         """Gets the admissions section child page"""
         return self._get_child_page_of_type(AdmissionsSection)
-
-    @property
-    def admissions_link(self):
-        """Gets the link to admissions page for this bootcamp run"""
-        return "/admissions"
 
     subpage_types = [
         "ThreeColumnImageTextSection",
@@ -234,13 +229,6 @@ class BootcampRunPage(BootcampPage):
     )
 
     content_panels = [FieldPanel("bootcamp_run")] + BootcampPage.content_panels
-
-    def get_context(self, request, *args, **kwargs):
-        """
-        return page context.
-        """
-        context = super().get_context(request)
-        return context
 
 
 class BootcampRunChildPage(Page):
@@ -482,7 +470,7 @@ class ResourcePage(Page):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
-            "js_settings_json": json.dumps(_serialize_js_settings(request)),
+            **get_base_context(request),
             "site_name": settings.SITE_NAME,
         }
 
