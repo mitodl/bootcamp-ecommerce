@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.46.2
+Version 0.46.2 (Released June 25, 2020)
 --------------
 
 - Fix resume link (#746)
