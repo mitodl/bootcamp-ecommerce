@@ -35,7 +35,9 @@ describe("TakeVideoInterviewDisplay", () => {
 
   it("takes the interview upon clicking the link", async () => {
     const { wrapper } = await renderPage()
-    await wrapper.find(".take-video-interview a").prop("onClick")()
+    await wrapper
+      .find(".take-video-interview button.btn-external-link")
+      .prop("onClick")()
     sinon.assert.calledWith(
       helper.handleRequestStub,
       videoInterviewsUrl,

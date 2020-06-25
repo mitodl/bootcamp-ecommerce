@@ -24,6 +24,21 @@ import NewApplication from "./NewApplication"
 import TakeVideoInterviewDisplay from "./TakeVideoInterviewDisplay"
 import ResumeLinkedIn from "./ResumeLinkedIn"
 
+export const DrawerCloseHeader = (): React$Element<*> => {
+  const dispatch = useDispatch()
+  const closeDrawer = useCallback(() => {
+    dispatch(setDrawerOpen(false))
+  }, [dispatch])
+
+  return (
+    <div className="drawer-close">
+      <button onClick={closeDrawer} className="btn-plain d-flex">
+        <i className="material-icons">close</i>
+      </button>
+    </div>
+  )
+}
+
 const renderDrawerContents = (
   drawerState: string,
   drawerMeta: ?Object

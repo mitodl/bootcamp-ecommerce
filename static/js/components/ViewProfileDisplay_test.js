@@ -29,7 +29,12 @@ describe("ViewProfileDisplay", () => {
 
   it("renders the display for a logged in user", async () => {
     const { wrapper } = await renderPage()
-    assert.isTrue(wrapper.find(".profile-btn").exists())
+    assert.isTrue(
+      wrapper
+        .find("button")
+        .first()
+        .exists()
+    )
     assert.isTrue(
       wrapper
         .find(".view-profile")
