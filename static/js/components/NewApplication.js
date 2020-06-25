@@ -13,6 +13,7 @@ import {
 } from "reactstrap"
 import { partial } from "ramda"
 
+import { DrawerCloseHeader } from "./Drawer"
 import { setDrawerOpen } from "../reducers/drawer"
 import users, { currentUserSelector } from "../lib/queries/users"
 import bootcamps, { bootcampRunsSelector } from "../lib/queries/bootcamps"
@@ -96,7 +97,8 @@ export class NewApplication extends React.Component<Props, State> {
 
     return (
       <div className="container drawer-wrapper new-application-drawer">
-        <h1 className="mb-3">Select Bootcamp</h1>
+        <DrawerCloseHeader />
+        <h2 className="mb-3">Select Bootcamp</h2>
         {unappliedBootcampRuns.length === 0 ? (
           <p className="mb-3">{noAvailableBootcampsMsg}</p>
         ) : (

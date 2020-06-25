@@ -38,8 +38,8 @@ export const LegalAddressFields = ({
 }: LegalAddressProps) => (
   <React.Fragment>
     <div className="form-group">
-      <label htmlFor="legal_address.first_name" className="row">
-        <div className="col-4 font-weight-bold">First Name*</div>
+      <label htmlFor="legal_address.first_name" className="font-weight-bold">
+        First Name*
       </label>
       <Field
         type="text"
@@ -62,8 +62,8 @@ export const LegalAddressFields = ({
       <ErrorMessage name="legal_address.last_name" component={FormError} />
     </div>
     <div className="form-group">
-      <label htmlFor="profile.name" className="row">
-        <div className="col-4 font-weight-bold">Full Name*</div>
+      <label htmlFor="profile.name" className="font-weight-bold">
+        Full Name*
       </label>
       <Field
         type="text"
@@ -91,14 +91,17 @@ export const LegalAddressFields = ({
     ) : null}
     <div className="form-group">
       {/* LegalAddress fields */}
-      <label htmlFor="legal_address.street_address" className="row">
-        <div className="col-4 font-weight-bold">Address*</div>
+      <label
+        htmlFor="legal_address.street_address"
+        className="font-weight-bold"
+      >
+        Address*
       </label>
       <FieldArray
         name="legal_address.street_address"
         render={arrayHelpers => (
-          <div>
-            <div key="0">
+          <React.Fragment>
+            <div>
               <Field
                 name={`legal_address.street_address[0]`}
                 className={`form-control`}
@@ -129,7 +132,7 @@ export const LegalAddressFields = ({
                 Add additional line
               </button>
             ) : null}
-          </div>
+          </React.Fragment>
         )}
       />
     </div>
@@ -332,57 +335,40 @@ export const ProfileFields = () => (
       <ErrorMessage name="profile.company_size" component={FormError} />
     </div>
     <div className="form-group">
-      <div className="row">
-        <div className="col">
-          <label
-            htmlFor="profile.years_experience"
-            className="font-weight-bold"
-          >
-            Years of Work Experience*
-          </label>
-          <Field
-            component="select"
-            name="profile.years_experience"
-            className="form-control"
-          >
-            <option value="">-----</option>
-            {EMPLOYMENT_EXPERIENCE.map(([value, label], i) => (
-              <option key={i} value={value}>
-                {label}
-              </option>
-            ))}
-          </Field>
-          <ErrorMessage name="profile.years_experience" component={FormError} />
-        </div>
-      </div>
+      <label htmlFor="profile.years_experience" className="font-weight-bold">
+        Years of Work Experience*
+      </label>
+      <Field
+        component="select"
+        name="profile.years_experience"
+        className="form-control"
+      >
+        <option value="">-----</option>
+        {EMPLOYMENT_EXPERIENCE.map(([value, label], i) => (
+          <option key={i} value={value}>
+            {label}
+          </option>
+        ))}
+      </Field>
+      <ErrorMessage name="profile.years_experience" component={FormError} />
     </div>
     <div className="form-group">
-      <div className="row">
-        <div className="col">
-          <label
-            htmlFor="profile.highest_education"
-            className="font-weight-bold"
-          >
-            Highest Level of Education*
-          </label>
-          <Field
-            component="select"
-            name="profile.highest_education"
-            className="form-control"
-          >
-            <option value="">-----</option>
-            {HIGHEST_EDUCATION_CHOICES.map((level, i) => (
-              <option key={i} value={level}>
-                {level}
-              </option>
-            ))}
-          </Field>
-          <ErrorMessage
-            name="profile.highest_education"
-            component={FormError}
-          />
-        </div>
-      </div>
+      <label htmlFor="profile.highest_education" className="font-weight-bold">
+        Highest Level of Education*
+      </label>
+      <Field
+        component="select"
+        name="profile.highest_education"
+        className="form-control"
+      >
+        <option value="">-----</option>
+        {HIGHEST_EDUCATION_CHOICES.map((level, i) => (
+          <option key={i} value={level}>
+            {level}
+          </option>
+        ))}
+      </Field>
+      <ErrorMessage name="profile.highest_education" component={FormError} />
     </div>
   </React.Fragment>
 )

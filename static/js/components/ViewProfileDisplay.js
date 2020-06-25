@@ -5,21 +5,29 @@ import { connect } from "react-redux"
 import { connectRequest } from "redux-query-react"
 import { find, fromPairs, propEq } from "ramda"
 import { createStructuredSelector } from "reselect"
-import { MetaTags } from "react-meta-tags"
 
+import { DrawerCloseHeader } from "./Drawer"
 import {
   EMPLOYMENT_EXPERIENCE,
   EMPLOYMENT_SIZE,
   GENDER_CHOICES,
-  PROFILE_EDIT,
-  VIEW_PROFILE_PAGE_TITLE
+  PROFILE_EDIT
 } from "../constants"
 import queries from "../lib/queries"
 import { currentUserSelector } from "../lib/queries/users"
 import { setDrawerState } from "../reducers/drawer"
-import { formatTitle } from "../util/util"
 
 import type { Country, CurrentUser } from "../flow/authTypes"
+
+const TwoColumnRow = (props: {
+  label: string,
+  children: string | React$Element<*>
+}): React$Element<*> => (
+  <div className="row profile-row">
+    <div className="col-12 col-sm-6 profile-label">{props.label}</div>
+    <div className="col-12 col-sm-6">{props.children}</div>
+  </div>
+)
 
 type StateProps = {|
   currentUser: ?CurrentUser,
@@ -39,159 +47,110 @@ export function ViewProfileDisplay(props: Props) {
   const { currentUser, countries, updateDrawer } = props
 
   return countries && currentUser ? (
-    <div className="container p-0 view-profile profile-display">
-      <MetaTags>
-        <title>{formatTitle(VIEW_PROFILE_PAGE_TITLE)}</title>
-      </MetaTags>
-      <div className="auth-header row">
-        <h1 className="col-6">Profile</h1>
-        <div className="col-6 profile-button-col">
+    <div className="container drawer-wrapper view-profile profile-display">
+      <DrawerCloseHeader />
+      <div className="row">
+        <h2 className="col-6">Profile</h2>
+        <div className="col-6 text-right">
           <button
             type="submit"
             onClick={() => {
               updateDrawer(PROFILE_EDIT)
             }}
-            className="btn btn-danger profile-btn"
+            className="btn-danger"
           >
             Edit
           </button>
         </div>
       </div>
-      <div className="auth-card card-shadow row">
-        <div className="container profile-container">
-          <div className="row">
-            {currentUser.is_authenticated ? (
-              <div className="col-12 bootcamp-form">
-                <div className="row profile-row">
-                  <div className="col profile-label">First Name</div>
-                  <div className="col">
-                    {currentUser.legal_address.first_name}
-                  </div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Last Name</div>
-                  <div className="col">
-                    {currentUser.legal_address.last_name}
-                  </div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Full Name</div>
-                  <div className="col">{currentUser.profile.name}</div>
-                </div>
-                {currentUser.legal_address.street_address.map((line, idx) => (
-                  <div className="row profile-row" key={idx}>
-                    <div className="col profile-label">
-                      Address{idx > 0 ? ` ${idx + 1}` : ""}
-                    </div>
-                    <div className="col">{line}</div>
-                  </div>
-                ))}
-                {countries && currentUser.legal_address.country ? (
-                  <div className="row profile-row">
-                    <div className="col profile-label">Country</div>
-                    <div className="col">
-                      {
-                        find(
-                          propEq("code", currentUser.legal_address.country),
-                          countries
-                        ).name
-                      }
-                    </div>
-                  </div>
-                ) : null}
-                <div className="row profile-row">
-                  <div className="col profile-label">City</div>
-                  <div className="col">{currentUser.legal_address.city}</div>
-                </div>
-                {countries && currentUser.legal_address.state_or_territory ? (
-                  <div className="row profile-row">
-                    <div className="col profile-label">
-                      State/Province/Region
-                    </div>
-                    <div className="col">
-                      {
-                        find(
-                          propEq(
-                            "code",
-                            currentUser.legal_address.state_or_territory
-                          ),
-                          find(
-                            propEq("code", currentUser.legal_address.country),
-                            countries
-                          ).states
-                        ).name
-                      }
-                    </div>
-                  </div>
-                ) : null}
-                <div className="divider" />
-                <div className="row profile-row">
-                  <div className="col profile-label">Gender</div>
-                  <div className="col">
-                    {fromPairs(GENDER_CHOICES)[currentUser.profile.gender]}
-                  </div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Year of Birth</div>
-                  <div className="col">{currentUser.profile.birth_year}</div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Company</div>
-                  <div className="col">{currentUser.profile.company}</div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Job Title</div>
-                  <div className="col">{currentUser.profile.job_title}</div>
-                </div>
-                <div className="form-group dotted" />
-                <div className="row profile-row">
-                  <div className="col profile-label">Industry</div>
-                  <div className="col">{currentUser.profile.industry}</div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Job Function</div>
-                  <div className="col">{currentUser.profile.job_function}</div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">Company Size</div>
-                  <div className="col">
-                    {
-                      fromPairs(EMPLOYMENT_SIZE)[
-                        currentUser.profile.company_size
-                      ]
-                    }
-                  </div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">
-                    Years of Work Experience
-                  </div>
-                  <div className="col">
-                    {
-                      fromPairs(EMPLOYMENT_EXPERIENCE)[
-                        currentUser.profile.years_experience
-                      ]
-                    }
-                  </div>
-                </div>
-                <div className="row profile-row">
-                  <div className="col profile-label">
-                    Highest Level of Education
-                  </div>
-                  <div className="col">
-                    {currentUser.profile.highest_education}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="col-12 bootcamp-form">
-                <div className="row">
-                  You must be logged in to view your profile.
-                </div>
-              </div>
-            )}
+      <div className="row bootcamp-form">
+        {currentUser.is_authenticated ? (
+          <div className="col-12">
+            <TwoColumnRow label="First Name">
+              {currentUser.legal_address.first_name}
+            </TwoColumnRow>
+            <TwoColumnRow label="Last Name">
+              {currentUser.legal_address.last_name}
+            </TwoColumnRow>
+            <TwoColumnRow label="Full Name">
+              {currentUser.profile.name}
+            </TwoColumnRow>
+            {currentUser.legal_address.street_address.map((line, idx) => {
+              const addressLineSuffix = idx > 0 ? ` ${idx + 1}` : ""
+              return (
+                <TwoColumnRow label={`Address${addressLineSuffix}`} key={idx}>
+                  {line}
+                </TwoColumnRow>
+              )
+            })}
+            {countries && currentUser.legal_address.country ? (
+              <TwoColumnRow label="Country">
+                {
+                  find(
+                    propEq("code", currentUser.legal_address.country),
+                    countries
+                  ).name
+                }
+              </TwoColumnRow>
+            ) : null}
+            <TwoColumnRow label="City">
+              {currentUser.legal_address.city}
+            </TwoColumnRow>
+            {countries && currentUser.legal_address.state_or_territory ? (
+              <TwoColumnRow label="State/Province/Region">
+                {
+                  find(
+                    propEq(
+                      "code",
+                      currentUser.legal_address.state_or_territory
+                    ),
+                    find(
+                      propEq("code", currentUser.legal_address.country),
+                      countries
+                    ).states
+                  ).name
+                }
+              </TwoColumnRow>
+            ) : null}
+            <div className="divider" />
+            <TwoColumnRow label="Gender">
+              {fromPairs(GENDER_CHOICES)[currentUser.profile.gender]}
+            </TwoColumnRow>
+            <TwoColumnRow label="Year of Birth">
+              {currentUser.profile.birth_year}
+            </TwoColumnRow>
+            <TwoColumnRow label="Company">
+              {currentUser.profile.company}
+            </TwoColumnRow>
+            <TwoColumnRow label="Job Title">
+              {currentUser.profile.job_title}
+            </TwoColumnRow>
+            <div className="form-group dotted" />
+            <TwoColumnRow label="Industry">
+              {currentUser.profile.industry}
+            </TwoColumnRow>
+            <TwoColumnRow label="Job Function">
+              {currentUser.profile.job_function}
+            </TwoColumnRow>
+            <TwoColumnRow label="Company Size">
+              {fromPairs(EMPLOYMENT_SIZE)[currentUser.profile.company_size]}
+            </TwoColumnRow>
+            <TwoColumnRow label="Years of Work Experience">
+              {
+                fromPairs(EMPLOYMENT_EXPERIENCE)[
+                  currentUser.profile.years_experience
+                ]
+              }
+            </TwoColumnRow>
+            <TwoColumnRow label="Highest Level of Education">
+              {currentUser.profile.highest_education}
+            </TwoColumnRow>
           </div>
-        </div>
+        ) : (
+          <div className="col-12">
+            You must be logged in to view your profile.
+          </div>
+        )}
       </div>
     </div>
   ) : null

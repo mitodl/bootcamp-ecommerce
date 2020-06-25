@@ -42,43 +42,39 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
     initialValues={getInitialValues(user)}
     render={({ isSubmitting, setFieldValue, setFieldTouched, values }) => (
       <Form>
-        <div className="auth-header row">
-          <h1 className="col-6">Profile</h1>
-          <div className="col-6 profile-button-col">
+        <div className="row">
+          <h2 className="col-6">Profile</h2>
+          <div className="col-6 text-right">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn btn-danger profile-btn"
+              className="btn-danger"
             >
               Save
             </button>
           </div>
         </div>
-        <div className="auth-card card-shadow row">
-          <div className="container">
-            <div className="row">
-              {user.is_authenticated ? (
-                <div className="col-12 bootcamp-form">
-                  <LegalAddressFields
-                    countries={countries}
-                    setFieldValue={setFieldValue}
-                    setFieldTouched={setFieldTouched}
-                    values={values}
-                    includePassword={false}
-                  />
-                  <div className="divider"></div>
-                  <ProfileFields />
-                  <div className="row-inner justify-content-end">
-                    <div className="required">*=Required</div>
-                  </div>
-                </div>
-              ) : (
-                <div className="row">
-                  You must be logged in to edit your profile.
-                </div>
-              )}
+        <div className="row">
+          {user.is_authenticated ? (
+            <div className="col-12 bootcamp-form">
+              <LegalAddressFields
+                countries={countries}
+                setFieldValue={setFieldValue}
+                setFieldTouched={setFieldTouched}
+                values={values}
+                includePassword={false}
+              />
+              <div className="divider" />
+              <ProfileFields />
+              <div className="row-inner justify-content-end">
+                <div className="required">*=Required</div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="col-12">
+              You must be logged in to edit your profile.
+            </div>
+          )}
         </div>
       </Form>
     )}

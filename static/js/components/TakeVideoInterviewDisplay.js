@@ -3,6 +3,7 @@ import React from "react"
 import { connect } from "react-redux"
 import { mutateAsync } from "redux-query"
 
+import { DrawerCloseHeader } from "./Drawer"
 import { JOBMA, JOBMA_SITE } from "../constants"
 import queries from "../lib/queries"
 
@@ -26,16 +27,18 @@ export function TakeVideoInterviewDisplay({
   createVideoInterview
 }: Props) {
   return (
-    <div className="take-video-interview auth-card">
-      <h2 className="text-uppercase">Take Video Interview</h2>
-      <p>
+    <div className="container drawer-wrapper take-video-interview">
+      <DrawerCloseHeader />
+      <h2 className="mb-5">Take Video Interview</h2>
+      <p className="mb-5">
         Thank you for taking the video interview. To make your experience better
         we are collaborating with {JOBMA} and you will be taking this interview
         on their platform at {JOBMA_SITE}.
       </p>
 
-      <div className="link">
-        <a
+      <div>
+        <button
+          className="btn-external-link"
           onClick={async () => {
             const {
               body: { interview_link: interviewLink }
@@ -49,7 +52,7 @@ export function TakeVideoInterviewDisplay({
           }}
         >
           Take Interview at {JOBMA_SITE}
-        </a>
+        </button>
       </div>
     </div>
   )

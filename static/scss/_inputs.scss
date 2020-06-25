@@ -45,6 +45,19 @@ button, .btn-styled {
   }
 }
 
+button.btn-plain {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: inline-block;
+  min-width: unset;
+  width: inherit;
+
+  &:focus {
+    outline-color: $input-border-color;
+  }
+}
+
 a.btn-styled {
   display: inline-block;
   color: $white;
@@ -84,6 +97,12 @@ a.btn-styled {
       color: $button-dk-grey;
     }
   }
+}
+
+.btn-external-link {
+  color: $black;
+  background-color: $white;
+  border-color: $button-red;
 }
 
 a.btn-text {

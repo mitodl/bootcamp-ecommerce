@@ -6,14 +6,13 @@ import { connect } from "react-redux"
 import { connectRequest } from "redux-query-react"
 import { mutateAsync } from "redux-query"
 import { createStructuredSelector } from "reselect"
-import { MetaTags } from "react-meta-tags"
 
 import EditProfileForm from "./forms/EditProfileForm"
 
-import { EDIT_PROFILE_PAGE_TITLE, PROFILE_VIEW } from "../constants"
+import { DrawerCloseHeader } from "./Drawer"
+import { PROFILE_VIEW } from "../constants"
 import users, { currentUserSelector } from "../lib/queries/users"
 import queries from "../lib/queries"
-import { formatTitle } from "../util/util"
 import { setDrawerState } from "../reducers/drawer"
 
 import type {
@@ -72,10 +71,8 @@ export class EditProfileDisplay extends React.Component<Props> {
   render() {
     const { countries, currentUser } = this.props
     return countries && currentUser ? (
-      <div className="container p-0 edit-profile profile-display">
-        <MetaTags>
-          <title>{formatTitle(EDIT_PROFILE_PAGE_TITLE)}</title>
-        </MetaTags>
+      <div className="container drawer-wrapper edit-profile profile-display">
+        <DrawerCloseHeader />
         <EditProfileForm
           countries={countries}
           user={currentUser}

@@ -43,7 +43,7 @@ describe("ResumeLinkedIn", () => {
 
   it("has a title", async () => {
     const { inner } = await renderPage()
-    assert.equal(inner.find("h1").text(), "Resume or LinkedIn Profile")
+    assert.equal(inner.find("h2").text(), "Resume or LinkedIn Profile")
   })
 
   it("renders the uploader", async () => {

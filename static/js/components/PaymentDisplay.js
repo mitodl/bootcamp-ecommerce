@@ -8,10 +8,10 @@ import { mutateAsync } from "redux-query"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import Decimal from "decimal.js-light"
 
+import { DrawerCloseHeader } from "./Drawer"
 import queries from "../lib/queries"
-import { formatRunDateRange } from "../util/util"
-
 import {
+  formatRunDateRange,
   createForm,
   formatPrice,
   formatReadableDateFromStr
@@ -65,58 +65,57 @@ export const PaymentDisplay = (props: Props) => {
   const cost = application.price
 
   return (
-    <div className="container p-0">
-      <div className="payment-drawer">
-        <h2 className="drawer-title">Make Payment</h2>
-        <div className="bootcamp">
-          <div className="bootcamp-title">{run.bootcamp.title}</div>
-          <div className="bootcamp-dates">{formatRunDateRange(run)}</div>
-        </div>
-        <div className="payment-deadline">
-          Full payment must be complete by{" "}
-          {formatReadableDateFromStr(application.payment_deadline)}
-        </div>
-        <div className="payment-amount">
-          You have paid {formatPrice(totalSpent)} out of {formatPrice(cost)}.
-        </div>
-        <div className="payment-input-container">
-          <Formik
-            initialValues={{ amount: "", balance: cost }}
-            validate={validate}
-            onSubmit={async ({ amount }, actions) => {
-              await sendPayment({
-                application_id: application.id,
-                payment_amount: roundToCent(amount)
-              })
-              actions.setSubmitting(false)
-            }}
-            render={({ isSubmitting }) => (
-              <Form>
-                <ErrorMessage name="amount" />
-                <Field
-                  name="amount"
-                  type="text"
-                  placeholder="Enter Amount"
-                  validate={validateAmount}
-                />
-                <button
-                  className="btn btn-danger"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  Pay Now
-                </button>
-              </Form>
-            )}
-          />
-        </div>
-        <div className="terms-and-conditions">
-          By making a payment I certify that I agree with the MIT Bootcamps{" "}
-          <a href="/terms_and_conditions/" target="_blank">
-            Terms and Conditions
-          </a>
-          .
-        </div>
+    <div className="container drawer-wrapper payment-drawer">
+      <DrawerCloseHeader />
+      <h2>Make Payment</h2>
+      <div className="bootcamp">
+        <div className="bootcamp-title">{run.bootcamp.title}</div>
+        <div className="bootcamp-dates">{formatRunDateRange(run)}</div>
+      </div>
+      <div className="payment-deadline">
+        Full payment must be complete by{" "}
+        {formatReadableDateFromStr(application.payment_deadline)}
+      </div>
+      <div className="payment-amount">
+        You have paid {formatPrice(totalSpent)} out of {formatPrice(cost)}.
+      </div>
+      <div className="payment-input-container">
+        <Formik
+          initialValues={{ amount: "", balance: cost }}
+          validate={validate}
+          onSubmit={async ({ amount }, actions) => {
+            await sendPayment({
+              application_id: application.id,
+              payment_amount: roundToCent(amount)
+            })
+            actions.setSubmitting(false)
+          }}
+          render={({ isSubmitting }) => (
+            <Form>
+              <ErrorMessage name="amount" />
+              <Field
+                name="amount"
+                type="text"
+                placeholder="Enter Amount"
+                validate={validateAmount}
+              />
+              <button
+                className="btn-danger"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                Pay Now
+              </button>
+            </Form>
+          )}
+        />
+      </div>
+      <div className="terms-and-conditions">
+        By making a payment I certify that I agree with the MIT Bootcamps{" "}
+        <a href="/terms_and_conditions/" target="_blank">
+          Terms and Conditions
+        </a>
+        .
       </div>
     </div>
   )

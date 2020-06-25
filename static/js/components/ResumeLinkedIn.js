@@ -9,6 +9,7 @@ import { values, join, keys } from "ramda"
 import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik"
 import * as yup from "yup"
 
+import { DrawerCloseHeader } from "./Drawer"
 import FormError from "./forms/elements/FormError"
 import { setDrawerOpen } from "../reducers/drawer"
 import applications, {
@@ -173,7 +174,8 @@ export class ResumeLinkedIn extends React.Component<Props> {
 
     return (
       <div className="container drawer-wrapper resume-linkedin-drawer">
-        <h1 className="mb-3">Resume or LinkedIn Profile</h1>
+        <DrawerCloseHeader />
+        <h2>Resume or LinkedIn Profile</h2>
         <p>Please upload resume or a link to your LinkedIn profile</p>
         <h3>Resume</h3>
         <ResumeUploader
@@ -204,7 +206,7 @@ export class ResumeLinkedIn extends React.Component<Props> {
                 <ErrorMessage name="linkedInUrl" component={FormError} />
               </div>
               <button
-                className="btn btn-danger"
+                className="btn-danger"
                 type="submit"
                 disabled={isSubmitting}
               >
