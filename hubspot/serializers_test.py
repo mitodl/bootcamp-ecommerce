@@ -13,17 +13,20 @@ from hubspot.serializers import (
     HubspotDealSerializer,
     HubspotLineSerializer,
 )
-from klasses.factories import PersonalPriceFactory, InstallmentFactory
-from klasses.models import Bootcamp
+from klasses.factories import (
+    PersonalPriceFactory,
+    InstallmentFactory,
+    BootcampRunFactory,
+)
 
 pytestmark = [pytest.mark.django_db]
 
 
 def test_product_serializer():
     """Test that the HubspotProductSerializer correctly serializes a Bootcamp"""
-    bootcamp = Bootcamp.objects.create(title="test bootcamp 123")
-    serialized_data = {"title": bootcamp.title}
-    data = HubspotProductSerializer(instance=bootcamp).data
+    bootcamp_run = BootcampRunFactory.create(title="test bootcamp 123")
+    serialized_data = {"title": bootcamp_run.title}
+    data = HubspotProductSerializer(instance=bootcamp_run).data
     assert data == serialized_data
 
 
@@ -48,7 +51,7 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
     )
     serialized_data = {
         "application_stage": application.state,
-        "bootcamp_name": application.bootcamp_run.bootcamp.title,
+        "bootcamp_name": application.bootcamp_run.title,
         "price": personal_price.price.to_eng_string(),
         "purchaser": format_hubspot_id(application.user.profile.id),
         "name": f"Bootcamp-application-order-{application.id}",
@@ -77,7 +80,7 @@ def test_deal_serializer_with_installment_price():
 
     serialized_data = {
         "application_stage": application.state,
-        "bootcamp_name": application.bootcamp_run.bootcamp.title,
+        "bootcamp_name": application.bootcamp_run.title,
         "price": installment.amount.to_eng_string(),
         "purchaser": format_hubspot_id(application.user.profile.id),
         "name": f"Bootcamp-application-order-{application.id}",
@@ -95,7 +98,7 @@ def test_deal_serializer_with_no_price():
 
     serialized_data = {
         "application_stage": application.state,
-        "bootcamp_name": application.bootcamp_run.bootcamp.title,
+        "bootcamp_name": application.bootcamp_run.title,
         "price": "0.00",
         "purchaser": format_hubspot_id(application.user.profile.id),
         "name": f"Bootcamp-application-order-{application.id}",
@@ -111,7 +114,7 @@ def test_deal_serializer_awaiting_submissions(awaiting_submission_app):
         "application_stage": SUBMISSION_TYPE_STATE.get(
             awaiting_submission_app.run_steps[1].application_step.submission_type
         ),
-        "bootcamp_name": awaiting_submission_app.application.bootcamp_run.bootcamp.title,
+        "bootcamp_name": awaiting_submission_app.application.bootcamp_run.title,
         "price": awaiting_submission_app.installment.amount.to_eng_string(),
         "purchaser": format_hubspot_id(
             awaiting_submission_app.application.user.profile.id
@@ -128,7 +131,7 @@ def test_line_serializer():
     application = BootcampApplicationFactory.create()
     serialized_data = {
         "order": format_hubspot_id(application.integration_id),
-        "product": format_hubspot_id(application.bootcamp_run.bootcamp_id),
+        "product": format_hubspot_id(application.bootcamp_run.integration_id),
     }
     data = HubspotLineSerializer(instance=application).data
     assert data == serialized_data

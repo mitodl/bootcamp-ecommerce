@@ -30,7 +30,11 @@ from hubspot.tasks import (
     sync_application_with_hubspot,
     retry_invalid_line_associations,
 )
-from klasses.factories import BootcampFactory, PersonalPriceFactory, InstallmentFactory
+from klasses.factories import (
+    PersonalPriceFactory,
+    InstallmentFactory,
+    BootcampRunFactory,
+)
 from profiles.factories import ProfileFactory, UserFactory
 
 pytestmark = [pytest.mark.django_db]
@@ -64,9 +68,9 @@ def test_sync_contact_with_hubspot_missing_email(mock_hubspot_request):
 
 def test_sync_product_with_hubspot(mock_hubspot_request):
     """Test that send_hubspot_request is called properly for a PRODUCT sync"""
-    bootcamp = BootcampFactory.create()
-    sync_product_with_hubspot(bootcamp.id)
-    body = make_product_sync_message(bootcamp.id)
+    bootcamp_run = BootcampRunFactory.create()
+    sync_product_with_hubspot(bootcamp_run.id)
+    body = make_product_sync_message(bootcamp_run.id)
     body[0]["changeOccurredTimestamp"] = ANY
     mock_hubspot_request.assert_called_once_with(
         "PRODUCT", HUBSPOT_SYNC_URL, "PUT", body=body

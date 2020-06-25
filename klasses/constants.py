@@ -8,3 +8,6 @@ class ApplicationSource:
     FLUIDREVIEW = "FluidRev"
 
     SOURCE_CHOICES = [None, SMAPPLY, FLUIDREVIEW]
+
+
+INTEGRATION_PREFIX_PRODUCT = "BootcampProduct-"

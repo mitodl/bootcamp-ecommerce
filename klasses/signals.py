@@ -3,11 +3,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from hubspot.task_helpers import sync_hubspot_product
-from klasses.models import Bootcamp
+from klasses.models import BootcampRun
 
 
-@receiver(post_save, sender=Bootcamp, dispatch_uid="bootcamp_post_save")
-def sync_bootcamp(
+@receiver(post_save, sender=BootcampRun, dispatch_uid="bootcamp__run_post_save")
+def sync_bootcamp_run(
     sender, instance, created, **kwargs
 ):  # pylint:disable=unused-argument
 

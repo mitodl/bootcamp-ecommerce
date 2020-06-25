@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.models import TimestampedModel
-from klasses.constants import ApplicationSource
+from klasses.constants import ApplicationSource, INTEGRATION_PREFIX_PRODUCT
 
 
 class Bootcamp(models.Model):
@@ -138,6 +138,19 @@ class BootcampRun(models.Model):
         return self.installment_set.filter(
             deadline__lte=next_installment.deadline
         ).aggregate(price=models.Sum("amount"))["price"]
+
+    @property
+    def integration_id(self):
+        """
+        Return an integration id to be used by Hubspot as the unique product id.
+        This is necessary because the integration id used to be based on Bootcamp.id,
+        and is now based on BootcampRun (formerly Klass).  This requires that there be no
+        overlap in integration ids between new and old products.
+
+        Returns:
+            str: the integration id
+        """
+        return f"{INTEGRATION_PREFIX_PRODUCT}{self.id}"
 
     def personal_price(self, user):
         """

@@ -10,18 +10,18 @@ from applications.api import get_required_submission_type
 from applications.constants import AppStates, SUBMISSION_TYPE_STATE
 from applications.models import BootcampApplication
 from ecommerce.models import Order
-from klasses.models import Bootcamp
+from klasses.models import BootcampRun
 
 log = logging.getLogger(__name__)
 
 
 class HubspotProductSerializer(serializers.ModelSerializer):
     """
-    Serializer for turning a Bootcamp into a hubspot Product
+    Serializer for turning a BootcampRun into a hubspot Product
     """
 
     class Meta:
-        model = Bootcamp
+        model = BootcampRun
         fields = ["title"]
 
 
@@ -54,8 +54,8 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         return "0.00"
 
     def get_bootcamp_name(self, instance):
-        """Get the name of the bootcamp"""
-        return instance.bootcamp_run.bootcamp.title
+        """Get the name of the bootcamp run"""
+        return instance.bootcamp_run.title
 
     def get_application_stage(self, instance):
         """Get the application stage"""
@@ -113,7 +113,7 @@ class HubspotLineSerializer(serializers.ModelSerializer):
         """Get the id of the associated Bootcamp"""
         from hubspot.api import format_hubspot_id
 
-        return format_hubspot_id(instance.bootcamp_run.bootcamp.id)
+        return format_hubspot_id(instance.bootcamp_run.integration_id)
 
     class Meta:
         model = BootcampApplication

@@ -13,7 +13,7 @@ from hubspot.api import (
     make_line_sync_message,
 )
 from hubspot.tasks import sync_bulk_with_hubspot
-from klasses.models import Bootcamp
+from klasses.models import BootcampRun
 
 
 class Command(BaseCommand):
@@ -62,7 +62,7 @@ class Command(BaseCommand):
         """
         print("  Syncing products with hubspot products...")
         self.bulk_sync_model(
-            Bootcamp.objects.all(), make_product_sync_message, "PRODUCT"
+            BootcampRun.objects.all(), make_product_sync_message, "PRODUCT"
         )
         print("  Finished")
 
