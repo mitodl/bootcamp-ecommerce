@@ -115,7 +115,7 @@ export const makeApplicationDetail = (): ApplicationDetail => {
     id:                    incr.next().value,
     state:                 casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
     bootcamp_run:          run,
-    resume_filepath:       casual.url,
+    resume_url:            casual.url,
     linkedin_url:          casual.url,
     resume_upload_date:    moment().format(),
     payment_deadline:      moment().format(),
@@ -133,7 +133,7 @@ export const setToAwaitingResume = (
   appDetail: ApplicationDetail
 ): ApplicationDetail => {
   appDetail.resume_upload_date = undefined
-  appDetail.resume_filepath = undefined
+  appDetail.resume_url = undefined
   appDetail.linkedin_url = undefined
   appDetail.submissions = []
   return appDetail
@@ -144,7 +144,7 @@ export const setToAwaitingSubmission = (
 ): ApplicationDetail => {
   appDetail = setToAwaitingResume(appDetail)
   appDetail.resume_upload_date = moment().format()
-  appDetail.resume_filepath = casual.url
+  appDetail.resume_url = casual.url
   appDetail.submissions = []
   return appDetail
 }

@@ -72,7 +72,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
 class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     """Detailed BootcampApplication serializer"""
 
-    resume_filepath = serializers.SerializerMethodField()
+    resume_url = serializers.SerializerMethodField()
     payment_deadline = serializers.SerializerMethodField()
     run_application_steps = serializers.SerializerMethodField()
     submissions = SubmissionSerializer(many=True, read_only=True)
@@ -80,12 +80,12 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
     bootcamp_run = BootcampRunSerializer(read_only=True)
     user = UserSerializer()
 
-    def get_resume_filepath(self, bootcamp_application):
-        """Gets the resume filename (without the path) if one exists"""
+    def get_resume_url(self, bootcamp_application):
+        """Gets the resume url if one exists"""
         return (
             None
             if not bootcamp_application.resume_file
-            else bootcamp_application.resume_file.name
+            else bootcamp_application.resume_file.url
         )
 
     def get_payment_deadline(self, bootcamp_application):
@@ -106,7 +106,7 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             "id",
             "bootcamp_run",
             "state",
-            "resume_filepath",
+            "resume_url",
             "linkedin_url",
             "resume_upload_date",
             "created_on",

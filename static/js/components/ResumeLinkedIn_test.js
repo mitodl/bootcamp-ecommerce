@@ -15,12 +15,12 @@ import { applicationDetailKey } from "../lib/queries/applications"
 
 describe("ResumeLinkedIn", () => {
   const fakeResumeFilename = "my_resume.pdf",
-    fakeResumeFilepath = `resumes/1/fd07666e-f546-4c86-8099-825628e68de8_${fakeResumeFilename}`
+    fakeResumeUrl = `https://foo.edu/resumes/1/fd07666e-f546-4c86-8099-825628e68de8_${fakeResumeFilename}`
   let helper, renderPage, applicationDetail, resumeUrl
 
   beforeEach(() => {
     applicationDetail = makeApplicationDetail()
-    applicationDetail.resume_filepath = fakeResumeFilepath
+    applicationDetail.resume_url = fakeResumeUrl
     resumeUrl = `/api/applications/${applicationDetail.id}/resume/`
     helper = new IntegrationTestHelper()
     renderPage = helper.configureHOCRenderer(

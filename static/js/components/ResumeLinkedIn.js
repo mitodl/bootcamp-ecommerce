@@ -165,7 +165,7 @@ export class ResumeLinkedIn extends React.Component<Props> {
       return null
     }
 
-    const resumeFilename = getFilenameFromMediaPath(application.resume_filepath)
+    const resumeFilename = getFilenameFromMediaPath(application.resume_url)
     const initialFormValues: ResumeLinkedInForm = {
       linkedInUrl:    application.linkedin_url || "",
       resumeFilename: resumeFilename
