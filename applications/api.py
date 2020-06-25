@@ -9,7 +9,6 @@ from applications.constants import (
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_PENDING,
 )
-from applications.models import BootcampApplication, ApplicantLetter
 from cms.api import render_template
 from cms.models import LetterTemplatePage
 from mail.v2.api import render_email_templates, send_message
@@ -29,6 +28,8 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
         Tuple[BootcampApplication, bool]: The bootcamp application paired with a boolean indicating whether
             or not a new application was created
     """
+    from applications.models import BootcampApplication
+
     bootcamp_app, created = BootcampApplication.objects.select_for_update().get_or_create(
         user=user, bootcamp_run_id=bootcamp_run_id
     )
@@ -169,6 +170,8 @@ def create_and_send_applicant_letter(application, *, is_acceptance):
         application (BootcampApplication): The application
         is_acceptance (bool): If true, send an acceptance letter. If false, send a rejection letter.
     """
+    from applications.models import ApplicantLetter
+
     subject, text = render_applicant_letter_text(
         application, is_acceptance=is_acceptance
     )
