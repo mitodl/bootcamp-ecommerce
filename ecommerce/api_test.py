@@ -131,8 +131,6 @@ def test_signed_payload(mocker, application, bootcamp_run):
     assert payload == {
         "access_key": CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
-        "consumer_id": order.user.username,
-        "customer_account_id": order.user.id,
         "currency": "USD",
         "item_0_code": "klass",
         "item_0_name": "{}".format(bootcamp_run.title),
