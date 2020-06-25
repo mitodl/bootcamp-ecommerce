@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.46.1
+Version 0.46.1 (Released June 25, 2020)
 --------------
 
 - hero image optional resource page
