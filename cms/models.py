@@ -462,6 +462,7 @@ class ResourcePage(Page):
     header_image = models.ForeignKey(
         Image,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
         help_text="Upload a header image that will render in the resource page.",
