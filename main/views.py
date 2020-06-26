@@ -64,7 +64,8 @@ def index(request):
         if request.GET:
             to_url = "{}?{}".format(to_url, request.GET.urlencode())
         return redirect(to=to_url)
-    return get_base_context(request)
+
+    return render(request, "bootcamp/index.html", context=get_base_context(request))
 
 
 @csrf_exempt
