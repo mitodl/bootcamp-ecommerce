@@ -22,6 +22,9 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
     SUBMISSION_STATUS_PENDING,
+    LETTER_TYPE_APPROVED,
+    LETTER_TYPE_REJECTED,
+    VALID_LETTER_TYPE_CHOICES,
 )
 from applications.constants import INTEGRATION_PREFIX
 from applications.tasks import create_and_send_applicant_letter
@@ -206,7 +209,7 @@ class BootcampApplication(TimestampedModel):
         """Approve application submission"""
         if self.is_ready_for_payment():
             create_and_send_applicant_letter.delay(
-                application_id=self.id, is_acceptance=True
+                application_id=self.id, letter_type=LETTER_TYPE_APPROVED
             )
             return AppStates.AWAITING_PAYMENT.value
         else:
@@ -228,7 +231,7 @@ class BootcampApplication(TimestampedModel):
     def reject_submission(self):
         """Reject application submission"""
         create_and_send_applicant_letter.delay(
-            application_id=self.id, is_acceptance=False
+            application_id=self.id, letter_type=LETTER_TYPE_REJECTED
         )
 
     @transition(
@@ -375,11 +378,11 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
 class ApplicantLetter(TimestampedModel):
     """Represents a letter sent to an applicant, with a hash so the user can view the letter afterwards"""
 
-    is_acceptance = models.BooleanField()
+    letter_type = models.CharField(choices=VALID_LETTER_TYPE_CHOICES, max_length=255)
     letter_subject = models.TextField()
     letter_text = RichTextField()
     application = models.ForeignKey(BootcampApplication, on_delete=models.CASCADE)
     hash = models.UUIDField(unique=True, default=uuid4)
 
     def __str__(self):
-        return f"{'Admission' if self.is_acceptance else 'Rejection'} letter for {self.application}"
+        return f"Letter for {self.application}, type={self.letter_type}"
