@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.46.5
+--------------
+
+- fix review dashbard paging behavior
+- fix review dashboard refreshing behavior
+- Fixed text overflow issue with custom select component
+
 Version 0.46.4 (Released June 26, 2020)
 --------------
 
