@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.46.3 (Released June 26, 2020)
+--------------
+
+- Remove consumer_id, customer_account_id from Cybersource SA payload (#776)
+- Fixed CMS admissions section links and fixed template vars
+
 Version 0.46.2 (Released June 25, 2020)
 --------------
 
