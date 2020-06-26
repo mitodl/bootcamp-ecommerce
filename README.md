@@ -102,6 +102,11 @@ a template to create your ``.env`` file. For Bootcamp to work, it needs 6 values
   - You should see a message that you owe the amount of money equal to the installment you created in step 6.
 
 
+#### 9) Create CMS resource pages
+
+  - Go to Settings > Resource Pages in the CMS
+  - For each of the options, create a resource page and save these updated settings
+
 ## Running the app in a notebook
 
 This repo includes a config for running a [Jupyter notebook](https://jupyter.org/) in a

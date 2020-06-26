@@ -7,7 +7,6 @@ from django.conf.urls.static import static
 from django.urls import re_path, include, path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView
 
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
@@ -24,16 +23,6 @@ if not features.is_enabled(features.CMS_HOME_PAGE):
 urlpatterns = (
     [
         url(r"^pay/$", react, name="pay"),
-        url(
-            r"^terms_of_service/$",
-            TemplateView.as_view(template_name="bootcamp/tos.html"),
-            name="bootcamp-tos",
-        ),
-        url(
-            r"^terms_and_conditions/$",
-            TemplateView.as_view(template_name="bootcamp/tac.html"),
-            name="bootcamp-tac",
-        ),
         url(r"^status/", include("server_status.urls")),
         url(r"^admin/", admin.site.urls),
         url(r"^hijack/", include("hijack.urls", namespace="hijack")),

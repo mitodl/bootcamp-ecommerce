@@ -46,16 +46,18 @@ def test_safe_format_recipients_override(user, settings):
 
 @pytest.mark.parametrize("test_user", [None, lazy("user")])
 @pytest.mark.parametrize("extra_context", [None, {}, {"other": "value"}])
-def test_context_for_user(settings, test_user, extra_context):
+def test_context_for_user(settings, mocker, test_user, extra_context):
     """Tests that context_for_user returns the expected values"""
     user_ctx = {"user": test_user} if test_user else {}
-
+    mock_get_resource_page_urls = mocker.patch("mail.v2.api.get_resource_page_urls")
     assert context_for_user(user=test_user, extra_context=extra_context) == {
         "base_url": settings.SITE_BASE_URL,
         "site_name": settings.SITE_NAME,
+        "resource_page_urls": mock_get_resource_page_urls.return_value,
         **(extra_context or {}),
         **user_ctx,
     }
+    mock_get_resource_page_urls.assert_called_once()
 
 
 def test_render_email_templates(user):

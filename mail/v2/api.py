@@ -22,6 +22,7 @@ from email.utils import formataddr
 import logging
 import re
 from collections import namedtuple
+from urllib.parse import urlparse
 
 from anymail.message import AnymailMessage
 from bs4 import BeautifulSoup
@@ -31,7 +32,10 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
 import premailer
+from wagtail.core.models import Site
+from wagtail.core.sites import get_site_for_hostname
 
+from cms.utils import get_resource_page_urls
 from mail.v2.exceptions import MultiEmailValidationError
 
 log = logging.getLogger()
@@ -95,7 +99,20 @@ def can_email_user(user):
 
 def get_base_context():
     """Returns a dict of context variables that are needed in all emails"""
-    return {"base_url": settings.SITE_BASE_URL, "site_name": settings.SITE_NAME}
+    base_url = settings.SITE_BASE_URL
+    hostname = urlparse(base_url).hostname
+
+    try:
+        site = get_site_for_hostname(hostname, None)
+    except Site.DoesNotExist:
+        log.error("Unable to generate")
+    else:
+        resource_page_urls = get_resource_page_urls(site)
+    return {
+        "base_url": base_url,
+        "site_name": settings.SITE_NAME,
+        "resource_page_urls": resource_page_urls,
+    }
 
 
 def context_for_user(*, user=None, extra_context=None):

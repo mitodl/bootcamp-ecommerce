@@ -1,7 +1,6 @@
 """Mail views"""
 from datetime import timedelta
 
-from django.conf import settings
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -28,13 +27,13 @@ def drf_datetime(dt):
 
 def _render_email(email_type):
     """Render the email with dummy data"""
-    context = {"base_url": settings.SITE_BASE_URL, "site_name": settings.SITE_NAME}
+    context = api.get_base_context()
 
     # static, dummy data
     if email_type == EMAIL_PW_RESET:
         context.update({"uid": "abc-def", "token": "abc-def"})
     elif email_type == EMAIL_VERIFICATION:
-        context.update({"confirmation_url": "http://www.example.com/comfirm/url"})
+        context.update({"confirmation_url": "http://www.example.com/confirm/url"})
     elif email_type == EMAIL_RECEIPT:
         context.update(
             {

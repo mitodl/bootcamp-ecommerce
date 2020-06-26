@@ -24,6 +24,7 @@ defusedxml==0.5.0         # via python3-openid, social-auth-core, zeep
 dj-database-url==0.3.0    # via -r requirements.in
 dj-static==0.0.6          # via -r requirements.in
 django-anymail[mailgun]==6.1.0  # via -r requirements.in
+django-cache-memoize==0.1.7  # via -r requirements.in
 django-classy-tags==1.0.0  # via -r requirements.in
 django-compat==1.0.15     # via -r requirements.in, django-hijack, django-hijack-admin
 django-filter==2.2.0      # via -r requirements.in

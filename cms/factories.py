@@ -169,3 +169,24 @@ class LetterTemplatePageFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.LetterTemplatePage
+
+
+class ResourcePagesSettingsFactory(DjangoModelFactory):
+    """Factory for ResourcePagesSettings"""
+
+    site = factory.SubFactory(wagtail_factories.SiteFactory, is_default_site=True)
+
+    apply_page = factory.SubFactory(ResourcePageFactory, title="Apply")
+    about_us_page = factory.SubFactory(ResourcePageFactory, title="About Us")
+    bootcamps_programs_page = factory.SubFactory(
+        ResourcePageFactory, title="Bootcamps Programs"
+    )
+    terms_of_service_page = factory.SubFactory(
+        ResourcePageFactory, title="Terms of Service"
+    )
+    privacy_policy_page = factory.SubFactory(
+        ResourcePageFactory, title="Privacy Policy"
+    )
+
+    class Meta:
+        model = models.ResourcePagesSettings

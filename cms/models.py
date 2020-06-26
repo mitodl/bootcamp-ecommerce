@@ -4,12 +4,13 @@ Page models for the CMS
 import logging
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.http.response import Http404
 from django.urls import reverse
 from django.utils.text import slugify
 from django.shortcuts import render
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, PageChooserPanel
+from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.blocks import StreamBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
@@ -35,7 +36,6 @@ from cms.constants import (
     SAMPLE_DECISION_TEMPLATE_CONTEXT,
 )
 from cms.forms import LetterTemplatePageForm
-from main.views import get_base_context
 
 
 log = logging.getLogger(__name__)
@@ -127,7 +127,6 @@ class HomePage(Page, CommonProperties):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
-            **get_base_context(request),
             "site_name": settings.SITE_NAME,
             "title": self.title,
         }
@@ -196,7 +195,6 @@ class BootcampPage(Page, CommonProperties):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
-            **get_base_context(request),
             "site_name": settings.SITE_NAME,
             "title": self.title,
             "apply_url": reverse("applications"),
@@ -484,9 +482,15 @@ class ResourcePage(Page):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
-            **get_base_context(request),
             "site_name": settings.SITE_NAME,
         }
+
+    def save(self, *args, **kwargs):
+        """Save the model instance"""
+        from cms.utils import invalidate_get_resource_page_urls
+
+        super().save(*args, **kwargs)
+        transaction.on_commit(invalidate_get_resource_page_urls)
 
 
 @register_snippet
@@ -660,9 +664,48 @@ class LetterTemplatePage(Page):
         return render(
             request,
             "letter_template_page.html",
-            context={**get_base_context(request), "preview": True, "content": content},
+            context={"preview": True, "content": content},
         )
 
     def serve(self, request, *args, **kwargs):
         """Applicants should use LettersView to see their letters"""
         raise Http404
+
+
+@register_setting
+class ResourcePagesSettings(BaseSetting):
+    """Wagtail settings for site pages"""
+
+    apply_page = models.ForeignKey(
+        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    about_us_page = models.ForeignKey(
+        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    bootcamps_programs_page = models.ForeignKey(
+        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    terms_of_service_page = models.ForeignKey(
+        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    privacy_policy_page = models.ForeignKey(
+        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    panels = [
+        PageChooserPanel("apply_page", "cms.ResourcePage"),
+        PageChooserPanel("about_us_page", "cms.ResourcePage"),
+        PageChooserPanel("bootcamps_programs_page", "cms.ResourcePage"),
+        PageChooserPanel("terms_of_service_page", "cms.ResourcePage"),
+        PageChooserPanel("privacy_policy_page", "cms.ResourcePage"),
+    ]
+
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        """Save the model instance"""
+        from cms.utils import invalidate_get_resource_page_urls
+
+        super().save(*args, **kwargs)
+        transaction.on_commit(invalidate_get_resource_page_urls)
+
+    class Meta:
+        verbose_name = "Resource Pages"
