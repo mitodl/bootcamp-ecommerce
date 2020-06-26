@@ -205,12 +205,9 @@ class BootcampApplication(TimestampedModel):
     def approve_submission(self):
         """Approve application submission"""
         if self.is_ready_for_payment():
-            try:
-                create_and_send_applicant_letter.delay(
-                    application_id=self.id, is_acceptance=True
-                )
-            except:
-                log.exception(f"Unable to send applicant approval letter for {self}")
+            create_and_send_applicant_letter.delay(
+                application_id=self.id, is_acceptance=True
+            )
             return AppStates.AWAITING_PAYMENT.value
         else:
             return AppStates.AWAITING_USER_SUBMISSIONS.value
@@ -230,12 +227,9 @@ class BootcampApplication(TimestampedModel):
     )
     def reject_submission(self):
         """Reject application submission"""
-        try:
-            create_and_send_applicant_letter.delay(
-                application_id=self.id, is_acceptance=False
-            )
-        except:
-            log.exception(f"Unable to send applicant rejection letter for {self}")
+        create_and_send_applicant_letter.delay(
+            application_id=self.id, is_acceptance=False
+        )
 
     @transition(
         field=state,
