@@ -25,7 +25,6 @@ from applications.serializers import (
     SubmissionReviewSerializer,
 )
 from applications.views import BootcampApplicationViewset
-from cms.factories import LetterTemplatePageFactory
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
@@ -37,12 +36,6 @@ from profiles.factories import UserFactory
 
 
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture(autouse=True)
-def letter_template_page():
-    """Create a LetterTemplatePage"""
-    yield LetterTemplatePageFactory.create()
 
 
 @pytest.mark.parametrize(

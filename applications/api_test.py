@@ -151,3 +151,9 @@ def test_get_required_submission_type(awaiting_submission_app):
         run_application_step=awaiting_submission_app.run_steps[1],
     )
     assert get_required_submission_type(awaiting_submission_app.application) is None
+
+
+def test_email_letter(applicant_letter):
+    """email_letter should email an ApplicantLetter"""
+
+
