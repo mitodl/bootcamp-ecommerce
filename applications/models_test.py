@@ -18,7 +18,12 @@ from applications.factories import (
 )
 from applications.constants import AppStates
 from ecommerce.test_utils import create_test_application, create_test_order
-from klasses.factories import BootcampFactory, BootcampRunFactory, InstallmentFactory
+from klasses.factories import (
+    BootcampFactory,
+    BootcampRunFactory,
+    InstallmentFactory,
+    PersonalPriceFactory,
+)
 from klasses.models import Installment, PersonalPrice
 
 
@@ -213,9 +218,14 @@ def test_price(
         InstallmentFactory.create(amount=run_price / 2, bootcamp_run=bootcamp_run)
 
     if personal_price is not None:
+        # this price should be ignored
+        PersonalPriceFactory.create(bootcamp_run=bootcamp_run)
+        # this price should be used
         PersonalPrice.objects.create(
             bootcamp_run=bootcamp_run, user=user, price=personal_price
         )
+        # this price should be ignored
+        PersonalPriceFactory.create(bootcamp_run=bootcamp_run)
 
     assert application.price == expected_price
 

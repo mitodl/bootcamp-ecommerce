@@ -155,12 +155,7 @@ class BootcampApplication(TimestampedModel):
     def price(self):
         """Calculate the price for the user, possibly their personal price or else the full price"""
         bootcamp_run = self.bootcamp_run
-        price_obj = bootcamp_run.personal_prices.first()
-        if price_obj is None:
-            price = bootcamp_run.price
-        else:
-            price = price_obj.price
-        return price or Decimal(0)
+        return bootcamp_run.personal_price(self.user) or Decimal(0)
 
     @property
     def is_paid_in_full(self):
