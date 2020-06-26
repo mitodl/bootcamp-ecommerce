@@ -72,10 +72,12 @@ type FacetState = {
 }
 
 export const submissionsQuery = (params: string) => {
-  const url =
-    params === "" ?
-      submissionsAPI.toString() :
-      submissionsAPI.query(qs.parse(params)).toString()
+  const url = submissionsAPI
+    .query({
+      limit: 1000,
+      ...qs.parse(params)
+    })
+    .toString()
 
   return {
     queryKey:  params ? `submissions__${params}` : "submissions",

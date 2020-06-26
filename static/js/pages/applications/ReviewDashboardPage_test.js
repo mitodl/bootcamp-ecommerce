@@ -21,16 +21,18 @@ describe("ReviewDashboardPage", () => {
     helper = new IntegrationTestHelper()
     facets = makeApplicationFacets()
     submissions = times(makeSubmissionReview, 4)
-    helper.handleRequestStub.withArgs(submissionsAPI.toString()).returns({
-      status: 200,
-      body:   {
-        count:    submissions.length,
-        next:     "next",
-        previous: "previous",
-        facets,
-        results:  submissions
-      }
-    })
+    helper.handleRequestStub
+      .withArgs(submissionsAPI.query({ limit: 1000 }).toString())
+      .returns({
+        status: 200,
+        body:   {
+          count:    submissions.length,
+          next:     "next",
+          previous: "previous",
+          facets,
+          results:  submissions
+        }
+      })
     render = helper.configureReduxQueryRenderer(ReviewDashboardPage)
   })
 

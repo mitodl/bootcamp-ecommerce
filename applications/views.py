@@ -102,7 +102,7 @@ class ReviewSubmissionPagination(LimitOffsetPagination):
     """Pagination class for ReviewSubmissionViewSet"""
 
     default_limit = 10
-    max_limit = 100
+    max_limit = 1000
     facets = {}
 
     def paginate_queryset(self, queryset, request, view=None):
