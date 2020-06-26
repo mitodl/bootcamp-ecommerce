@@ -135,7 +135,7 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
   if (price === null || price === undefined) {
     return ""
   } else {
-    let formattedPrice: Decimal = Decimal(price)
+    let formattedPrice: Decimal = Decimal(price).toDecimalPlaces(2)
 
     if (formattedPrice.isInteger()) {
       formattedPrice = formattedPrice.toFixed(0)
