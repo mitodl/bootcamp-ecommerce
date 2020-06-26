@@ -644,7 +644,9 @@ class LetterTemplatePage(Page):
 
     base_form_class = LetterTemplatePageForm
 
-    def serve_preview(self, request, *args, **kwargs):  # pylint: arguments-differ
+    def serve_preview(
+        self, request, *args, **kwargs
+    ):  # pylint: disable=arguments-differ
         """
         Show a sample letter for testing
         """
