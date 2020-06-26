@@ -30,7 +30,7 @@ We found your story inspiring and liked the problems you’re trying to solve. W
 This is NOT a good-bye but rather a see you later.
 """
 
-SAMPLE_VARIABLES = {
+SAMPLE_DECISION_TEMPLATE_CONTEXT = {
     "first_name": "FirstName",
     "last_name": "LastName",
     "bootcamp_name": "Sample Bootcamp",

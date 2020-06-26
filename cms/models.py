@@ -32,7 +32,7 @@ from cms.constants import (
     ACCEPTANCE_DEFAULT_LETTER_TEXT,
     BOOTCAMP_INDEX_SLUG,
     REJECTION_DEFAULT_LETTER_TEXT,
-    SAMPLE_VARIABLES,
+    SAMPLE_DECISION_TEMPLATE_CONTEXT,
 )
 from cms.forms import LetterTemplatePageForm
 from main.views import get_base_context
@@ -652,10 +652,10 @@ class LetterTemplatePage(Page):
         """
         content = f"""
 <h2>Acceptance letter:</h2><br />
-{render_template(text=self.acceptance_text, context=SAMPLE_VARIABLES)}<br />
+{render_template(text=self.acceptance_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)}<br />
 <br />
 <h2>Rejection letter:</h2><br />
-{render_template(text=self.rejection_text, context=SAMPLE_VARIABLES)}
+{render_template(text=self.rejection_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)}
 """
         return render(
             request,

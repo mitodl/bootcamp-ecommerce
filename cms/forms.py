@@ -4,7 +4,7 @@ from django.template.exceptions import TemplateSyntaxError
 from wagtail.admin.forms import WagtailAdminPageForm
 
 from cms.api import render_template
-from cms.constants import SAMPLE_VARIABLES
+from cms.constants import SAMPLE_DECISION_TEMPLATE_CONTEXT
 
 
 class LetterTemplatePageForm(WagtailAdminPageForm):
@@ -14,7 +14,7 @@ class LetterTemplatePageForm(WagtailAdminPageForm):
         """Validate that the acceptance text is a valid Django template with no extra variables"""
         acceptance_text = self.cleaned_data["acceptance_text"]
         try:
-            render_template(acceptance_text, context=SAMPLE_VARIABLES)
+            render_template(acceptance_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)
         except TemplateSyntaxError as ex:
             raise ValidationError(
                 "Unable to render acceptance template text: %(exception)s",
@@ -26,7 +26,7 @@ class LetterTemplatePageForm(WagtailAdminPageForm):
         """Validate that the rejection text is a valid Django template with no extra variables"""
         rejection_text = self.cleaned_data["rejection_text"]
         try:
-            render_template(rejection_text, context=SAMPLE_VARIABLES)
+            render_template(rejection_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)
         except TemplateSyntaxError as ex:
             raise ValidationError(
                 "Unable to render rejection template text: %(exception)s",
