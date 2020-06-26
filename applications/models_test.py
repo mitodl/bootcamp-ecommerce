@@ -247,3 +247,13 @@ def test_is_paid_in_full(mocker, application, price, total_paid, expected_fully_
     )
     total_paid_mock.return_value = total_paid
     assert application.is_paid_in_full is expected_fully_paid
+
+
+def test_applicant_letter_approved():
+    """If all submissions are approved, an applicant letter should be sent"""
+    # TODO: need more context
+
+
+def test_applicant_letter_rejected():
+    """If any submission is rejected, an applicant letter should be sent"""
+    # TODO: need more context

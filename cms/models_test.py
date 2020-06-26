@@ -129,7 +129,3 @@ def test_home_catalog():
     assert not home.catalog
     catalog = CatalogGridSectionFactory(parent=home)
     assert home.catalog == catalog
-
-
-def test_acceptance_letter():
-    """The acceptance letter should render as a string properly"""
