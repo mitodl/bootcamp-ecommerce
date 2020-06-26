@@ -1,4 +1,5 @@
 {% extends "email_base.html" %}
+{% load wagtailcore_tags %}
 
 {% block content %}
 <!-- 1 Column Text + Button : BEGIN -->
@@ -37,12 +38,6 @@
                         Welcome and thank you!
                         <br/>
                         The {{ site_name }} Admissions Team
-                        <br/>
-                        MIT Bootcamps, 77 Massachusetts Avenue, Cambridge, MA 02139
-                        <br/>
-                        © 2020 MIT Bootcamps, All Rights Reserved.
-                          <a href="{{ base_url }}{% url 'bootcamp-tos' %}">Terms of Service</a> and
-                          <a href="{{ base_url }}/privacy-policy">Privacy Policy</a>
                       </p>
                   </td>
               </tr>

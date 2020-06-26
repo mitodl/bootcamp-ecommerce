@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     "wagtail.admin",
     "wagtail.core",
     "wagtail.contrib.routable_page",
+    "wagtail.contrib.settings",
     "modelcluster",
     "taggit",
     "django_filters",
@@ -321,6 +322,7 @@ TEMPLATES = [
                 "social_django.context_processors.login_redirect",
                 "main.context_processors.api_keys",
                 "main.context_processors.configuration_context",
+                "main.context_processors.js_settings",
             ]
         },
     }

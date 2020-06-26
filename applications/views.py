@@ -32,7 +32,6 @@ from ecommerce.models import Order
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 from main.utils import serializer_date_format
-from main.views import get_base_context
 
 
 class BootcampApplicationViewset(
@@ -226,4 +225,4 @@ class LettersView(TemplateView):
         """
         hash_code = kwargs.get("hash")
         letter = get_object_or_404(ApplicantLetter, hash=hash_code)
-        return {**get_base_context(self.request), "content": letter.letter_text}
+        return {"content": letter.letter_text}
