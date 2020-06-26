@@ -16,7 +16,9 @@ def application():
     yield create_test_application()
 
 
-def test_create_and_send_applicant_letter(mocker, application):
+def test_create_and_send_applicant_letter(
+    mocker, application
+):  # pylint: disable=redefined-outer-name
     """This should just start a task to forward the request to the API function"""
     letter_type = "letter_type"
     patched = mocker.patch("applications.tasks.api.create_and_send_applicant_letter")
