@@ -283,7 +283,4 @@ class LettersView(TemplateView):
         """
         hash_code = kwargs.get("hash")
         letter = get_object_or_404(ApplicantLetter, hash=hash_code)
-        return {
-            **get_base_context(self.request),
-            "content": letter.letter_text,
-        }
+        return {**get_base_context(self.request), "content": letter.letter_text}

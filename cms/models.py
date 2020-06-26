@@ -659,11 +659,7 @@ class LetterTemplatePage(Page):
         return render(
             request,
             "letter_template_page.html",
-            context={
-                **get_base_context(request),
-                "preview": True,
-                "content": content,
-            },
+            context={**get_base_context(request), "preview": True, "content": content},
         )
 
     def serve(self, request, *args, **kwargs):
