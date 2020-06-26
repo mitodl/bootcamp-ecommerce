@@ -106,7 +106,6 @@ def email_letter(applicant_letter):
         applicant_letter (ApplicantLetter): The rendered applicant letter in the database
     """
 
-    # TODO: where does the link to our own site go?
     subject, text_body, html_body = render_email_templates(
         "applicant_letter",
         {
@@ -157,7 +156,6 @@ def render_applicant_letter_text(application, *, is_acceptance):
         },
     )
 
-    # TODO: what should we do for the subject?
     subject = "Welcome!" if is_acceptance else "Regarding your application"
     return subject, rendered_text
 

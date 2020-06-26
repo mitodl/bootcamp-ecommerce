@@ -13,7 +13,6 @@ from django.contrib.auth.models import User
 from django_fsm import FSMField, transition, RETURN_VALUE
 from wagtail.core.fields import RichTextField
 
-from applications.api import create_and_send_applicant_letter
 from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
     AppStates,
@@ -25,6 +24,7 @@ from applications.constants import (
     SUBMISSION_STATUS_PENDING,
 )
 from applications.constants import INTEGRATION_PREFIX
+from applications.tasks import create_and_send_applicant_letter
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
 from jobma.models import Interview
@@ -206,7 +206,9 @@ class BootcampApplication(TimestampedModel):
         """Approve application submission"""
         if self.is_ready_for_payment():
             try:
-                create_and_send_applicant_letter(application=self, is_acceptance=True)
+                create_and_send_applicant_letter.delay(
+                    application_id=self.id, is_acceptance=True
+                )
             except:
                 log.exception(f"Unable to send applicant approval letter for {self}")
             return AppStates.AWAITING_PAYMENT.value
@@ -229,7 +231,9 @@ class BootcampApplication(TimestampedModel):
     def reject_submission(self):
         """Reject application submission"""
         try:
-            create_and_send_applicant_letter(application=self, is_acceptance=False)
+            create_and_send_applicant_letter.delay(
+                application_id=self.id, is_acceptance=False
+            )
         except:
             log.exception(f"Unable to send applicant rejection letter for {self}")
 
