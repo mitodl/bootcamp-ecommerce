@@ -173,6 +173,16 @@ input[type=number] {
     background-color: $white;
     color: $default-text-color;
     border: 1px solid $black;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+  }
+
+  .dropdown-item {
+    white-space: normal;
+
+    &:hover, &:focus {
+      background-color: $soft-light-gray;
+    }
   }
 }
 
