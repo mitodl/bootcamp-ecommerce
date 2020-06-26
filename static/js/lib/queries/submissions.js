@@ -81,6 +81,7 @@ export const submissionsQuery = (params: string) => {
     queryKey:  params ? `submissions__${params}` : "submissions",
     url,
     transform: facetTransform,
+    force:     true,
     update:    {
       [submissionsFacetsKey]: (
         prevState: { [string]: FacetState },
@@ -92,14 +93,11 @@ export const submissionsQuery = (params: string) => {
         // in order to deal with the situation where the user selects and then
         // unselects a given facet
         return {
-          ...prevState,
-          [params === "" ? "defaultSearch" : params]: {
-            count,
-            next,
-            previous,
-            facets,
-            results
-          }
+          count,
+          next,
+          previous,
+          facets,
+          results
         }
       }
     }
@@ -108,10 +106,5 @@ export const submissionsQuery = (params: string) => {
 
 export const submissionFacetsSelector = createSelector(
   state => state.entities,
-  entities => {
-    if (!entities[submissionsFacetsKey]) {
-      return {}
-    }
-    return entities[submissionsFacetsKey]
-  }
+  entities => entities[submissionsFacetsKey] ?? {}
 )

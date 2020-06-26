@@ -4,7 +4,6 @@ import { useSelector } from "react-redux"
 import { useRequest } from "redux-query-react"
 import { useLocation } from "react-router"
 import { Link } from "react-router-dom"
-import { path } from "ramda"
 import { reverse } from "named-urls"
 
 import SubmissionFacets from "../../components/SubmissionFacets"
@@ -51,17 +50,7 @@ export function SubmissionRow({ submission }: RowProps) {
 export default function ReviewDashboardPage() {
   const location = useLocation()
   const [{ isFinished }] = useRequest(submissionsQuery(location.search))
-
-  const submissions = useSelector(submissionFacetsSelector)
-
-  const results = path(
-    [location.search || "defaultSearch", "results"],
-    submissions
-  )
-  const facets = path(
-    [location.search || "defaultSearch", "facets"],
-    submissions
-  )
+  const { results, facets } = useSelector(submissionFacetsSelector)
 
   return (
     <div className="review-dashboard-page container-lg">
