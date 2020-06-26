@@ -1,4 +1,5 @@
 """Signals for application models"""
+from django.db.transaction import on_commit
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -14,7 +15,7 @@ from hubspot.task_helpers import sync_hubspot_application
 def sync_deal_application(sender, instance, created, **kwargs):
     """Sync application to hubspot"""
     if not created:
-        sync_hubspot_application(instance)
+        on_commit(lambda: sync_hubspot_application(instance))
 
 
 @receiver(
@@ -25,4 +26,4 @@ def sync_deal_application(sender, instance, created, **kwargs):
 def sync_deal_on_submission(sender, instance, created, **kwargs):
     """Sync application to hubspot when a submission is created"""
     if created:
-        sync_hubspot_application(instance.bootcamp_application)
+        on_commit(lambda: sync_hubspot_application(instance.bootcamp_application))

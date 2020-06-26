@@ -11,7 +11,7 @@ from hubspot.task_helpers import (
     sync_hubspot_user,
     sync_hubspot_product,
 )
-from klasses.factories import BootcampFactory
+from klasses.factories import BootcampRunFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -77,12 +77,12 @@ def test_sync_hubspot_user(settings, mock_hubspot, hubspot_key, user):
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_product(settings, mock_hubspot, hubspot_key):
     """ sync_hubspot_product helper should call task if an API key is present """
-    bootcamp = BootcampFactory.create()
+    bootcamp_run = BootcampRunFactory.create()
     settings.HUBSPOT_API_KEY = hubspot_key
-    sync_hubspot_product(bootcamp)
+    sync_hubspot_product(bootcamp_run)
     if hubspot_key is not None:
         mock_hubspot.sync_product_with_hubspot.delay.assert_called_once_with(
-            bootcamp.id
+            bootcamp_run.id
         )
     else:
         mock_hubspot.sync_product_with_hubspot.delay.assert_not_called()

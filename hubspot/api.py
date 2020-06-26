@@ -21,8 +21,7 @@ from hubspot.serializers import (
     HubspotDealSerializer,
     HubspotLineSerializer,
 )
-from klasses.models import Bootcamp
-
+from klasses.models import BootcampRun
 
 HUBSPOT_API_BASE_URL = "https://api.hubapi.com"
 
@@ -249,19 +248,19 @@ def make_contact_sync_message(user_id):
     return [make_sync_message(user.profile.id, properties)]
 
 
-def make_product_sync_message(bootcamp_id):
+def make_product_sync_message(bootcamp_run_id):
     """
     Create the body of a sync message for a product.
 
     Args:
-        bootcamp_id (int): Bootcamp id
+        bootcamp_run_id (int): Bootcamp run id
 
     Returns:
         list: dict containing serializable sync-message data
     """
-    bootcamp = Bootcamp.objects.get(id=bootcamp_id)
-    properties = HubspotProductSerializer(instance=bootcamp).data
-    return [make_sync_message(bootcamp.id, properties)]
+    bootcamp_run = BootcampRun.objects.get(id=bootcamp_run_id)
+    properties = HubspotProductSerializer(instance=bootcamp_run).data
+    return [make_sync_message(bootcamp_run.integration_id, properties)]
 
 
 def make_deal_sync_message(application_id):
