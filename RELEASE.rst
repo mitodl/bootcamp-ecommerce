@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.46.5
+Version 0.46.5 (Released June 26, 2020)
 --------------
 
 - fix review dashbard paging behavior
