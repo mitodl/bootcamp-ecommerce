@@ -9,7 +9,6 @@ import { values, join, keys } from "ramda"
 import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik"
 import * as yup from "yup"
 
-import { DrawerCloseHeader } from "./Drawer"
 import FormError from "./forms/elements/FormError"
 import { closeDrawer } from "../reducers/drawer"
 import applications, {
@@ -174,7 +173,6 @@ export class ResumeLinkedIn extends React.Component<Props> {
 
     return (
       <div className="container drawer-wrapper resume-linkedin-drawer">
-        <DrawerCloseHeader />
         <h2>Resume or LinkedIn Profile</h2>
         <p>Please upload resume or a link to your LinkedIn profile</p>
         <h3>Resume</h3>

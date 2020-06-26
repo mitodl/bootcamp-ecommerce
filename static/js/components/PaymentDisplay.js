@@ -8,7 +8,6 @@ import { mutateAsync } from "redux-query"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import Decimal from "decimal.js-light"
 
-import { DrawerCloseHeader } from "./Drawer"
 import queries from "../lib/queries"
 import {
   formatRunDateRange,
@@ -66,7 +65,6 @@ export const PaymentDisplay = (props: Props) => {
 
   return (
     <div className="container drawer-wrapper payment-drawer">
-      <DrawerCloseHeader />
       <h2>Make Payment</h2>
       <div className="bootcamp">
         <div className="bootcamp-title">{run.bootcamp.title}</div>

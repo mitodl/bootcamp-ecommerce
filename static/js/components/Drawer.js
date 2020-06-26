@@ -82,6 +82,7 @@ export default function Drawer() {
     <Theme>
       <RMWCDrawer open={drawerOpen} onClose={onClose} dir="rtl" modal>
         <DrawerContent dir="ltr">
+          <DrawerCloseHeader />
           {renderDrawerContents(drawerState, drawerMeta)}
         </DrawerContent>
       </RMWCDrawer>
