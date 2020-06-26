@@ -1,0 +1,11 @@
+Dear {{ first_name }},
+
+After careful consideration, we regret to inform you that we are unable to proceed further in the admissions process for the {{ bootcamp_name }}. Based on our review, we believe you have the potential but are not ready at this time for the Bootcamp.
+
+We hope you will take this as an opportunity to improve and re-apply at the next opportunity. Please read on to learn more about our process.
+
+It was a tough decision. We select applicants who have a demonstrated capacity for calculated risk, open and critical thinking, initiative with follow through, and focus on community. Specifically, we offer admission to applicants that complement one another’s skillsets for this Bootcamp.
+
+We found your story inspiring and liked the problems you’re trying to solve. We hope that you will continue working on it because the world needs entrepreneurs like you.
+
+This is NOT a good-bye but rather a see you later.
