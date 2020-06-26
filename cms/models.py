@@ -1,7 +1,6 @@
 """
 Page models for the CMS
 """
-import json
 import logging
 
 from django.conf import settings
@@ -645,7 +644,7 @@ class LetterTemplatePage(Page):
 
     base_form_class = LetterTemplatePageForm
 
-    def serve_preview(self, request, *args, **kwargs):
+    def serve_preview(self, request, *args, **kwargs):  # pylint: arguments-differ
         """
         Show a sample letter for testing
         """

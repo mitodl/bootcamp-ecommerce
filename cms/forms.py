@@ -8,8 +8,10 @@ from cms.constants import SAMPLE_VARIABLES
 
 
 class LetterTemplatePageForm(WagtailAdminPageForm):
+    """A form to do field validation of LetterTemplatePage"""
+
     def clean_acceptance_text(self):
-        """Validate that the templates are valid"""
+        """Validate that the acceptance text is a valid Django template with no extra variables"""
         acceptance_text = self.cleaned_data["acceptance_text"]
         try:
             render_template(acceptance_text, context=SAMPLE_VARIABLES)
@@ -21,6 +23,7 @@ class LetterTemplatePageForm(WagtailAdminPageForm):
         return acceptance_text
 
     def clean_rejection_text(self):
+        """Validate that the rejection text is a valid Django template with no extra variables"""
         rejection_text = self.cleaned_data["rejection_text"]
         try:
             render_template(rejection_text, context=SAMPLE_VARIABLES)
