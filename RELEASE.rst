@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.46.4
+--------------
+
+- Fixed circular dependency with drawer components
+- Fix rendering of homepage (#796)
+- Handle failure to create jobma interview
+- Added drawer close button and fixed drawer inconsistencies
+
 Version 0.46.3 (Released June 26, 2020)
 --------------
 
