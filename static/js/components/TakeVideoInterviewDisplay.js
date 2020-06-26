@@ -2,7 +2,6 @@
 import React, { useState } from "react"
 import { useMutation } from "redux-query-react"
 
-import { DrawerCloseHeader } from "./Drawer"
 import { JOBMA, JOBMA_SITE } from "../constants"
 import queries from "../lib/queries"
 
@@ -28,7 +27,6 @@ export default function TakeVideoInterviewDisplay({
 
   return (
     <div className="container drawer-wrapper take-video-interview">
-      <DrawerCloseHeader />
       <h2 className="mb-5">Take Video Interview</h2>
       <p className="mb-5">
         Thank you for taking the video interview. To make your experience better

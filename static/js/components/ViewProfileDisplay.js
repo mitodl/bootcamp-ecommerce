@@ -6,7 +6,6 @@ import { connectRequest } from "redux-query-react"
 import { find, fromPairs, propEq } from "ramda"
 import { createStructuredSelector } from "reselect"
 
-import { DrawerCloseHeader } from "./Drawer"
 import {
   EMPLOYMENT_EXPERIENCE,
   EMPLOYMENT_SIZE,
@@ -48,7 +47,6 @@ export function ViewProfileDisplay(props: Props) {
 
   return countries && currentUser ? (
     <div className="container drawer-wrapper view-profile profile-display">
-      <DrawerCloseHeader />
       <div className="row">
         <h2 className="col-6">Profile</h2>
         <div className="col-6 text-right">

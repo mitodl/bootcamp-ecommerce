@@ -9,7 +9,6 @@ import { createStructuredSelector } from "reselect"
 
 import EditProfileForm from "./forms/EditProfileForm"
 
-import { DrawerCloseHeader } from "./Drawer"
 import { PROFILE_VIEW } from "../constants"
 import users, { currentUserSelector } from "../lib/queries/users"
 import queries from "../lib/queries"
@@ -72,7 +71,6 @@ export class EditProfileDisplay extends React.Component<Props> {
     const { countries, currentUser } = this.props
     return countries && currentUser ? (
       <div className="container drawer-wrapper edit-profile profile-display">
-        <DrawerCloseHeader />
         <EditProfileForm
           countries={countries}
           user={currentUser}
