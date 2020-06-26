@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.46.4
+Version 0.46.4 (Released June 26, 2020)
 --------------
 
 - Fixed circular dependency with drawer components
