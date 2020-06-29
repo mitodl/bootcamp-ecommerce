@@ -260,7 +260,7 @@ def test_applicant_letter_approved(mocker, application, ready_for_payment):
     application.state = AppStates.AWAITING_SUBMISSION_REVIEW.value
     application.save()
     create_patched = mocker.patch(
-        "applications.models.create_and_send_applicant_letter.delay"
+        "applications.tasks.create_and_send_applicant_letter.delay"
     )
     ready_patched = mocker.patch(
         "applications.models.BootcampApplication.is_ready_for_payment",
@@ -281,7 +281,7 @@ def test_applicant_letter_rejected(mocker, application):
     application.state = AppStates.AWAITING_SUBMISSION_REVIEW.value
     application.save()
     create_patched = mocker.patch(
-        "applications.models.create_and_send_applicant_letter.delay"
+        "applications.tasks.create_and_send_applicant_letter.delay"
     )
     application.reject_submission()
     create_patched.assert_called_once_with(

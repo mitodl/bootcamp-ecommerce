@@ -27,7 +27,6 @@ from applications.constants import (
     VALID_LETTER_TYPE_CHOICES,
 )
 from applications.constants import INTEGRATION_PREFIX
-from applications.tasks import create_and_send_applicant_letter
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
 from jobma.models import Interview
@@ -204,6 +203,8 @@ class BootcampApplication(TimestampedModel):
     )
     def approve_submission(self):
         """Approve application submission"""
+        from applications.tasks import create_and_send_applicant_letter
+
         if self.is_ready_for_payment():
             create_and_send_applicant_letter.delay(
                 application_id=self.id, letter_type=LETTER_TYPE_APPROVED
@@ -227,6 +228,8 @@ class BootcampApplication(TimestampedModel):
     )
     def reject_submission(self):
         """Reject application submission"""
+        from applications.tasks import create_and_send_applicant_letter
+
         create_and_send_applicant_letter.delay(
             application_id=self.id, letter_type=LETTER_TYPE_REJECTED
         )

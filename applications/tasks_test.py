@@ -21,7 +21,7 @@ def test_create_and_send_applicant_letter(
 ):  # pylint: disable=redefined-outer-name
     """This should just start a task to forward the request to the API function"""
     letter_type = "letter_type"
-    patched = mocker.patch("applications.tasks.api.create_and_send_applicant_letter")
+    patched = mocker.patch("applications.mail_api.create_and_send_applicant_letter")
 
     create_and_send_applicant_letter.delay(
         application_id=application.id, letter_type=letter_type
