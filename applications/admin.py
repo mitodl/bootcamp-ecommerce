@@ -321,9 +321,17 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
     get_run_title.admin_order_field = "bootcamp_run__title"
 
 
+class ApplicantLetterAdmin(TimestampedModelAdmin):
+    """Admin for ApplicantLetter"""
+
+    model = models.ApplicantLetter
+    readonly_fields = get_field_names(models.ApplicantLetter)
+
+
 admin.site.register(models.ApplicationStep, ApplicationStepAdmin)
 admin.site.register(models.BootcampRunApplicationStep, BootcampRunApplicationStepAdmin)
 admin.site.register(models.BootcampApplication, BootcampApplicationAdmin)
 admin.site.register(models.VideoInterviewSubmission, VideoInterviewSubmissionAdmin)
 admin.site.register(models.QuizSubmission, QuizSubmissionAdmin)
 admin.site.register(models.ApplicationStepSubmission, ApplicationStepSubmissionAdmin)
+admin.site.register(models.ApplicantLetter, ApplicantLetterAdmin)
