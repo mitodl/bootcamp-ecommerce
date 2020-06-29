@@ -3,18 +3,12 @@ import { objOf, mergeDeepRight } from "ramda"
 
 import { nextState } from "./util"
 
-import {
-  applicationsAPI,
-  applicationDetailAPI,
-  appVideoInterviewAPI,
-  appResumeAPI
-} from "../urls"
+import { applicationsAPI, applicationDetailAPI, appResumeAPI } from "../urls"
 import { DEFAULT_NON_GET_OPTIONS } from "../redux_query"
 import type {
   Application,
   ApplicationDetail,
-  ApplicationDetailState,
-  VideoInterviewResponse
+  ApplicationDetailState
 } from "../../flow/applicationTypes"
 
 const applicationsKey = "applications"
@@ -82,23 +76,6 @@ export default {
       })
     },
     force: !!force
-  }),
-  createVideoInterviewMutation: (applicationId: number, stepId: number) => ({
-    url:  appVideoInterviewAPI.param({ applicationId }).toString(),
-    body: {
-      step_id: stepId
-    },
-    options: {
-      ...DEFAULT_NON_GET_OPTIONS,
-      method: "POST"
-    },
-    transform: (json: ?VideoInterviewResponse) => ({
-      bootcampRuns: json
-    }),
-    update: {
-      bootcampRuns: nextState
-    },
-    force: true
   }),
   applicationLinkedInUrlMutation: (
     applicationId: number,

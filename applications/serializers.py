@@ -41,13 +41,23 @@ class SubmissionSerializer(serializers.ModelSerializer):
     """ApplicationStepSubmission serializer"""
 
     interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
+    take_interview_url = serializers.SerializerMethodField(
+        required=False, allow_null=True
+    )
 
     def get_interview_url(self, submission):
-        """ Get the interview url for a video submission if of that type"""
+        """Return the results URL for the reviewer or others to view the interview"""
         if submission.content_type == ContentType.objects.get_for_model(
             VideoInterviewSubmission
         ):
             return submission.content_object.interview.results_url
+
+    def get_take_interview_url(self, submission):
+        """Return the interview URL for the applicant to take the interview"""
+        if submission.content_type == ContentType.objects.get_for_model(
+            VideoInterviewSubmission
+        ):
+            return submission.content_object.interview.interview_url
 
     class Meta:
         model = models.ApplicationStepSubmission
@@ -59,6 +69,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "review_status",
             "review_status_date",
             "interview_url",
+            "take_interview_url",
         ]
         read_only_fields = [
             "submitted_date",

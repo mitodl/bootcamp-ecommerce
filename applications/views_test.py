@@ -15,11 +15,9 @@ from applications.constants import (
 )
 from applications.factories import (
     BootcampApplicationFactory,
-    BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     ApplicantLetterFactory,
 )
-from applications.models import ApplicationStepSubmission, VideoInterviewSubmission
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
@@ -30,8 +28,6 @@ from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.factories import BootcampRunFactory, BootcampFactory
-from jobma.factories import InterviewFactory, JobFactory
-from jobma.models import Interview
 from main.test_utils import assert_drf_json_equal
 from profiles.factories import UserFactory
 
@@ -379,108 +375,6 @@ def test_application_detail_queryset_orders(client):
     assert_drf_json_equal(
         rendered_orders, [ApplicationOrderSerializer(fulfilled_order).data]
     )
-
-
-@pytest.fixture
-def application():
-    """Application for a user"""
-    yield BootcampApplicationFactory.create()
-
-
-@pytest.fixture
-def job(application):
-    """Make a job"""
-    yield JobFactory.create(run=application.bootcamp_run)
-
-
-@pytest.fixture
-def step(application):
-    """Make an ApplicationStepSubmission"""
-    yield BootcampRunApplicationStepFactory.create(
-        bootcamp_run=application.bootcamp_run
-    )
-
-
-@pytest.mark.parametrize("interview_exists", [True, False])
-@pytest.mark.parametrize("has_interview_link", [True, False])
-def test_take_interview(
-    interview_exists, has_interview_link, mocker, client, application, step, job
-):
-    """Start the interview process and return a URL to redirect the user to"""
-    client.force_login(application.user)
-    new_interview_link = "http://fake.interview.link"
-    create_interview = mocker.patch(
-        "applications.views.create_interview_in_jobma", return_value=new_interview_link
-    )
-
-    if interview_exists:
-        interview = InterviewFactory.create(job=job, applicant=application.user)
-        if not has_interview_link:
-            interview.interview_url = None
-            interview.save()
-
-    resp = client.post(
-        reverse("video-interviews", kwargs={"pk": application.id}),
-        data={"step_id": step.id},
-    )
-    assert resp.status_code == status.HTTP_200_OK
-    assert resp.json() == {
-        "interview_link": interview.interview_url
-        if interview_exists and has_interview_link
-        else new_interview_link
-    }
-    if not interview_exists or not has_interview_link:
-        interview = Interview.objects.get(job=job, applicant=application.user)
-        create_interview.assert_called_once_with(interview)
-
-        video_submission = VideoInterviewSubmission.objects.filter(
-            interview=interview
-        ).get()
-        submission = ApplicationStepSubmission.objects.filter(
-            bootcamp_application=application, run_application_step=step
-        ).get()
-        assert submission.content_object == video_submission
-    else:
-        create_interview.assert_not_called()
-
-
-def test_take_interview_missing_step_id(client, application):
-    """Should raise a validation error if the step_id parameter is missing"""
-    client.force_login(application.user)
-    resp = client.post(
-        reverse("video-interviews", kwargs={"pk": application.id}), data={}
-    )
-    assert resp.status_code == status.HTTP_400_BAD_REQUEST
-    assert resp.json() == ["Missing step_id"]
-
-
-def test_take_interview_wrong_step_id(client, application):
-    """If the step_id is not related to the application, the user should get a 404"""
-    client.force_login(application.user)
-    step = BootcampRunApplicationStepFactory.create()
-    resp = client.post(
-        reverse("video-interviews", kwargs={"pk": application.id}),
-        data={"step_id": step.id},
-    )
-    assert resp.status_code == status.HTTP_404_NOT_FOUND
-
-
-def test_take_interview_anonymous(client, application):
-    """Anonymous access is not allowed"""
-    resp = client.post(
-        reverse("video-interviews", kwargs={"pk": application.id}), data={}
-    )
-    assert resp.status_code == status.HTTP_403_FORBIDDEN
-
-
-def test_take_interview_different_user(client, application, step):
-    """Users cannot modify another user's application"""
-    client.force_login(UserFactory.create())
-    resp = client.post(
-        reverse("video-interviews", kwargs={"pk": application.id}),
-        data={"step_id": step.id},
-    )
-    assert resp.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_letters_view(client):

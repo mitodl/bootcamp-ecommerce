@@ -2,7 +2,6 @@
 from collections import OrderedDict
 
 import django_fsm
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -28,12 +27,8 @@ from applications.models import (
     ApplicantLetter,
     ApplicationStepSubmission,
     BootcampApplication,
-    BootcampRunApplicationStep,
-    VideoInterviewSubmission,
 )
 from ecommerce.models import Order
-from jobma.api import create_interview_in_jobma
-from jobma.models import Interview, Job
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 from main.utils import serializer_date_format
@@ -216,58 +211,6 @@ class UploadResumeView(GenericAPIView):
             },
             status=status.HTTP_200_OK,
         )
-
-
-class VideoInterviewsView(GenericAPIView):
-    """
-    Create an interview on Jobma, then redirect the user to it
-    """
-
-    authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated, UserIsOwnerPermission)
-    lookup_field = "pk"
-    owner_field = "user"
-    queryset = BootcampApplication.objects.all()
-
-    # pylint: disable=too-many-locals
-    def post(self, request, *args, **kwargs):
-        """
-        Create the Interview, then POST to Jobma to create it there,
-        then return a URL for the user to go to
-        """
-        try:
-            step_id = request.data["step_id"]
-        except KeyError:
-            raise ValidationError("Missing step_id")
-
-        user = request.user
-        application = self.get_object()
-        run_step = get_object_or_404(
-            BootcampRunApplicationStep,
-            id=step_id,
-            bootcamp_run=application.bootcamp_run,
-        )
-        # Job should be created by admin beforehand
-        job = Job.objects.get(run=application.bootcamp_run)
-        interview, _ = Interview.objects.get_or_create(applicant=user, job=job)
-        if interview.interview_url:
-            interview_link = interview.interview_url
-        else:
-            interview_link = create_interview_in_jobma(interview)
-
-            video_interview_submission, _ = VideoInterviewSubmission.objects.get_or_create(
-                interview=interview
-            )
-            ApplicationStepSubmission.objects.get_or_create(
-                bootcamp_application=application,
-                run_application_step=run_step,
-                object_id=video_interview_submission.id,
-                content_type=ContentType.objects.get_for_model(
-                    video_interview_submission
-                ),
-            )
-
-        return Response(data={"interview_link": interview_link})
 
 
 class LettersView(TemplateView):

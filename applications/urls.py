@@ -8,7 +8,6 @@ from rest_framework import routers
 from applications.views import (
     BootcampApplicationViewset,
     ReviewSubmissionViewSet,
-    VideoInterviewsView,
     LettersView,
     UploadResumeView,
 )
@@ -25,11 +24,6 @@ urlpatterns = [
         r"^api/applications/(?P<pk>\d+)/resume/$",
         UploadResumeView.as_view(),
         name="upload-resume",
-    ),
-    path(
-        "api/applications/<int:pk>/video-interviews/",
-        VideoInterviewsView.as_view(),
-        name="video-interviews",
     ),
     path("letters/<uuid:hash>/", LettersView.as_view(), name="letters"),
 ]
