@@ -9,6 +9,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django_fsm import FSMField, transition, RETURN_VALUE
 from wagtail.core.fields import RichTextField
 
@@ -379,6 +380,10 @@ class ApplicantLetter(TimestampedModel):
     letter_text = RichTextField()
     application = models.ForeignKey(BootcampApplication, on_delete=models.CASCADE)
     hash = models.UUIDField(unique=True, default=uuid4)
+
+    def get_absolute_url(self):
+        """Return the absolute URL for use with Django Admin"""
+        return reverse("letters", kwargs={"hash": self.hash})
 
     def __str__(self):
         return f"Letter for {self.application}, type={self.letter_type}"
