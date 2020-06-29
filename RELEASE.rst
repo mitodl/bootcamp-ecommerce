@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+Version 0.47.0
+--------------
+
+- Acceptance/rejection letters (#744)
+- fix some accessibility issues on the application dashboard
+- Fix formatting for negative zero (#807)
+- Fix: object has no attribute 'id'
+- Fix personal price calculation (#805)
+- Sync product (bootcamp run) on transaction commit (#759)
+- back to top accessibility fix
+- Safari CSS issue fix - #771
+
 Version 0.46.5 (Released June 26, 2020)
 --------------
 
