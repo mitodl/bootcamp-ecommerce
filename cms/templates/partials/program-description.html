@@ -1,4 +1,4 @@
-{% load image_version_url %}
+{% load static image_version_url %}
 <section class="program-block">
   <div class="container">
     <div class="gray-box d-none d-sm-block">
@@ -13,7 +13,11 @@
     <div class="row program-content">
       <div class="col-sm-6">
         <div class="img-holder">
-          <img src="{% image_version_url page.image 'fill-1000x1000' %}" alt="Program Description Image" />
+          {% if page.image %}
+            <img src="{% image_version_url page.image 'fill-1000x1000' %}" alt="Program Description Image" />
+          {% else %}
+            <img class="w-100" src="{% static 'images/mit-dome.png' %}" alt="{{ block.page.title }}">
+          {% endif %}
         </div>
       </div>
       <div class="col-sm-6">
