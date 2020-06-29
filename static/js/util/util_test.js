@@ -210,6 +210,7 @@ describe("util", () => {
       assert.equal(formatPrice(20.6059), "$20.61")
       assert.equal(formatPrice(20.6959), "$20.70")
       assert.equal(formatPrice(20.1234567), "$20.12")
+      assert.equal(formatPrice(-0.0000000001), "$0")
     })
 
     it("returns an empty string if null or undefined", () => {
