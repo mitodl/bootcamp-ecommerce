@@ -2,7 +2,6 @@
 from decimal import Decimal
 from uuid import uuid4
 from functools import reduce
-import logging
 from operator import or_
 
 from django.core.exceptions import ValidationError
@@ -33,9 +32,6 @@ from ecommerce.models import Order
 from jobma.models import Interview
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
-
-
-log = logging.getLogger(__name__)
 
 
 class ApplicationStep(models.Model):
