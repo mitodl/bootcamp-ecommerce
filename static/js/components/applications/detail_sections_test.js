@@ -57,7 +57,7 @@ describe("application detail section component", () => {
       const wrapper = shallow(
         <ProfileDetail {...defaultProps} user={makeIncompleteUser()} />
       )
-      wrapper.find("ProgressDetailRow a.btn-link").simulate("click")
+      wrapper.find("ProgressDetailRow AccessibleAnchor").simulate("click")
       sinon.assert.calledWith(openDrawerStub, { type: PROFILE_VIEW })
     })
   })
@@ -85,10 +85,10 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-        const link = wrapper.find("ProgressDetailRow a.btn-link")
+        const link = wrapper.find("ProgressDetailRow AccessibleAnchor")
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
-          assert.equal(link.text(), expLinkText)
+          assert.equal(link.prop("children"), expLinkText)
         }
       })
     })
@@ -127,10 +127,17 @@ describe("application detail section component", () => {
             applicationDetail={application}
           />
         )
-        const link = wrapper.find("ProgressDetailRow a.btn-link")
+        const link = wrapper.find(
+          fulfilled ?
+            "ProgressDetailRow a.btn-link" :
+            "ProgressDetailRow AccessibleAnchor"
+        )
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
-          assert.equal(link.text(), expLinkText)
+          assert.equal(
+            fulfilled ? link.text() : link.prop("children"),
+            expLinkText
+          )
         }
         if (submitted) {
           assert.equal(link.prop("href"), submission.interview_url)
@@ -210,10 +217,10 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-        const link = wrapper.find("ProgressDetailRow a.btn-link")
+        const link = wrapper.find("ProgressDetailRow AccessibleAnchor")
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
-          assert.equal(link.text(), expLinkText)
+          assert.equal(link.prop("children"), expLinkText)
         }
       })
     })
@@ -228,7 +235,7 @@ describe("application detail section component", () => {
         />
       )
 
-      wrapper.find("ProgressDetailRow a.btn-link").simulate("click")
+      wrapper.find("ProgressDetailRow AccessibleAnchor").simulate("click")
       sinon.assert.calledWith(openDrawerStub, {
         type: PAYMENT,
         meta: { application: applicationDetail }

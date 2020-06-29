@@ -4,6 +4,8 @@ import React from "react"
 import * as R from "ramda"
 
 import ProgressDetailRow from "./ProgressDetailRow"
+import AccessibleAnchor from "../AccessibleAnchor"
+
 import { formatReadableDateFromStr } from "../../util/util"
 import {
   PAYMENT,
@@ -46,12 +48,12 @@ export const ProfileDetail = (props: ProfileDetailProps): React$Element<*> => {
         ) : null}
       </div>
       <div className="col-12 col-sm-5 text-sm-right">
-        <a
+        <AccessibleAnchor
           className="btn-link"
           onClick={R.partial(openDrawer, [{ type: PROFILE_VIEW }])}
         >
           View/Edit Profile
-        </a>
+        </AccessibleAnchor>
       </div>
     </ProgressDetailRow>
   )
@@ -77,7 +79,7 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
       </div>
       {ready && (
         <div className="col-12 col-sm-5 text-sm-right">
-          <a
+          <AccessibleAnchor
             className="btn-link"
             onClick={R.partial(openDrawer, [
               {
@@ -89,7 +91,7 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
             {fulfilled ?
               "View/Edit Resume or LinkedIn Profile" :
               "Add Resume or LinkedIn Profile"}
-          </a>
+          </AccessibleAnchor>
         </div>
       )}
     </ProgressDetailRow>
@@ -133,7 +135,7 @@ export const VideoInterviewDetail = (
       {ready ? (
         !fulfilled ? (
           <div className="col-12 col-sm-5 text-sm-right">
-            <a
+            <AccessibleAnchor
               className="btn-link"
               onClick={R.partial(openDrawer, [
                 {
@@ -143,7 +145,7 @@ export const VideoInterviewDetail = (
               ])}
             >
               Take Video Interview
-            </a>
+            </AccessibleAnchor>
           </div>
         ) : submission && submission.interview_url ? (
           <div className="col-12 col-sm-5 text-sm-right">
@@ -228,7 +230,7 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
       </div>
       {ready && !fulfilled ? (
         <div className="col-12 col-sm-5 text-sm-right">
-          <a
+          <AccessibleAnchor
             className="btn-link"
             onClick={R.partial(openDrawer, [
               {
@@ -238,7 +240,7 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
             ])}
           >
             Make a Payment
-          </a>
+          </AccessibleAnchor>
         </div>
       ) : null}
     </ProgressDetailRow>

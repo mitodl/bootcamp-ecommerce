@@ -19,6 +19,8 @@ import {
   ReviewDetail,
   VideoInterviewDetail
 } from "../../components/applications/detail_sections"
+import AccessibleAnchor from "../../components/AccessibleAnchor"
+
 import { openDrawer } from "../../reducers/drawer"
 import queries from "../../lib/queries"
 import {
@@ -274,14 +276,14 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 )}
               </div>
               <div className="col-5 text-right collapse-link">
-                <a
+                <AccessibleAnchor
                   className="btn-text expand-collapse"
                   onClick={R.partial(this.loadAndRevealAppDetail, [
                     application.id
                   ])}
                 >
                   {isOpen ? "Collapse −" : "Expand ＋"}
-                </a>
+                </AccessibleAnchor>
               </div>
             </div>
           </div>

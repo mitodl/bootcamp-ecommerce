@@ -154,7 +154,7 @@ describe("ApplicationDashboardPage", () => {
       .find(".application-card")
       .at(applicationIndex)
     assert.isFalse(firstApplicationCard.find("Collapse").prop("isOpen"))
-    const expandLink = firstApplicationCard.find(".expand-collapse")
+    const expandLink = firstApplicationCard.find(".expand-collapse").at(0)
     assert.include(expandLink.text(), "Expand")
     assert.isFalse(firstApplicationCard.find(".application-detail").exists())
 
