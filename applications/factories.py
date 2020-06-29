@@ -16,6 +16,7 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_WAITLISTED,
+    ALL_LETTER_TYPES,
 )
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
@@ -107,3 +108,15 @@ class ApplicationStepSubmissionFactory(DjangoModelFactory):
 
     class Meta:
         model = models.ApplicationStepSubmission
+
+
+class ApplicantLetterFactory(DjangoModelFactory):
+    """Factory for ApplicantLetter"""
+
+    application = SubFactory(BootcampApplicationFactory)
+    letter_text = fuzzy.FuzzyText()
+    letter_subject = fuzzy.FuzzyText()
+    letter_type = fuzzy.FuzzyChoice(choices=ALL_LETTER_TYPES)
+
+    class Meta:
+        model = models.ApplicantLetter

@@ -9,7 +9,9 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django_fsm import FSMField, transition, RETURN_VALUE
+from wagtail.core.fields import RichTextField
 
 from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
@@ -20,6 +22,9 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
     SUBMISSION_STATUS_PENDING,
+    LETTER_TYPE_APPROVED,
+    LETTER_TYPE_REJECTED,
+    VALID_LETTER_TYPE_CHOICES,
 )
 from applications.constants import INTEGRATION_PREFIX
 from applications.utils import validate_file_extension
@@ -198,11 +203,15 @@ class BootcampApplication(TimestampedModel):
     )
     def approve_submission(self):
         """Approve application submission"""
-        return (
-            AppStates.AWAITING_PAYMENT.value
-            if self.is_ready_for_payment()
-            else AppStates.AWAITING_USER_SUBMISSIONS.value
-        )
+        from applications.tasks import create_and_send_applicant_letter
+
+        if self.is_ready_for_payment():
+            create_and_send_applicant_letter.delay(
+                application_id=self.id, letter_type=LETTER_TYPE_APPROVED
+            )
+            return AppStates.AWAITING_PAYMENT.value
+        else:
+            return AppStates.AWAITING_USER_SUBMISSIONS.value
 
     @transition(
         field=state,
@@ -219,6 +228,11 @@ class BootcampApplication(TimestampedModel):
     )
     def reject_submission(self):
         """Reject application submission"""
+        from applications.tasks import create_and_send_applicant_letter
+
+        create_and_send_applicant_letter.delay(
+            application_id=self.id, letter_type=LETTER_TYPE_REJECTED
+        )
 
     @transition(
         field=state,
@@ -359,3 +373,20 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
             f"user='{self.bootcamp_application.user.email}', run='{self.bootcamp_application.bootcamp_run.title}', "
             f"contenttype={self.content_type}, object={self.object_id}"
         )
+
+
+class ApplicantLetter(TimestampedModel):
+    """Represents a letter sent to an applicant, with a hash so the user can view the letter afterwards"""
+
+    letter_type = models.CharField(choices=VALID_LETTER_TYPE_CHOICES, max_length=255)
+    letter_subject = models.TextField()
+    letter_text = RichTextField()
+    application = models.ForeignKey(BootcampApplication, on_delete=models.CASCADE)
+    hash = models.UUIDField(unique=True, default=uuid4)
+
+    def get_absolute_url(self):
+        """Return the absolute URL for use with Django Admin"""
+        return reverse("letters", kwargs={"hash": self.hash})
+
+    def __str__(self):
+        return f"Letter for {self.application}, type={self.letter_type}"

@@ -9,7 +9,12 @@ from django.db import models
 import pytest
 
 
-from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, REVIEW_STATUS_REJECTED
+from applications.constants import (
+    VALID_SUBMISSION_TYPE_CHOICES,
+    REVIEW_STATUS_REJECTED,
+    LETTER_TYPE_REJECTED,
+    LETTER_TYPE_APPROVED,
+)
 from applications.models import ApplicationStepSubmission, APP_SUBMISSION_MODELS
 from applications.factories import (
     BootcampRunApplicationStepFactory,
@@ -247,3 +252,38 @@ def test_is_paid_in_full(mocker, application, price, total_paid, expected_fully_
     )
     total_paid_mock.return_value = total_paid
     assert application.is_paid_in_full is expected_fully_paid
+
+
+@pytest.mark.parametrize("ready_for_payment", [True, False])
+def test_applicant_letter_approved(mocker, application, ready_for_payment):
+    """If all submissions are approved, an applicant letter should be sent"""
+    application.state = AppStates.AWAITING_SUBMISSION_REVIEW.value
+    application.save()
+    create_patched = mocker.patch(
+        "applications.tasks.create_and_send_applicant_letter.delay"
+    )
+    ready_patched = mocker.patch(
+        "applications.models.BootcampApplication.is_ready_for_payment",
+        return_value=ready_for_payment,
+    )
+    application.approve_submission()
+    ready_patched.assert_called_once_with()
+    if ready_for_payment:
+        create_patched.assert_called_once_with(
+            application_id=application.id, letter_type=LETTER_TYPE_APPROVED
+        )
+    else:
+        assert create_patched.called is False
+
+
+def test_applicant_letter_rejected(mocker, application):
+    """If any submission is rejected, an applicant letter should be sent"""
+    application.state = AppStates.AWAITING_SUBMISSION_REVIEW.value
+    application.save()
+    create_patched = mocker.patch(
+        "applications.tasks.create_and_send_applicant_letter.delay"
+    )
+    application.reject_submission()
+    create_patched.assert_called_once_with(
+        application_id=application.id, letter_type=LETTER_TYPE_REJECTED
+    )

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static render_bundle wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags %}
+
+{% block title %}{{ site_name }} | Letter{% endblock %}
+
+{% block headercontent %}
+    <div id="header"></div>
+    {% render_bundle 'header' %}
+{% endblock %}
+
+{% block content %}
+    <div class="letter-template-page container">
+    {% if preview %}
+    <div class="preview">
+        SAMPLE
+    </div>
+    {% endif %}
+
+    <div class="main-content">
+        <div class="col-12 text-right">
+            <a class="print-button btn-link" onClick="window.print()">
+                <span class="material-icons">printer</span> Print Letter
+            </a>
+        </div>
+        {{ content|richtext }}
+    </div>
+    <p>
+        Sincerely,<br />
+        <img src="{% static "images/signature-mariah-rawding.png" %}" alt="Signature for Mariah Rawding" /><br />
+        Mariah Rawding<br />
+        MIT Bootcamps Admissions
+    </p>
+    </div>
+{% endblock %}

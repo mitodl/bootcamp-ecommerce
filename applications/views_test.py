@@ -17,6 +17,7 @@ from applications.factories import (
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
+    ApplicantLetterFactory,
 )
 from applications.models import ApplicationStepSubmission, VideoInterviewSubmission
 from applications.serializers import (
@@ -480,3 +481,11 @@ def test_take_interview_different_user(client, application, step):
         data={"step_id": step.id},
     )
     assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_letters_view(client):
+    """Any user, including anonymous users, should be able to view the letter if they have the right UUID"""
+    letter = ApplicantLetterFactory.create()
+    resp = client.get(reverse("letters", kwargs={"hash": letter.hash}))
+    assert resp.status_code == status.HTTP_200_OK
+    assert letter.letter_text in resp.content.decode()

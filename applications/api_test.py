@@ -1,9 +1,8 @@
 """Tests for applications API functionality"""
 from decimal import Decimal
 
-import pytest
-
 from django.core.files.uploadedfile import SimpleUploadedFile
+import pytest
 
 from applications.api import (
     get_or_create_bootcamp_application,
@@ -28,7 +27,9 @@ from profiles.factories import ProfileFactory, UserFactory
 from main.utils import now_in_utc
 
 
-@pytest.mark.django_db
+pytestmark = pytest.mark.django_db
+
+
 def test_derive_application_state():
     """derive_application_state should return the correct state based on the bootcamp application and related data"""
     bootcamp_run = BootcampRunFactory.create()
@@ -83,7 +84,6 @@ def test_derive_application_state():
     assert derive_application_state(app) == AppStates.COMPLETE.value
 
 
-@pytest.mark.django_db
 def test_derive_application_state_rejected():
     """derive_application_state should return the rejected state if any of the user's submissions were rejected"""
     run_step = BootcampRunApplicationStepFactory.create()
@@ -100,7 +100,6 @@ def test_derive_application_state_rejected():
     assert derive_application_state(app) == AppStates.REJECTED.value
 
 
-@pytest.mark.django_db
 def test_get_or_create_bootcamp_application(mocker):
     """
     get_or_create_bootcamp_application should fetch an existing bootcamp application, or create one with the \
@@ -131,7 +130,6 @@ def test_get_or_create_bootcamp_application(mocker):
     assert created is False
 
 
-@pytest.mark.django_db
 def test_get_required_submission_type(awaiting_submission_app):
     """ Test that get_required_submission_type returns the correct submission type"""
 

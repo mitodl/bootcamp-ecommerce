@@ -162,3 +162,10 @@ class CatalogGridSectionFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.CatalogGridSection
+
+
+class LetterTemplatePageFactory(wagtail_factories.PageFactory):
+    """Factory class for the LetterTemplatePage"""
+
+    class Meta:
+        model = models.LetterTemplatePage
