@@ -23,7 +23,6 @@ from hubspot.api import (
     make_deal_sync_message,
     make_line_sync_message,
     exists_in_hubspot,
-    format_hubspot_id,
 )
 from hubspot.models import HubspotErrorCheck, HubspotLineResync
 
@@ -133,14 +132,13 @@ def retry_invalid_line_associations():
     Check lines that have errored and retry them if their orders have synced
     """
     for hubspot_line_resync in HubspotLineResync.objects.all():
-        integrationId = format_hubspot_id(
-            hubspot_line_resync.application.integration_id
-        )
-        if exists_in_hubspot("LINE_ITEM", integrationId):
+        if exists_in_hubspot(
+            "LINE_ITEM", hubspot_line_resync.application.integration_id
+        ):
             hubspot_line_resync.delete()
             continue
 
-        if exists_in_hubspot("DEAL", integrationId):
+        if exists_in_hubspot("DEAL", hubspot_line_resync.application.integration_id):
             sync_line_with_hubspot(hubspot_line_resync.application.id)
         else:
             sync_application_with_hubspot(hubspot_line_resync.application.id)
