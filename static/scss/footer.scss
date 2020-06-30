@@ -10,15 +10,6 @@
   padding-bottom: 20px;
   position: relative;
 
-  &:after {
-    position: absolute;
-    left: -9999px;
-    right: -9999px;
-    bottom: 0;
-    display: block !important;
-    border-bottom: 1px solid black;
-  }
-
   .links-info {
     @include media-breakpoint-down(sm) {
       margin-bottom: 20px;
@@ -35,18 +26,17 @@
     }
 
     a {
-      color: black;
+      color: $matterhorn;
+      text-decoration: underline;
     }
   }
 
   .hbspt-form {
-
     label {
       display: none;
     }
 
     .hs-email {
-
       .hs-input {
         border: 1px solid gray;
         padding: 5px 10px;
@@ -71,18 +61,31 @@
 }
 
 .footer-bottom {
-  padding-top: 20px;
+  padding-top: 40px;
   padding-bottom: 20px;
+  background: $white-smoke-dark;
+  /* to carry the background to corners on both left and right sides
+     the big number to make it work on the bigger screens */
+  padding-left: 999px;
+  margin-left: -999px;
+  padding-right: 999px;
+  margin-right: -999px;
+
+  @include media-breakpoint-down(sm) {
+    padding-top: 20px;
+  }
 
   .links {
     margin: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
 
     li {
       margin: 0 0 10px;
-      font-size: 18px;
+      font-size: 16px;
 
       a {
-        color: gray;
+        color: $dim-gray;
       }
     }
   }
@@ -95,9 +98,8 @@
       max-width: 100%;
     }
 
-    .mit-open-learning {
-      color: black;
-      text-decoration: underline;
+    h3 {
+      color: $matterhorn;
     }
   }
 
@@ -121,7 +123,6 @@
     text-align: center;
 
     &.facebook {
-
       a {
         &:after {
           background: $facebook;
@@ -130,7 +131,6 @@
     }
 
     &.linkedin {
-
       a {
         &:after {
           background: $linkedin;
@@ -139,7 +139,6 @@
     }
 
     &.twitter {
-
       a {
         &:after {
           background: $twitter;
@@ -148,7 +147,6 @@
     }
 
     &.youtube {
-
       a {
         &:after {
           background: $youtube;
@@ -157,9 +155,7 @@
     }
 
     &.instagram {
-
       a {
-
         &:after {
           background: radial-gradient(circle farthest-corner at 35% 100%, #fec564, transparent 50%),
           radial-gradient(circle farthest-corner at 10% 140%, #feda7e, transparent 50%),
@@ -174,9 +170,7 @@
     }
 
     &.soundcloud {
-
       a {
-
         &:after {
           background: $soundcloud;
         }
@@ -189,7 +183,7 @@
       width: 30px;
       height: 30px;
       position: relative;
-      transition: all .25s ease-in-out;
+      transition: all 0.25s ease-in-out;
 
       &:after {
         position: absolute;
@@ -199,7 +193,7 @@
         content: "";
         background: black;
         height: 0;
-        transition: all .25s ease-in-out;
+        transition: all 0.25s ease-in-out;
       }
 
       &:hover {
