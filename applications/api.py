@@ -6,6 +6,7 @@ from applications.constants import (
     AppStates,
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_PENDING,
+    SUBMISSION_VIDEO,
 )
 from applications.models import (
     ApplicationStepSubmission,
@@ -112,7 +113,8 @@ def populate_interviews_in_jobma(application):
         application (BootcampApplication): A bootcamp application
     """
     for run_step in BootcampRunApplicationStep.objects.filter(
-        bootcamp_run=application.bootcamp_run
+        bootcamp_run=application.bootcamp_run,
+        application_step__submission_type=SUBMISSION_VIDEO,
     ):
         # Job should be created by admin beforehand
         job = Job.objects.get(run=application.bootcamp_run)
@@ -128,8 +130,10 @@ def populate_interviews_in_jobma(application):
             ApplicationStepSubmission.objects.get_or_create(
                 bootcamp_application=application,
                 run_application_step=run_step,
-                object_id=video_interview_submission.id,
-                content_type=ContentType.objects.get_for_model(
-                    video_interview_submission
-                ),
+                defaults={
+                    "object_id": video_interview_submission.id,
+                    "content_type": ContentType.objects.get_for_model(
+                        video_interview_submission
+                    ),
+                },
             )
