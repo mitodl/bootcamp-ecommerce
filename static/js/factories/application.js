@@ -64,7 +64,8 @@ export const makeApplicationSubmission = (): ApplicationSubmission => ({
     Object.keys(SUBMISSION_STATUS_TEXT_MAP)
   ),
   interview_url:      casual.url,
-  take_interview_url: casual.url
+  take_interview_url: casual.url,
+  interview_token:    casual.uuid
 })
 
 export const makeApplicationFacets = (): SubmissionFacetData => {
@@ -194,5 +195,6 @@ export const makeSubmissionReview = (): SubmissionReview => ({
   bootcamp_application: makeApplication(),
   learner:              makeUser(),
   interview_url:        casual.url,
-  take_interview_url:   casual.url
+  take_interview_url:   casual.url,
+  interview_token:      casual.uuid
 })

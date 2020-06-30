@@ -18,6 +18,7 @@ export default function TakeVideoInterviewDisplay({
     submission => submission.run_application_step_id === stepId
   )
   const url = submission && submission.take_interview_url
+  const token = submission && submission.interview_token
 
   return (
     <div className="container drawer-wrapper take-video-interview">
@@ -27,6 +28,8 @@ export default function TakeVideoInterviewDisplay({
         we are collaborating with {JOBMA} and you will be taking this interview
         on their platform at {JOBMA_SITE}.
       </p>
+
+      {token ? <p className="mb-5">Your interview token is: {token}</p> : null}
 
       <div>
         <a

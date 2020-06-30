@@ -41,6 +41,7 @@ export type ApplicationSubmission = {
   review_status_date:      ?string,
   interview_url:           ?string,
   take_interview_url:      ?string,
+  interview_token:         ?string,
 }
 
 export type LegacyOrderPartial = {
@@ -82,6 +83,7 @@ export type SubmissionReview = {
   learner: User,
   interview_url: ?string,
   take_interview_url: ?string,
+  interview_token: ?string,
 }
 
 export type ApplicationDetailState = {
