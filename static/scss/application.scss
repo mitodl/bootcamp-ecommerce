@@ -156,5 +156,9 @@ $border-style: 1px solid $black;
 
   a {
     color: black;
+
+    &:hover {
+      color: black;
+    }
   }
 }
