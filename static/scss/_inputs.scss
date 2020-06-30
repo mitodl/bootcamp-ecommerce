@@ -43,6 +43,10 @@ button, .btn-styled {
     font-size: 14px;
     font-weight: 500;
   }
+
+  &:not([href]) {
+    cursor: pointer;
+  }
 }
 
 button.btn-plain {
