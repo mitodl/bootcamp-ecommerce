@@ -29,7 +29,7 @@ export default function TakeVideoInterviewDisplay({
         on their platform at {JOBMA_SITE}.
       </p>
 
-      {token ? <p className="mb-5">Your interview token is: {token}</p> : null}
+      {token ? <p className="mb-5">If you are on mobile, please enter this token when asked: {token}</p> : null}
 
       <div>
         <a
