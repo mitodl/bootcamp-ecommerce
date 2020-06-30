@@ -159,11 +159,14 @@ def test_retry_invalid_line_associations(mocker, deal_exists, line_exists):
     """
     mock_line_task = mocker.patch("hubspot.tasks.sync_line_with_hubspot")
     mock_application_task = mocker.patch("hubspot.tasks.sync_application_with_hubspot")
-    mocker.patch(
+    mock_exists = mocker.patch(
         "hubspot.tasks.exists_in_hubspot", side_effect=[line_exists, deal_exists]
     )
     resync = HubspotLineResyncFactory.create()
     retry_invalid_line_associations()
+    mock_exists.assert_any_call("LINE_ITEM", resync.application.integration_id)
+    if not line_exists:
+        mock_exists.assert_any_call("DEAL", resync.application.integration_id)
     assert HubspotLineResync.objects.filter(application=resync.application).count() == (
         1 if not line_exists else 0
     )
