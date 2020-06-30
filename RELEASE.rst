@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.47.0
+Version 0.47.0 (Released June 30, 2020)
 --------------
 
 - Acceptance/rejection letters (#744)
