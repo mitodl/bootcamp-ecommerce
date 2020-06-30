@@ -153,21 +153,6 @@
       font-size: 36px;
     }
 
-    .rich-text {
-      margin-bottom: 25px;
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5 {
-        a {
-          text-decoration: underline;
-          color: $wewak;
-        }
-      }
-    }
-
     .section-headings {
       @include media-breakpoint-down(sm) {
         border: 0px;

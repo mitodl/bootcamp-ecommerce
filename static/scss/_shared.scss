@@ -49,7 +49,8 @@ h3.section-header {
   }
 }
 
-p, .std-text {
+p,
+.std-text {
   font-size: 16px;
 }
 
@@ -67,7 +68,9 @@ p, .std-text {
   margin: 0 auto;
   padding: 15px 0;
 
-  h2, p, li {
+  h2,
+  p,
+  li {
     margin-bottom: $text-page-margin;
   }
 
@@ -119,4 +122,34 @@ p, .std-text {
 
 .bottom-holder {
   margin-bottom: 50px;
+}
+
+.cms-page {
+  .rich-text p {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      margin-bottom: 25px;
+
+      a {
+        text-decoration: underline;
+        color: $standard-link-color;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+
+    a {
+      text-decoration: underline;
+      color: $standard-link-color;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
 }

@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="cms-page">
   <div class="product-page">
     <div class="header">
       {% image page.header_image fill-1920x1080 %}
@@ -39,5 +40,6 @@
   {% if page.instructors %} {% include "partials/instructor.html" with page=page.instructors %} {% endif %}
   {% if page.alumni %} {% include "partials/alumni.html" with page=page.alumni %} {% endif %}
   {% if page.learning_resources %} {% include "partials/learning-resources.html" with page=page.learning_resources %} {% endif %}
-  </div>
+  </>
+</div>
 {% endblock %}

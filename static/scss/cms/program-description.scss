@@ -112,6 +112,7 @@
 
           &[aria-expanded="true"] {
             font-weight: bold;
+            color: $standard-link-color;
           }
         }
 
@@ -220,7 +221,7 @@
 
           &[aria-expanded="true"] {
             font-weight: bold;
-            color: $trolley-gray;
+            color: $standard-link-color;
           }
         }
 
