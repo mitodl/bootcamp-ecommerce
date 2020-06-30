@@ -1,6 +1,22 @@
 Release Notes
 =============
 
+Version 0.47.1
+--------------
+
+- Display interview token in take video interview drawer (#839)
+- Cleaned up tos / privacy policy link usage
+- Add 'static' to letter template signature url (#834)
+- Remove "View your video" link on application
+- tweak retry_invalid_line_associations function (#821)
+- Make take interview link open in a separate tab (#817)
+- Add interview_token (#835)
+- Hubspot Footer Form With Arrow Button.
+- Update the link styling for all links to match InVision on both home and product page
+- update footer styling, backgorund-color etc.
+- Fixed thumbnail stretching in application dashboard
+- gray link in program elements section
+
 Version 0.47.0 (Released June 30, 2020)
 --------------
 
