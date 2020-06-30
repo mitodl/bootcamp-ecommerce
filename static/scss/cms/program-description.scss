@@ -105,7 +105,7 @@
         a {
           display: inline-block;
           vertical-align: top;
-          color: #505050;
+          color: $matterhorn;
           font-size: 20px;
           line-height: 25px;
           text-decoration: underline;
@@ -220,7 +220,7 @@
 
           &[aria-expanded="true"] {
             font-weight: bold;
-            color: $dodger-blue;
+            color: $trolley-gray;
           }
         }
 
