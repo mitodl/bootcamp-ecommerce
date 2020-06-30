@@ -59,9 +59,13 @@ def create_interview_in_jobma(interview):
     result = response.json()
     interview_link = result.get("interview_link")
     if interview_link is not None:
-        interview.interview_url = result["interview_link"]
-        interview.save_and_log(None)
+        interview.interview_url = interview_link
     else:
         log.error("Interview link not found in payload - %s", result)
 
+    interview_token = result.get("interview_token")
+    if interview_token is not None:
+        interview.interview_token = interview_token
+
+    interview.save_and_log(None)
     return interview_link

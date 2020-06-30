@@ -24,19 +24,30 @@ def test_get_jobma_client(settings):
     )
 
 
-def test_create_interview(mocker, settings):
+@pytest.mark.parametrize("interview_token", [None, "new token"])
+@pytest.mark.parametrize("interview_url", [None, "https://new.url/"])
+@pytest.mark.parametrize("preexisting_token", [None, "old token"])
+@pytest.mark.parametrize("preexisting_url", [None, "http://old.url"])
+def test_create_interview(
+    mocker, settings, interview_token, interview_url, preexisting_token, preexisting_url
+):  # pylint: disable=too-many-arguments
     """create_interview should send an existing interview to Jobma"""
     client_mock = mocker.patch("jobma.api.get_jobma_client")
-    new_interview_url = "https://path.to/url/for/interview/"
-    client_mock.return_value.post.return_value.json.return_value = {
-        "interview_link": new_interview_url
-    }
 
-    interview = InterviewFactory.create()
+    interview = InterviewFactory.create(
+        interview_url=preexisting_url, interview_token=preexisting_token
+    )
     settings.JOBMA_BASE_URL = "http://theothersiteurl.org"
     settings.SITE_BASE_URL = "http://thissitebaseurl.com"
     token = "anaccesstoken"
     settings.JOBMA_ACCESS_TOKEN = token
+
+    response = {}
+    if interview_url:
+        response["interview_link"] = interview_url
+    if interview_token:
+        response["interview_token"] = interview_token
+    client_mock.return_value.post.return_value.json.return_value = response
 
     create_interview_in_jobma(interview)
     client_mock.return_value.post.assert_called_once_with(
@@ -60,4 +71,9 @@ def test_create_interview(mocker, settings):
     )
     client_mock.return_value.post.return_value.raise_for_status.assert_called_once_with()
     interview.refresh_from_db()
-    assert interview.interview_url == new_interview_url
+
+    expected_url = interview_url if interview_url else preexisting_url
+    expected_token = interview_token if interview_token else preexisting_token
+
+    assert interview.interview_url == expected_url
+    assert interview.interview_token == expected_token

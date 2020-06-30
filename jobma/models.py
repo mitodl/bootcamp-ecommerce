@@ -50,6 +50,7 @@ class Interview(AuditableModel):
         default=PENDING,
         choices=[(status, status) for status in JOBMA_INTERVIEW_STATUSES],
     )
+    interview_token = models.TextField(blank=True, null=True)
 
     @classmethod
     def get_audit_class(cls):
