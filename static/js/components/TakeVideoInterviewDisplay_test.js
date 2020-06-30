@@ -48,7 +48,7 @@ describe("TakeVideoInterviewDisplay", () => {
     const { wrapper } = await renderPage()
     assert.include(
       wrapper.find(".take-video-interview").text(),
-      `Your interview token is: ${String(submission.interview_token)}`
+      String(submission.interview_token)
     )
   })
 })
