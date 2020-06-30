@@ -693,11 +693,11 @@ class ResourcePagesSettings(BaseSetting):
     )
 
     panels = [
-        PageChooserPanel("apply_page", "cms.ResourcePage"),
-        PageChooserPanel("about_us_page", "cms.ResourcePage"),
-        PageChooserPanel("bootcamps_programs_page", "cms.ResourcePage"),
-        PageChooserPanel("terms_of_service_page", "cms.ResourcePage"),
-        PageChooserPanel("privacy_policy_page", "cms.ResourcePage"),
+        PageChooserPanel("apply_page"),
+        PageChooserPanel("about_us_page"),
+        PageChooserPanel("bootcamps_programs_page"),
+        PageChooserPanel("terms_of_service_page"),
+        PageChooserPanel("privacy_policy_page"),
     ]
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
