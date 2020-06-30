@@ -147,12 +147,6 @@ export const VideoInterviewDetail = (
               Take Video Interview
             </AccessibleAnchor>
           </div>
-        ) : submission && submission.interview_url ? (
-          <div className="col-12 col-sm-5 text-sm-right">
-            <a className="btn-link" href={submission.interview_url}>
-              View Your Interview
-            </a>
-          </div>
         ) : null
       ) : null}
     </ProgressDetailRow>

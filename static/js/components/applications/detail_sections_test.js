@@ -106,7 +106,6 @@ describe("application detail section component", () => {
     ;[
       [false, false, false, undefined],
       [true, false, false, "Take Video Interview"],
-      [true, true, true, "View Your Interview"],
       [true, true, false, undefined]
     ].forEach(([ready, fulfilled, submitted, expLinkText]) => {
       it(`should show correct link if ready === ${String(
@@ -138,9 +137,6 @@ describe("application detail section component", () => {
             fulfilled ? link.text() : link.prop("children"),
             expLinkText
           )
-        }
-        if (submitted) {
-          assert.equal(link.prop("href"), submission.interview_url)
         }
       })
     })
