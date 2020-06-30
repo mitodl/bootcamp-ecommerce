@@ -13,6 +13,10 @@ $border-style: 1px solid $black;
     content: none;
   }
 
+  img {
+    align-self: start;
+  }
+
   .label {
     color: $med-dark-gray;
   }
