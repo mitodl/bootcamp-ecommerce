@@ -1,28 +1,31 @@
 // @flow
 import casual from "casual-browserify"
-import sinon from "sinon"
 import { assert } from "chai"
 
 import TakeVideoInterviewDisplay from "./TakeVideoInterviewDisplay"
 
 import IntegrationTestHelper from "../util/integration_test_helper"
-import { makeApplicationDetail } from "../factories/application"
+import {
+  makeApplicationDetail,
+  makeApplicationSubmission
+} from "../factories/application"
 
 describe("TakeVideoInterviewDisplay", () => {
-  let helper, renderPage, application, interviewLink, stepId, videoInterviewsUrl
+  let helper, renderPage, application, stepId, submission
   beforeEach(() => {
-    interviewLink = "http://fake.url/"
     stepId = casual.integer(0, 100)
     application = makeApplicationDetail()
-    videoInterviewsUrl = `/api/applications/${application.id}/video-interviews/`
+    submission = {
+      ...makeApplicationSubmission(),
+      run_application_step_id: stepId
+    }
+    application.submissions = [
+      makeApplicationSubmission(),
+      submission,
+      makeApplicationSubmission()
+    ]
 
     helper = new IntegrationTestHelper()
-    helper.handleRequestStub.withArgs(videoInterviewsUrl).returns({
-      status: 200,
-      body:   {
-        interview_link: interviewLink
-      }
-    })
     renderPage = helper.configureReduxQueryRenderer(TakeVideoInterviewDisplay, {
       application,
       stepId
@@ -33,42 +36,11 @@ describe("TakeVideoInterviewDisplay", () => {
     helper.cleanup()
   })
 
-  it("takes the interview upon clicking the link", async () => {
+  it("has a link with the interview URL", async () => {
     const { wrapper } = await renderPage()
-    await wrapper
-      .find(".take-video-interview button.btn-external-link")
-      .prop("onClick")()
-    wrapper.update() // needed to assert the error message doesn't render
-    sinon.assert.calledWith(
-      helper.handleRequestStub,
-      videoInterviewsUrl,
-      "POST",
-      {
-        body: {
-          step_id: stepId
-        },
-        credentials: undefined,
-        headers:     {
-          "X-CSRFTOKEN": null
-        }
-      }
+    assert.equal(
+      wrapper.find(".take-video-interview a.btn-external-link").prop("href"),
+      submission.take_interview_url
     )
-    assert.equal(window.location.toString(), interviewLink)
-    assert.notOk(wrapper.find(".form-error").exists())
-  })
-
-  it("displays an error message if no link returned", async () => {
-    helper.handleRequestStub.withArgs(videoInterviewsUrl).returns({
-      status: 200,
-      body:   {
-        interview_link: null
-      }
-    })
-    const { wrapper } = await renderPage()
-    await wrapper
-      .find(".take-video-interview button.btn-external-link")
-      .prop("onClick")()
-    wrapper.update()
-    assert.ok(wrapper.find(".form-error").exists())
   })
 })

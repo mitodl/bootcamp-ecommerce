@@ -1,15 +1,9 @@
 // @flow
-import React, { useState } from "react"
-import { useMutation } from "redux-query-react"
+import React from "react"
 
 import { JOBMA, JOBMA_SITE } from "../constants"
-import queries from "../lib/queries"
 
-import type {
-  ApplicationDetail,
-  VideoInterviewResponse
-} from "../flow/applicationTypes"
-import type { HttpAuthResponse } from "../flow/authTypes"
+import type { ApplicationDetail } from "../flow/applicationTypes"
 
 type Props = {
   application: ApplicationDetail,
@@ -20,10 +14,10 @@ export default function TakeVideoInterviewDisplay({
   application,
   stepId
 }: Props) {
-  const [hasError, setHasError] = useState(false)
-  const [{ isPending }, createVideoInterview] = useMutation(() =>
-    queries.applications.createVideoInterviewMutation(application.id, stepId)
+  const submission = application.submissions.find(
+    submission => submission.run_application_step_id === stepId
   )
+  const url = submission && submission.take_interview_url
 
   return (
     <div className="container drawer-wrapper take-video-interview">
@@ -35,41 +29,15 @@ export default function TakeVideoInterviewDisplay({
       </p>
 
       <div>
-        <button
-          className="btn-external-link"
-          onClick={async () => {
-            setHasError(false)
-
-            const result: HttpAuthResponse<VideoInterviewResponse> = await createVideoInterview()
-
-            if (result.status === 200 && result.body.interview_link) {
-              window.location = result.body.interview_link
-              return
-            }
-            setHasError(true)
-          }}
-          disabled={isPending}
+        <a
+          className="btn-external-link btn-styled"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Take Interview at {JOBMA_SITE}
-        </button>
+        </a>
       </div>
-
-      {hasError ? (
-        <div className="form-error">
-          <p>
-            We're unable to start a video interview for you at this time, please
-            try again later. If you continue to see this message, please{" "}
-            <a
-              href="https://mitbootcamps.zendesk.com/hc/en-us/requests/new"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              contact support
-            </a>
-            .
-          </p>
-        </div>
-      ) : null}
     </div>
   )
 }

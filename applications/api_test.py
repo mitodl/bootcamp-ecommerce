@@ -8,21 +8,27 @@ from applications.api import (
     get_or_create_bootcamp_application,
     derive_application_state,
     get_required_submission_type,
+    populate_interviews_in_jobma,
 )
 from applications.constants import (
     AppStates,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
     SUBMISSION_QUIZ,
+    SUBMISSION_VIDEO,
 )
 from applications.factories import (
+    ApplicationStepFactory,
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
 )
+from applications.models import ApplicationStepSubmission, VideoInterviewSubmission
 from ecommerce.factories import LineFactory
 from ecommerce.models import Order
 from klasses.factories import BootcampRunFactory, InstallmentFactory
+from jobma.factories import InterviewFactory, JobFactory
+from jobma.models import Interview
 from profiles.factories import ProfileFactory, UserFactory
 from main.utils import now_in_utc
 
@@ -149,3 +155,63 @@ def test_get_required_submission_type(awaiting_submission_app):
         run_application_step=awaiting_submission_app.run_steps[1],
     )
     assert get_required_submission_type(awaiting_submission_app.application) is None
+
+
+@pytest.fixture
+def application():
+    """Application for a user"""
+    yield BootcampApplicationFactory.create()
+
+
+@pytest.fixture
+def job(application):  # pylint: disable=redefined-outer-name
+    """Make a job"""
+    yield JobFactory.create(run=application.bootcamp_run)
+
+
+@pytest.mark.parametrize("interview_exists", [True, False])
+@pytest.mark.parametrize("has_interview_link", [True, False])
+def test_populate_interviews_in_jobma(
+    interview_exists, has_interview_link, mocker, application, job
+):  # pylint: disable=redefined-outer-name,too-many-arguments
+    """
+    populate_interviews_in_jobma should create interviews on Jobma via REST API
+    for each relevant BootcampRunApplicationStep
+    """
+    video_app_step = ApplicationStepFactory.create(
+        bootcamp=application.bootcamp_run.bootcamp, submission_type=SUBMISSION_VIDEO
+    )
+    # this step should be ignored since it's not a video
+    quiz_app_step = ApplicationStepFactory.create(
+        bootcamp=application.bootcamp_run.bootcamp, submission_type=SUBMISSION_QUIZ
+    )
+    for step in (video_app_step, quiz_app_step):
+        BootcampRunApplicationStepFactory.create(
+            bootcamp_run=application.bootcamp_run, application_step=step
+        )
+
+    new_interview_link = "http://fake.interview.link"
+    create_interview = mocker.patch(
+        "applications.api.create_interview_in_jobma", return_value=new_interview_link
+    )
+
+    if interview_exists:
+        interview = InterviewFactory.create(job=job, applicant=application.user)
+        if not has_interview_link:
+            interview.interview_url = None
+            interview.save()
+
+    populate_interviews_in_jobma(application)
+    # We should be able to run this repeatedly without creating duplicate objects in the database
+    populate_interviews_in_jobma(application)
+
+    if not interview_exists or not has_interview_link:
+        interview = Interview.objects.get(job=job, applicant=application.user)
+        create_interview.assert_any_call(interview)
+        assert create_interview.call_count == 2
+
+        video_submission = VideoInterviewSubmission.objects.get(interview=interview)
+        step_submission = ApplicationStepSubmission.objects.get()
+        assert step_submission.content_object == video_submission
+    else:
+        create_interview.assert_not_called()

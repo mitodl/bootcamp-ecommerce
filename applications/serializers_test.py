@@ -193,6 +193,9 @@ def test_submission_serializer(content_object_factory):
         "interview_url": submission.content_object.interview.results_url
         if content_object_factory is VideoInterviewSubmissionFactory
         else None,
+        "take_interview_url": submission.content_object.interview.interview_url
+        if content_object_factory is VideoInterviewSubmissionFactory
+        else None,
     }
 
 
@@ -225,6 +228,7 @@ def test_submission_review_serializer(has_interview):
         "review_status_date": serializer_date_format(submission.review_status_date),
         "submission_status": submission.submission_status,
         "interview_url": interview.results_url if has_interview else None,
+        "take_interview_url": interview.interview_url if has_interview else None,
         "learner": UserSerializer(instance=user).data,
         "bootcamp_application": BootcampApplicationSerializer(
             instance=submission.bootcamp_application
