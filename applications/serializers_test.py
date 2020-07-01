@@ -190,10 +190,10 @@ def test_submission_serializer(content_object_factory):
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
         "submission_status": submission.submission_status,
-        "interview_url": submission.content_object.interview.results_url
+        "results_url": submission.content_object.interview.results_url
         if content_object_factory is VideoInterviewSubmissionFactory
         else None,
-        "take_interview_url": submission.content_object.interview.interview_url
+        "interview_url": submission.content_object.interview.interview_url
         if content_object_factory is VideoInterviewSubmissionFactory
         else None,
         "interview_token": submission.content_object.interview.interview_token
@@ -230,8 +230,8 @@ def test_submission_review_serializer(has_interview):
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
         "submission_status": submission.submission_status,
-        "interview_url": interview.results_url if has_interview else None,
-        "take_interview_url": interview.interview_url if has_interview else None,
+        "results_url": interview.results_url if has_interview else None,
+        "interview_url": interview.interview_url if has_interview else None,
         "interview_token": interview.interview_token if has_interview else None,
         "learner": UserSerializer(instance=user).data,
         "bootcamp_application": BootcampApplicationSerializer(

@@ -39,8 +39,8 @@ export type ApplicationSubmission = {
   submission_status:       ValidSubmissionStatusType,
   review_status:           ValidReviewStatusType,
   review_status_date:      ?string,
+  results_url:             ?string,
   interview_url:           ?string,
-  take_interview_url:      ?string,
   interview_token:         ?string,
 }
 
@@ -81,8 +81,8 @@ export type SubmissionReview = {
   review_status_date: ?string,
   bootcamp_application: Application,
   learner: User,
+  results_url: ?string,
   interview_url: ?string,
-  take_interview_url: ?string,
   interview_token: ?string,
 }
 

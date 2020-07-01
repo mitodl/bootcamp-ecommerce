@@ -17,7 +17,7 @@ export default function TakeVideoInterviewDisplay({
   const submission = application.submissions.find(
     submission => submission.run_application_step_id === stepId
   )
-  const url = submission && submission.take_interview_url
+  const url = submission && submission.interview_url
   const token = submission && submission.interview_token
 
   return (

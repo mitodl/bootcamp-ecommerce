@@ -40,7 +40,7 @@ describe("TakeVideoInterviewDisplay", () => {
     const { wrapper } = await renderPage()
     assert.equal(
       wrapper.find(".take-video-interview a.btn-external-link").prop("href"),
-      submission.take_interview_url
+      submission.interview_url
     )
   })
 

@@ -40,20 +40,18 @@ class BootcampRunStepSerializer(serializers.ModelSerializer):
 class SubmissionSerializer(serializers.ModelSerializer):
     """ApplicationStepSubmission serializer"""
 
+    results_url = serializers.SerializerMethodField(required=False, allow_null=True)
     interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
-    take_interview_url = serializers.SerializerMethodField(
-        required=False, allow_null=True
-    )
     interview_token = serializers.SerializerMethodField(required=False, allow_null=True)
 
-    def get_interview_url(self, submission):
+    def get_results_url(self, submission):
         """Return the results URL for the reviewer or others to view the interview"""
         if submission.content_type == ContentType.objects.get_for_model(
             VideoInterviewSubmission
         ):
             return submission.content_object.interview.results_url
 
-    def get_take_interview_url(self, submission):
+    def get_interview_url(self, submission):
         """Return the interview URL for the applicant to take the interview"""
         if submission.content_type == ContentType.objects.get_for_model(
             VideoInterviewSubmission
@@ -76,8 +74,8 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "submission_status",
             "review_status",
             "review_status_date",
+            "results_url",
             "interview_url",
-            "take_interview_url",
             "interview_token",
         ]
         read_only_fields = [
@@ -85,8 +83,8 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "submission_status",
             "review_status",
             "review_status_date",
+            "results_url",
             "interview_url",
-            "take_interview_url",
             "interview_token",
         ]
 
