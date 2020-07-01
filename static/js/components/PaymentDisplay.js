@@ -8,13 +8,17 @@ import { mutateAsync } from "redux-query"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import Decimal from "decimal.js-light"
 
+import FormError from "./forms/elements/FormError"
+import { closeDrawer } from "../reducers/drawer"
 import queries from "../lib/queries"
 import {
   formatRunDateRange,
   createForm,
   formatPrice,
-  formatReadableDateFromStr
+  formatReadableDateFromStr,
+  isNilOrBlank
 } from "../util/util"
+import { routes } from "../lib/urls"
 
 import type { PaymentPayload } from "../flow/ecommerceTypes"
 import type { ApplicationDetail } from "../flow/applicationTypes"
@@ -27,32 +31,34 @@ type Props = {
 const roundToCent = amount => new Decimal(amount).toDecimalPlaces(2).toNumber()
 
 const validate = ({ amount, balance }) => {
-  if (roundToCent(amount) > balance) {
+  let adjustedAmount
+  if (isNilOrBlank(amount)) {
     return {
-      amount: "Enter a number less than the remaining balance"
+      amount: "Payment amount is required"
+    }
+  }
+  try {
+    adjustedAmount = roundToCent(amount)
+  } catch (e) {
+    return {
+      amount: "Payment amount must be a valid number"
+    }
+  }
+  if (adjustedAmount > balance) {
+    return {
+      amount: "Payment amount must be less than the remaining balance"
+    }
+  } else if (adjustedAmount <= 0) {
+    return {
+      amount: "Payment amount must be greater than zero"
     }
   }
 
   return {}
 }
 
-const validateAmount = value => {
-  let price
-  try {
-    price = roundToCent(value)
-  } catch (e) {
-    return "Price must be a valid number"
-  }
-
-  if (price <= 0) {
-    return "Price must be greater than zero"
-  }
-
-  return null
-}
-
 export const PaymentDisplay = (props: Props) => {
-  const { application, sendPayment } = props
+  const { application, sendPayment, closeDrawer } = props
   if (!application) {
     return null
   }
@@ -81,39 +87,33 @@ export const PaymentDisplay = (props: Props) => {
         <Formik
           initialValues={{ amount: "", balance: cost }}
           validate={validate}
-          onSubmit={async ({ amount }, actions) => {
+          onSubmit={async (values, actions) => {
+            const amount = values.amount
             await sendPayment({
               application_id: application.id,
               payment_amount: roundToCent(amount)
             })
-            actions.setSubmitting(false)
+            actions.resetForm()
+            closeDrawer()
           }}
-          render={({ isSubmitting }) => (
+          render={({ isSubmitting, isValidating }) => (
             <Form>
-              <ErrorMessage name="amount" />
-              <Field
-                name="amount"
-                type="text"
-                placeholder="Enter Amount"
-                validate={validateAmount}
-              />
+              <Field type="number" name="amount" placeholder="Enter Amount" />
               <button
                 className="btn-danger"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isValidating || isSubmitting}
               >
                 Pay Now
               </button>
+              <ErrorMessage name="amount" component={FormError} />
             </Form>
           )}
         />
       </div>
       <div className="terms-and-conditions">
         By making a payment I certify that I agree with the MIT Bootcamps{" "}
-        <a href="/terms_and_conditions/" target="_blank">
-          Terms and Conditions
-        </a>
-        .
+        <a href={routes.resourcePages.terms}>Terms and Conditions</a>.
       </div>
     </div>
   )
@@ -135,7 +135,8 @@ const mapDispatchToProps = dispatch => ({
     }
     body.appendChild(form)
     form.submit()
-  }
+  },
+  closeDrawer: () => dispatch(closeDrawer())
 })
 
 export default compose(connect(null, mapDispatchToProps))(PaymentDisplay)

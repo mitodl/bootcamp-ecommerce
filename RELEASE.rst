@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.47.1
+Version 0.47.1 (Released June 30, 2020)
 --------------
 
 - Allow any page for bootcamp programs page

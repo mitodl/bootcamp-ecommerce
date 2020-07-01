@@ -7,6 +7,7 @@ import { shallow } from "enzyme"
 import PaymentDisplay, {
   PaymentDisplay as InnerPaymentDisplay
 } from "./PaymentDisplay"
+import { paymentAPI } from "../lib/urls"
 
 import { makeApplicationDetail } from "../factories/application"
 import IntegrationTestHelper from "../util/integration_test_helper"
@@ -81,36 +82,48 @@ describe("PaymentDisplay", () => {
       return { formik, inner: rendered }
     }
 
-    it("does nothing if the payment textbox is empty", async () => {
-      const { inner } = await renderFormik()
+    it("returns a validation error if the payment textbox is empty", async () => {
+      const { formik } = await renderFormik()
       assert.deepEqual(
-        inner
-          .find(Field)
-          .filter("[name='amount']")
-          .prop("validate")(""),
-        "Price must be a valid number"
+        formik.prop("validate")({
+          amount:  "",
+          balance: 100
+        }),
+        { amount: "Payment amount is required" }
       )
     })
 
-    it("does nothing if the payment textbox is not parseable as a float", async () => {
-      const { inner } = await renderFormik()
+    it("returns a validation error if the payment textbox is not parseable as a float", async () => {
+      const { formik } = await renderFormik()
       assert.deepEqual(
-        inner
-          .find(Field)
-          .filter("[name='amount']")
-          .prop("validate")("abc"),
-        "Price must be a valid number"
+        formik.prop("validate")({
+          amount:  "abc",
+          balance: 100
+        }),
+        { amount: "Payment amount must be a valid number" }
       )
     })
+    ;["0", "-5"].forEach(amount => {
+      it(`returns a validation error if the amount is ${amount}`, async () => {
+        const { formik } = await renderFormik()
+        assert.deepEqual(
+          formik.prop("validate")({
+            amount:  String(amount),
+            balance: 100
+          }),
+          { amount: "Payment amount must be greater than zero" }
+        )
+      })
+    })
 
-    it("does nothing if the amount is 0", async () => {
-      const { inner } = await renderFormik()
+    it("returns a validation error if the amount is greater than the balance", async () => {
+      const { formik } = await renderFormik()
       assert.deepEqual(
-        inner
-          .find(Field)
-          .filter("[name='amount']")
-          .prop("validate")("0.000001"),
-        "Price must be greater than zero"
+        formik.prop("validate")({
+          amount:  "105",
+          balance: 100
+        }),
+        { amount: "Payment amount must be less than the remaining balance" }
       )
     })
 
@@ -127,7 +140,7 @@ describe("PaymentDisplay", () => {
       const { formik } = await renderFormik()
       const url = "url"
       const payload = { pay: "load" }
-      helper.handleRequestStub.withArgs("/api/v0/payment/").returns({
+      helper.handleRequestStub.withArgs(paymentAPI.toString()).returns({
         status: 200,
         body:   {
           url,
@@ -135,19 +148,18 @@ describe("PaymentDisplay", () => {
         }
       })
       const payment = "123.456" // will get rounded to 123.46
-      const setSubmittingStub = helper.sandbox.stub()
+      const resetFormStub = helper.sandbox.stub()
       await formik.prop("onSubmit")(
         { amount: payment },
-        { setSubmitting: setSubmittingStub }
+        { resetForm: resetFormStub }
       )
 
-      assert.equal(createFormStub.callCount, 1)
-      assert.deepEqual(createFormStub.args[0], [url, payload])
-      assert.equal(submitStub.callCount, 1)
-      assert.deepEqual(submitStub.args[0], [])
+      sinon.assert.calledOnce(createFormStub)
+      sinon.assert.calledOnce(submitStub)
+      sinon.assert.calledOnce(resetFormStub)
       sinon.assert.calledWith(
-        helper.handleRequestStub.withArgs("/api/v0/payment/"),
-        "/api/v0/payment/",
+        helper.handleRequestStub.withArgs(paymentAPI.toString()),
+        paymentAPI.toString(),
         "POST",
         {
           body: {
