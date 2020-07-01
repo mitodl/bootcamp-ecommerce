@@ -41,7 +41,13 @@ module.exports = {
   },
   babelSharedLoader: {
     test:    /\.jsx?$/,
-    exclude: /node_modules/,
+    include: [
+      path.resolve(__dirname, "static/js"),
+      // The query-string is only published in ES6. These two paths are added to transpile these
+      // libraries to ES5.
+      path.resolve(__dirname, "node_modules/query-string"),
+      path.resolve(__dirname, "node_modules/strict-uri-encode"),
+    ],
     loader:  "babel-loader",
     query:   {
       presets: [
@@ -49,7 +55,6 @@ module.exports = {
         "@babel/preset-react",
         "@babel/preset-flow"
       ],
-      ignore:  ["node_modules/**"],
       plugins: [
         "react-hot-loader/babel",
         "@babel/plugin-proposal-object-rest-spread",
