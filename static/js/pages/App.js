@@ -16,7 +16,6 @@ import RegisterPages from "./register/RegisterPages"
 import ApplicationPages from "./applications/ApplicationPages"
 import ReviewAdminPages from "./applications/ReviewAdminPages"
 
-import PaymentPage from "./PaymentPage"
 import EmailConfirmPage from "./settings/EmailConfirmPage"
 import AccountSettingsPage from "./settings/AccountSettingsPage"
 
@@ -82,7 +81,6 @@ export class App extends Component<Props> {
         <NotificationContainer />
         <div className="body-content">
           <Switch>
-            <Route path={`${match.url}pay/`} component={PaymentPage} />
             <Route
               path={urljoin(match.url, String(routes.login))}
               component={LoginPages}

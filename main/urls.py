@@ -22,7 +22,6 @@ if not features.is_enabled(features.CMS_HOME_PAGE):
 
 urlpatterns = (
     [
-        url(r"^pay/$", react, name="pay"),
         url(r"^status/", include("server_status.urls")),
         url(r"^admin/", admin.site.urls),
         url(r"^hijack/", include("hijack.urls", namespace="hijack")),
