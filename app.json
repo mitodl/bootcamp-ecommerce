@@ -339,6 +339,10 @@
       "description": "Token to access the status API.",
       "required": true
     },
+    "USE_X_FORWARDED_HOST": {
+      "description": "Set HOST header to original domain accessed by user",
+      "required": false
+    },
     "ZENDESK_HELP_WIDGET_ENABLED": {
       "description": null,
       "required": false
