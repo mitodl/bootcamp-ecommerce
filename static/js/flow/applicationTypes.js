@@ -75,15 +75,10 @@ export type ApplicationDetail = {
 
 export type SubmissionReview = {
   id: number,
-  run_application_step_id: number,
-  submitted_date: ?string,
-  review_status: ?string,
-  review_status_date: ?string,
-  bootcamp_application: Application,
   learner: User,
+  review_status: ?string,
   interview_url: ?string,
-  take_interview_url: ?string,
-  interview_token: ?string,
+  application_id: number,
 }
 
 export type ApplicationDetailState = {

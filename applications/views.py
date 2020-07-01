@@ -158,7 +158,14 @@ class ReviewSubmissionViewSet(
     authentication_classes = (SessionAuthentication,)
     serializer_class = SubmissionReviewSerializer
     permission_classes = (IsAdminUser,)
-    queryset = ApplicationStepSubmission.objects.all()
+    queryset = (
+        ApplicationStepSubmission.objects.all()
+        .select_related(
+            "bootcamp_application__user__profile",
+            "bootcamp_application__user__legal_address",
+        )
+        .prefetch_related("content_object__interview")
+    )
     filterset_class = ApplicationStepSubmissionFilterSet
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     pagination_class = ReviewSubmissionPagination

@@ -225,18 +225,10 @@ def test_submission_review_serializer(has_interview):
     data = SubmissionReviewSerializer(instance=submission).data
     assert data == {
         "id": submission.id,
-        "run_application_step_id": run_step.id,
-        "submitted_date": serializer_date_format(submission.submitted_date),
         "review_status": submission.review_status,
-        "review_status_date": serializer_date_format(submission.review_status_date),
-        "submission_status": submission.submission_status,
         "interview_url": interview.results_url if has_interview else None,
-        "take_interview_url": interview.interview_url if has_interview else None,
-        "interview_token": interview.interview_token if has_interview else None,
         "learner": UserSerializer(instance=user).data,
-        "bootcamp_application": BootcampApplicationSerializer(
-            instance=submission.bootcamp_application
-        ).data,
+        "application_id": submission.bootcamp_application_id,
     }
 
 

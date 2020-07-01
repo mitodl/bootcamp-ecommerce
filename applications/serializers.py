@@ -48,22 +48,25 @@ class SubmissionSerializer(serializers.ModelSerializer):
 
     def get_interview_url(self, submission):
         """Return the results URL for the reviewer or others to view the interview"""
-        if submission.content_type == ContentType.objects.get_for_model(
-            VideoInterviewSubmission
+        if (
+            submission.content_type_id
+            == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
             return submission.content_object.interview.results_url
 
     def get_take_interview_url(self, submission):
         """Return the interview URL for the applicant to take the interview"""
-        if submission.content_type == ContentType.objects.get_for_model(
-            VideoInterviewSubmission
+        if (
+            submission.content_type_id
+            == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
             return submission.content_object.interview.interview_url
 
     def get_interview_token(self, submission):
         """Return the interview token for the applicant"""
-        if submission.content_type == ContentType.objects.get_for_model(
-            VideoInterviewSubmission
+        if (
+            submission.content_type_id
+            == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
             return submission.content_object.interview.interview_token
 
@@ -164,13 +167,24 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
         fields = ["id", "state", "created_on", "bootcamp_run", "has_payments"]
 
 
-class SubmissionReviewSerializer(SubmissionSerializer):
+class SubmissionReviewSerializer(serializers.ModelSerializer):
     """ApplicationStepSubmission serializer for reviewers"""
 
-    bootcamp_application = BootcampApplicationSerializer(required=False, read_only=True)
+    application_id = serializers.IntegerField(
+        read_only=True, source="bootcamp_application_id"
+    )
     learner = UserSerializer(
         source="bootcamp_application.user", required=False, read_only=True
     )
+    interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
+
+    def get_interview_url(self, submission):
+        """Return the results URL for the reviewer or others to view the interview"""
+        if (
+            submission.content_type_id
+            == ContentType.objects.get_for_model(VideoInterviewSubmission).id
+        ):
+            return submission.content_object.interview.results_url
 
     def validate(self, attrs):
         """Validate incoming data for a write"""
@@ -213,5 +227,5 @@ class SubmissionReviewSerializer(SubmissionSerializer):
         return instance
 
     class Meta(SubmissionSerializer.Meta):
-        fields = SubmissionSerializer.Meta.fields + ["bootcamp_application", "learner"]
-        read_only_fields = ("submitted_date", "review_status_date")
+        fields = ["application_id", "learner", "review_status", "interview_url", "id"]
+        read_only_fields = ["application_id", "learner", "interview_url", "id"]

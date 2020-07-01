@@ -2,6 +2,7 @@
 import { assert } from "chai"
 import { times } from "ramda"
 import { reverse } from "named-urls"
+import casual from "casual-browserify"
 
 import ReviewDashboardPage from "./ReviewDashboardPage"
 
@@ -15,12 +16,13 @@ import { REVIEW_STATUS_DISPLAY_MAP } from "../../constants"
 import { routes } from "../../lib/urls"
 
 describe("ReviewDashboardPage", () => {
-  let helper, render, facets, submissions
+  let helper, render, facets, submissions, applicationId
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
     facets = makeApplicationFacets()
-    submissions = times(makeSubmissionReview, 4)
+    applicationId = casual.integer(2, 30)
+    submissions = times(() => makeSubmissionReview(applicationId), 4)
     helper.handleRequestStub
       .withArgs(submissionsAPI.query({ limit: 1000 }).toString())
       .returns({

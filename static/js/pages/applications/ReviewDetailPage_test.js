@@ -1,11 +1,15 @@
 /* global SETTINGS: false */
 import { assert } from "chai"
 import sinon from "sinon"
+import wait from "waait"
+
+import ReviewDetailPage from "./ReviewDetailPage"
 
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import { makeUser } from "../../factories/user"
 import {
   makeApplicationDetail,
+  makeApplicationSubmission,
   makeSubmissionReview
 } from "../../factories/application"
 import {
@@ -13,43 +17,34 @@ import {
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED
 } from "../../constants"
-import ReviewDetailPage from "./ReviewDetailPage"
-
 import { shouldIf } from "../../lib/test_utils"
 import { getFilenameFromPath, isNilOrBlank } from "../../util/util"
-import wait from "waait"
+
+import type { ApplicationSubmission } from "../../flow/applicationTypes"
 
 describe("ReviewDetailPage", () => {
   let helper,
     fakeUser,
     renderPage,
-    fakeApplication,
     fakeApplicationDetail,
-    fakeApplicationSubmission,
+    fakeApplicationSubmission: ApplicationSubmission,
     fakeSubmissionReview
 
   beforeEach(() => {
     helper = new IntegrationTestHelper()
-    fakeSubmissionReview = makeSubmissionReview()
+    fakeApplicationDetail = makeApplicationDetail()
+    fakeSubmissionReview = makeSubmissionReview(fakeApplicationDetail.id)
     fakeSubmissionReview.review_status = REVIEW_STATUS_PENDING
-    fakeApplication = fakeSubmissionReview.bootcamp_application
     fakeUser = fakeSubmissionReview.learner
     fakeApplicationSubmission = {
-      id:                      fakeSubmissionReview.id,
-      run_application_step_id: fakeSubmissionReview.run_application_step_id,
-      submitted_date:          fakeSubmissionReview.submitted_date,
-      review_status:           fakeSubmissionReview.review_status,
-      review_status_date:      fakeSubmissionReview.review_status_date
+      ...makeApplicationSubmission(),
+      id:            fakeSubmissionReview.id,
+      review_status: fakeSubmissionReview.review_status
     }
-    fakeApplicationDetail = makeApplicationDetail()
-    fakeApplicationDetail.id = fakeApplication.id
-    fakeApplicationDetail.bootcamp_run_id = fakeApplication.bootcamp_run_id
     fakeApplicationDetail.submissions = [fakeApplicationSubmission]
 
     helper.handleRequestStub
-      .withArgs(
-        `/api/applications/${fakeSubmissionReview.bootcamp_application.id}/`
-      )
+      .withArgs(`/api/applications/${fakeApplicationDetail.id}/`)
       .returns({
         status: 200,
         body:   fakeApplicationDetail
@@ -138,10 +133,10 @@ describe("ReviewDetailPage", () => {
   })
 
   //
-  ;["http://linkedin/user", null].forEach(interviewUrl => {
+  ;["http://interview/for/user", null].forEach(interviewUrl => {
     it(`${shouldIf(
       !isNilOrBlank(interviewUrl)
-    )} render the LinkedIn section if LinkedIn URL is ${String(
+    )} render the interview link if the link is ${String(
       interviewUrl
     )}`, async () => {
       fakeSubmissionReview.interview_url = interviewUrl
