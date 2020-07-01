@@ -70,3 +70,5 @@ export const appResumeAPI = applicationDetailAPI.segment("resume/")
 export const appVideoInterviewAPI = applicationDetailAPI.segment(
   "video-interviews/"
 )
+
+export const paymentAPI = api.segment("v0/payment/")
