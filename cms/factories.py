@@ -53,6 +53,15 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
         return obj
 
 
+class BootcampIndexPageFactory(wagtail_factories.PageFactory):
+    """Factory for BootcampIndexPage"""
+
+    title = factory.Faker("text", max_nb_chars=15)
+
+    class Meta:
+        model = models.BootcampIndexPage
+
+
 class ResourcePageFactory(wagtail_factories.PageFactory):
     """ResourcePage factory"""
 

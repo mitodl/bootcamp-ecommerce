@@ -689,14 +689,10 @@ USE_CELERY = True
 # django cache back-ends
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "local-in-memory-cache",
-    },
-    "redis": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": CELERY_BROKER_URL,
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-    },
+    }
 }
 
 

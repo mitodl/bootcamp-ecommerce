@@ -2,7 +2,7 @@
 import pytest
 
 from cms.factories import ResourcePagesSettingsFactory, ResourcePageFactory
-from cms.utils import get_resource_page_urls, invalidate_get_resource_page_urls
+from cms.utils import get_resource_page_urls, invalidate_resource_page_urls
 
 pytestmark = pytest.mark.django_db
 
@@ -20,8 +20,8 @@ def test_get_resource_page_urls():
     }
 
 
-def test_invalidate_get_resource_page_urls():
-    """Test that invalidate_get_resource_page_urls() invalidates the cache for get_resource_page_urls"""
+def test_invalidate_resource_page_urls():
+    """Test that invalidate_resource_page_urls() invalidates the cache for get_resource_page_urls"""
     site_page_settings = ResourcePagesSettingsFactory.create()
     initial = get_resource_page_urls(site_page_settings.site)
 
@@ -33,7 +33,7 @@ def test_invalidate_get_resource_page_urls():
     # verify the calue is cached
     assert get_resource_page_urls(site_page_settings.site) == initial
 
-    invalidate_get_resource_page_urls()
+    invalidate_resource_page_urls()
 
     # updated value should be seen
     assert get_resource_page_urls(site_page_settings.site) == expected
