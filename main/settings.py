@@ -606,6 +606,11 @@ GTM_TRACKING_ID = get_string(
 SL_TRACKING_ID = get_string("SL_TRACKING_ID", "", description="The SL tracking ID")
 REACT_GA_DEBUG = get_bool("REACT_GA_DEBUG", False, dev_only=True)
 
+USE_X_FORWARDED_HOST = get_bool(
+    "USE_X_FORWARDED_HOST",
+    False,
+    description="Set HOST header to original domain accessed by user",
+)
 SITE_NAME = get_string(
     "SITE_NAME", "MIT Bootcamp-Ecommerce", description="The site name for the app"
 )
