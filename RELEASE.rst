@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.47.2
+--------------
+
+- Added setting for USE_X_FORWARDED_HOST
+
 Version 0.47.1 (Released June 30, 2020)
 --------------
 
