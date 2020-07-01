@@ -4,7 +4,7 @@ Page models for the CMS
 import logging
 
 from django.conf import settings
-from django.db import models, transaction
+from django.db import models
 from django.http.response import Http404
 from django.urls import reverse
 from django.utils.text import slugify
@@ -485,13 +485,6 @@ class ResourcePage(Page):
             "site_name": settings.SITE_NAME,
         }
 
-    def save(self, *args, **kwargs):
-        """Save the model instance"""
-        from cms.utils import invalidate_get_resource_page_urls
-
-        super().save(*args, **kwargs)
-        transaction.on_commit(invalidate_get_resource_page_urls)
-
 
 @register_snippet
 class SiteNotification(models.Model):
@@ -699,13 +692,6 @@ class ResourcePagesSettings(BaseSetting):
         PageChooserPanel("terms_of_service_page"),
         PageChooserPanel("privacy_policy_page"),
     ]
-
-    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        """Save the model instance"""
-        from cms.utils import invalidate_get_resource_page_urls
-
-        super().save(*args, **kwargs)
-        transaction.on_commit(invalidate_get_resource_page_urls)
 
     class Meta:
         verbose_name = "Resource Pages"

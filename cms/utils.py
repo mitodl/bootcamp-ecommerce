@@ -28,7 +28,7 @@ def get_resource_page_urls(site):
     return {key: value.url if value else "" for key, value in pages.items()}
 
 
-def invalidate_get_resource_page_urls():
+def invalidate_resource_page_urls():
     """
     Invalidate the cached values of get_resource_page_urls
     """
