@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.47.3
+--------------
+
+- Added rule to transpile query-string library + dependency
+- Fixed address factory (which caused flaky username test)
+
 Version 0.47.2 (Released July 01, 2020)
 --------------
 
