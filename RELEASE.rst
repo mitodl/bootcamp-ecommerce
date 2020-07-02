@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.47.4
+Version 0.47.4 (Released July 02, 2020)
 --------------
 
 - Fixes faulty logic in Profile.is_complete
