@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.47.4
+--------------
+
+- Fixes faulty logic in Profile.is_complete
+- Fixed payment input validation
+
 Version 0.47.3 (Released July 02, 2020)
 --------------
 
