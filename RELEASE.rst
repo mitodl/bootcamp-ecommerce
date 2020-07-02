@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.47.3
+Version 0.47.3 (Released July 02, 2020)
 --------------
 
 - Added rule to transpile query-string library + dependency
