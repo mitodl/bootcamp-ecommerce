@@ -37,14 +37,8 @@ class BootcampRunStepSerializer(serializers.ModelSerializer):
         fields = ["id", "due_date", "step_order", "submission_type"]
 
 
-class SubmissionSerializer(serializers.ModelSerializer):
-    """ApplicationStepSubmission serializer"""
-
-    interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
-    take_interview_url = serializers.SerializerMethodField(
-        required=False, allow_null=True
-    )
-    interview_token = serializers.SerializerMethodField(required=False, allow_null=True)
+class InterviewUrlMixin:
+    """Mixin to provide get_interview_url for both submission serializers"""
 
     def get_interview_url(self, submission):
         """Return the results URL for the reviewer or others to view the interview"""
@@ -53,6 +47,16 @@ class SubmissionSerializer(serializers.ModelSerializer):
             == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
             return submission.content_object.interview.results_url
+
+
+class SubmissionSerializer(InterviewUrlMixin, serializers.ModelSerializer):
+    """ApplicationStepSubmission serializer"""
+
+    interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
+    take_interview_url = serializers.SerializerMethodField(
+        required=False, allow_null=True
+    )
+    interview_token = serializers.SerializerMethodField(required=False, allow_null=True)
 
     def get_take_interview_url(self, submission):
         """Return the interview URL for the applicant to take the interview"""
@@ -167,7 +171,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
         fields = ["id", "state", "created_on", "bootcamp_run", "has_payments"]
 
 
-class SubmissionReviewSerializer(serializers.ModelSerializer):
+class SubmissionReviewSerializer(InterviewUrlMixin, serializers.ModelSerializer):
     """ApplicationStepSubmission serializer for reviewers"""
 
     application_id = serializers.IntegerField(
@@ -177,14 +181,6 @@ class SubmissionReviewSerializer(serializers.ModelSerializer):
         source="bootcamp_application.user", required=False, read_only=True
     )
     interview_url = serializers.SerializerMethodField(required=False, allow_null=True)
-
-    def get_interview_url(self, submission):
-        """Return the results URL for the reviewer or others to view the interview"""
-        if (
-            submission.content_type_id
-            == ContentType.objects.get_for_model(VideoInterviewSubmission).id
-        ):
-            return submission.content_object.interview.results_url
 
     def validate(self, attrs):
         """Validate incoming data for a write"""
