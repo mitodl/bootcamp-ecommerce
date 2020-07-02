@@ -44,9 +44,8 @@
   </div>
   <script>
     var totalSections = {{ page.sections|length }};
-
-    for(i=1 ; i <= totalSections; i++){
-      $(`.slider-${i}`).slick({
+    for(var i=1; i <= totalSections; i++){
+      $(".slider-" + i).slick({
         rows:           0,
         slidesToShow:   4,
         slidesToScroll: 1,
