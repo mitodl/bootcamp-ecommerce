@@ -57,6 +57,12 @@ def test_profile_is_complete(empty_field):
         assert profile.is_complete is True
 
 
+def test_profile_is_complete_zero():
+    """Test that Profile.is_complete returns True even if one of the values is 0"""
+    profile = ProfileFactory.create(company_size=0)
+    assert profile.is_complete is True
+
+
 @pytest.mark.parametrize(
     "name, expected",
     [
