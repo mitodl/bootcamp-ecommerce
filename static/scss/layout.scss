@@ -36,7 +36,14 @@
 @import "cms/letter-page";
 @import "submission-facets";
 
+html, body {
+  height: 100%;
+}
+
 body {
+  // Setting flex styles to enable "sticky" footer
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
   background-color: $default-background-color;
@@ -51,8 +58,19 @@ body {
   }
 }
 
+// Top-level content elements (i.e.: direct child elements of <body> that contain non-footer content).
+// Setting this styles to enable "sticky" footer.
+#app-container, .letter-template-page, .cms-page {
+  flex: 1 0 auto;
+}
+
+#footer {
+  flex-shrink: 0;
+}
+
 .body-content {
   padding-top: 30px;
+  min-height: 325px;
 
   &.deprecated-styling {
     padding-top: 0;
