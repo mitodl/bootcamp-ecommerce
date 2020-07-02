@@ -26,6 +26,7 @@ from main.utils import (
     all_unique,
     all_equal,
     has_all_keys,
+    is_blank,
     group_into_dict,
     filter_dict_by_key_set,
 )
@@ -121,6 +122,18 @@ def test_has_all_keys():
     d = {"a": 1, "b": 2, "c": 3}
     assert has_all_keys(d, ["a", "c"]) is True
     assert has_all_keys(d, ["a", "z"]) is False
+
+
+def test_is_blank():
+    """
+    Assert that is_blank returns True if the given value is None or a blank string
+    """
+    assert is_blank("") is True
+    assert is_blank(None) is True
+    assert is_blank(0) is False
+    assert is_blank(" ") is False
+    assert is_blank(False) is False
+    assert is_blank("value") is False
 
 
 def test_group_into_dict():

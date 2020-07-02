@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 import pycountry
 
 from main.models import TimestampedModel
-from main.utils import now_in_utc
+from main.utils import now_in_utc, is_blank
 
 from profiles.constants import (
     GENDER_CHOICES,
@@ -186,17 +186,20 @@ class Profile(TimestampedModel):
     @property
     def is_complete(self):
         """Returns True if the profile is complete"""
-        return all(
-            (
-                self.gender,
-                self.birth_year,
-                self.company,
-                self.job_title,
-                self.industry,
-                self.job_function,
-                self.company_size,
-                self.years_experience,
-                self.highest_education,
+        return not any(
+            map(
+                is_blank,
+                [
+                    self.gender,
+                    self.birth_year,
+                    self.company,
+                    self.job_title,
+                    self.industry,
+                    self.job_function,
+                    self.company_size,
+                    self.years_experience,
+                    self.highest_education,
+                ],
             )
         )
 
