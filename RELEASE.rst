@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.48.0
+Version 0.48.0 (Released July 07, 2020)
 --------------
 
 - Don't prefetch interview which doesn't exist on QuizSubmission (#891)
