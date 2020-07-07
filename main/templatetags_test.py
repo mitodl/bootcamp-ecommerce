@@ -111,6 +111,7 @@ def test_dollar_format():
     assert dollar_format("123.5") == "$123.50"
     assert dollar_format(123) == "$123.00"
     assert dollar_format(123.5) == "$123.50"
+    assert dollar_format(-34.56) == "-$34.56"
 
 
 def test_parse_iso_datetime():

@@ -135,14 +135,20 @@ export const formatPrice = (price: ?string | number | Decimal): string => {
   if (price === null || price === undefined) {
     return ""
   } else {
-    let formattedPrice: Decimal = Decimal(price).toDecimalPlaces(2)
-
-    if (formattedPrice.isInteger()) {
-      formattedPrice = formattedPrice.toFixed(0)
-    } else {
-      formattedPrice = formattedPrice.toFixed(2, Decimal.ROUND_HALF_UP)
+    let decimalPrice: Decimal = Decimal(price).toDecimalPlaces(2)
+    let formattedPrice
+    const isNegative = decimalPrice.isNegative()
+    if (isNegative) {
+      decimalPrice = decimalPrice.times(-1)
     }
-    return `$${formattedPrice}`
+
+    if (decimalPrice.isInteger()) {
+      formattedPrice = decimalPrice.toFixed(0)
+    } else {
+      formattedPrice = decimalPrice.toFixed(2, Decimal.ROUND_HALF_UP)
+    }
+
+    return `${isNegative ? "-" : ""}$${formattedPrice}`
   }
 }
 
