@@ -43,10 +43,11 @@ module.exports = {
     test:    /\.jsx?$/,
     include: [
       path.resolve(__dirname, "static/js"),
-      // The query-string is only published in ES6. These two paths are added to transpile these
-      // libraries to ES5.
+      // The query-string is only published in ES6. These paths are added to transpile that library
+      // and some of its dependencies to ES5.
       path.resolve(__dirname, "node_modules/query-string"),
       path.resolve(__dirname, "node_modules/strict-uri-encode"),
+      path.resolve(__dirname, "node_modules/split-on-first")
     ],
     loader:  "babel-loader",
     query:   {
