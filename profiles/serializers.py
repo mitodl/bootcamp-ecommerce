@@ -126,7 +126,9 @@ class LegalAddressSerializer(serializers.ModelSerializer):
             "state_or_territory",
             "country",
             "postal_code",
+            "is_complete",
         )
+        read_only_fields = ("is_complete",)
         extra_kwargs = {
             "street_address_1": {"write_only": True},
             "street_address_2": {"write_only": True},

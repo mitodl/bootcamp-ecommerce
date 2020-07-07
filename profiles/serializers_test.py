@@ -3,7 +3,7 @@ import pytest
 
 from rest_framework.exceptions import ValidationError
 
-from profiles.factories import UserFactory
+from profiles.factories import UserFactory, LegalAddressFactory
 from profiles.models import ChangeEmailRequest
 from profiles.serializers import ChangeEmailRequestUpdateSerializer
 from profiles.serializers import LegalAddressSerializer, UserSerializer
@@ -31,6 +31,17 @@ def sample_address():
         "city": "Boulder",
         "postal_code": "80309",
     }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("is_complete", [True, False])
+def test_complete_address(is_complete):
+    """Test that is_complete in serializer has correct value"""
+    address = LegalAddressFactory.create(
+        street_address_1=("Main St" if is_complete else "")
+    )
+    serializer = LegalAddressSerializer(instance=address)
+    assert serializer.data["is_complete"] is is_complete
 
 
 def test_validate_legal_address(sample_address):

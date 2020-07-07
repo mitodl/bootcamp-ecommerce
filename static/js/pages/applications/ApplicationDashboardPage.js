@@ -135,12 +135,16 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       applicationDetail.submissions
     )
 
-    const profileFulfilled =
-      !!currentUser.profile && currentUser.profile.is_complete
+    const profileAndAddressFulfilled =
+      !!currentUser.profile &&
+      currentUser.profile.is_complete &&
+      !!currentUser.legal_address &&
+      currentUser.legal_address.is_complete
+
     const profileRow = (
       <ProfileDetail
         ready={true}
-        fulfilled={profileFulfilled}
+        fulfilled={profileAndAddressFulfilled}
         openDrawer={openDrawer}
         user={currentUser}
       />
@@ -149,7 +153,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     const resumeFulfilled = !!applicationDetail.resume_upload_date
     const resumeRow = (
       <ResumeDetail
-        ready={profileFulfilled}
+        ready={profileAndAddressFulfilled}
         fulfilled={resumeFulfilled}
         openDrawer={openDrawer}
         applicationDetail={applicationDetail}
