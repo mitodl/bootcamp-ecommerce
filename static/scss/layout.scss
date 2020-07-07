@@ -58,9 +58,9 @@ body {
   }
 }
 
-// Top-level content elements (i.e.: direct child elements of <body> that contain non-footer content).
-// Setting this styles to enable "sticky" footer.
-#app-container, .letter-template-page, .cms-page {
+// Top-level content element (i.e.: direct child element of <body> that contains non-footer content).
+// Setting this style to enable "sticky" footer.
+.top-level-page-body {
   flex: 1 0 auto;
 }
 

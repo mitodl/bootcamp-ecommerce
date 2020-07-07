@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="resource-container cms-page {% if not page.header_image %}without-banner{% endif %}" >
+<section class="top-level-page-body cms-page resource-container {% if not page.header_image %}without-banner{% endif %}" >
   {% if page.header_image %}
   <div class="banner-holder">
     <img class="resource-image" src="{% image_version_url page.header_image 'fill-1920x540' %}" alt="Resource Page" />
