@@ -182,19 +182,13 @@ export const setToPaid = (appDetail: ApplicationDetail): ApplicationDetail => {
   return appDetail
 }
 
-export const makeSubmissionReview = (): SubmissionReview => ({
+export const makeSubmissionReview = (
+  applicationId: number
+): SubmissionReview => ({
   // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-  id:                      incr.next().value,
-  run_application_step_id: casual.integer,
-  submitted_date:          moment().format(),
-  review_status:           casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
-  review_status_date:      moment().format(),
-  submission_status:       casual.random_element(
-    Object.keys(SUBMISSION_STATUS_TEXT_MAP)
-  ),
-  bootcamp_application: makeApplication(),
-  learner:              makeUser(),
-  interview_url:        casual.url,
-  take_interview_url:   casual.url,
-  interview_token:      casual.uuid
+  id:             incr.next().value,
+  review_status:  casual.random_element(Object.keys(REVIEW_STATUS_TEXT_MAP)),
+  learner:        makeUser(),
+  interview_url:  casual.url,
+  application_id: applicationId
 })

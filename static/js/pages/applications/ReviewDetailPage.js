@@ -264,16 +264,14 @@ export default function ReviewDetailPage(props: PageProps) {
 
   useRequest(
     submission ?
-      queries.applications.applicationDetailQuery(
-        submission.bootcamp_application.id
-      ) :
+      queries.applications.applicationDetailQuery(submission.application_id) :
       null
   )
 
   const applicationDetails = useSelector(allApplicationDetailSelector)
   const application =
     applicationDetails && submission ?
-      applicationDetails[submission.bootcamp_application.id] :
+      applicationDetails[submission.application_id] :
       null
   const user = submission ? submission.learner : null
 
