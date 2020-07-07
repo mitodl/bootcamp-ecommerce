@@ -17,6 +17,8 @@ from applications.factories import (
     BootcampApplicationFactory,
     ApplicationStepSubmissionFactory,
     ApplicantLetterFactory,
+    QuizSubmissionFactory,
+    VideoInterviewSubmissionFactory,
 )
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
@@ -155,7 +157,10 @@ def test_review_submission_update(admin_drf_client, review_status, application_s
     assert submission.bootcamp_application.state == application_state
 
 
-def test_review_submission_list(admin_drf_client):
+@pytest.mark.parametrize(
+    "submission_factory", [QuizSubmissionFactory, VideoInterviewSubmissionFactory]
+)
+def test_review_submission_list(admin_drf_client, submission_factory):
     """
     The review submission list view should return a list of all submissions
     """
@@ -167,6 +172,7 @@ def test_review_submission_list(admin_drf_client):
                 ApplicationStepSubmissionFactory.create(
                     review_status=review_status,
                     bootcamp_application__bootcamp_run__bootcamp=bootcamp,
+                    content_object=submission_factory.create(),
                 )
             )
     url = reverse("submissions_api-list")
