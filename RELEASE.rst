@@ -1,6 +1,21 @@
 Release Notes
 =============
 
+Version 0.48.0
+--------------
+
+- remove payment page (#852)
+- load legacy hubspot js for older browsers as shown in hubspot sample embed code, use target div (#867)
+- Fix invalid HTML tag (#876)
+- Simplify review submission serializer (#865)
+- Better formatting for negative formatPrice (#862)
+- fix aria-labelledby value for accessiblity issue
+- Pin isort to fix master
+- Added 'split-on-first' library to loader config
+- Added min space above footer and made it 'sticky'
+- Removed ES6 template literal in Django template
+- Logo file resize - #808
+
 Version 0.47.4 (Released July 02, 2020)
 --------------
 
