@@ -164,7 +164,7 @@ class ReviewSubmissionViewSet(
             "bootcamp_application__user__profile",
             "bootcamp_application__user__legal_address",
         )
-        .prefetch_related("content_object__interview")
+        .prefetch_related("content_object")
     )
     filterset_class = ApplicationStepSubmissionFilterSet
     filter_backends = [DjangoFilterBackend, OrderingFilter]
