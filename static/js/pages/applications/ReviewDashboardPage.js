@@ -4,6 +4,7 @@ import { useSelector } from "react-redux"
 import { useRequest } from "redux-query-react"
 import { useLocation } from "react-router"
 import { Link } from "react-router-dom"
+import { Pagination, PaginationItem, PaginationLink } from 'reactstrap'
 import { reverse } from "named-urls"
 
 import SubmissionFacets from "../../components/SubmissionFacets"
@@ -53,8 +54,10 @@ export default function ReviewDashboardPage() {
   const location = useLocation()
   const [{ isFinished }] = useRequest(submissionsQuery(location.search))
   const { count, results, facets } = useSelector(submissionFacetsSelector)
-  const pages = count <= limit ? 1 : Math.ceil(count / limit)
-  const {offset} = qs.parse(location.search) || 0
+  const pages = 5 count <= limit ? 1 : Math.ceil(count / limit)
+  const offset = qs.parse(location.search).offset || 0
+  const currentPage = offset ? (offset / limit + 1) : 1
+
 
   return (
     <div className="review-dashboard-page container-lg">
@@ -80,18 +83,31 @@ export default function ReviewDashboardPage() {
             {results.map((submission, i) => (
               <SubmissionRow key={i} submission={submission} />
             ))}
-            <div className="row">
               { pages > 1 ? (
-                <ul className="pagination">
+               <div className="row justify-content-center">
+                 <Pagination>
+                <PaginationItem>
+                    <PaginationLink first href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink previous href="#" />
+                </PaginationItem>
                   {
                     [...Array(pages)].map((page, idx) => (
-                        <li className={`page-item ${ offset === (limit*idx) ? "active" : ""}`}>
-  
-                        </li>
+                        <PaginationItem key={idx} active={offset === (limit*idx)}>
+                          <PaginationLink href="#">{idx+1}</PaginationLink>
+                        </PaginationItem>
                       )
                     )
                   }
-                </ul>
+                <PaginationItem>
+                    <PaginationLink next href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink last href="#" />
+                </PaginationItem>
+               </Pagination>
+               </div>
                 ) : null
               }
           </div>
