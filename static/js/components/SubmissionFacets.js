@@ -52,13 +52,13 @@ export function Option({ option, facetKey }: OptionProps) {
     e => {
       e.preventDefault()
 
-      const updatedParams = facetIsActive ?
+      let updatedParams = facetIsActive ?
         omit([qsKey], qs.parse(location.search)) :
         {
           ...qs.parse(location.search),
           [qsKey]: getQSValue(option)
         }
-
+      updatedParams = omit(["limit", "offset"], updatedParams)
       const url = urljoin(location.pathname, `/?${qs.stringify(updatedParams)}`)
       history.push(url)
     },
