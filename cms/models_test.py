@@ -12,8 +12,11 @@ from cms.factories import (
     HomeAlumniSectionFactory,
     HomePageFactory,
     CatalogGridSectionFactory,
+    ThreeColumnImageTextSectionFactory,
+    InstructorSectionFactory,
+    AdmissionSectionFactory,
 )
-from cms.models import LearningResourceSection
+from cms import models
 
 pytestmark = [pytest.mark.django_db]
 
@@ -34,7 +37,7 @@ def test_bootcamp_run_learning_resources():
     """
     bootcamp_run_page = BootcampRunPageFactory.create()
     assert bootcamp_run_page.learning_resources is None
-    assert LearningResourceSection.can_create_at(bootcamp_run_page)
+    assert models.LearningResourceSection.can_create_at(bootcamp_run_page)
     learning_resources_page = LearningResourceSectionFactory.create(
         parent=bootcamp_run_page,
         heading="heading",
@@ -48,6 +51,139 @@ def test_bootcamp_run_learning_resources():
     for item in learning_resources_page.items:  # pylint: disable=not-an-iterable
         assert item.value.get("title") == "title"
         assert item.value.get("links") == "<p>links</p>"
+
+
+def test_three_column_image_text_section_under_runpage():
+    """
+    Three column image text section subpage should provide expected values.
+    """
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    assert bootcamp_run_page.three_column_image_text_section is None
+    assert models.ThreeColumnImageTextSection.can_create_at(bootcamp_run_page)
+    three_column_image_text_section = ThreeColumnImageTextSectionFactory.create(
+        column_image_text_section=json.dumps(
+            [
+                {
+                    "type": "column_image_text_section",
+                    "value": {
+                        "heading": "heading of block",
+                        "sub_heading": "subheading of block",
+                        "body": "<p>body of the block</p>",
+                        "image__title": "title of the image",
+                    },
+                }
+            ]
+        ),
+        parent=bootcamp_run_page,
+    )
+    assert bootcamp_run_page.three_column_image_text_section
+    assert (
+        bootcamp_run_page.three_column_image_text_section
+        == three_column_image_text_section
+    )
+    for (
+        item
+    ) in (
+        three_column_image_text_section.column_image_text_section
+    ):  # pylint: disable=not-an-iterable
+        assert item.value.get("heading") == "heading of block"
+        assert item.value.get("sub_heading") == "subheading of block"
+        assert item.value.get("body").source == "<p>body of the block</p>"
+
+
+def test_three_column_image_text_section_under_homepage():
+    """
+    Three column image text section subpage should provide expected values.
+    """
+    home_page = HomePageFactory.create()
+    assert home_page.three_column_image_text_section is None
+    assert models.ThreeColumnImageTextSection.can_create_at(home_page)
+    three_column_image_text_section = ThreeColumnImageTextSectionFactory.create(
+        column_image_text_section=json.dumps(
+            [
+                {
+                    "type": "column_image_text_section",
+                    "value": {
+                        "heading": "heading of block",
+                        "sub_heading": "subheading of block",
+                        "body": "<p>body of the block</p>",
+                        "image__title": "title of the image",
+                    },
+                }
+            ]
+        ),
+        parent=home_page,
+    )
+    assert home_page.three_column_image_text_section
+    assert home_page.three_column_image_text_section == three_column_image_text_section
+    for (
+        item
+    ) in (
+        three_column_image_text_section.column_image_text_section
+    ):  # pylint: disable=not-an-iterable
+        assert item.value.get("heading") == "heading of block"
+        assert item.value.get("sub_heading") == "subheading of block"
+        assert item.value.get("body").source == "<p>body of the block</p>"
+
+
+def test_instructors_section():
+    """
+    Verify user can create instructor section under bootcamp run page.
+    """
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    assert bootcamp_run_page.three_column_image_text_section is None
+    assert models.ThreeColumnImageTextSection.can_create_at(bootcamp_run_page)
+
+    instructor_section = InstructorSectionFactory.create(
+        parent=bootcamp_run_page,
+        banner_image__title="title of the image",
+        heading="heading",
+        sections=json.dumps(
+            [
+                {
+                    "type": "section",
+                    "value": {
+                        "heading": "Introduction",
+                        "sub_heading": "Subheading",
+                        "heading_singular": "Singular heading",
+                        "members": {
+                            "name": "Name",
+                            "image__title": "Image title",
+                            "title": "Title",
+                        },
+                    },
+                }
+            ]
+        ),
+    )
+    assert bootcamp_run_page.instructors
+    assert bootcamp_run_page.instructors == instructor_section
+
+
+def test_admission_section():
+    """
+    Verify user can create admission section under bootcamp page but not HomePage.
+    """
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    home_page = HomePageFactory.create()
+    assert bootcamp_run_page.admissions_section is None
+    assert models.AdmissionsSection.can_create_at(bootcamp_run_page)
+    assert models.AdmissionsSection.can_create_at(home_page) is False
+
+    admission_section = AdmissionSectionFactory.create(
+        parent=bootcamp_run_page,
+        admissions_image__title="title of the image",
+        notes="notes",
+        details="details",
+        bootcamp_format="bootcamp format",
+        bootcamp_format_details="format details",
+        dates="dates",
+        dates_details="dates details",
+        price=10,
+        price_details="price details",
+    )
+    assert bootcamp_run_page.admissions_section
+    assert bootcamp_run_page.admissions_section == admission_section
 
 
 def test_program_description_page():
