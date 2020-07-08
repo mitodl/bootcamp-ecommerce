@@ -27,6 +27,7 @@ class AppStates(Enum):
     AWAITING_PAYMENT = "AWAITING_PAYMENT"
     COMPLETE = "COMPLETE"
     REJECTED = "REJECTED"
+    REFUNDED = "REFUNDED"
 
     def __str__(self):
         """If an enum is silently cast to string it should be treated as if the user added .value to the end"""

@@ -14,6 +14,7 @@ from rest_framework.exceptions import ValidationError
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
+from applications.models import BootcampApplication
 from ecommerce.api import (
     generate_cybersource_sa_payload,
     generate_cybersource_sa_signature,
@@ -23,13 +24,22 @@ from ecommerce.api import (
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
     send_receipt_email,
+    refund_enrollment,
+    create_refund_order,
+    complete_successful_order,
 )
 from ecommerce.exceptions import EcommerceException, ParseException
 from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import Line, Order
 from ecommerce.serializers import LineSerializer
 from ecommerce.test_utils import create_test_application, create_test_order
-from klasses.factories import BootcampRunFactory, InstallmentFactory
+from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
+from klasses.factories import (
+    BootcampRunFactory,
+    InstallmentFactory,
+    BootcampRunEnrollmentFactory,
+)
+from klasses.models import BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from main.test_utils import any_instance_of
 from profiles.factories import ProfileFactory
@@ -375,3 +385,135 @@ def test_send_verify_email_change_email(mocker, user):
 
     email = send_messages_mock.call_args[0][0][0]
     assert application.bootcamp_run.title in email.body
+
+
+@pytest.mark.parametrize("has_application", [True, False])
+def test_refund_enrollment(has_application):
+    """
+    Test that deactivate_run_enrollment creates a refund order and
+    updates enrollment and application objects
+    """
+    enrollment = BootcampRunEnrollmentFactory.create()
+    application = (
+        BootcampApplicationFactory.create(
+            user=enrollment.user,
+            bootcamp_run=enrollment.bootcamp_run,
+            state=AppStates.COMPLETE,
+        )
+        if has_application
+        else None
+    )
+    refund_amount = 1.50
+    LineFactory.create(
+        price=3,
+        run_key=enrollment.bootcamp_run.run_key,
+        order=OrderFactory(
+            user=enrollment.user,
+            application=application,
+            status=Order.FULFILLED,
+            total_price_paid=3,
+        ),
+    )
+    refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=refund_amount)
+    updated_enrollment = BootcampRunEnrollment.objects.get(id=enrollment.id)
+    assert updated_enrollment.active is False
+    assert updated_enrollment.change_status == ENROLL_CHANGE_STATUS_REFUNDED
+    order = Order.objects.get(
+        total_price_paid=-refund_amount, application=application, user=enrollment.user
+    )
+    assert order.status == Order.FULFILLED
+    assert Line.objects.filter(
+        order=order,
+        run_key=enrollment.bootcamp_run.run_key,
+        price=-refund_amount,
+        description="Refund for {}".format(enrollment.bootcamp_run.title),
+    ).exists()
+    if has_application:
+        assert (
+            BootcampApplication.objects.get(id=application.id).state
+            == AppStates.REFUNDED.value
+        )
+
+
+@pytest.mark.parametrize("has_application", [True, False])
+def test_refund_exceeds_payment(has_application):
+    """
+    Test that refunded amount cannot exceed total paid
+    """
+    enrollment = BootcampRunEnrollmentFactory.create()
+    application = (
+        BootcampApplicationFactory.create(
+            user=enrollment.user,
+            bootcamp_run=enrollment.bootcamp_run,
+            state=AppStates.COMPLETE,
+        )
+        if has_application
+        else None
+    )
+    # Create 3 orders totalling $30 in payments
+    orders = OrderFactory.create_batch(
+        3,
+        user=enrollment.user,
+        application=application,
+        status=Order.FULFILLED,
+        total_price_paid=10,
+    )
+    for order in orders:
+        LineFactory.create(
+            price=10, run_key=enrollment.bootcamp_run.run_key, order=order
+        )
+
+    with pytest.raises(EcommerceException) as exc:
+        refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=45.50)
+    assert exc.value.args[0] == f"Enrollment refund exceeds total payment of $30.00"
+    refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=11)
+    refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=11)
+    with pytest.raises(EcommerceException) as exc:
+        refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=11)
+    assert exc.value.args[0] == f"Enrollment refund exceeds total payment of $8.00"
+
+
+@pytest.mark.parametrize("amount", [-5, 0])
+def test_bad_refund_amount(amount):
+    """ Test that an invalid refund amount raises an exception"""
+    enrollment = BootcampRunEnrollmentFactory.create()
+    with pytest.raises(EcommerceException) as exc:
+        create_refund_order(
+            user=enrollment.user, bootcamp_run=enrollment.bootcamp_run, amount=amount
+        )
+    assert exc.value.args[0] == "Amount to refund must be greater than zero"
+
+
+@pytest.mark.parametrize("enrollment_exists", [True, False])
+def test_complete_successful_order(enrollment_exists):
+    """Test that enrollment, application values updated correctly on successful order"""
+    installment = InstallmentFactory.create()
+    application = BootcampApplicationFactory.create(
+        bootcamp_run=installment.bootcamp_run, state=AppStates.AWAITING_PAYMENT
+    )
+    order = OrderFactory.create(
+        status=Order.CREATED,
+        total_price_paid=installment.amount,
+        application=application,
+        user=application.user,
+    )
+    LineFactory.create(
+        order=order, price=installment.amount, run_key=application.bootcamp_run.run_key
+    )
+    if enrollment_exists:
+        BootcampRunEnrollmentFactory.create(
+            user=order.user,
+            bootcamp_run=application.bootcamp_run,
+            active=False,
+            change_status=ENROLL_CHANGE_STATUS_REFUNDED,
+        )
+    complete_successful_order(order)
+    assert (
+        BootcampApplication.objects.get(id=application.id).state
+        == AppStates.COMPLETE.value
+    )
+    enrollment = BootcampRunEnrollment.objects.get(
+        user=application.user, bootcamp_run=application.bootcamp_run
+    )
+    assert enrollment.active is True
+    assert enrollment.change_status is None

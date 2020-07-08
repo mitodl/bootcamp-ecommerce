@@ -246,6 +246,18 @@ class BootcampApplication(TimestampedModel):
     def revert_decision(self):
         """Revert previous submission decision"""
 
+    @transition(
+        field=state,
+        source=[
+            AppStates.COMPLETE.value,
+            AppStates.AWAITING_PAYMENT.value,
+            AppStates.REFUNDED.value,
+        ],
+        target=AppStates.REFUNDED.value,
+    )
+    def refund(self):
+        """Mark the application as refunded"""
+
     def all_application_steps_submitted(self):
         """
         Check if the user has submissions for all application steps.

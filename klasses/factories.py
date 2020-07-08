@@ -39,6 +39,16 @@ class BootcampRunFactory(DjangoModelFactory):
         model = models.BootcampRun
 
 
+class BootcampRunEnrollmentFactory(DjangoModelFactory):
+    """Factory for BootcampRunEnrollment"""
+
+    user = SubFactory(UserFactory)
+    bootcamp_run = SubFactory(BootcampRunFactory)
+
+    class Meta:
+        model = models.BootcampRunEnrollment
+
+
 class InstallmentFactory(DjangoModelFactory):
     """Factory for Installment"""
 
