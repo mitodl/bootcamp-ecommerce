@@ -104,6 +104,7 @@ export const APP_STATE_IN_PROGRESS = "In Progress"
 export const APP_STATE_IN_REVIEW = "In Review"
 export const APP_STATE_COMPLETE = "Complete"
 export const APP_STATE_REJECTED = "Rejected"
+export const APP_STATE_REFUNDED = "Refunded"
 
 export const APP_STATE_TEXT_MAP = {
   AWAITING_PROFILE_COMPLETION: APP_STATE_IN_PROGRESS,
@@ -112,7 +113,8 @@ export const APP_STATE_TEXT_MAP = {
   AWAITING_SUBMISSION_REVIEW:  APP_STATE_IN_REVIEW,
   AWAITING_PAYMENT:            APP_STATE_IN_PROGRESS,
   COMPLETE:                    APP_STATE_COMPLETE,
-  REJECTED:                    APP_STATE_REJECTED
+  REJECTED:                    APP_STATE_REJECTED,
+  REFUNDED:                    APP_STATE_REFUNDED
 }
 
 export const SUBMISSION_VIDEO = "videointerviewsubmission"
