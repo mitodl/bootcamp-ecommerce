@@ -15,6 +15,7 @@ import {
 import { REVIEW_STATUS_DISPLAY_MAP } from "../../constants"
 import { routes } from "../../lib/urls"
 import type { SubmissionReview } from "../../flow/applicationTypes"
+import qs from "query-string"
 
 /* eslint-disable camelcase */
 type RowProps = {
@@ -48,9 +49,12 @@ export function SubmissionRow({ submission }: RowProps) {
 /* eslint-enable camelcase */
 
 export default function ReviewDashboardPage() {
+  const limit = 10
   const location = useLocation()
   const [{ isFinished }] = useRequest(submissionsQuery(location.search))
-  const { results, facets } = useSelector(submissionFacetsSelector)
+  const { count, results, facets } = useSelector(submissionFacetsSelector)
+  const pages = count <= limit ? 1 : Math.ceil(count / limit)
+  const {offset} = qs.parse(location.search) || 0
 
   return (
     <div className="review-dashboard-page container-lg">
@@ -76,6 +80,20 @@ export default function ReviewDashboardPage() {
             {results.map((submission, i) => (
               <SubmissionRow key={i} submission={submission} />
             ))}
+            <div className="row">
+              { pages > 1 ? (
+                <ul className="pagination">
+                  {
+                    [...Array(pages)].map((page, idx) => (
+                        <li className={`page-item ${ offset === (limit*idx) ? "active" : ""}`}>
+  
+                        </li>
+                      )
+                    )
+                  }
+                </ul>
+                ) : null
+              }
           </div>
         </div>
       ) : null}
