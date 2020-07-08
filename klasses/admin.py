@@ -38,6 +38,14 @@ class BootcampRunAdmin(admin.ModelAdmin):
     inlines = [InstallmentInline]
 
 
+class BootcampRunEnrollmentAdmin(admin.ModelAdmin):
+    """Admin for BootcampRun"""
+
+    model = models.BootcampRunEnrollment
+    list_display = ("bootcamp_run", "user", "change_status", "active")
+    list_filter = ("change_status", "active")
+
+
 class InstallmentAdmin(admin.ModelAdmin):
     """Admin for Installment"""
 
@@ -66,3 +74,4 @@ admin.site.register(models.Bootcamp, BootcampAdmin)
 admin.site.register(models.BootcampRun, BootcampRunAdmin)
 admin.site.register(models.Installment, InstallmentAdmin)
 admin.site.register(models.PersonalPrice, PersonalPriceAdmin)
+admin.site.register(models.BootcampRunEnrollment, BootcampRunEnrollmentAdmin)

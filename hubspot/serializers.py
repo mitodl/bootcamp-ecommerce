@@ -74,14 +74,17 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         )
         if orders.exists():
             amount_paid = Decimal(0)
+            has_refunds = False
             for order in orders:
                 if order.status == Order.FULFILLED:
+                    if order.total_price_paid < 0:
+                        has_refunds = True
                     amount_paid += order.total_price_paid
 
             data["total_price_paid"] = amount_paid.to_eng_string()
             if amount_paid >= instance.bootcamp_run.personal_price(instance.user):
                 data["status"] = "shipped"
-            elif amount_paid > 0:
+            elif amount_paid > 0 or has_refunds:
                 data["status"] = "processed"
             else:
                 data["status"] = "checkout_completed"

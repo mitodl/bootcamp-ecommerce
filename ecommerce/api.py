@@ -11,6 +11,7 @@ import uuid
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
@@ -21,6 +22,8 @@ from ecommerce import tasks
 from ecommerce.constants import CYBERSOURCE_DECISION_CANCEL
 from ecommerce.exceptions import EcommerceException, ParseException
 from ecommerce.models import Line, Order
+from klasses.api import deactivate_run_enrollment
+from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from mail.api import MailgunClient
@@ -67,6 +70,87 @@ def create_unfulfilled_order(*, application, payment_amount):
     )
     order.save_and_log(application.user)
     return order
+
+
+@transaction.atomic
+def create_refund_order(*, user, bootcamp_run, amount, application=None):
+    """
+    Create a refund order for a bootcamp run & user
+
+    Args:
+        user (User): The User receiving the refund
+        bootcamp_run (BootcampRun): The BootcampRun to refund
+        amount (Decimal): The amount to refund
+        application (BootcampApplication): the application associated with the order
+
+    Returns:
+        Order: A newly created refund Order for the bootcamp run
+
+    """
+    refund_amount = -Decimal(amount)
+
+    if refund_amount >= 0:
+        raise EcommerceException("Amount to refund must be greater than zero")
+
+    order = Order.objects.create(
+        status=Order.FULFILLED,
+        total_price_paid=refund_amount,
+        user=user,
+        application=application,
+    )
+    Line.objects.create(
+        order=order,
+        run_key=bootcamp_run.run_key,
+        description="Refund for {}".format(bootcamp_run.title),
+        price=refund_amount,
+    )
+    order.save_and_log(user)
+    return order
+
+
+@transaction.atomic
+def refund_enrollment(*, user, enrollment, amount):
+    """
+    Deactivate a bootcamp run enrollment, create a refund order, and update the application state
+
+    Args:
+        user (User): The user receiving the refund
+        enrollment (BootcampRunEnrollment): The user's bootcamp enrollment
+        amount (Decimal): The amount to refund
+    """
+    application = BootcampApplication.objects.filter(
+        user=user, bootcamp_run=enrollment.bootcamp_run
+    ).first()
+
+    total_paid = Decimal(
+        application.total_paid
+        if application
+        else sum(
+            Order.objects.select_related("line")
+            .filter(
+                Q(user=user)
+                & Q(line__run_key=enrollment.bootcamp_run.run_key)
+                & Q(status=Order.FULFILLED)
+            )
+            .values_list("total_price_paid", flat=True)
+        )
+    )
+
+    if total_paid < amount:
+        raise EcommerceException(
+            f"Enrollment refund exceeds total payment of ${total_paid}"
+        )
+
+    create_refund_order(
+        user=user,
+        bootcamp_run=enrollment.bootcamp_run,
+        amount=Decimal(amount),
+        application=application,
+    )
+    deactivate_run_enrollment(enrollment, change_status=ENROLL_CHANGE_STATUS_REFUNDED)
+    if application:
+        application.refund()
+        application.save()
 
 
 def generate_cybersource_sa_signature(payload):
@@ -241,7 +325,11 @@ def complete_successful_order(order):
     run = order.get_bootcamp_run()
     application = order.application
     if application.is_paid_in_full:
-        BootcampRunEnrollment.objects.get_or_create(user=order.user, bootcamp_run=run)
+        BootcampRunEnrollment.objects.update_or_create(
+            user=order.user,
+            bootcamp_run=run,
+            defaults={"active": True, "change_status": None},
+        )
 
         try:
             application.complete()

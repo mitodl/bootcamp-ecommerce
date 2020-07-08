@@ -7,7 +7,11 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.models import TimestampedModel
-from klasses.constants import ApplicationSource, INTEGRATION_PREFIX_PRODUCT
+from klasses.constants import (
+    ApplicationSource,
+    INTEGRATION_PREFIX_PRODUCT,
+    ENROLL_CHANGE_STATUS_CHOICES,
+)
 
 
 class Bootcamp(models.Model):
@@ -215,6 +219,13 @@ class BootcampRunEnrollment(TimestampedModel):
     )
     bootcamp_run = models.ForeignKey(
         BootcampRun, on_delete=models.CASCADE, related_name="enrollments"
+    )
+    change_status = models.CharField(
+        choices=ENROLL_CHANGE_STATUS_CHOICES, max_length=20, null=True, blank=True
+    )
+    active = models.BooleanField(
+        default=True,
+        help_text="Indicates whether or not this enrollment should be considered active",
     )
 
     class Meta:
