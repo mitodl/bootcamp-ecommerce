@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.48.1
+--------------
+
+- Refund management command (#806)
+
 Version 0.48.0 (Released July 07, 2020)
 --------------
 
