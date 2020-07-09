@@ -77,7 +77,7 @@ export function SubmissionPagination(props: PaginateProps) {
   }
 
   return pageCount > 1 ? (
-    <div className="pagination-div row justify-content-center">
+    <div className="submission-paging row justify-content-center">
       <ReactPaginate
         previousLabel={"previous"}
         nextLabel={"next"}
