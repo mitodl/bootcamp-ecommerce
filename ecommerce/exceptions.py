@@ -25,3 +25,9 @@ class ParseException(Exception):
     """
     Exception regarding parsing CyberSource reference numbers
     """
+
+
+class WireTransferImportException(Exception):
+    """
+    Exception regarding importing wire transfer CSV files
+    """
