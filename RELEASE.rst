@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.48.2
+--------------
+
+- Fix caching for resource page links
+- Add label for Refunded (#904)
+
 Version 0.48.1 (Released July 09, 2020)
 --------------
 
