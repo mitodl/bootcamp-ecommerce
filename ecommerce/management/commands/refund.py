@@ -27,9 +27,11 @@ class Command(BaseCommand):
             required=True,
         )
         parser.add_argument(
-            "--run", type=str, help="The id for an enrolled BootcampRun"
+            "--run", type=int, help="The id for an enrolled BootcampRun", required=True
         )
-        parser.add_argument("--amount", type=str, help="The amount of the refund")
+        parser.add_argument(
+            "--amount", type=Decimal, help="The amount of the refund", required=True
+        )
         super().add_arguments(parser)
 
     def handle(self, *args, **options):
