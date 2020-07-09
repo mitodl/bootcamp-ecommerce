@@ -24,9 +24,9 @@ from ecommerce.api import (
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
     send_receipt_email,
-    refund_enrollment,
     create_refund_order,
     complete_successful_order,
+    process_refund,
 )
 from ecommerce.exceptions import EcommerceException, ParseException
 from ecommerce.factories import LineFactory, OrderFactory
@@ -387,18 +387,19 @@ def test_send_verify_email_change_email(mocker, user):
     assert application.bootcamp_run.title in email.body
 
 
+@pytest.mark.parametrize("has_enrollment", [True, False])
 @pytest.mark.parametrize("has_application", [True, False])
-def test_refund_enrollment(has_application):
+def test_refund_enrollment(has_enrollment, has_application, user):
     """
     Test that deactivate_run_enrollment creates a refund order and
     updates enrollment and application objects
     """
-    enrollment = BootcampRunEnrollmentFactory.create()
+    bootcamp_run = BootcampRunFactory.create()
+    if has_enrollment:
+        BootcampRunEnrollmentFactory.create(bootcamp_run=bootcamp_run, user=user)
     application = (
         BootcampApplicationFactory.create(
-            user=enrollment.user,
-            bootcamp_run=enrollment.bootcamp_run,
-            state=AppStates.COMPLETE,
+            user=user, bootcamp_run=bootcamp_run, state=AppStates.COMPLETE
         )
         if has_application
         else None
@@ -406,27 +407,37 @@ def test_refund_enrollment(has_application):
     refund_amount = 1.50
     LineFactory.create(
         price=3,
-        run_key=enrollment.bootcamp_run.run_key,
+        run_key=bootcamp_run.run_key,
         order=OrderFactory(
-            user=enrollment.user,
+            user=user,
             application=application,
             status=Order.FULFILLED,
             total_price_paid=3,
         ),
     )
-    refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=refund_amount)
-    updated_enrollment = BootcampRunEnrollment.objects.get(id=enrollment.id)
-    assert updated_enrollment.active is False
-    assert updated_enrollment.change_status == ENROLL_CHANGE_STATUS_REFUNDED
+    process_refund(user=user, bootcamp_run=bootcamp_run, amount=refund_amount)
+    if has_enrollment:
+        updated_enrollment = BootcampRunEnrollment.objects.get(
+            user=user, bootcamp_run=bootcamp_run
+        )
+        assert updated_enrollment.active is False
+        assert updated_enrollment.change_status == ENROLL_CHANGE_STATUS_REFUNDED
+    else:
+        assert (
+            BootcampRunEnrollment.objects.filter(
+                user=user, bootcamp_run=bootcamp_run
+            ).first()
+            is None
+        )
     order = Order.objects.get(
-        total_price_paid=-refund_amount, application=application, user=enrollment.user
+        total_price_paid=-refund_amount, application=application, user=user
     )
     assert order.status == Order.FULFILLED
     assert Line.objects.filter(
         order=order,
-        run_key=enrollment.bootcamp_run.run_key,
+        run_key=bootcamp_run.run_key,
         price=-refund_amount,
-        description="Refund for {}".format(enrollment.bootcamp_run.title),
+        description="Refund for {}".format(bootcamp_run.title),
     ).exists()
     if has_application:
         assert (
@@ -436,16 +447,14 @@ def test_refund_enrollment(has_application):
 
 
 @pytest.mark.parametrize("has_application", [True, False])
-def test_refund_exceeds_payment(has_application):
+def test_refund_exceeds_payment(has_application, user):
     """
     Test that refunded amount cannot exceed total paid
     """
-    enrollment = BootcampRunEnrollmentFactory.create()
+    bootcamp_run = BootcampRunFactory.create()
     application = (
         BootcampApplicationFactory.create(
-            user=enrollment.user,
-            bootcamp_run=enrollment.bootcamp_run,
-            state=AppStates.COMPLETE,
+            user=user, bootcamp_run=bootcamp_run, state=AppStates.COMPLETE
         )
         if has_application
         else None
@@ -453,24 +462,22 @@ def test_refund_exceeds_payment(has_application):
     # Create 3 orders totalling $30 in payments
     orders = OrderFactory.create_batch(
         3,
-        user=enrollment.user,
+        user=user,
         application=application,
         status=Order.FULFILLED,
         total_price_paid=10,
     )
     for order in orders:
-        LineFactory.create(
-            price=10, run_key=enrollment.bootcamp_run.run_key, order=order
-        )
+        LineFactory.create(price=10, run_key=bootcamp_run.run_key, order=order)
 
     with pytest.raises(EcommerceException) as exc:
-        refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=45.50)
-    assert exc.value.args[0] == f"Enrollment refund exceeds total payment of $30.00"
-    refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=11)
-    refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=11)
+        process_refund(user=user, bootcamp_run=bootcamp_run, amount=45.50)
+    assert exc.value.args[0] == f"Refund exceeds total payment of $30.00"
+    process_refund(user=user, bootcamp_run=bootcamp_run, amount=11)
+    process_refund(user=user, bootcamp_run=bootcamp_run, amount=11)
     with pytest.raises(EcommerceException) as exc:
-        refund_enrollment(user=enrollment.user, enrollment=enrollment, amount=11)
-    assert exc.value.args[0] == f"Enrollment refund exceeds total payment of $8.00"
+        process_refund(user=user, bootcamp_run=bootcamp_run, amount=11)
+    assert exc.value.args[0] == f"Refund exceeds total payment of $8.00"
 
 
 @pytest.mark.parametrize("amount", [-5, 0])
