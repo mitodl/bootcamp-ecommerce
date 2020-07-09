@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.48.2
+Version 0.48.2 (Released July 09, 2020)
 --------------
 
 - Fix caching for resource page links
