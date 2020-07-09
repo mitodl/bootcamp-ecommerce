@@ -21,6 +21,12 @@
     text-align: center;
     color: $black;
 
+    input.dzu-input {
+      position: fixed;
+      opacity: 0;
+      display: initial;
+    }
+
     .file-types {
       font-size: 16px;
     }
