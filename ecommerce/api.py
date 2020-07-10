@@ -109,17 +109,17 @@ def create_refund_order(*, user, bootcamp_run, amount, application=None):
 
 
 @transaction.atomic
-def refund_enrollment(*, user, enrollment, amount):
+def process_refund(*, user, bootcamp_run, amount):
     """
-    Deactivate a bootcamp run enrollment, create a refund order, and update the application state
+    Deactivate an enrollment (if any), create a refund order, and update the application state
 
     Args:
         user (User): The user receiving the refund
-        enrollment (BootcampRunEnrollment): The user's bootcamp enrollment
+        bootcamp_run (BootcampRun): The user's bootcamp run
         amount (Decimal): The amount to refund
     """
     application = BootcampApplication.objects.filter(
-        user=user, bootcamp_run=enrollment.bootcamp_run
+        user=user, bootcamp_run=bootcamp_run
     ).first()
 
     total_paid = Decimal(
@@ -129,7 +129,7 @@ def refund_enrollment(*, user, enrollment, amount):
             Order.objects.select_related("line")
             .filter(
                 Q(user=user)
-                & Q(line__run_key=enrollment.bootcamp_run.run_key)
+                & Q(line__run_key=bootcamp_run.run_key)
                 & Q(status=Order.FULFILLED)
             )
             .values_list("total_price_paid", flat=True)
@@ -137,17 +137,21 @@ def refund_enrollment(*, user, enrollment, amount):
     )
 
     if total_paid < amount:
-        raise EcommerceException(
-            f"Enrollment refund exceeds total payment of ${total_paid}"
-        )
+        raise EcommerceException(f"Refund exceeds total payment of ${total_paid}")
 
     create_refund_order(
         user=user,
-        bootcamp_run=enrollment.bootcamp_run,
+        bootcamp_run=bootcamp_run,
         amount=Decimal(amount),
         application=application,
     )
-    deactivate_run_enrollment(enrollment, change_status=ENROLL_CHANGE_STATUS_REFUNDED)
+    enrollment = BootcampRunEnrollment.objects.filter(
+        user=user, bootcamp_run=bootcamp_run
+    ).first()
+    if enrollment:
+        deactivate_run_enrollment(
+            enrollment, change_status=ENROLL_CHANGE_STATUS_REFUNDED
+        )
     if application:
         application.refund()
         application.save()

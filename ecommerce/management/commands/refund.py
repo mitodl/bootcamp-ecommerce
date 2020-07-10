@@ -6,9 +6,9 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 
-from ecommerce.api import refund_enrollment
+from ecommerce.api import process_refund
 from ecommerce.exceptions import EcommerceException
-from klasses.models import BootcampRunEnrollment
+from klasses.models import BootcampRun
 from profiles.api import fetch_user
 
 User = get_user_model()
@@ -27,24 +27,24 @@ class Command(BaseCommand):
             required=True,
         )
         parser.add_argument(
-            "--run", type=str, help="The id for an enrolled BootcampRun"
+            "--run", type=int, help="The id for an enrolled BootcampRun", required=True
         )
-        parser.add_argument("--amount", type=str, help="The amount of the refund")
+        parser.add_argument(
+            "--amount", type=Decimal, help="The amount of the refund", required=True
+        )
         super().add_arguments(parser)
 
     def handle(self, *args, **options):
         """Handle command execution"""
         user = fetch_user(options["user"])
-        enrollment = BootcampRunEnrollment.objects.get(
-            bootcamp_run__id=options["run"], user=user
-        )
+        bootcamp_run = BootcampRun.objects.get(id=options["run"])
         amount = Decimal(options["amount"])
 
         try:
-            refund_enrollment(user=user, enrollment=enrollment, amount=amount)
+            process_refund(user=user, bootcamp_run=bootcamp_run, amount=amount)
             self.stdout.write(
-                "Refunded enrollment for user: {} ({})\nEnrollment affected: {}".format(
-                    user.username, user.email, enrollment.bootcamp_run.title
+                "Refunded user: {} ({})\nBootcamp Run affected: {}\nRefund Amount: ${}".format(
+                    user.username, user.email, bootcamp_run.title, amount
                 )
             )
         except EcommerceException as exc:
