@@ -52,7 +52,8 @@ body {
   font-family: Helvetica, Arial, sans-serif;
   overflow-x: hidden;
 
-  .row:before, .row:after {
+  .row:before,
+  .row:after {
     display: unset !important;
     content: unset !important;
   }
@@ -132,4 +133,16 @@ body {
 .panel-body:after,
 .row:after {
   clear: both;
+}
+
+@media (min-width: 576px) {
+  .col-30 {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+
+  .col-35 {
+    flex: 0 0 35%;
+    max-width: 35%;
+  }
 }

@@ -8,7 +8,7 @@ html {
   .section-row {
     padding-bottom: 60px;
 
-    .col-sm-4 {
+    .three-column {
       .col-border-padding {
         padding-left: 30px;
         padding-right: 30px;
@@ -21,19 +21,43 @@ html {
 
       &:first-child {
         .col-border-padding {
-          margin-left: 80px;
+          margin-left: 14.5%;
           @include media-breakpoint-down(sm) {
             margin-left: 0;
+          }
+        }
+
+        .image-holder {
+          &:after {
+            width: calc(14.5% + 60px);
+
+            @include media-breakpoint-down(sm) {
+              width: 60px;
+            }
           }
         }
       }
 
       &:last-child {
         .col-border-padding {
-          margin-right: 80px;
+          margin-right: 14.5%;
           @include media-breakpoint-down(sm) {
             margin-right: 0;
           }
+        }
+      }
+
+      .image-holder {
+        position: relative;
+
+        &:after {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 60px;
+          height: 60px;
+          background-color: white;
+          content: "";
         }
       }
     }
