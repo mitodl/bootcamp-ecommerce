@@ -29,7 +29,7 @@ from ecommerce.models import Order
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from jobma.factories import InterviewFactory, JobFactory
 from jobma.models import Interview
-from profiles.factories import ProfileFactory, UserFactory
+from profiles.factories import ProfileFactory, UserFactory, LegalAddressFactory
 from main.utils import now_in_utc
 
 
@@ -47,11 +47,17 @@ def test_derive_application_state():
     )
 
     app = BootcampApplicationFactory.create(
-        bootcamp_run=bootcamp_run, user__profile=None, resume_file=None
+        bootcamp_run=bootcamp_run,
+        user__profile=None,
+        user__legal_address=None,
+        resume_file=None,
     )
     assert derive_application_state(app) == AppStates.AWAITING_PROFILE_COMPLETION.value
 
     ProfileFactory.create(user=app.user)
+    app.refresh_from_db()
+    assert derive_application_state(app) == AppStates.AWAITING_PROFILE_COMPLETION.value
+    LegalAddressFactory.create(user=app.user)
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.AWAITING_RESUME.value
 

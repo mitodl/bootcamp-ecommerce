@@ -62,6 +62,8 @@ def derive_application_state(
     if (
         not hasattr(bootcamp_application.user, "profile")
         or not bootcamp_application.user.profile.is_complete
+        or not hasattr(bootcamp_application.user, "legal_address")
+        or not bootcamp_application.user.legal_address.is_complete
     ):
         return AppStates.AWAITING_PROFILE_COMPLETION.value
     if not bootcamp_application.resume_file:

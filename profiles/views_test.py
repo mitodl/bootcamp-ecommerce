@@ -46,6 +46,7 @@ def test_get_user_by_id(user_client, user):
             "state_or_territory": user.legal_address.state_or_territory,
             "country": user.legal_address.country,
             "postal_code": user.legal_address.postal_code,
+            "is_complete": True,
         },
         "profile": {
             "name": user.profile.name,
@@ -83,6 +84,7 @@ def test_get_user_by_me(user_client, user):
             "state_or_territory": user.legal_address.state_or_territory,
             "country": user.legal_address.country,
             "postal_code": user.legal_address.postal_code,
+            "is_complete": True,
         },
         "profile": {
             "name": user.profile.name,

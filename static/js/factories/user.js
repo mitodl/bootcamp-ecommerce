@@ -45,7 +45,8 @@ export const makeUser = (username: ?string): LoggedInUser => ({
     city:               casual.city,
     state_or_territory: "US-MA",
     country:            "US",
-    postal_code:        "02090"
+    postal_code:        "02090",
+    is_complete:        true
   }
 })
 
@@ -57,6 +58,8 @@ export const makeCompleteUser = (username: ?string): LoggedInUser => {
   fakeUser.profile.updated_on = moment().format()
   // $FlowFixMe: Profile can't be undefined
   fakeUser.profile.is_complete = true
+  // $FlowFixMe: LegalAddress can't be undefined
+  fakeUser.legal_address.is_complete = true
   return fakeUser
 }
 
@@ -66,6 +69,19 @@ export const makeIncompleteUser = (username: ?string): LoggedInUser => {
   fakeUser.profile.name = undefined
   // $FlowFixMe: Profile can't be undefined
   fakeUser.profile.is_complete = false
+  // $FlowFixMe: LegalAddress can't be undefined
+  fakeUser.legal_address.is_complete = true
+  return fakeUser
+}
+
+export const makeUserIncompleteAddress = (username: ?string): LoggedInUser => {
+  const fakeUser = makeUser(username)
+  // $FlowFixMe: LegalAddress can't be undefined
+  fakeUser.legal_address.city = undefined
+  // $FlowFixMe: LegalAddress can't be undefined
+  fakeUser.legal_address.is_complete = false
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.is_complete = true
   return fakeUser
 }
 

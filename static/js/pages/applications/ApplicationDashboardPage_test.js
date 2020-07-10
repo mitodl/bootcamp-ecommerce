@@ -30,7 +30,8 @@ import {
 import {
   makeCompleteUser,
   makeIncompleteUser,
-  makeUser
+  makeUser,
+  makeUserIncompleteAddress
 } from "../../factories/user"
 import { shouldIf } from "../../lib/test_utils"
 
@@ -240,10 +241,11 @@ describe("ApplicationDashboardPage", () => {
 
     //
     ;[
-      [false, false, "incomplete profile"],
-      [true, false, "complete profile"],
-      [true, true, "submitted resume"]
-    ].forEach(([hasProfile, hasResume, desc]) => {
+      [true, false, false, "incomplete profile"],
+      [false, true, false, "incomplete address"],
+      [true, true, false, "complete profile and address"],
+      [true, true, true, "submitted resume"]
+    ].forEach(([hasAddress, hasProfile, hasResume, desc]) => {
       it(`shows resume details with ${desc}`, async () => {
         let newApplicationDetail = Object.assign({}, applicationDetail)
         newApplicationDetail =
@@ -255,14 +257,18 @@ describe("ApplicationDashboardPage", () => {
           allApplicationDetail: {
             [application.id]: newApplicationDetail
           },
-          currentUser: hasProfile ? makeCompleteUser() : makeIncompleteUser()
+          currentUser: hasAddress ?
+            hasProfile ?
+              makeCompleteUser() :
+              makeIncompleteUser() :
+            makeUserIncompleteAddress()
         }
         const wrapper = await renderExpanded(props)
 
         const resumeDetail = wrapper.find("ResumeDetail")
         assert.isTrue(resumeDetail.exists())
         assert.deepEqual(resumeDetail.props(), {
-          ready:             hasProfile,
+          ready:             hasProfile && hasAddress,
           fulfilled:         hasResume,
           openDrawer:        openDrawerStub,
           applicationDetail: newApplicationDetail
