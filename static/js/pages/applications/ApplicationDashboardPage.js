@@ -22,7 +22,6 @@ import {
   ReviewDetail,
   VideoInterviewDetail
 } from "../../components/applications/detail_sections"
-import AccessibleAnchor from "../../components/AccessibleAnchor"
 import SupportLink from "../../components/SupportLink"
 
 import { addErrorNotification, addSuccessNotification } from "../../actions"
@@ -485,14 +484,15 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 )}
               </div>
               <div className="col-5 text-right collapse-link">
-                <AccessibleAnchor
-                  className="btn-text expand-collapse"
+                <button
+                  className="btn-text borderless expand-collapse"
+                  aria-expanded={isOpen ? "true" : "false"}
                   onClick={R.partial(this.loadAndRevealAppDetail, [
                     String(application.id)
                   ])}
                 >
                   {isOpen ? "Collapse −" : "Expand ＋"}
-                </AccessibleAnchor>
+                </button>
               </div>
             </div>
           </div>

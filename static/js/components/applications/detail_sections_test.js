@@ -57,7 +57,7 @@ describe("application detail section component", () => {
       const wrapper = shallow(
         <ProfileDetail {...defaultProps} user={makeIncompleteUser()} />
       )
-      wrapper.find("ProgressDetailRow AccessibleAnchor").simulate("click")
+      wrapper.find("ProgressDetailRow button.btn-link").simulate("click")
       sinon.assert.calledWith(openDrawerStub, { type: PROFILE_VIEW })
     })
   })
@@ -85,7 +85,7 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-        const link = wrapper.find("ProgressDetailRow AccessibleAnchor")
+        const link = wrapper.find("ProgressDetailRow button.btn-link")
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
           assert.equal(link.prop("children"), expLinkText)
@@ -129,7 +129,7 @@ describe("application detail section component", () => {
         const link = wrapper.find(
           fulfilled ?
             "ProgressDetailRow a.btn-link" :
-            "ProgressDetailRow AccessibleAnchor"
+            "ProgressDetailRow button.btn-link"
         )
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
@@ -213,7 +213,7 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-        const link = wrapper.find("ProgressDetailRow AccessibleAnchor")
+        const link = wrapper.find("ProgressDetailRow button.btn-link")
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
           assert.equal(link.prop("children"), expLinkText)
@@ -231,7 +231,7 @@ describe("application detail section component", () => {
         />
       )
 
-      wrapper.find("ProgressDetailRow AccessibleAnchor").simulate("click")
+      wrapper.find("ProgressDetailRow button.btn-link").simulate("click")
       sinon.assert.calledWith(openDrawerStub, {
         type: PAYMENT,
         meta: { application: applicationDetail }
