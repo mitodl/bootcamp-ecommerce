@@ -3,6 +3,7 @@ import { assert } from "chai"
 import { times } from "ramda"
 import { reverse } from "named-urls"
 import casual from "casual-browserify"
+import ReactPaginate from "react-paginate"
 
 import ReviewDashboardPage from "./ReviewDashboardPage"
 
@@ -14,6 +15,7 @@ import {
 } from "../../factories/application"
 import { REVIEW_STATUS_DISPLAY_MAP } from "../../constants"
 import { routes } from "../../lib/urls"
+import { shouldIf } from "../../lib/test_utils"
 
 describe("ReviewDashboardPage", () => {
   let helper, render, facets, submissions, applicationId
@@ -22,15 +24,15 @@ describe("ReviewDashboardPage", () => {
     helper = new IntegrationTestHelper()
     facets = makeApplicationFacets()
     applicationId = casual.integer(2, 30)
-    submissions = times(() => makeSubmissionReview(applicationId), 4)
+    submissions = times(() => makeSubmissionReview(applicationId), 10)
     helper.handleRequestStub
-      .withArgs(submissionsAPI.query({ limit: 1000 }).toString())
+      .withArgs(submissionsAPI.query().toString())
       .returns({
         status: 200,
         body:   {
           count:    submissions.length,
-          next:     "next",
-          previous: "previous",
+          next:     "http://next.com?limit=10&offset=10",
+          previous: null,
           facets,
           results:  submissions
         }
@@ -66,5 +68,47 @@ describe("ReviewDashboardPage", () => {
       reverse(routes.review.detail, { submissionId: submissions[0].id })
     )
     assert.equal(link.text(), submissions[0].learner.profile.name)
+  })
+
+  //
+  ;[
+    [5, 12, 12, null, false],
+    [15, 12, 12, null, true],
+    [15, 12, null, 12, true],
+    [15, 20, null, 20, false],
+    [15, 10, null, null, true]
+  ].forEach(([subCount, limit, nextOffset, previousOffset, showPaging]) => {
+    it(`${shouldIf(
+      showPaging
+    )} render page controls if count is ${subCount} & limit is ${limit}`, async () => {
+      helper.handleRequestStub
+        .withArgs(submissionsAPI.query().toString())
+        .returns({
+          status: 200,
+          body:   {
+            count: subCount,
+            next:  nextOffset ?
+              `http://next.com?limit=${limit}&offset=${nextOffset}` :
+              null,
+            previous: previousOffset ?
+              `http://previous.com?limit=${limit}&offset=${previousOffset}` :
+              null,
+            facets,
+            results: submissions.slice(0, subCount)
+          }
+        })
+      const { wrapper } = await render()
+      const submissionPagination = wrapper.find("SubmissionPagination")
+      assert.equal(
+        submissionPagination.find(ReactPaginate).exists(),
+        showPaging
+      )
+      assert.equal(submissionPagination.props().count, subCount)
+      assert.equal(
+        submissionPagination.props().limit,
+        nextOffset || previousOffset || limit
+      )
+      assert.equal(submissionPagination.props().offset, 0)
+    })
   })
 })
