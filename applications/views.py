@@ -1,7 +1,6 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
-import django_fsm
 from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -193,17 +192,11 @@ class UploadResumeView(GenericAPIView):
         linkedin_url = request.data.get("linkedin_url")
         resume_file = request.FILES.get("file")
         if linkedin_url is None and resume_file is None and not application.resume_file:
-
             raise ValidationError("At least one form of resume is required.")
 
-        try:
-            application.add_resume(resume_file=resume_file, linkedin_url=linkedin_url)
-            # when state transition happens need to save manually
-            application.save()
-        except django_fsm.TransitionNotAllowed:
-            return Response(
-                {"errors": "Cannot upload a resume in this application state"}
-            )
+        application.add_resume(resume_file=resume_file, linkedin_url=linkedin_url)
+        # when state transition happens need to save manually
+        application.save()
 
         return Response(
             {

@@ -11,6 +11,7 @@ import {
 
 import type { BootcampRun } from "./bootcampTypes"
 import type { User } from "./authTypes"
+import type {HttpResponse} from "./httpTypes"
 
 export type Application = {
   id:           number,
@@ -56,13 +57,16 @@ export type ApplicationOrder = {
   payment_method:   string
 } & LegacyOrderPartial
 
-export type ApplicationDetail = {
+export type ResumeLinkedInDetail = {
+  resume_url:         ?string,
+  linkedin_url:       ?string,
+  resume_upload_date: ?string
+}
+
+export type ApplicationDetail = ResumeLinkedInDetail & {
   id:                    number,
   state:                 string,
   bootcamp_run:          BootcampRun,
-  resume_url:            ?string,
-  linkedin_url:          ?string,
-  resume_upload_date:    ?string,
   payment_deadline:      string,
   is_paid_in_full:       boolean,
   run_application_steps: Array<ApplicationRunStep>,
@@ -85,7 +89,7 @@ export type ApplicationDetailState = {
   [string]: ApplicationDetail
 }
 
-export type SubmissionReviewState ={
+export type SubmissionReviewState = {
   [string]: SubmissionReview
 }
 
@@ -111,8 +115,6 @@ export type VideoInterviewResponse = {
   interview_link: string,
 }
 
-export type ResumeLinkedInResponse = {
-  body: {
-    errors?: Array<string>
-  }
-}
+export type NewApplicationResponse = HttpResponse<Application>
+export type ResumeLinkedInResponse = HttpResponse<ResumeLinkedInDetail>
+export type ApplicationDetailResponse = HttpResponse<ApplicationDetail>

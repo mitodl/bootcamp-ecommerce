@@ -107,13 +107,13 @@ $border-style: 1px solid $black;
 
     .fulfilled .progress-meter {
       .check, .bottom-line {
-        background-color: $success-green;
+        background-color: $success;
       }
     }
 
     .fulfilled + .detail-section {
       .progress-meter .top-line {
-        background-color: $success-green;
+        background-color: $success;
       }
     }
 

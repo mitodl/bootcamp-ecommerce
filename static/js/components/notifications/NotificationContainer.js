@@ -5,15 +5,15 @@ import { compose } from "redux"
 import { partial } from "ramda"
 import { Alert } from "reactstrap"
 
-import { removeUserNotification } from "../actions"
-import { newSetWith, newSetWithout, timeoutPromise } from "../util/util"
-import { notificationTypeMap } from "./notifications"
+import { notificationConfigMap } from "."
+import { removeUserNotification } from "../../actions"
+import { newSetWith, newSetWithout, timeoutPromise } from "../../util/util"
 import {
-  CMS_SITE_WIDE_NOTIFICATION,
-  CMS_NOTIFICATION_LCL_STORAGE_ID
-} from "../constants"
+  CMS_NOTIFICATION_LCL_STORAGE_ID,
+  CMS_SITE_WIDE_NOTIFICATION
+} from "../../constants"
 
-import type { UserNotificationMapping } from "../reducers/ui"
+import type { UserNotificationMapping } from "../../flow/uiTypes"
 
 const DEFAULT_REMOVE_DELAY_MS = 1000
 
@@ -74,7 +74,9 @@ export class NotificationContainer extends React.Component<Props, State> {
         {Object.keys(userNotifications || {}).map((notificationKey, i) => {
           const dismiss = partial(this.onDismiss, [notificationKey])
           const notification = userNotifications[notificationKey]
-          const AlertBodyComponent = notificationTypeMap[notification.type]
+          const notificationConfig = notificationConfigMap[notification.type]
+          const AlertBodyComponent = notificationConfig.bodyComponent
+          const alertProps = notificationConfig.alertProps
 
           return (
             <Alert
@@ -84,6 +86,7 @@ export class NotificationContainer extends React.Component<Props, State> {
               isOpen={!hiddenNotifications.has(notificationKey)}
               toggle={dismiss}
               fade={true}
+              {...alertProps}
             >
               <AlertBodyComponent dismiss={dismiss} {...notification.props} />
             </Alert>

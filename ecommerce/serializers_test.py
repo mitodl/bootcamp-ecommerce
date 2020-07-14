@@ -2,7 +2,12 @@
 import pytest
 
 from main.utils import serializer_date_format
-from ecommerce.factories import LineFactory, BootcampApplicationFactory, ReceiptFactory
+from ecommerce.factories import (
+    LineFactory,
+    BootcampApplicationFactory,
+    ReceiptFactory,
+    OrderFactory,
+)
 from ecommerce.models import Order
 from ecommerce.serializers import (
     PaymentSerializer,
@@ -10,6 +15,7 @@ from ecommerce.serializers import (
     LineSerializer,
     ApplicationOrderSerializer,
     CheckoutDataSerializer,
+    OrderSerializer,
 )
 from klasses.factories import InstallmentFactory
 from klasses.serializers import BootcampRunSerializer, InstallmentSerializer
@@ -124,4 +130,16 @@ def test_checkout_data(has_paid):
         "payments": [LineSerializer(line).data] if has_paid else [],
         "total_paid": application.total_paid,
         "total_price": application.price,
+    }
+
+
+def test_order_serializer():
+    """OrderSerializer should return expected data"""
+    order = OrderFactory.create()
+    assert OrderSerializer(instance=order).data == {
+        "id": order.id,
+        "status": order.status,
+        "application_id": order.application.id,
+        "created_on": serializer_date_format(order.created_on),
+        "updated_on": serializer_date_format(order.updated_on),
     }

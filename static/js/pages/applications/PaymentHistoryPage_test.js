@@ -4,11 +4,11 @@ import sinon from "sinon"
 
 import PaymentHistoryPage from "./PaymentHistoryPage"
 
+import { calcOrderBalances } from "../../lib/applicationApi"
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import { makeCountries } from "../../factories/user"
 import { makeApplicationDetail } from "../../factories/application"
 import {
-  calcOrderBalances,
   formatPrice,
   formatReadableDateFromStr,
   formatRunDateRange

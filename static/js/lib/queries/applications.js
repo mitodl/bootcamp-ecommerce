@@ -10,6 +10,8 @@ import type {
   ApplicationDetail,
   ApplicationDetailState
 } from "../../flow/applicationTypes"
+// $FlowFixMe: This export exists
+import type { QueryState } from "redux-query"
 
 const applicationsKey = "applications"
 export const applicationDetailKey = "applicationDetail"
@@ -22,6 +24,11 @@ export const applicationsSelector = (state: any): ?Array<Application> =>
 export const allApplicationDetailSelector = (
   state: any
 ): { [string]: ApplicationDetail } => state.entities[applicationDetailKey]
+
+// HACK: This wouldn't work with R.curry for some reason. Settling for a function that returns a function.
+export const appDetailQuerySelector = (state: any) => (
+  applicationId: string
+): ?QueryState => state.queries[`appDetail.${applicationId}`]
 
 export const applicationDetailSelector = (
   applicationId: number,
@@ -58,6 +65,7 @@ export default {
     }
   }),
   applicationDetailQuery: (applicationId: string, force?: boolean) => ({
+    queryKey:  `appDetail.${applicationId}`,
     url:       applicationDetailAPI.param({ applicationId }).toString(),
     transform: (json: ?ApplicationDetail) => {
       return {

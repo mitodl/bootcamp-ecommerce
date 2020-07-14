@@ -9,6 +9,7 @@ import { values, join, keys } from "ramda"
 import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik"
 import * as yup from "yup"
 
+import SupportLink from "./SupportLink"
 import FormError from "./forms/elements/FormError"
 import { closeDrawer } from "../reducers/drawer"
 import applications, {
@@ -16,7 +17,12 @@ import applications, {
 } from "../lib/queries/applications"
 import { DEFAULT_NON_GET_OPTIONS } from "../lib/redux_query"
 import queries from "../lib/queries"
-import { getFilenameFromMediaPath, isNilOrBlank } from "../util/util"
+import {
+  getFilenameFromMediaPath,
+  getFirstResponseBodyError,
+  isErrorResponse,
+  isNilOrBlank
+} from "../util/util"
 import { appResumeAPI } from "../lib/urls"
 import { ALLOWED_FILE_EXTENSIONS } from "../constants"
 
@@ -102,7 +108,7 @@ type ResumeLinkedInForm = {
 type Props = {
   application: ?ApplicationDetail,
   closeDrawer: () => void,
-  fetchAppDetail: (applicationId: number, force: boolean) => Promise<void>,
+  fetchAppDetail: (applicationId: string, force: boolean) => Promise<void>,
   addLinkedInUrl: (
     applicationId: number,
     linkedInUrl: string
@@ -126,16 +132,17 @@ export class ResumeLinkedIn extends React.Component<Props> {
       return
     }
 
-    const { body: errors }: ResumeLinkedInResponse = await addLinkedInUrl(
-      application.id,
-      linkedInUrl
-    )
+    const linkedInResponse = await addLinkedInUrl(application.id, linkedInUrl)
 
-    // $FlowFixMe: errors can only be null or an array
-    const hasErrors = errors && errors.length > 0
-    if (hasErrors) {
+    if (isErrorResponse(linkedInResponse)) {
+      const responseBodyError = getFirstResponseBodyError(linkedInResponse)
       actions.setErrors({
-        linkedInUrl: errors
+        linkedInUrl: responseBodyError || (
+          <span>
+            Something went wrong while adding your LinkedIn profile. Please try
+            again, or <SupportLink />
+          </span>
+        )
       })
       actions.setSubmitting(false)
     } else {
@@ -155,7 +162,7 @@ export class ResumeLinkedIn extends React.Component<Props> {
     // server response after a successful upload. To get around this, we make
     // another request for the application detail to "refresh" that data and get
     // the up-to-date resume.
-    await fetchAppDetail(application.id, true)
+    await fetchAppDetail(String(application.id), true)
   }
 
   render() {
@@ -233,7 +240,7 @@ const mapDispatchToProps = dispatch => ({
         applications.applicationLinkedInUrlMutation(applicationId, linkedInUrl)
       )
     ),
-  fetchAppDetail: async (applicationId: number, force: ?boolean) =>
+  fetchAppDetail: async (applicationId: string, force: ?boolean) =>
     dispatch(
       requestAsync(
         queries.applications.applicationDetailQuery(

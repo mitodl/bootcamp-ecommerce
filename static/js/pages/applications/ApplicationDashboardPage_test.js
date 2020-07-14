@@ -68,7 +68,11 @@ describe("ApplicationDashboardPage", () => {
 
     renderPage = helper.configureReduxQueryRenderer(
       ApplicationDashboardPage,
-      {},
+      {
+        location: {
+          search: ""
+        }
+      },
       {
         entities: {
           currentUser: fakeUser
@@ -203,7 +207,10 @@ describe("ApplicationDashboardPage", () => {
         allApplicationDetail: { [application.id]: applicationDetail },
         currentUser:          makeCompleteUser(),
         fetchAppDetail:       sinon.stub(),
-        openDrawer:           openDrawerStub
+        openDrawer:           openDrawerStub,
+        location:             {
+          search: ""
+        }
       }
       // This function renders the component then sets the state so the detail section is expanded
       renderExpanded = async props => {

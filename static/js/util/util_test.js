@@ -6,8 +6,7 @@ import _ from "lodash"
 import {
   generateFakePayableRuns,
   generateFakeInstallment,
-  generateFakeRun,
-  generateOrder
+  generateFakeRun
 } from "../factories"
 import {
   createForm,
@@ -23,10 +22,11 @@ import {
   timeoutPromise,
   getFilenameFromPath,
   getFilenameFromMediaPath,
-  parsePrice,
-  calcOrderBalances
+  isErrorResponse,
+  parsePrice
 } from "./util"
-import { makeApplicationDetail } from "../factories/application"
+
+import type { HttpResponse } from "../flow/httpTypes"
 
 describe("util", () => {
   describe("createForm", () => {
@@ -202,6 +202,25 @@ describe("util", () => {
     })
   })
 
+  //
+  ;[
+    [200, false],
+    [299, false],
+    [300, false],
+    [400, true],
+    [500, true]
+  ].forEach(([status, expResult]) => {
+    it(`isErrorResponse returns ${String(expResult)} when status=${String(
+      status
+    )}`, () => {
+      const response: HttpResponse<*> = {
+        status: status,
+        body:   {}
+      }
+      assert.equal(isErrorResponse(response), expResult)
+    })
+  })
+
   describe("formatPrice", () => {
     it("format price", () => {
       assert.equal(formatPrice(20), "$20")
@@ -261,34 +280,5 @@ describe("util", () => {
         assert.equal(formatRunDateRange(run), expectedText)
       })
     })
-  })
-
-  it("sorts orders by updated_on and balances from the application", () => {
-    const application = makeApplicationDetail()
-    application.price = 60
-    // $FlowFixMe
-    application.orders = [
-      { ...generateOrder(), total_price_paid: 20, updated_on: "2020-01-01" },
-      { ...generateOrder(), total_price_paid: 30, updated_on: "2020-02-01" }
-    ]
-    const {
-      ordersAndBalances,
-      totalPaid,
-      totalPrice,
-      balanceRemaining
-    } = calcOrderBalances(application)
-    assert.deepEqual(ordersAndBalances, [
-      {
-        order:   application.orders[0],
-        balance: 40
-      },
-      {
-        order:   application.orders[1],
-        balance: 10
-      }
-    ])
-    assert.equal(totalPaid, 50)
-    assert.equal(totalPrice, 60)
-    assert.equal(balanceRemaining, 10)
   })
 })

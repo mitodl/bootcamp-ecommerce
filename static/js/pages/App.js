@@ -9,7 +9,7 @@ import { createStructuredSelector } from "reselect"
 
 import PrivateRoute from "../components/PrivateRoute"
 import SiteNavbar from "../components/SiteNavbar"
-import NotificationContainer from "../components/NotificationContainer"
+import NotificationContainer from "../components/notifications/NotificationContainer"
 import Drawer from "../components/Drawer"
 import LoginPages from "./login/LoginPages"
 import RegisterPages from "./register/RegisterPages"
@@ -49,7 +49,7 @@ export class App extends Component<Props> {
       const notificationId = cmsNotification.getAttribute(
         CMS_NOTIFICATION_ID_ATTR
       )
-      const notificationMessage = cmsNotification.textContent
+      const notificationHtml = cmsNotification.innerHTML
       if (
         window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID) !==
         notificationId
@@ -58,7 +58,12 @@ export class App extends Component<Props> {
           [CMS_SITE_WIDE_NOTIFICATION]: {
             type:  ALERT_TYPE_TEXT,
             props: {
-              text:        notificationMessage,
+              text: (
+                <div
+                  className="site-wide"
+                  dangerouslySetInnerHTML={{ __html: notificationHtml }}
+                />
+              ),
               persistedId: notificationId
             }
           }

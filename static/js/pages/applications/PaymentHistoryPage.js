@@ -6,9 +6,9 @@ import { connectRequest } from "redux-query-react"
 
 import Address from "../../components/Address"
 
+import { calcOrderBalances } from "../../lib/applicationApi"
 import queries from "../../lib/queries"
 import {
-  calcOrderBalances,
   formatPrice,
   formatReadableDateFromStr,
   formatRunDateRange

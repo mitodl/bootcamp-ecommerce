@@ -40,7 +40,13 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
     onSubmit={onSubmit}
     validationSchema={legalAddressValidation.concat(profileValidation)}
     initialValues={getInitialValues(user)}
-    render={({ isSubmitting, setFieldValue, setFieldTouched, values }) => (
+    render={({
+      isSubmitting,
+      setFieldValue,
+      setFieldTouched,
+      values,
+      errors
+    }) => (
       <Form>
         <div className="row">
           <h2 className="col-6">Profile</h2>
@@ -54,6 +60,11 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
             </button>
           </div>
         </div>
+        {errors && errors.general ? (
+          <div className="row mt-2 mb-2">
+            <div className="col-12 form-error">{errors.general}</div>
+          </div>
+        ) : null}
         <div className="row">
           {user.is_authenticated ? (
             <div className="col-12 bootcamp-form">

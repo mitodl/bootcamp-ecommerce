@@ -1,5 +1,6 @@
 // @flow
 import moment from "moment"
+import { mergeRight, omit } from "ramda"
 
 import {
   CLEAR_UI,
@@ -11,12 +12,18 @@ import {
   SHOW_DIALOG,
   HIDE_DIALOG,
   ADD_USER_NOTIFICATION,
-  REMOVE_USER_NOTIFICATION
+  REMOVE_USER_NOTIFICATION,
+  ADD_ERROR_NOTIFICATION,
+  ADD_SUCCESS_NOTIFICATION
 } from "../actions"
+import {
+  ALERT_TYPE_ERROR,
+  ALERT_TYPE_SUCCESS,
+  APP_NOTIFICATION
+} from "../constants"
 
 import type { Action } from "../flow/reduxTypes"
-import { mergeRight, omit } from "ramda"
-import { ALERT_TYPE_TEXT } from "../constants"
+import type { UserNotificationMapping } from "../flow/uiTypes"
 
 export type ToastMessage = {
   message: string,
@@ -31,9 +38,10 @@ export type UIState = {
   timeoutActive: boolean,
   toastMessage: ?ToastMessage,
   dialogVisibility: Object,
-  userNotifications: Object
+  userNotifications: UserNotificationMapping
 }
-const INITIAL_UI_STATE = {
+
+const INITIAL_UI_STATE: UIState = {
   paymentAmount:     "",
   initialTime:       moment().toISOString(),
   timeoutActive:     false,
@@ -41,19 +49,6 @@ const INITIAL_UI_STATE = {
   dialogVisibility:  {},
   userNotifications: {}
 }
-
-export type TextNotificationProps = {
-  text: string,
-  persistedId?: string
-}
-
-export type UserNotificationSpec = {
-  type: ALERT_TYPE_TEXT,
-  color: string,
-  props: TextNotificationProps
-}
-
-export type UserNotificationMapping = { [string]: UserNotificationSpec }
 
 const ui = (state: UIState = INITIAL_UI_STATE, action: Action) => {
   switch (action.type) {
@@ -89,6 +84,26 @@ const ui = (state: UIState = INITIAL_UI_STATE, action: Action) => {
     return {
       ...state,
       userNotifications: mergeRight(state.userNotifications, action.payload)
+    }
+  case ADD_ERROR_NOTIFICATION:
+    return {
+      ...state,
+      userNotifications: mergeRight(state.userNotifications, {
+        [APP_NOTIFICATION]: {
+          type: ALERT_TYPE_ERROR,
+          ...action.payload
+        }
+      })
+    }
+  case ADD_SUCCESS_NOTIFICATION:
+    return {
+      ...state,
+      userNotifications: mergeRight(state.userNotifications, {
+        [APP_NOTIFICATION]: {
+          type: ALERT_TYPE_SUCCESS,
+          ...action.payload
+        }
+      })
     }
   case REMOVE_USER_NOTIFICATION:
     return {

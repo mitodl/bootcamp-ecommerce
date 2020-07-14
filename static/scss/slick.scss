@@ -1,4 +1,6 @@
 // sass-lint:disable mixins-before-declarations
+$slick-red: #a31f34;
+
 /* Slider */
 .slick-slider {
   position: relative;
@@ -142,7 +144,7 @@
   }
 
   &:hover {
-    color: $primary;
+    color: $slick-red;
     background: black;
   }
 
@@ -212,7 +214,7 @@
 
     &.slick-active {
       button {
-        background: $primary;
+        background: $slick-red;
       }
     }
   }

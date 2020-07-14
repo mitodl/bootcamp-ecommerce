@@ -12,14 +12,17 @@ import EditProfileForm from "./forms/EditProfileForm"
 import { PROFILE_VIEW } from "../constants"
 import users, { currentUserSelector } from "../lib/queries/users"
 import queries from "../lib/queries"
+import { getFirstResponseBodyError, isErrorResponse } from "../util/util"
 import { setDrawerState } from "../reducers/drawer"
 
 import type {
   Country,
   CurrentUser,
   User,
-  HttpAuthResponse
+  HttpAuthResponse,
+  EditProfileResponse
 } from "../flow/authTypes"
+import SupportLink from "./SupportLink"
 
 type StateProps = {|
   countries: ?Array<Country>,
@@ -50,14 +53,16 @@ export class EditProfileDisplay extends React.Component<Props> {
         {})
     }
     try {
-      const {
-        body: { errors }
-      }: // $FlowFixMe
-      { body: Object } = await editProfile(payload)
-
-      if (errors && errors.length > 0) {
+      const response: EditProfileResponse = await editProfile(payload)
+      if (isErrorResponse(response)) {
+        const responseBodyError = getFirstResponseBodyError(response)
         setErrors({
-          email: errors[0]
+          general: responseBodyError || (
+            <span>
+              Something went wrong while updating your profile. Please refresh
+              the page and try again, or <SupportLink />
+            </span>
+          )
         })
       } else {
         updateDrawer(PROFILE_VIEW)

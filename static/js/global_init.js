@@ -11,6 +11,7 @@ const _createSettings = () => ({})
 
 global.SETTINGS = _createSettings()
 global._testing = true
+global.CSOURCE_PAYLOAD = null
 
 window.scrollTo = () => "scroll!"
 
