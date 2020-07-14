@@ -42,16 +42,18 @@
     {% endblock %}
     {% if zendesk_config.help_widget_enabled %}
       <script type="text/javascript">
-        zE('webWidget', 'prefill', {
-            name: {
-                value: '{{user.name}}',
-            },
-            email: {
-                value: '{{user.email}}',
-            }
-        });
-        // set page title as a search term
-        zE('webWidget', 'helpCenter:setSuggestions', { search: document.title });
+        if (typeof zE !== 'undefined') {
+            zE('webWidget', 'prefill', {
+                name: {
+                    value: '{{user.name}}',
+                },
+                email: {
+                    value: '{{user.email}}',
+                }
+            });
+            // set page title as a search term
+            zE('webWidget', 'helpCenter:setSuggestions', { search: document.title });
+        }
       </script>
     {% endif %}
     {% render_bundle 'third_party' %}
