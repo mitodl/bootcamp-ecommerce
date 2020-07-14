@@ -13,6 +13,9 @@ from cms.blocks import (
     TitleLinksBlock,
     TitleDescriptionBlock,
     CatalogSectionBootcampBlock,
+    ThreeColumnImageTextBlock,
+    InstructorSectionBlock,
+    InstructorBlock,
 )
 from klasses.factories import BootcampRunFactory
 
@@ -101,6 +104,41 @@ class TitleDescriptionBlockFactory(wagtail_factories.StructBlockFactory):
         model = TitleDescriptionBlock
 
 
+class ThreeColumnImageTextBlockFactory(wagtail_factories.StructBlockFactory):
+    """ThreeColumnImageTextBlockFactory factory class"""
+
+    heading = factory.fuzzy.FuzzyText(prefix="Heading ")
+    sub_heading = factory.fuzzy.FuzzyText(prefix="Sub Heading ")
+    body = factory.LazyFunction(lambda: RichText("<p>{}</p>".format(FAKE.paragraph())))
+    image = factory.SubFactory(wagtail_factories.ImageFactory)
+
+    class Meta:
+        model = ThreeColumnImageTextBlock
+
+
+class InstructorBlockFactory(wagtail_factories.StructBlockFactory):
+    """InstructorBlockFactory factory class"""
+
+    name = factory.fuzzy.FuzzyText(prefix="Name ")
+    image = factory.SubFactory(wagtail_factories.ImageFactory)
+    title = factory.fuzzy.FuzzyText(prefix="Title ")
+
+    class Meta:
+        model = InstructorBlock
+
+
+class InstructorSectionBlockFactory(wagtail_factories.StructBlockFactory):
+    """InstructorSectionBlockFactory factory class"""
+
+    heading = factory.fuzzy.FuzzyText(prefix="Heading ")
+    sub_heading = factory.fuzzy.FuzzyText(prefix="Sub Heading ")
+    heading_singular = factory.fuzzy.FuzzyText(prefix="Heading Singular ")
+    members = factory.SubFactory(InstructorBlockFactory)
+
+    class Meta:
+        model = InstructorSectionBlock
+
+
 class ProgramDescriptionSectionFactory(wagtail_factories.PageFactory):
     """ProgramDescriptionSection factory class"""
 
@@ -115,6 +153,17 @@ class ProgramDescriptionSectionFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.ProgramDescriptionSection
+
+
+class ThreeColumnImageTextSectionFactory(wagtail_factories.PageFactory):
+    """ThreeColumnImageTextSection factory class"""
+
+    column_image_text_section = wagtail_factories.StreamFieldFactory(
+        {"column_image_text_section": ThreeColumnImageTextBlockFactory}
+    )
+
+    class Meta:
+        model = models.ThreeColumnImageTextSection
 
 
 class HomePageFactory(wagtail_factories.PageFactory):
@@ -199,3 +248,41 @@ class ResourcePagesSettingsFactory(DjangoModelFactory):
 
     class Meta:
         model = models.ResourcePagesSettings
+
+
+class InstructorSectionFactory(wagtail_factories.PageFactory):
+    """InstructorSectionFactory factory class"""
+
+    banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    heading = factory.fuzzy.FuzzyText(prefix="heading ")
+    sections = wagtail_factories.StreamFieldFactory(
+        {"section": InstructorSectionBlockFactory}
+    )
+
+    class Meta:
+        model = models.InstructorsSection
+
+
+class AdmissionSectionFactory(wagtail_factories.PageFactory):
+    """AdmissionSectionFactory factory class"""
+
+    admissions_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    notes = factory.fuzzy.FuzzyText(prefix="heading ")
+    details = factory.LazyFunction(
+        lambda: RichText("<p>{}</p>".format(FAKE.paragraph()))
+    )
+    bootcamp_format = factory.fuzzy.FuzzyText(prefix="heading ")
+    bootcamp_format_details = factory.LazyFunction(
+        lambda: RichText("<p>{}</p>".format(FAKE.paragraph()))
+    )
+    dates = factory.fuzzy.FuzzyText(prefix="heading ")
+    dates_details = factory.LazyFunction(
+        lambda: RichText("<p>{}</p>".format(FAKE.paragraph()))
+    )
+    price = factory.fuzzy.FuzzyInteger(10)
+    price_details = factory.LazyFunction(
+        lambda: RichText("<p>{}</p>".format(FAKE.paragraph()))
+    )
+
+    class Meta:
+        model = models.AdmissionsSection
