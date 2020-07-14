@@ -13,8 +13,13 @@ from ecommerce.api import make_reference_id
 from ecommerce.exceptions import EcommerceException
 from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import Order, OrderAudit, Receipt
-from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
+from ecommerce.serializers import (
+    CheckoutDataSerializer,
+    PaymentSerializer,
+    OrderSerializer,
+)
 from ecommerce.test_utils import create_test_application, create_test_order
+from ecommerce.views import OrderView
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRunEnrollment
 from profiles.factories import ProfileFactory, UserFactory
@@ -530,3 +535,21 @@ def test_checkout_data_anonymous(client):
     """anonymous users cannot query the checkout data API"""
     resp = client.get(reverse("checkout-data-detail"))
     assert resp.status_code == statuses.HTTP_403_FORBIDDEN
+
+
+def test_order_view_permissions(client, user):
+    """A user should not be able to access order data if it does not belong to them"""
+    random_user = UserFactory.create(is_staff=False, is_superuser=False)
+    order = OrderFactory.create(user=user)
+    client.force_login(random_user)
+    resp = client.get(reverse("order-api", kwargs={"pk": order.id}))
+    assert resp.status_code == statuses.HTTP_403_FORBIDDEN
+    order.user = random_user
+    order.save()
+    resp = client.get(reverse("order-api", kwargs={"pk": order.id}))
+    assert resp.status_code == statuses.HTTP_200_OK
+
+
+def test_order_view_serializer():
+    """The OrderView should use the expected serializer"""
+    assert OrderView.serializer_class == OrderSerializer

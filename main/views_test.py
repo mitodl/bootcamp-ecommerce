@@ -1,7 +1,10 @@
 """
 Test end to end django views.
 """
+import json
+
 import pytest
+from django.urls import reverse
 
 from cms.factories import HomePageFactory
 
@@ -27,3 +30,33 @@ def test_password_reset_link(client):
     """Verify that the password reset link doesn't cause an error"""
     resp = client.get("/signin/forgot-password/confirm/MTA3/5gw-ccd72e49361be41f4924/")
     assert resp.status_code == 200
+
+
+@pytest.mark.django_db
+def test_cybersource_context(client, user):
+    """The view that handles POST requests from Cybersource should add some values to the template context"""
+    fake_title, fake_datetime, decision = (
+        "Bootcamp Run 1",
+        "2020-01-01T00:00:00Z",
+        "ACCEPT",
+    )
+    client.force_login(user)
+    url = reverse("applications")
+    resp = client.get(url)
+    assert "CSOURCE_PAYLOAD" not in resp.context
+    resp = client.post(
+        url,
+        {
+            "decision": decision,
+            "signed_date_time": fake_datetime,
+            "req_merchant_defined_data4": fake_title,
+            "req_reference_number": "12345",
+            "req_transaction_uuid": "00aa7f4ca7b440de8eb70881a58abc99",
+        },
+    )
+    assert "CSOURCE_PAYLOAD" in resp.context
+    assert json.loads(resp.context["CSOURCE_PAYLOAD"]) == {
+        "decision": decision,
+        "bootcamp_run_purchased": fake_title,
+        "purchase_date_utc": fake_datetime,
+    }

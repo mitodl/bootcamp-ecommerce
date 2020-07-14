@@ -4,7 +4,7 @@ import { compose } from "redux"
 import { connect } from "react-redux"
 
 import SiteNavbar from "../components/SiteNavbar"
-import NotificationContainer from "../components/NotificationContainer"
+import NotificationContainer from "../components/notifications/NotificationContainer"
 import { addUserNotification } from "../actions"
 import {
   ALERT_TYPE_TEXT,
@@ -22,7 +22,7 @@ export class HeaderApp extends React.Component<*, *> {
       const notificationId = cmsNotification.getAttribute(
         CMS_NOTIFICATION_ID_ATTR
       )
-      const notificationMessage = cmsNotification.textContent
+      const notificationHtml = cmsNotification.innerHTML
       if (
         window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID) !==
         notificationId
@@ -31,7 +31,12 @@ export class HeaderApp extends React.Component<*, *> {
           [CMS_SITE_WIDE_NOTIFICATION]: {
             type:  ALERT_TYPE_TEXT,
             props: {
-              text:        notificationMessage,
+              text: (
+                <div
+                  className="site-wide"
+                  dangerouslySetInnerHTML={{ __html: notificationHtml }}
+                />
+              ),
               persistedId: notificationId
             }
           }

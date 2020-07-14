@@ -1,5 +1,8 @@
 // @flow
 import { getCookie } from "./api"
+import { isErrorStatusCode } from "../util/util"
+// $FlowFixMe: This export exists
+import type { QueryState } from "redux-query"
 
 export const DEFAULT_NON_GET_OPTIONS = {
   headers: {
@@ -19,3 +22,6 @@ export const constructIdMap = (results: Array<Object>) => {
 
 export const getQueries = (state: Object) => state.queries
 export const getEntities = (state: Object) => state.entities
+
+export const isQueryInErrorState = (queryState?: QueryState) =>
+  !!queryState && isErrorStatusCode(queryState.status)

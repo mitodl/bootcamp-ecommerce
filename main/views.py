@@ -1,9 +1,35 @@
 """
 bootcamp views
 """
+import json
+
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
+
+from main.utils import has_all_keys
+
+
+def is_cybersource_request(request):
+    """
+    Returns True if the request is a post-back from Cybersource after a payment was completed
+
+    Args:
+        request (django.http.request.HttpRequest): A request
+
+    Returns:
+        bool: True if the request is a post-back from Cybersource
+    """
+    return request.method == "POST" and has_all_keys(
+        request.POST,
+        {
+            "decision",
+            "signed_date_time",
+            "req_merchant_defined_data4",
+            "req_reference_number",
+            "req_transaction_uuid",
+        },
+    )
 
 
 @csrf_exempt
@@ -25,7 +51,16 @@ def react(request, **kwargs):
     """
     View for pages served by react
     """
-    return render(request, "bootcamp/react.html")
+    context = {}
+    if is_cybersource_request(request):
+        context["CSOURCE_PAYLOAD"] = json.dumps(
+            {
+                "decision": request.POST["decision"],
+                "bootcamp_run_purchased": request.POST["req_merchant_defined_data4"],
+                "purchase_date_utc": request.POST["signed_date_time"],
+            }
+        )
+    return render(request, "bootcamp/react.html", context)
 
 
 class BackgroundImagesCSSView(TemplateView):

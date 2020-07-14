@@ -1,6 +1,8 @@
 // @flow
+import type {HttpResponse} from "./httpTypes"
 
 // API response types
+
 export type AuthStates =
   | "success"
   | "inactive"
@@ -137,3 +139,5 @@ export type updateEmailResponse = {
   confirmed: boolean,
   detail: ?string,
 }
+
+export type EditProfileResponse = HttpResponse<User>

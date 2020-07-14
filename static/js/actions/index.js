@@ -30,5 +30,11 @@ export const hideDialog = createAction(HIDE_DIALOG)
 export const ADD_USER_NOTIFICATION = "ADD_USER_NOTIFICATION"
 export const addUserNotification = createAction(ADD_USER_NOTIFICATION)
 
+export const ADD_ERROR_NOTIFICATION = "ADD_ERROR_NOTIFICATION"
+export const addErrorNotification = createAction(ADD_ERROR_NOTIFICATION)
+
+export const ADD_SUCCESS_NOTIFICATION = "ADD_SUCCESS_NOTIFICATION"
+export const addSuccessNotification = createAction(ADD_SUCCESS_NOTIFICATION)
+
 export const REMOVE_USER_NOTIFICATION = "REMOVE_USER_NOTIFICATION"
 export const removeUserNotification = createAction(REMOVE_USER_NOTIFICATION)

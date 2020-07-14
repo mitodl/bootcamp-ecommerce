@@ -163,8 +163,8 @@ def has_all_keys(dict_to_scan, keys):
     Returns True if the given dict has all of the given keys
 
     Args:
-        dict_to_scan (dict):
-        keys (iterable of str): Iterable of keys to check for
+        dict_to_scan (Dict[str, Any]):
+        keys (Iterable[str]): Iterable of keys to check for
 
     Returns:
         bool: True if the given dict has all of the given keys

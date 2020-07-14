@@ -13,14 +13,17 @@ import {
 } from "reactstrap"
 import { partial } from "ramda"
 
+import SupportLink from "./SupportLink"
 import { closeDrawer } from "../reducers/drawer"
 import users, { currentUserSelector } from "../lib/queries/users"
 import bootcamps, { bootcampRunsSelector } from "../lib/queries/bootcamps"
 import applications, { createAppQueryKey } from "../lib/queries/applications"
 import { isQueryPending } from "../lib/queries/util"
+import { isErrorResponse } from "../util/util"
 
 import type { User } from "../flow/authTypes"
 import type { BootcampRun } from "../flow/bootcampTypes"
+import type { NewApplicationResponse } from "../flow/applicationTypes"
 
 const noAvailableBootcampsMsg =
   "There are no bootcamps that are currently open for application."
@@ -36,12 +39,14 @@ type Props = {
 
 type State = {
   selectedBootcamp: ?BootcampRun,
-  dropdownOpen: boolean
+  dropdownOpen: boolean,
+  requestFailed: boolean
 }
 
 const INITIAL_STATE: State = {
   selectedBootcamp: null,
-  dropdownOpen:     false
+  dropdownOpen:     false,
+  requestFailed:    false
 }
 
 export class NewApplication extends React.Component<Props, State> {
@@ -49,7 +54,8 @@ export class NewApplication extends React.Component<Props, State> {
 
   changeSelectedRun = (run: BootcampRun) => {
     this.setState({
-      selectedBootcamp: run
+      selectedBootcamp: run,
+      requestFailed:    false
     })
   }
 
@@ -60,7 +66,13 @@ export class NewApplication extends React.Component<Props, State> {
     if (!selectedBootcamp) {
       return
     }
-    await createNewApplication(selectedBootcamp.id)
+    const response: NewApplicationResponse = await createNewApplication(
+      selectedBootcamp.id
+    )
+    if (isErrorResponse(response)) {
+      this.setState({ requestFailed: true })
+      return
+    }
     this.setState({ ...INITIAL_STATE })
     closeDrawer()
   }
@@ -72,7 +84,7 @@ export class NewApplication extends React.Component<Props, State> {
       appliedRunIds,
       createAppIsPending
     } = this.props
-    const { selectedBootcamp, dropdownOpen } = this.state
+    const { selectedBootcamp, dropdownOpen, requestFailed } = this.state
 
     if (!currentUser || !bootcampRuns) {
       return null
@@ -114,7 +126,7 @@ export class NewApplication extends React.Component<Props, State> {
               <DropdownToggle caret>{dropdownText}</DropdownToggle>
               <DropdownMenu>{items}</DropdownMenu>
             </Dropdown>
-            <div className="d-flex justify-content-end">
+            <div className="mb-3 d-flex justify-content-end">
               <button
                 className="btn-red btn-inverse"
                 onClick={this.handleSubmit}
@@ -123,6 +135,12 @@ export class NewApplication extends React.Component<Props, State> {
                 Continue
               </button>
             </div>
+            {requestFailed && (
+              <p className="form-error">
+                Something went wrong while creating your application. Please
+                refresh the page and try again, or <SupportLink />
+              </p>
+            )}
           </React.Fragment>
         )}
       </div>

@@ -11,6 +11,7 @@ from ecommerce.views import (
     UserBootcampRunDetail,
     UserBootcampRunList,
     UserBootcampRunStatement,
+    OrderView,
 )
 
 
@@ -36,5 +37,6 @@ urlpatterns = [
         UserBootcampRunStatement.as_view(),
         name="bootcamp-run-statement",
     ),
+    url(r"api/orders/(?P<pk>[0-9]+)/$", OrderView.as_view(), name="order-api"),
     path("api/checkout/", CheckoutDataView.as_view(), name="checkout-data-detail"),
 ]

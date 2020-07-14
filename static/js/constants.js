@@ -99,6 +99,13 @@ export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
 export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
 
 export const ALERT_TYPE_TEXT = "text"
+export const ALERT_TYPE_ERROR = "error"
+export const ALERT_TYPE_SUCCESS = "success"
+export const ALERT_TYPES = [
+  ALERT_TYPE_TEXT,
+  ALERT_TYPE_ERROR,
+  ALERT_TYPE_SUCCESS
+]
 
 export const APP_STATE_IN_PROGRESS = "In Progress"
 export const APP_STATE_IN_REVIEW = "In Review"
@@ -147,6 +154,12 @@ export const SUBMISSION_STATUS_TEXT_MAP = {
   SUBMISSION_STATUS_SUBMITTED: SUBMISSION_STATUS_SUBMITTED
 }
 
+export const ORDER_STATUS_FULFILLED = "fulfilled"
+export const ORDER_STATUS_FAILED = "failed"
+
+export const CYBERSOURCE_RETURN_QS_STATE = "receipt"
+export const CYBERSOURCE_DECISION_ACCEPT = "ACCEPT"
+
 // HTML title for different pages
 export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
 export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE
@@ -177,6 +190,7 @@ export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"
 export const CMS_NOTIFICATION_SELECTOR = ".site-wide"
 export const CMS_NOTIFICATION_ID_ATTR = "data-notification-id"
 export const CMS_NOTIFICATION_LCL_STORAGE_ID = "dismissedNotification"
+export const APP_NOTIFICATION = "app-notification"
 
 // Drawer content types
 export const PROFILE_VIEW = "profileView"

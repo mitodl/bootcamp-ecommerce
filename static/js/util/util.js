@@ -6,7 +6,7 @@ import moment from "moment"
 import { ORDER_FULFILLED } from "../constants"
 
 import type { BootcampRun } from "../flow/bootcampTypes"
-import type { ApplicationDetail } from "../flow/applicationTypes"
+import type { HttpResponse } from "../flow/httpTypes"
 
 /**
  * Creates a POST form with hidden input fields
@@ -168,6 +168,34 @@ export const getFilenameFromMediaPath = R.compose(
   R.defaultTo("")
 )
 
+export const isErrorStatusCode = (statusCode: number): boolean =>
+  statusCode >= 400
+
+export const isErrorResponse = (response: HttpResponse<*>): boolean =>
+  isErrorStatusCode(response.status)
+
+export const getResponseBodyErrors = (
+  response: HttpResponse<*>
+): string | Array<string> | null => {
+  if (!response || !response.body || !response.body.errors) {
+    return null
+  }
+  if (Array.isArray(response.body.errors)) {
+    return response.body.errors.length === 0 ? null : response.body.errors
+  }
+  return response.body.errors === "" ? null : response.body.errors
+}
+
+export const getFirstResponseBodyError = (
+  response: HttpResponse<*>
+): ?string => {
+  const errors = getResponseBodyErrors(response)
+  if (!Array.isArray(errors)) {
+    return errors
+  }
+  return errors.length === 0 ? null : errors[0]
+}
+
 export const parsePrice = (priceStr: string | number): Decimal => {
   let price
   try {
@@ -182,21 +210,3 @@ export const formatRunDateRange = (run: BootcampRun) =>
   `${run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} - ${
     run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"
   }`
-
-export const calcOrderBalances = (application: ApplicationDetail) => {
-  const sortedOrders = R.sortBy(order => order.updated_on, application.orders)
-  let balance = application.price
-  const ordersAndBalances = sortedOrders.map(order => {
-    balance -= order.total_price_paid
-    return { order, balance }
-  })
-  const totalPaid = R.sum(sortedOrders.map(order => order.total_price_paid))
-  const totalPrice = application.price
-
-  return {
-    ordersAndBalances,
-    totalPaid,
-    totalPrice,
-    balanceRemaining: balance
-  }
-}

@@ -60,6 +60,14 @@ class ApplicationOrderSerializer(serializers.ModelSerializer):
         ]
 
 
+class OrderSerializer(serializers.ModelSerializer):
+    """Serializer for orders"""
+
+    class Meta:
+        model = Order
+        fields = ["id", "status", "application_id", "created_on", "updated_on"]
+
+
 class LineSerializer(serializers.ModelSerializer):
     """
     Serializer for Line

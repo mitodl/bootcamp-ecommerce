@@ -4,13 +4,13 @@ import { assert } from "chai"
 import NotificationContainer, {
   NotificationContainer as InnerNotificationContainer
 } from "./NotificationContainer"
-import { TextNotification } from "./notifications"
+import { TextNotification } from "."
 import {
   ALERT_TYPE_TEXT,
   CMS_NOTIFICATION_LCL_STORAGE_ID,
   CMS_SITE_WIDE_NOTIFICATION
-} from "../constants"
-import IntegrationTestHelper from "../util/integration_test_helper"
+} from "../../constants"
+import IntegrationTestHelper from "../../util/integration_test_helper"
 
 describe("NotificationContainer component", () => {
   const messages = {

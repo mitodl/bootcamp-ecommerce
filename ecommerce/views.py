@@ -32,10 +32,15 @@ from ecommerce.constants import CYBERSOURCE_DECISION_ACCEPT, CYBERSOURCE_DECISIO
 from ecommerce.exceptions import EcommerceException
 from ecommerce.models import Line, Order, Receipt
 from ecommerce.permissions import IsSignedByCyberSource
-from ecommerce.serializers import CheckoutDataSerializer, PaymentSerializer
+from ecommerce.serializers import (
+    CheckoutDataSerializer,
+    PaymentSerializer,
+    OrderSerializer,
+)
 from hubspot.task_helpers import sync_hubspot_application_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
+from main.permissions import UserIsOwnerOrAdminPermission
 from main.serializers import serialize_maybe_user
 
 
@@ -240,3 +245,12 @@ class CheckoutDataView(RetrieveAPIView):
         """Get the application given the query parameter"""
         application_id = self.request.query_params.get("application")
         return get_object_or_404(self.get_queryset(), id=application_id)
+
+
+class OrderView(RetrieveAPIView):
+    """API view for Orders"""
+
+    permission_classes = (IsAuthenticated, UserIsOwnerOrAdminPermission)
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+    owner_field = "user"

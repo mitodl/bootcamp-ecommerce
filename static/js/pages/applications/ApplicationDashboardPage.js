@@ -9,6 +9,9 @@ import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
 import { Collapse } from "reactstrap"
 import * as R from "ramda"
+import moment from "moment"
+import wait from "waait"
+import qs from "query-string"
 import { reverse } from "named-urls"
 
 import {
@@ -20,16 +23,29 @@ import {
   VideoInterviewDetail
 } from "../../components/applications/detail_sections"
 import AccessibleAnchor from "../../components/AccessibleAnchor"
+import SupportLink from "../../components/SupportLink"
 
+import { addErrorNotification, addSuccessNotification } from "../../actions"
 import { openDrawer } from "../../reducers/drawer"
+import {
+  findAppByRunTitle,
+  isStatusPollingFinished
+} from "../../lib/applicationApi"
 import queries from "../../lib/queries"
+import { isQueryInErrorState } from "../../lib/redux_query"
 import {
   allApplicationDetailSelector,
+  appDetailQuerySelector,
   applicationsSelector
 } from "../../lib/queries/applications"
 import { currentUserSelector } from "../../lib/queries/users"
-import { formatStartEndDateStrings, formatTitle } from "../../util/util"
 import { routes } from "../../lib/urls"
+import {
+  formatStartEndDateStrings,
+  formatTitle,
+  isErrorResponse,
+  isNilOrBlank
+} from "../../util/util"
 import {
   APP_STATE_TEXT_MAP,
   APPLICATIONS_DASHBOARD_PAGE_TITLE,
@@ -37,18 +53,34 @@ import {
   SUBMISSION_QUIZ,
   SUBMISSION_STATUS_SUBMITTED,
   REVIEW_STATUS_APPROVED,
-  NEW_APPLICATION
+  NEW_APPLICATION,
+  CYBERSOURCE_RETURN_QS_STATE,
+  CYBERSOURCE_DECISION_ACCEPT
 } from "../../constants"
 
+import type { User } from "../../flow/authTypes"
 import type {
   Application,
+  ApplicationDetailResponse,
   ApplicationDetailState,
   ApplicationRunStep,
   ApplicationSubmission,
   ValidAppStepType
 } from "../../flow/applicationTypes"
-import type { User } from "../../flow/authTypes"
+import type {
+  CybersourcePayload,
+  OrderResponse
+} from "../../flow/ecommerceTypes"
 import type { DrawerChangePayload } from "../../reducers/drawer"
+import type { Location } from "react-router"
+// $FlowFixMe: This export exists
+import type { QueryState } from "redux-query"
+
+declare var CSOURCE_PAYLOAD: ?CybersourcePayload
+
+const NUM_MILLIS_PER_POLL = 3000
+const NUM_POLL_ATTEMPTS = 10
+const MAX_ORDER_AGE_MINUTES = 15
 
 /*
  * Returns an object mapping an application step id to the user's submission (if anything was submitted
@@ -69,23 +101,178 @@ const getAppStepSubmissions = (
   )
 
 type Props = {
+  location: Location,
   applications: Array<Application>,
   allApplicationDetail: ApplicationDetailState,
+  appDetailQueryStatus: (applicationId: string) => ?QueryState,
   currentUser: User,
-  fetchAppDetail: (applicationId: number) => void,
-  openDrawer: (actionPayload: DrawerChangePayload) => void
+  fetchAppDetail: (
+    applicationId: string,
+    force?: boolean
+  ) => ?ApplicationDetailResponse,
+  fetchOrder: (orderId: string) => OrderResponse,
+  openDrawer: (actionPayload: DrawerChangePayload) => void,
+  addSuccessNotification: (actionPayload: any) => void,
+  addErrorNotification: (actionPayload: any) => void
 }
 
 type State = {
-  collapseVisible: Object
+  collapseVisible: { string: boolean },
+  pollingCount: number
 }
 
 export class ApplicationDashboardPage extends React.Component<Props, State> {
   state = {
-    collapseVisible: {}
+    collapseVisible: {},
+    pollingCount:    0
   }
 
-  onCollapseToggle = (applicationId: number): void => {
+  async componentDidMount() {
+    const { applications } = this.props
+    if (applications) {
+      const orderId = this.getOrderIdFromCybersourceParams()
+      if (orderId) {
+        await this.handleCybersourcePageLoad(orderId)
+      }
+    }
+  }
+
+  async componentDidUpdate(prevProps: Props, prevState: State) {
+    const { pollingCount } = this.state
+    if (
+      prevProps.applications !== this.props.applications ||
+      prevState.pollingCount !== pollingCount
+    ) {
+      const orderId = this.getOrderIdFromCybersourceParams()
+      if (orderId) {
+        if (pollingCount === 0) {
+          await this.handleCybersourcePageLoad(orderId)
+        } else if (prevState.pollingCount !== pollingCount) {
+          await this.checkForOrderCompletion(orderId)
+        }
+      }
+    }
+  }
+
+  getOrderIdFromCybersourceParams = (): ?string => {
+    const { location } = this.props
+
+    if (isNilOrBlank(location.search)) {
+      return
+    }
+    // This page load should only be considered a Cybersource redirect if it has
+    // the correct querystring params, and a global var containing some order metadata exists.
+    const query = qs.parse(location.search)
+    if (
+      !query.status ||
+      query.status !== CYBERSOURCE_RETURN_QS_STATE ||
+      isNilOrBlank(query.order)
+    ) {
+      return
+    }
+    // We only need the order ID if the order date in the metadata is "fresh" enough. We can ignore
+    // it otherwise.
+    if (!CSOURCE_PAYLOAD || !CSOURCE_PAYLOAD.purchase_date_utc) {
+      return
+    }
+    const orderDate = moment.utc(CSOURCE_PAYLOAD.purchase_date_utc)
+    if (
+      moment
+        .utc()
+        .subtract(MAX_ORDER_AGE_MINUTES, "minutes")
+        .isAfter(orderDate)
+    ) {
+      return
+    }
+    return query.order
+  }
+
+  handleCybersourcePageLoad = async (orderId: string) => {
+    const { addSuccessNotification, addErrorNotification } = this.props
+
+    if (!CSOURCE_PAYLOAD) {
+      return
+    }
+    const succeeded = CSOURCE_PAYLOAD.decision === CYBERSOURCE_DECISION_ACCEPT
+    const notificationAction = succeeded ?
+      addSuccessNotification :
+      addErrorNotification
+    const msg = succeeded ? (
+      "Thank you! You will receive an email when your payment is successfully processed."
+    ) : (
+      <span>
+        Something went wrong while processing your payment. Please{" "}
+        <SupportLink className="alert-link" />
+      </span>
+    )
+    notificationAction({
+      props: {
+        text: msg
+      }
+    })
+    if (succeeded) {
+      await this.checkForOrderCompletion(orderId)
+    }
+  }
+
+  checkForOrderCompletion = async (orderId: string) => {
+    const {
+      applications,
+      allApplicationDetail,
+      fetchOrder,
+      fetchAppDetail,
+      addSuccessNotification,
+      addErrorNotification
+    } = this.props
+    const { pollingCount } = this.state
+
+    let succeeded
+    if (pollingCount < NUM_POLL_ATTEMPTS) {
+      const response = await fetchOrder(orderId)
+      if (!isStatusPollingFinished(response)) {
+        await wait(NUM_MILLIS_PER_POLL)
+        this.setState({ pollingCount: pollingCount + 1 })
+        return
+      }
+      succeeded = !isErrorResponse(response)
+    } else {
+      succeeded = false
+    }
+    const notificationAction = succeeded ?
+      addSuccessNotification :
+      addErrorNotification
+    const msg = succeeded ? (
+      "Your payment was processed successfully!"
+    ) : (
+      <span>
+        Something went wrong while processing your payment. Please{" "}
+        <SupportLink className="alert-link" />
+      </span>
+    )
+    notificationAction({
+      props: {
+        text: msg
+      }
+    })
+    if (!succeeded || !CSOURCE_PAYLOAD) {
+      return
+    }
+
+    // If any application details have already been loaded, reload the details for the application
+    // to which the successful order belongs.
+    const runTitle = CSOURCE_PAYLOAD.bootcamp_run_purchased
+    const appToUpdate = findAppByRunTitle(applications, runTitle)
+    const applicationId = appToUpdate ? String(appToUpdate.id) : null
+    if (
+      allApplicationDetail &&
+      applicationId &&
+      allApplicationDetail[applicationId]
+    ) {
+      await fetchAppDetail(applicationId, true)
+    }
+  }
+
+  onCollapseToggle = (applicationId: string): void => {
     this.setState({
       collapseVisible: {
         ...this.state.collapseVisible,
@@ -106,11 +293,29 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     })
   }
 
-  loadAndRevealAppDetail = async (applicationId: number) => {
-    const { fetchAppDetail } = this.props
+  loadAndRevealAppDetail = async (applicationId: string) => {
+    const {
+      fetchAppDetail,
+      addErrorNotification,
+      appDetailQueryStatus
+    } = this.props
     const { collapseVisible } = this.state
     if (!collapseVisible[applicationId]) {
-      await fetchAppDetail(applicationId)
+      const force = isQueryInErrorState(appDetailQueryStatus(applicationId))
+      const response = await fetchAppDetail(applicationId, force)
+      if (response && isErrorResponse(response)) {
+        addErrorNotification({
+          props: {
+            text: (
+              <span>
+                Something went wrong while loading your application details.
+                Please try again, or <SupportLink className="alert-link" />
+              </span>
+            )
+          }
+        })
+        return
+      }
     }
     this.onCollapseToggle(applicationId)
   }
@@ -283,7 +488,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 <AccessibleAnchor
                   className="btn-text expand-collapse"
                   onClick={R.partial(this.loadAndRevealAppDetail, [
-                    application.id
+                    String(application.id)
                   ])}
                 >
                   {isOpen ? "Collapse −" : "Expand ＋"}
@@ -367,18 +572,28 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
 const mapStateToProps = createStructuredSelector({
   applications:         applicationsSelector,
   allApplicationDetail: allApplicationDetailSelector,
-  currentUser:          currentUserSelector
+  currentUser:          currentUserSelector,
+  appDetailQueryStatus: appDetailQuerySelector
 })
 
 const mapDispatchToProps = dispatch => ({
-  fetchAppDetail: async (applicationId: number) =>
+  fetchAppDetail: async (applicationId: string, force?: boolean) =>
     dispatch(
       requestAsync(
-        queries.applications.applicationDetailQuery(String(applicationId))
+        queries.applications.applicationDetailQuery(
+          String(applicationId),
+          !!force
+        )
       )
     ),
+  fetchOrder: async (orderId: string) =>
+    dispatch(requestAsync(queries.ecommerce.orderQuery(orderId))),
   openDrawer: (actionPayload: DrawerChangePayload) =>
-    dispatch(openDrawer(actionPayload))
+    dispatch(openDrawer(actionPayload)),
+  addSuccessNotification: actionPayload =>
+    dispatch(addSuccessNotification(actionPayload)),
+  addErrorNotification: actionPayload =>
+    dispatch(addErrorNotification(actionPayload))
 })
 
 const mapPropsToConfigs = () => [queries.applications.applicationsQuery()]
