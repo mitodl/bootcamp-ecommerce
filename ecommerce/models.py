@@ -60,11 +60,11 @@ class Order(AuditableModel, TimestampedModel):
 
     @property
     def run_title(self):
-        """Title of the bootcamp run that was purchased in this Order"""
+        """Display title of the bootcamp run that was purchased in this Order"""
         bootcamp_run = self.get_bootcamp_run()
         if not bootcamp_run:
             return ""
-        return bootcamp_run.title
+        return bootcamp_run.display_title
 
     @classmethod
     def get_audit_class(cls):

@@ -4,6 +4,7 @@ Admin views for bootcamps
 from django.contrib import admin
 
 from klasses import models
+from main.admin import TimestampedModelAdmin
 
 
 class BootcampRunInline(admin.StackedInline):
@@ -35,30 +36,49 @@ class BootcampRunAdmin(admin.ModelAdmin):
 
     model = models.BootcampRun
     list_display = ("display_title",)
+    raw_id_fields = ("bootcamp",)
     inlines = [InstallmentInline]
 
 
-class BootcampRunEnrollmentAdmin(admin.ModelAdmin):
-    """Admin for BootcampRun"""
+class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
+    """Admin for BootcampRunEnrollment"""
 
     model = models.BootcampRunEnrollment
-    list_display = ("bootcamp_run", "user", "change_status", "active")
-    list_filter = ("change_status", "active")
+    include_created_on_in_list = True
+    list_display = ("id", "bootcamp_run", "user", "change_status", "active")
+    list_filter = ("change_status", "active", "bootcamp_run__bootcamp")
+    raw_id_fields = ("bootcamp_run", "user")
+    search_fields = (
+        "user__email",
+        "user__username",
+        "bootcamp_run__title",
+        "bootcamp_run__bootcamp__title",
+    )
+
+    def get_queryset(self, request):
+        """Overrides base queryset"""
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("user", "bootcamp_run__bootcamp")
+        )
 
 
 class InstallmentAdmin(admin.ModelAdmin):
     """Admin for Installment"""
 
     model = models.Installment
-    list_display = ("bootcamp_run", "deadline", "amount")
+    list_display = ("id", "bootcamp_run", "deadline", "amount")
+    raw_id_fields = ("bootcamp_run",)
 
 
 class PersonalPriceAdmin(admin.ModelAdmin):
     """Admin for PersonalPrice"""
 
     model = models.PersonalPrice
-    list_display = ("bootcamp_run", "user", "price")
+    list_display = ("id", "bootcamp_run", "user", "price")
     list_filter = ("bootcamp_run__bootcamp", "bootcamp_run")
+    raw_id_fields = ("bootcamp_run", "user")
     search_fields = (
         "price",
         "bootcamp_run__title",

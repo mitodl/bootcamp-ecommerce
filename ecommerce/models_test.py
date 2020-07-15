@@ -94,10 +94,10 @@ def test_no_bootcamp_run():
 
 
 def test_run_title():
-    """run_title should be bootcamp run title for the given run_key"""
+    """run_title should be bootcamp run display title for the given run_key"""
     bootcamp_run = BootcampRunFactory.create()
     line = LineFactory.create(run_key=bootcamp_run.run_key)
-    assert line.order.run_title == bootcamp_run.title
+    assert line.order.run_title == bootcamp_run.display_title
 
 
 @pytest.fixture
