@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.48.3 (Released July 15, 2020)
+--------------
+
+- fix dropzone accessibility issue
+- Allow refunds for users without enrollments (partial payments) (#910)
+- legal address requirement (#895)
+- cms pages feedback
+
 Version 0.48.2 (Released July 09, 2020)
 --------------
 
