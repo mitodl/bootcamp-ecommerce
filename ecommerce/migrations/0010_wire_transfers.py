@@ -7,7 +7,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [("ecommerce", "0005_application_multiple_orders")]
+    dependencies = [("ecommerce", "0009_remove_line_run_key")]
 
     operations = [
         migrations.AddField(
