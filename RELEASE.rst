@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Version 0.49.0
+--------------
+
+- fix anchor-tag related accessibility issues on dashboard
+- Implemented consistent error and success behavior
+- conditional hubspot/zendesk JS (#917)
+- CMS model tests
+- Paging for submission reviews (#905)
+
 Version 0.48.3 (Released July 15, 2020)
 --------------
 
