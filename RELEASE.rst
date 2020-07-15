@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.49.0
+Version 0.49.0 (Released July 15, 2020)
 --------------
 
 - fix anchor-tag related accessibility issues on dashboard
