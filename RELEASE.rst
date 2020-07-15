@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.48.3
+Version 0.48.3 (Released July 15, 2020)
 --------------
 
 - fix dropzone accessibility issue
