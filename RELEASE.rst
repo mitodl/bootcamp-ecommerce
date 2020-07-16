@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.49.1
+--------------
+
+- Various improvements to django admin classes
+
 Version 0.49.0 (Released July 15, 2020)
 --------------
 
