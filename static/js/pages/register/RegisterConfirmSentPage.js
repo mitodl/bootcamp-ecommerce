@@ -26,44 +26,48 @@ export class RegisterConfirmSentPage extends React.Component<Props> {
           <title>{formatTitle(REGISTER_CONFIRM_PAGE_TITLE)}</title>
         </MetaTags>
         <div className="row auth-header">
-          <h1>Sign Up</h1>
+          <div className="col-12">
+            <h1>Sign Up</h1>
+          </div>
         </div>
         <div className="row auth-card">
-          <h2 className="font-weight-600">Thank You!</h2>
-          <p>
-            We sent an email to <span className="email">{email}</span>
-            ,<br /> please verify your address to continue.
-          </p>
-          <p>
-            If you do NOT receive your verification email, here’s what to do:
-          </p>
-          <ol>
-            <li>
-              <span className="font-weight-600">Wait a few moments.</span> It
-              might take several minutes to receive your verification email.
-            </li>
-            <li>
-              <span className="font-weight-600">Check your spam folder.</span>{" "}
-              It might be there.
-            </li>
-            <li>
-              <span className="font-weight-600">Is your email correct?</span> If
-              you made a typo, no problem, just try{" "}
-              <a href={routes.register.begin}>creating an account</a> again.
-            </li>
-          </ol>
-          <div className="contact-support">
-            <span className="font-weight-600">
-              Still no verification email?
-            </span>{" "}
-            Please contact our
-            <a
-              href={SETTINGS.support_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {` MIT Bootcamp Customer Support Center`}.
-            </a>
+          <div className="col-12">
+            <h2 className="font-weight-600">Thank You!</h2>
+            <p>
+              We sent an email to <span className="email">{email}</span>
+              ,<br /> please verify your address to continue.
+            </p>
+            <p>
+              If you do NOT receive your verification email, here’s what to do:
+            </p>
+            <ol>
+              <li>
+                <span className="font-weight-600">Wait a few moments.</span> It
+                might take several minutes to receive your verification email.
+              </li>
+              <li>
+                <span className="font-weight-600">Check your spam folder.</span>{" "}
+                It might be there.
+              </li>
+              <li>
+                <span className="font-weight-600">Is your email correct?</span>{" "}
+                If you made a typo, no problem, just try{" "}
+                <a href={routes.register.begin}>creating an account</a> again.
+              </li>
+            </ol>
+            <div className="contact-support">
+              <span className="font-weight-600">
+                Still no verification email?
+              </span>{" "}
+              Please contact our
+              <a
+                href={SETTINGS.support_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {` MIT Bootcamp Customer Support Center`}.
+              </a>
+            </div>
           </div>
         </div>
       </div>
