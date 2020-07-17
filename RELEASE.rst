@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.49.1
+--------------
+
+- More admin improvements, including receipt class fix (#928)
+- fix mobile margin (#925)
+- Various improvements to django admin classes
+
 Version 0.49.0 (Released July 15, 2020)
 --------------
 
