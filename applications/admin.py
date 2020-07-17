@@ -349,7 +349,29 @@ class ApplicantLetterAdmin(TimestampedModelAdmin):
     """Admin for ApplicantLetter"""
 
     model = models.ApplicantLetter
+    list_display = ("id", "letter_type", "get_user_email", "get_run_display_title")
+    list_filter = ("letter_type",)
+    raw_id_fields = ("application",)
+    search_fields = (
+        "application__user__email",
+        "application__bootcamp_run__title",
+        "application__bootcamp_run__bootcamp__title",
+    )
     readonly_fields = get_field_names(models.ApplicantLetter)
+
+    def get_user_email(self, obj):
+        """Returns the user email"""
+        return obj.application.user.email
+
+    get_user_email.short_description = "User"
+    get_user_email.admin_order_field = "user__email"
+
+    def get_run_display_title(self, obj):
+        """Returns the bootcamp run display title"""
+        return obj.application.bootcamp_run.display_title
+
+    get_run_display_title.short_description = "Bootcamp Run"
+    get_run_display_title.admin_order_field = "bootcamp_run__title"
 
 
 admin.site.register(models.ApplicationStep, ApplicationStepAdmin)

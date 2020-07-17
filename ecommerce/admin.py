@@ -123,6 +123,8 @@ class ReceiptAdmin(TimestampedModelAdmin):
 
     def get_user_email(self, obj):
         """Returns the user email"""
+        if obj.order is None:
+            return None
         return obj.order.user.email
 
     get_user_email.short_description = "User"
@@ -130,6 +132,8 @@ class ReceiptAdmin(TimestampedModelAdmin):
 
     def get_order_status(self, obj):
         """Returns the order status"""
+        if obj.order is None:
+            return None
         return obj.order.status
 
     get_order_status.short_description = "Status"
@@ -137,6 +141,8 @@ class ReceiptAdmin(TimestampedModelAdmin):
 
     def order_link(self, obj):
         """Returns a link to the related order"""
+        if obj.order is None:
+            return None
         return mark_safe(
             '<a href="{}">Order ({})</a>'.format(
                 reverse(
