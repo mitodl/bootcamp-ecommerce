@@ -1,7 +1,7 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
-from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch
+from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch, Q
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django_filters.rest_framework import DjangoFilterBackend
@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_serializer_extensions.views import SerializerExtensionsAPIViewMixin
 
+from applications.constants import SUBMISSION_STATUS_SUBMITTED, REVIEWABLE_APP_STATES
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
     BootcampApplicationSerializer,
@@ -158,7 +159,10 @@ class ReviewSubmissionViewSet(
     serializer_class = SubmissionReviewSerializer
     permission_classes = (IsAdminUser,)
     queryset = (
-        ApplicationStepSubmission.objects.all()
+        ApplicationStepSubmission.objects.filter(
+            Q(submission_status=SUBMISSION_STATUS_SUBMITTED)
+            & Q(bootcamp_application__state__in=REVIEWABLE_APP_STATES)
+        )
         .select_related(
             "bootcamp_application__user__profile",
             "bootcamp_application__user__legal_address",

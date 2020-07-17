@@ -12,6 +12,7 @@ from applications.constants import (
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
     ALL_REVIEW_STATUSES,
+    SUBMISSION_STATUS_SUBMITTED,
 )
 from applications.factories import (
     BootcampApplicationFactory,
@@ -148,6 +149,7 @@ def test_review_submission_update(admin_drf_client, review_status, application_s
         is_pending=True,
         bootcamp_application=bootcamp_application,
         run_application_step__bootcamp_run=bootcamp_application.bootcamp_run,
+        submission_status=SUBMISSION_STATUS_SUBMITTED,
     )
     url = reverse("submissions_api-detail", kwargs={"pk": submission.id})
     resp = admin_drf_client.patch(url, data={"review_status": review_status})
@@ -173,6 +175,7 @@ def test_review_submission_list(admin_drf_client, submission_factory):
                     review_status=review_status,
                     bootcamp_application__bootcamp_run__bootcamp=bootcamp,
                     content_object=submission_factory.create(),
+                    is_review_ready=True,
                 )
             )
     url = reverse("submissions_api-list")
@@ -211,7 +214,7 @@ def test_review_submission_list_query_bootcamp_id(admin_drf_client):
     """
     The review submission list view should return a list of submissions filtered by bootcamp id
     """
-    submission = ApplicationStepSubmissionFactory.create()
+    submission = ApplicationStepSubmissionFactory.create(is_review_ready=True)
     bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp
     ApplicationStepSubmissionFactory.create_batch(3)
     url = reverse("submissions_api-list")
@@ -236,11 +239,25 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
     """
     The review submission list view should return a list of submissions filtered by review status
     """
+    # Create a few submissions that should be filtered out due to submission status or application state
+    ApplicationStepSubmissionFactory.create(is_pending=True)
+    ApplicationStepSubmissionFactory.create(is_approved=True)
+    ApplicationStepSubmissionFactory.create(is_rejected=True)
+    ApplicationStepSubmissionFactory.create(is_waitlisted=True)
+    ApplicationStepSubmissionFactory.create(
+        is_approved=True,
+        submission_status=SUBMISSION_STATUS_SUBMITTED,
+        bootcamp_application=BootcampApplicationFactory.create(state="AWAITING_RESUME"),
+    )
+
+    # Create a few submissions that should be included in results
     submissions = [
-        ApplicationStepSubmissionFactory.create(is_pending=True),
-        ApplicationStepSubmissionFactory.create(is_approved=True),
-        ApplicationStepSubmissionFactory.create(is_rejected=True),
-        ApplicationStepSubmissionFactory.create(is_waitlisted=True),
+        ApplicationStepSubmissionFactory.create(is_pending=True, is_review_ready=True),
+        ApplicationStepSubmissionFactory.create(is_approved=True, is_review_ready=True),
+        ApplicationStepSubmissionFactory.create(is_rejected=True, is_review_ready=True),
+        ApplicationStepSubmissionFactory.create(
+            is_waitlisted=True, is_review_ready=True
+        ),
     ]
     submission = next(filter(lambda s: s.review_status == review_status, submissions))
     bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp
@@ -280,9 +297,9 @@ def test_review_submission_list_query_review_status_in(
     The review submission list view should return a list of all submissions filtered by multiple review statuses
     """
     submissions = [
-        ApplicationStepSubmissionFactory.create(is_pending=True),
-        ApplicationStepSubmissionFactory.create(is_approved=True),
-        ApplicationStepSubmissionFactory.create(is_rejected=True),
+        ApplicationStepSubmissionFactory.create(is_pending=True, is_review_ready=True),
+        ApplicationStepSubmissionFactory.create(is_approved=True, is_review_ready=True),
+        ApplicationStepSubmissionFactory.create(is_rejected=True, is_review_ready=True),
     ]
     submissions = list(
         filter(lambda s: s.review_status in review_statuses, submissions)

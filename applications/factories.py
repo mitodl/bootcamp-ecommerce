@@ -17,6 +17,8 @@ from applications.constants import (
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_WAITLISTED,
     ALL_LETTER_TYPES,
+    SUBMISSION_STATUS_SUBMITTED,
+    REVIEWABLE_APP_STATES,
 )
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
@@ -105,6 +107,11 @@ class ApplicationStepSubmissionFactory(DjangoModelFactory):
         is_rejected = Trait(review_status=REVIEW_STATUS_REJECTED)
         is_approved = Trait(review_status=REVIEW_STATUS_APPROVED)
         is_waitlisted = Trait(review_status=REVIEW_STATUS_WAITLISTED)
+
+        is_review_ready = Trait(
+            submission_status=SUBMISSION_STATUS_SUBMITTED,
+            bootcamp_application__state=fuzzy.FuzzyChoice(REVIEWABLE_APP_STATES),
+        )
 
     class Meta:
         model = models.ApplicationStepSubmission

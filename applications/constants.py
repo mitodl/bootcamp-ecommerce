@@ -34,6 +34,13 @@ class AppStates(Enum):
         return self.value
 
 
+REVIEWABLE_APP_STATES = [
+    AppStates.REJECTED.value,
+    AppStates.AWAITING_PAYMENT.value,
+    AppStates.AWAITING_USER_SUBMISSIONS.value,
+    AppStates.AWAITING_SUBMISSION_REVIEW.value,
+]
+
 VALID_APP_STATE_CHOICES = list(
     zip((member.value for member in AppStates), (member.value for member in AppStates))
 )
