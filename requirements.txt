@@ -7,7 +7,7 @@
 amqp==2.5.2               # via kombu
 appdirs==1.4.3            # via zeep
 attrs==19.3.0             # via zeep
-beautifulsoup4==4.6.0     # via wagtail
+beautifulsoup4==4.8.2     # via wagtail
 billiard==3.6.3.0         # via celery
 boto3==1.12.42            # via -r requirements.in
 botocore==1.15.42         # via boto3, s3transfer
@@ -89,6 +89,7 @@ simplegeneric==0.8.1      # via ipython
 six==1.15.0               # via django-anymail, django-classy-tags, django-compat, django-server-status, edx-api-client, html5lib, isodate, l18n, prompt-toolkit, pynacl, python-dateutil, social-auth-app-django, social-auth-core, traitlets, zeep
 social-auth-app-django==2.1.0  # via -r requirements.in
 social-auth-core==1.4.0   # via social-auth-app-django
+soupsieve==2.0.1          # via beautifulsoup4
 sqlparse==0.3.1           # via django
 static3==0.5.1            # via -r requirements.in, dj-static
 traitlets==4.3.2          # via ipython
@@ -96,10 +97,11 @@ unidecode==1.1.1          # via wagtail
 urllib3==1.24.2           # via -r requirements.in, botocore, elasticsearch, requests, sentry-sdk
 uwsgi==2.0.15             # via -r requirements.in
 vine==1.3.0               # via amqp, celery
-wagtail==2.8.2            # via -r requirements.in
+wagtail==2.9.2            # via -r requirements.in
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
 willow==1.3               # via wagtail
+xlsxwriter==1.2.9         # via wagtail
 zeep==3.4.0               # via -r requirements.in
 zipp==3.1.0               # via importlib-metadata
 

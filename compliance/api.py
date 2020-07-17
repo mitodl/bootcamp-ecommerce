@@ -105,6 +105,7 @@ def log_exports_inquiry(user, response, last_sent, last_received):
         ExportsInquiryLog: the generated log record of the exports inquiry
     """
     # render lxml data structures into a string so we can encrypt it
+    # pylint: disable=c-extension-no-member
     xml_request = etree.tostring(last_sent["envelope"])
     xml_response = etree.tostring(last_received["envelope"])
 

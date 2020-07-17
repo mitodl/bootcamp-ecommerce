@@ -29,7 +29,7 @@ from hubspot.models import HubspotErrorCheck, HubspotLineResync
 log = logging.getLogger(__name__)
 
 HUBSPOT_SYNC_URL = "/extensions/ecomm/v1/sync-messages"
-ASSOCIATED_DEAL_RE = re.compile(fr"\[hs_assoc__deal_id: (.+)\]")
+ASSOCIATED_DEAL_RE = re.compile(r"\[hs_assoc__deal_id: (.+)\]")
 
 
 @app.task

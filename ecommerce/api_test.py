@@ -472,12 +472,12 @@ def test_refund_exceeds_payment(has_application, user):
 
     with pytest.raises(EcommerceException) as exc:
         process_refund(user=user, bootcamp_run=bootcamp_run, amount=45.50)
-    assert exc.value.args[0] == f"Refund exceeds total payment of $30.00"
+    assert exc.value.args[0] == "Refund exceeds total payment of $30.00"
     process_refund(user=user, bootcamp_run=bootcamp_run, amount=11)
     process_refund(user=user, bootcamp_run=bootcamp_run, amount=11)
     with pytest.raises(EcommerceException) as exc:
         process_refund(user=user, bootcamp_run=bootcamp_run, amount=11)
-    assert exc.value.args[0] == f"Refund exceeds total payment of $8.00"
+    assert exc.value.args[0] == "Refund exceeds total payment of $8.00"
 
 
 @pytest.mark.parametrize("amount", [-5, 0])

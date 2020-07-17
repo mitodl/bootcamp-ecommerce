@@ -194,7 +194,7 @@ def test_sync_bulk(mocker):
 def test_sync_bulk_logs_errors(mocker):
     """Test that hubspot bulk sync correctly logs errors"""
     mock_request = mocker.patch(
-        f"hubspot.api.requests.put",
+        "hubspot.api.requests.put",
         return_value=Mock(raise_for_status=Mock(side_effect=HTTPError())),
     )
     mock_log = mocker.patch("hubspot.tasks.log.exception")

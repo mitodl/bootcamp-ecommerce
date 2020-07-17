@@ -101,7 +101,7 @@ def test_send_hubspot_request(mocker, request_method, endpoint, api_url, expecte
 def test_send_hubspot_request_try_again(mocker):
     """Test the try again decorator"""
     mock_request = mocker.patch(
-        f"hubspot.api.requests.get",
+        "hubspot.api.requests.get",
         return_value=Mock(raise_for_status=Mock(side_effect=HTTPError())),
     )
 
