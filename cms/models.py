@@ -268,7 +268,7 @@ class BootcampRunChildPage(Page):
             and parent.get_children().type(cls).count() == 0
         )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=signature-differs
         # autogenerate a unique slug so we don't hit a ValidationError
         if not self.title:
             self.title = self.__class__._meta.verbose_name.title()
@@ -497,7 +497,7 @@ class SiteNotification(models.Model):
     panels = [FieldPanel("message")]
 
     def __str__(self):
-        return self.message
+        return str(self.message)
 
 
 class HomeAlumniSection(BootcampRunChildPage):
@@ -641,9 +641,8 @@ class LetterTemplatePage(Page):
 
     base_form_class = LetterTemplatePageForm
 
-    def serve_preview(
-        self, request, *args, **kwargs
-    ):  # pylint: disable=arguments-differ
+    # pylint: disable=unused-argument
+    def serve_preview(self, request, *args, **kwargs):
         """
         Show a sample letter for testing
         """
@@ -670,19 +669,19 @@ class ResourcePagesSettings(BaseSetting):
     """Wagtail settings for site pages"""
 
     apply_page = models.ForeignKey(
-        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+        Page, null=True, on_delete=models.SET_NULL, related_name="+"
     )
     about_us_page = models.ForeignKey(
-        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+        Page, null=True, on_delete=models.SET_NULL, related_name="+"
     )
     bootcamps_programs_page = models.ForeignKey(
-        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+        Page, null=True, on_delete=models.SET_NULL, related_name="+"
     )
     terms_of_service_page = models.ForeignKey(
-        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+        Page, null=True, on_delete=models.SET_NULL, related_name="+"
     )
     privacy_policy_page = models.ForeignKey(
-        "wagtailcore.Page", null=True, on_delete=models.SET_NULL, related_name="+"
+        Page, null=True, on_delete=models.SET_NULL, related_name="+"
     )
 
     panels = [

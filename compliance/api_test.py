@@ -1,6 +1,6 @@
 """Tests for compliance api"""
 
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,c-extension-no-member
 import time
 
 import pytest

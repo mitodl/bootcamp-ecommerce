@@ -31,7 +31,7 @@ class AppStates(Enum):
 
     def __str__(self):
         """If an enum is silently cast to string it should be treated as if the user added .value to the end"""
-        return self.value
+        return str(self.value)
 
 
 VALID_APP_STATE_CHOICES = list(
