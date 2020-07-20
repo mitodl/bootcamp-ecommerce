@@ -37,7 +37,6 @@ class AppStates(Enum):
 REVIEWABLE_APP_STATES = [
     AppStates.REJECTED.value,
     AppStates.AWAITING_PAYMENT.value,
-    AppStates.AWAITING_USER_SUBMISSIONS.value,
     AppStates.AWAITING_SUBMISSION_REVIEW.value,
 ]
 
