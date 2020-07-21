@@ -89,6 +89,35 @@ def partition_to_lists(items, predicate=bool):
     return list(a), list(b)
 
 
+def partition_around_index(list_to_partition, index):
+    """
+    Partitions a list around the given index, returning 2 lists. The first contains elements
+    before the index, and the second contains elements after the index (the given index is excluded).
+
+    Examples:
+        partition_around_index([1,2,3,4,5], 2) == ([1,2], [4,5])
+        partition_around_index([1,2,3,4,5], 0) == ([], [2,3,4,5])
+
+    Args:
+        list_to_partition (list): The list to partition
+        index (int): The index that the list should be partitioned around
+
+    Returns:
+        Tuple(list, list): The partitions of the given list
+    """
+    list_len = len(list_to_partition)
+    if list_len <= index:
+        raise ValueError(
+            "Index out of range: {} ({} item list)".format(index, list_len)
+        )
+    l1, l2 = [], []
+    if index > 0:
+        l1 = list_to_partition[0:index]
+    if index < (list_len - 1):
+        l2 = list_to_partition[(index + 1) :]
+    return l1, l2
+
+
 def unique(iterable):
     """
     Returns a generator containing all unique items in an iterable
