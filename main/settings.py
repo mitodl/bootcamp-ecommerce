@@ -149,6 +149,9 @@ DISABLE_WEBPACK_LOADER_STATS = get_bool(
 if not DISABLE_WEBPACK_LOADER_STATS:
     INSTALLED_APPS += ("webpack_loader",)
 
+# Only include the seed data app if this isn't running in prod
+if ENVIRONMENT not in ("production", "prod"):
+    INSTALLED_APPS += ("localdev.seed",)
 
 MIDDLEWARE = (
     "django.middleware.security.SecurityMiddleware",

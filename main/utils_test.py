@@ -29,6 +29,8 @@ from main.utils import (
     is_blank,
     group_into_dict,
     filter_dict_by_key_set,
+    partition_around_index,
+    partition_to_lists,
 )
 from main.test_utils import MockResponse, format_as_iso8601
 
@@ -175,6 +177,29 @@ def test_filter_dict_by_key_set():
     assert filter_dict_by_key_set(d, {"a", "c"}) == {"a": 1, "c": 3}
     assert filter_dict_by_key_set(d, {"a", "c", "nonsense"}) == {"a": 1, "c": 3}
     assert filter_dict_by_key_set(d, {"nonsense"}) == {}
+
+
+def test_partition_to_lists():
+    """
+    Assert that partition_to_lists splits an iterable into two lists according to a condition
+    """
+    nums = [1, 2, 1, 3, 1, 4, 0, None, None]
+    not_ones, ones = partition_to_lists(nums, lambda n: n == 1)
+    assert not_ones == [2, 3, 4, 0, None, None]
+    assert ones == [1, 1, 1]
+    # The default predicate is the standard Python bool() function
+    falsey, truthy = partition_to_lists(nums)
+    assert falsey == [0, None, None]
+    assert truthy == [1, 2, 1, 3, 1, 4]
+
+
+def test_partition_around_index():
+    """partition_around_index should split a list into two lists around an index"""
+    assert partition_around_index([1, 2, 3, 4], 2) == ([1, 2], [4])
+    assert partition_around_index([1, 2, 3, 4], 0) == ([], [2, 3, 4])
+    assert partition_around_index([1, 2, 3, 4], 3) == ([1, 2, 3], [])
+    with pytest.raises(ValueError):
+        partition_around_index([1, 2, 3, 4], 4)
 
 
 @pytest.mark.parametrize(

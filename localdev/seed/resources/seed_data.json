@@ -1,0 +1,112 @@
+{
+  "bootcamps": [
+    {
+      "title": "Single Variable Calculus",
+      "[runs]": [
+        {
+          "title": "Single Variable Calculus Run 1",
+          "_dates": "current",
+          "[installments]": [
+            {
+              "amount": 1001
+            }
+          ]
+        },
+        {
+          "title": "Single Variable Calculus Run 2",
+          "_dates": "future",
+          "[installments]": [
+            {
+              "amount": 1002
+            }
+          ]
+        }
+      ],
+      "[steps]": [
+        {
+          "submission_type": "videointerviewsubmission"
+        }
+      ]
+    },
+    {
+      "title": "Multivariable Calculus",
+      "[runs]": [
+        {
+          "title": "Multivariable Calculus Run 1",
+          "_dates": "current",
+          "[installments]": [
+            {
+              "amount": 2001
+            }
+          ]
+        },
+        {
+          "title": "Multivariable Calculus Run 2",
+          "_dates": "future",
+          "[installments]": [
+            {
+              "amount": 2002
+            }
+          ]
+        },
+        {
+          "title": "Multivariable Calculus Run 3",
+          "_dates": "future",
+          "[installments]": [
+            {
+              "amount": 2003
+            }
+          ]
+        }
+      ],
+      "[steps]": [
+        {
+          "submission_type": "videointerviewsubmission"
+        }
+      ]
+    },
+    {
+      "title": "Differential Equations",
+      "[runs]": [
+        {
+          "title": "Differential Equations Run 1",
+          "_dates": "past",
+          "[installments]": [
+            {
+              "amount": 1001
+            },
+            {
+              "amount": 1002
+            },
+            {
+              "amount": 1003
+            }
+          ]
+        },
+        {
+          "title": "Differential Equations Run 2",
+          "_dates": "future",
+          "[installments]": [
+            {
+              "amount": 1001
+            },
+            {
+              "amount": 1002
+            },
+            {
+              "amount": 1003
+            }
+          ]
+        }
+      ],
+      "[steps]": [
+        {
+          "submission_type": "videointerviewsubmission"
+        },
+        {
+          "submission_type": "quizsubmission"
+        }
+      ]
+    }
+  ]
+}
