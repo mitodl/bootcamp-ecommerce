@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.50.0
+Version 0.50.0 (Released July 21, 2020)
 --------------
 
 - Filter out submissions that cannot be reviewed (#932)
