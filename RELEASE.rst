@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.50.1 (Released July 22, 2020)
+--------------
+
+- Added seed data scripts and commands (#927)
+
 Version 0.50.0 (Released July 21, 2020)
 --------------
 
