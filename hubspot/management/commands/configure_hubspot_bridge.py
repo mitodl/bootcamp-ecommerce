@@ -53,6 +53,14 @@ CUSTOM_ECOMMERCE_PROPERTIES = {
         "groups": [],
         "properties": [
             {
+                "name": "full_name",
+                "label": "Full Name",
+                "description": "Full name",
+                "groupName": "contactinformation",
+                "type": "string",
+                "fieldType": "text",
+            },
+            {
                 "name": "highest_education",
                 "label": "Highest Education",
                 "description": "Highest education level",
@@ -284,7 +292,7 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
             },
             {
                 "propertyName": "name",
-                "targetHubspotProperty": "name",
+                "targetHubspotProperty": "full_name",
                 "dataType": "STRING",
             },
             {
