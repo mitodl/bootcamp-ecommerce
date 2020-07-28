@@ -66,7 +66,7 @@ newrelic==2.86.3.70       # via -r requirements.in
 oauthlib==2.0.2           # via requests-oauthlib, social-auth-core
 pexpect==4.2.1            # via ipython
 pickleshare==0.7.4        # via ipython
-pillow==6.2.2             # via wagtail
+pillow==7.1.0             # via wagtail
 premailer==3.7.0          # via -r requirements.in
 prompt-toolkit==1.0.14    # via ipython
 psycopg2==2.7.3.2         # via -r requirements.in, django-server-status
