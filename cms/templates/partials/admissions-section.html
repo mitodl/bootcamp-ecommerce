@@ -39,19 +39,16 @@
                 <div class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column">
                     <h3 class="block-title">Format</h3>
                     <h2 class="pb-2">{{ page.bootcamp_format }}</h2>
-                    <div class="flex-grow-1"></div>
                     {{ page.bootcamp_format_details|richtext }}
                 </div>
                 <div class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column">
                     <h3 class="block-title">Bootcamp Dates</h3>
                     <h2 class="pb-2">{{ page.dates }}</h2>
-                    <div class="flex-grow-1"></div>
                     {{ page.dates_details|richtext }}
                 </div>
                 <div class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column">
                     <h3 class="block-title">Tuition</h3>
                     <h2 class="pb-2">${{ page.price|intcomma }} USD</h2>
-                    <div class="flex-grow-1"></div>
                     <div>{{ page.price_details|richtext }}</div>
                 </div>
             </div>
