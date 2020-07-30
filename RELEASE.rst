@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+Version 0.50.3
+--------------
+
+- Update pillow version
+- Release date for 0.50.2
+- New full_name field for hubspot (#941)
+- Bump codecov from 3.6.5 to 3.7.1 (#935)
+- Bump wagtail from 2.9.2 to 2.9.3 (#936)
+- Bump lodash from 4.17.15 to 4.17.19 (#929)
+
 Version 0.50.2 (Released July 28, 2020)
 --------------
 
