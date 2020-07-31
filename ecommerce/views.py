@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from ipware import get_client_ip
 from rest_framework import status as statuses
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
@@ -85,10 +86,13 @@ class PaymentView(CreateAPIView):
         sync_hubspot_application_from_order(order)
 
         redirect_url = self.request.build_absolute_uri(reverse("applications"))
+        user_ip, _ = get_client_ip(request)
 
         return Response(
             {
-                "payload": generate_cybersource_sa_payload(order, redirect_url),
+                "payload": generate_cybersource_sa_payload(
+                    order, redirect_url, ip_address=user_ip
+                ),
                 "url": settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL,
             }
         )

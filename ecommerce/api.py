@@ -180,13 +180,14 @@ def generate_cybersource_sa_signature(payload):
     return b64encode(digest).decode("utf-8")
 
 
-def generate_cybersource_sa_payload(order, redirect_url):
+def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
     """
     Generates a payload dict to send to CyberSource for Secure Acceptance
 
     Args:
         order (Order): An order
         redirect_url: (str): The URL to redirect to after order completion
+        ip_address (str): The user's IP address
     Returns:
         dict: the payload to send to CyberSource via Secure Acceptance
     """
@@ -223,6 +224,7 @@ def generate_cybersource_sa_payload(order, redirect_url):
         "access_key": settings.CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
         "currency": "USD",
+        "customer_ip_address": ip_address,
         "locale": "en-us",
         "item_0_code": "klass",
         "item_0_name": "{}".format(run_title),

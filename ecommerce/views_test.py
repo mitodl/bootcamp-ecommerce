@@ -98,6 +98,12 @@ def test_payment(mocker, client, user, bootcamp_run, application):
             bootcamp_run=bootcamp_run, user=user
         )
     )
+    fake_ip = "195.0.0.1"
+
+    mock_ip_call = mocker.patch(
+        "ecommerce.views.get_client_ip", return_value=(fake_ip, True)
+    )
+
     generate_cybersource_sa_payload_mock = mocker.patch(
         "ecommerce.views.generate_cybersource_sa_payload",
         autospec=True,
@@ -117,9 +123,10 @@ def test_payment(mocker, client, user, bootcamp_run, application):
         "payload": fake_payload,
         "url": CYBERSOURCE_SECURE_ACCEPTANCE_URL,
     }
+    assert mock_ip_call.call_count == 1
     assert generate_cybersource_sa_payload_mock.call_count == 1
     generate_cybersource_sa_payload_mock.assert_any_call(
-        fake_order, "http://testserver/applications/"
+        fake_order, "http://testserver/applications/", fake_ip
     )
     assert create_unfulfilled_order_mock.call_count == 1
     create_unfulfilled_order_mock.assert_any_call(

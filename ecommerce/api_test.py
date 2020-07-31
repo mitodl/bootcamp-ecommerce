@@ -132,7 +132,10 @@ def test_signed_payload(mocker, application, bootcamp_run):
         autospec=True,
         return_value=mocker.MagicMock(hex=transaction_uuid),
     )
-    payload = generate_cybersource_sa_payload(order, "dashboard_url")
+    mock_ip = "194.100.0.1"
+    payload = generate_cybersource_sa_payload(
+        order, "dashboard_url", ip_address=mock_ip
+    )
     signature = payload.pop("signature")
     assert generate_cybersource_sa_signature(payload) == signature
     signed_field_names = payload["signed_field_names"].split(",")
@@ -142,6 +145,7 @@ def test_signed_payload(mocker, application, bootcamp_run):
         "access_key": CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
         "currency": "USD",
+        "customer_ip_address": mock_ip,
         "item_0_code": "klass",
         "item_0_name": "{}".format(bootcamp_run.title),
         "item_0_quantity": 1,
