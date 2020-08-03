@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.50.3
+Version 0.50.3 (Released August 03, 2020)
 --------------
 
 - Update pillow version
