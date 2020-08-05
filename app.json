@@ -253,7 +253,7 @@
       "required": false
     },
     "JOBMA_LINK_EXPIRATION_DAYS": {
-      "description": "The number of days for jobma links to expire",
+      "description": "The number of days for Jobma links to expire",
       "required": false
     },
     "JOBMA_WEBHOOK_ACCESS_TOKEN": {

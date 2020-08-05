@@ -124,9 +124,10 @@ def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments
         assert create_interview.call_count == 1
         assert new_interview.id != interview.id
         mock_log.assert_called_once_with(
-            f"Interview recreated for submission {submission.id}, "
-            f"application {bootcamp_app.id}, "
-            f"user {bootcamp_app.user.email}"
+            "Interview recreated for submission %d, application %d, user %s",
+            submission.id,
+            bootcamp_app.id,
+            bootcamp_app.user.email,
         )
     else:
         mock_log.assert_not_called()

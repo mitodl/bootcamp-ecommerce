@@ -6,11 +6,7 @@ from django.conf import settings
 from django.db.models import Q
 
 from applications.constants import AppStates, SUBMISSION_STATUS_PENDING
-from applications.models import (
-    BootcampApplication,
-    ApplicationStepSubmission,
-    VideoInterviewSubmission,
-)
+from applications.models import BootcampApplication, ApplicationStepSubmission
 from applications import api
 from main.celery import app
 from main.utils import now_in_utc
@@ -60,7 +56,8 @@ def refresh_pending_interview_links():
         submission.content_object.interview.delete()
         api.populate_interviews_in_jobma(submission.bootcamp_application)
         log.debug(
-            f"Interview recreated for submission {submission.id}, "
-            f"application {submission.bootcamp_application.id}, "
-            f"user {submission.bootcamp_application.user.email}"
+            "Interview recreated for submission %d, application %d, user %s",
+            submission.id,
+            submission.bootcamp_application.id,
+            submission.bootcamp_application.user.email,
         )
