@@ -839,7 +839,7 @@ JOBMA_WEBHOOK_ACCESS_TOKEN = get_string(
 )
 JOBMA_LINK_EXPIRATION_DAYS = get_int(
     "JOBMA_LINK_EXPIRATION_DAYS",
-    30,
+    29,
     description="The number of days for Jobma links to expire",
 )
 
