@@ -175,8 +175,9 @@ export default class Payment extends React.Component<*, void> {
           <p className="tac">
             By making a payment I certify that I agree with the{" "}
             <a
-              href="/terms_and_conditions/"
+              href={SETTINGS.terms_url}
               target="_blank"
+              rel="noopener noreferrer"
               className="tac-link"
             >
               MIT Bootcamps Terms and Conditions

@@ -88,6 +88,7 @@ describe("Payment", () => {
   })
 
   it("should show terms and conditions message", () => {
+    SETTINGS.terms_url = "/terms/"
     const fakeRun = generateFakePayableRuns(1, { hasInstallment: true })[0]
     const wrapper = renderPayment({ selectedBootcampRun: fakeRun })
     const termsText = wrapper.find(".tac").text()
@@ -97,7 +98,7 @@ describe("Payment", () => {
       termsText,
       "By making a payment I certify that I agree with the MIT Bootcamps Terms and Conditions"
     )
-    assert.equal(termsLink.prop("href"), "/terms_and_conditions/")
+    assert.equal(termsLink.prop("href"), SETTINGS.terms_url)
   })
 
   describe("bootcamp run dropdown", () => {

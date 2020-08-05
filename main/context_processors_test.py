@@ -8,9 +8,21 @@ from main.context_processors import configuration_context, js_settings
 from profiles.factories import UserFactory
 
 
+# pylint: disable=redefined-outer-name
+@pytest.fixture
+def patched_get_resource_page_urls(mocker):
+    """ Return a mock of main.context_processors.get_resource_page_urls """
+    yield mocker.patch(
+        "main.context_processors.get_resource_page_urls",
+        return_value={"terms_of_service": "/terms-of-service"},
+    )
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("is_authed", [True, False])
-def test_configuration_context(settings, mocker, is_authed):
+def test_configuration_context(
+    settings, mocker, is_authed, patched_get_resource_page_urls
+):
     """Verify the context that is provided to all Django templates"""
     settings.ZENDESK_CONFIG = {
         "HELP_WIDGET_ENABLED": False,
@@ -20,9 +32,6 @@ def test_configuration_context(settings, mocker, is_authed):
         "HUBSPOT_PORTAL_ID": "fake-portal-id",
         "HUBSPOT_FOOTER_FORM_GUID": "fake-form-guid",
     }
-    patched_get_resource_page_urls = mocker.patch(
-        "main.context_processors.get_resource_page_urls"
-    )
     user = UserFactory.create() if is_authed else AnonymousUser()
 
     request = RequestFactory().get("/")
@@ -30,7 +39,7 @@ def test_configuration_context(settings, mocker, is_authed):
     request.site = mocker.Mock()
     context = configuration_context(request)
     assert context == {
-        "resource_page_urls": patched_get_resource_page_urls.return_value,
+        "resource_page_urls": {"terms_of_service": "/terms-of-service"},
         "zendesk_config": {
             "help_widget_enabled": settings.ZENDESK_CONFIG["HELP_WIDGET_ENABLED"],
             "help_widget_key": settings.ZENDESK_CONFIG["HELP_WIDGET_KEY"],
@@ -44,7 +53,7 @@ def test_configuration_context(settings, mocker, is_authed):
     patched_get_resource_page_urls.assert_called_once_with(request.site)
 
 
-def test_get_context_js_settings(settings):
+def test_get_context_js_settings(mocker, settings, patched_get_resource_page_urls):
     """Verify the specific JS settings in the base context dictionary"""
     settings.USE_WEBPACK_DEV_SERVER = False
     settings.ENVIRONMENT = "TEST"
@@ -59,6 +68,7 @@ def test_get_context_js_settings(settings):
 
     request = RequestFactory().get("/")
     request.user = AnonymousUser()
+    request.site = mocker.Mock()
     context = js_settings(request)
     assert json.loads(context["js_settings_json"]) == {
         "environment": settings.ENVIRONMENT,
@@ -71,4 +81,5 @@ def test_get_context_js_settings(settings):
         },
         "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
         "support_url": settings.SUPPORT_URL,
+        "terms_url": patched_get_resource_page_urls.return_value["terms_of_service"],
     }
