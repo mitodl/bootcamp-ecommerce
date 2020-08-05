@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.db.models import Q
 
-from applications.constants import AppStates
+from applications.constants import AppStates, SUBMISSION_STATUS_PENDING
 from applications.models import (
     BootcampApplication,
     ApplicationStepSubmission,
@@ -37,19 +37,23 @@ def populate_interviews_in_jobma(application_id):
 @app.task
 def refresh_pending_interview_links():
     """ Recreate old pending interviews """
-    cutoff_date = now_in_utc() - timedelta(days=settings.JOBMA_LINK_EXPIRATION_DAYS)
+    now = now_in_utc()
+    cutoff_date = now - timedelta(days=settings.JOBMA_LINK_EXPIRATION_DAYS)
     for submission in (
         ApplicationStepSubmission.objects.select_related("bootcamp_application")
         .exclude(
-            bootcamp_application__state__in=(
-                AppStates.AWAITING_PAYMENT,
-                AppStates.COMPLETE,
-                AppStates.REJECTED,
-                AppStates.REFUNDED,
+            Q(
+                bootcamp_application__state__in=(
+                    AppStates.AWAITING_PAYMENT,
+                    AppStates.COMPLETE,
+                    AppStates.REJECTED,
+                    AppStates.REFUNDED,
+                )
             )
+            | Q(bootcamp_application__bootcamp_run__start_date__lte=now)
         )
         .filter(
-            Q(submission_status="pending")
+            Q(submission_status=SUBMISSION_STATUS_PENDING)
             & Q(videointerviews__created_on__lte=cutoff_date)
         )
     ):

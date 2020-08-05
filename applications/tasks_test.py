@@ -1,4 +1,6 @@
 """Tests for application tasks"""
+from datetime import timedelta
+
 import pytest
 
 from applications.constants import (
@@ -21,6 +23,8 @@ from applications.tasks import (
 from ecommerce.test_utils import create_test_application
 from jobma.factories import InterviewFactory, JobFactory
 from jobma.models import Interview
+from klasses.factories import BootcampRunFactory
+from main.utils import now_in_utc
 
 pytestmark = pytest.mark.django_db
 
@@ -45,18 +49,44 @@ def test_create_and_send_applicant_letter(
 
 
 @pytest.mark.parametrize(
-    "state,status,old_link,recreated",
+    "state,status,old_link,old_run,recreated",
     [
-        [AppStates.AWAITING_USER_SUBMISSIONS, SUBMISSION_STATUS_PENDING, True, True],
-        [AppStates.AWAITING_USER_SUBMISSIONS, SUBMISSION_STATUS_PENDING, False, False],
-        [AppStates.AWAITING_PAYMENT, SUBMISSION_STATUS_PENDING, True, False],
-        [AppStates.AWAITING_USER_SUBMISSIONS, SUBMISSION_STATUS_SUBMITTED, True, False],
+        [
+            AppStates.AWAITING_USER_SUBMISSIONS,
+            SUBMISSION_STATUS_PENDING,
+            True,
+            False,
+            True,
+        ],
+        [
+            AppStates.AWAITING_USER_SUBMISSIONS,
+            SUBMISSION_STATUS_PENDING,
+            True,
+            True,
+            False,
+        ],
+        [
+            AppStates.AWAITING_USER_SUBMISSIONS,
+            SUBMISSION_STATUS_PENDING,
+            False,
+            False,
+            False,
+        ],
+        [AppStates.AWAITING_PAYMENT, SUBMISSION_STATUS_PENDING, True, False, False],
+        [
+            AppStates.AWAITING_USER_SUBMISSIONS,
+            SUBMISSION_STATUS_SUBMITTED,
+            True,
+            False,
+            False,
+        ],
     ],
-)
-def test_refresh_pending_interview_links(
-    mocker, settings, state, status, old_link, recreated
-):  # pylint:disable=too-many-arguments
+)  # pylint:disable=too-many-locals
+def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments
+    mocker, settings, state, status, old_link, old_run, recreated
+):
     """ Test that refresh_pending_interview_links updates links only when appropriate """
+    now = now_in_utc()
     settings.JOBMA_LINK_EXPIRATION_DAYS = 0 if old_link else 30
     mock_log = mocker.patch("applications.tasks.log.debug")
     create_interview = mocker.patch(
@@ -64,7 +94,10 @@ def test_refresh_pending_interview_links(
         return_value="http://fake.interview.link",
     )
 
-    bootcamp_app = BootcampApplicationFactory.create(state=state)
+    run = BootcampRunFactory.create(
+        start_date=(now + timedelta(days=(-10 if old_run else 10)))
+    )
+    bootcamp_app = BootcampApplicationFactory.create(state=state, bootcamp_run=run)
     video_app_step = ApplicationStepFactory.create(
         bootcamp=bootcamp_app.bootcamp_run.bootcamp, submission_type=SUBMISSION_VIDEO
     )
