@@ -1,4 +1,5 @@
 // @flow
+/* global SETTINGS: false */
 import React from "react"
 import { sum } from "ramda"
 
@@ -18,7 +19,6 @@ import {
   formatReadableDateFromStr,
   isNilOrBlank
 } from "../util/util"
-import { routes } from "../lib/urls"
 
 import type { PaymentPayload } from "../flow/ecommerceTypes"
 import type { ApplicationDetail } from "../flow/applicationTypes"
@@ -114,7 +114,7 @@ export const PaymentDisplay = (props: Props) => {
       </div>
       <div className="terms-and-conditions">
         By making a payment I certify that I agree with the MIT Bootcamps{" "}
-        <a href={routes.resourcePages.terms}>Terms and Conditions</a>.
+        <a href={SETTINGS.terms_url}>Terms and Conditions</a>.
       </div>
     </div>
   )

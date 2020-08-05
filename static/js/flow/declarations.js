@@ -4,6 +4,7 @@ declare var SETTINGS: {
   reactGaDebug: boolean,
   recaptchaKey: ?string,
   support_url: string,
+  terms_url: string,
   zendesk_config: {
     help_widget_enabled: boolean,
     help_widget_key: ?string

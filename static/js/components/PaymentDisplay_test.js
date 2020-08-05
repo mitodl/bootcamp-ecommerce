@@ -1,4 +1,5 @@
 // @flow
+/* global SETTINGS: false */
 import { assert } from "chai"
 import sinon from "sinon"
 import { shallow } from "enzyme"
@@ -40,6 +41,18 @@ describe("PaymentDisplay", () => {
     assert.equal(
       inner.find(".bootcamp-title").text(),
       application.bootcamp_run.bootcamp.title
+    )
+  })
+
+  it("renders the terms and conditions link", async () => {
+    SETTINGS.terms_url = "/terms-of-service"
+    const { inner } = await renderPage()
+    assert.equal(
+      inner
+        .find(".terms-and-conditions")
+        .find("a")
+        .prop("href"),
+      SETTINGS.terms_url
     )
   })
 

@@ -40,6 +40,7 @@ def js_settings(request):
                 },
                 "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
                 "support_url": settings.SUPPORT_URL,
+                "terms_url": get_resource_page_urls(request.site)["terms_of_service"],
             }
         )
     }

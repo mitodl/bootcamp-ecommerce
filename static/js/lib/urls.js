@@ -54,8 +54,7 @@ export const routes = {
   }),
 
   resourcePages: include("", {
-    howToApply: "apply/",
-    terms:      "terms-and-conditions/"
+    howToApply: "apply/"
   })
 }
 
