@@ -1,11 +1,26 @@
 """Tests for application tasks"""
-
 import pytest
 
-
-from applications.tasks import create_and_send_applicant_letter
+from applications.constants import (
+    AppStates,
+    SUBMISSION_STATUS_PENDING,
+    SUBMISSION_STATUS_SUBMITTED,
+    SUBMISSION_VIDEO,
+)
+from applications.factories import (
+    BootcampApplicationFactory,
+    VideoInterviewSubmissionFactory,
+    ApplicationStepSubmissionFactory,
+    ApplicationStepFactory,
+    BootcampRunApplicationStepFactory,
+)
+from applications.tasks import (
+    create_and_send_applicant_letter,
+    refresh_pending_interview_links,
+)
 from ecommerce.test_utils import create_test_application
-
+from jobma.factories import InterviewFactory, JobFactory
+from jobma.models import Interview
 
 pytestmark = pytest.mark.django_db
 
@@ -27,3 +42,59 @@ def test_create_and_send_applicant_letter(
         application_id=application.id, letter_type=letter_type
     )
     patched.assert_called_once_with(application, letter_type=letter_type)
+
+
+@pytest.mark.parametrize(
+    "state,status,old_link,recreated",
+    [
+        [AppStates.AWAITING_USER_SUBMISSIONS, SUBMISSION_STATUS_PENDING, True, True],
+        [AppStates.AWAITING_USER_SUBMISSIONS, SUBMISSION_STATUS_PENDING, False, False],
+        [AppStates.AWAITING_PAYMENT, SUBMISSION_STATUS_PENDING, True, False],
+        [AppStates.AWAITING_USER_SUBMISSIONS, SUBMISSION_STATUS_SUBMITTED, True, False],
+    ],
+)
+def test_refresh_pending_interview_links(
+    mocker, settings, state, status, old_link, recreated
+):  # pylint:disable=too-many-arguments
+    """ Test that refresh_pending_interview_links updates links only when appropriate """
+    settings.JOBMA_LINK_EXPIRATION_DAYS = 0 if old_link else 30
+    mock_log = mocker.patch("applications.tasks.log.debug")
+    create_interview = mocker.patch(
+        "applications.api.create_interview_in_jobma",
+        return_value="http://fake.interview.link",
+    )
+
+    bootcamp_app = BootcampApplicationFactory.create(state=state)
+    video_app_step = ApplicationStepFactory.create(
+        bootcamp=bootcamp_app.bootcamp_run.bootcamp, submission_type=SUBMISSION_VIDEO
+    )
+    application_step = BootcampRunApplicationStepFactory.create(
+        bootcamp_run=bootcamp_app.bootcamp_run, application_step=video_app_step
+    )
+    interview = InterviewFactory.create(
+        job=JobFactory.create(run=bootcamp_app.bootcamp_run),
+        applicant=bootcamp_app.user,
+    )
+    interview_submission = VideoInterviewSubmissionFactory.create(interview=interview)
+    submission = ApplicationStepSubmissionFactory.create(
+        run_application_step=application_step,
+        bootcamp_application=bootcamp_app,
+        is_pending=True,
+        content_object=interview_submission,
+        submission_status=status,
+    )
+    assert submission.videointerviews.first() == interview_submission
+    refresh_pending_interview_links()
+
+    new_interview = Interview.objects.get(applicant=bootcamp_app.user)
+    if recreated:
+        assert create_interview.call_count == 1
+        assert new_interview.id != interview.id
+        mock_log.assert_called_once_with(
+            f"Interview recreated for submission {submission.id}, "
+            f"application {bootcamp_app.id}, "
+            f"user {bootcamp_app.user.email}"
+        )
+    else:
+        mock_log.assert_not_called()
+        assert new_interview.id == interview.id
