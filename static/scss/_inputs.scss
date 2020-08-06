@@ -70,6 +70,8 @@ a.btn-styled {
   &:hover {
     color: $white;
     text-decoration: none;
+    background-color: $carmine;
+    border-color: $carmine;
   }
 }
 
@@ -83,7 +85,9 @@ a.btn-styled {
     background-color: $white;
 
     &:hover {
-      color: $button-red;
+      color: $white;
+      border-color: $button-red;
+      background-color: $button-red;
     }
   }
 }
@@ -93,12 +97,20 @@ a.btn-styled {
   background-color: $button-dk-grey;
   border-color: $button-dk-grey;
 
+  &:hover {
+    color: $button-dk-grey;
+    background-color: $charcoal !important;
+    border-color: $charcoal !important;
+  }
+
   &.btn-inverse {
     color: $button-dk-grey;
     background-color: $white;
 
     &:hover {
       color: $button-dk-grey;
+      background-color: $charcoal !important;
+      border-color: $charcoal !important;
     }
   }
 }
