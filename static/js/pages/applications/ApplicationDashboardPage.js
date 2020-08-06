@@ -74,6 +74,7 @@ import type { DrawerChangePayload } from "../../reducers/drawer"
 import type { Location } from "react-router"
 // $FlowFixMe: This export exists
 import type { QueryState } from "redux-query"
+import {APP_STATE_IN_PROGRESS, APP_STATE_IN_REVIEW} from "../../../../staticfiles/js/constants"
 
 declare var CSOURCE_PAYLOAD: ?CybersourcePayload
 
