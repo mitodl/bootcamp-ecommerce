@@ -11,7 +11,10 @@ import {
   PROFILE_VIEW,
   REVIEW_STATUS_REJECTED,
   TAKE_VIDEO_INTERVIEW,
-  RESUME_UPLOAD, APP_STATE_TEXT_MAP, AWAITING_RESUME, AWAITING_USER_SUBMISSIONS, AWAITING_SUBMISSION_REVIEW
+  RESUME_UPLOAD,
+  AWAITING_RESUME,
+  AWAITING_USER_SUBMISSIONS,
+  AWAITING_SUBMISSION_REVIEW
 } from "../../constants"
 
 import type { DrawerChangePayload } from "../../reducers/drawer"
@@ -21,7 +24,6 @@ import type {
   ApplicationSubmission
 } from "../../flow/applicationTypes"
 import type { User } from "../../flow/authTypes"
-import {APP_STATE_IN_PROGRESS, APP_STATE_IN_REVIEW} from "../../../../staticfiles/js/constants"
 
 type DetailSectionProps = {
   ready: boolean,
@@ -65,14 +67,11 @@ type ResumeDetailProps = DetailSectionProps & {
 
 export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
   const { ready, fulfilled, openDrawer, applicationDetail } = props
-  const isEditable = [AWAITING_RESUME, AWAITING_USER_SUBMISSIONS, AWAITING_SUBMISSION_REVIEW].includes(
-      applicationDetail.state
-    )
-  console.log("IS EDITABLE?" + isEditable)
-  console.log("APP STATE?" + applicationDetail.state)
-  console.log(JSON.stringify([AWAITING_RESUME, AWAITING_USER_SUBMISSIONS, AWAITING_SUBMISSION_REVIEW]))
-
-
+  const isEditable = [
+    AWAITING_RESUME,
+    AWAITING_USER_SUBMISSIONS,
+    AWAITING_SUBMISSION_REVIEW
+  ].includes(applicationDetail.state)
 
   return (
     <ProgressDetailRow className="resume" fulfilled={fulfilled}>
