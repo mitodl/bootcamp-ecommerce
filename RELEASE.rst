@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.51.0
+Version 0.51.0 (Released August 07, 2020)
 --------------
 
 - Fix terms link on payment drawer (#957)
