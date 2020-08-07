@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.51.0 (Released August 07, 2020)
+--------------
+
+- Fix terms link on payment drawer (#957)
+- Bump elliptic from 6.5.2 to 6.5.3
+- admin section, make details top aligned
+- add a Accessibility link in footer
+
 Version 0.50.3 (Released August 03, 2020)
 --------------
 
