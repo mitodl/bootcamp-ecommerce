@@ -224,7 +224,6 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
         "access_key": settings.CYBERSOURCE_ACCESS_KEY,
         "amount": str(order.total_price_paid),
         "currency": "USD",
-        "customer_ip_address": ip_address,
         "locale": "en-us",
         "item_0_code": "klass",
         "item_0_name": "{}".format(run_title),
@@ -252,6 +251,9 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
         "merchant_defined_data7": "{}".format(order.user.profile.name),
         "merchant_defined_data8": "{}".format(order.user.email),
     }
+
+    if ip_address:
+        payload["customer_ip_address"] = ip_address
 
     field_names = sorted(list(payload.keys()) + ["signed_field_names"])
     payload["signed_field_names"] = ",".join(field_names)
