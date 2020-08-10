@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.52.0
+--------------
+
+- Fixes button styles issues
+
 Version 0.51.0 (Released August 07, 2020)
 --------------
 
