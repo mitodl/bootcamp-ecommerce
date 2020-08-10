@@ -31,6 +31,7 @@ django-filter==2.2.0      # via -r requirements.in
 django-fsm==2.6.1         # via -r requirements.in
 django-hijack-admin==2.1.7  # via -r requirements.in
 django-hijack==2.1.10     # via -r requirements.in, django-hijack-admin
+django-ipware==3.0.0      # via -r requirements.in
 django-mathfilters==1.0.0  # via -r requirements.in
 django-modelcluster==5.0.1  # via wagtail
 django-redis==4.7.0       # via -r requirements.in
