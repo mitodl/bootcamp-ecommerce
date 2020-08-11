@@ -15,6 +15,7 @@ import os
 import platform
 from urllib.parse import urljoin, urlparse
 
+from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
 
@@ -682,7 +683,11 @@ CELERY_BEAT_SCHEDULE = {
             900,
             description="How often in seconds to check for hubspot errors",
         ),
-    }
+    },
+    "recreate-stale-interview-links": {
+        "task": "applications.tasks.refresh_pending_interview_links",
+        "schedule": crontab(minute=0, hour=5),
+    },
 }
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -831,6 +836,11 @@ JOBMA_WEBHOOK_ACCESS_TOKEN = get_string(
     "JOBMA_WEBHOOK_ACCESS_TOKEN",
     "",
     description="The Jobma access token used by us to verify that a postback came from Jobma",
+)
+JOBMA_LINK_EXPIRATION_DAYS = get_int(
+    "JOBMA_LINK_EXPIRATION_DAYS",
+    29,
+    description="The number of days for Jobma links to expire",
 )
 
 # Relative URL to be used by Djoser for the link in the password reset email

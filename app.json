@@ -252,6 +252,10 @@
       "description": "The base URL for accessing Jobma",
       "required": false
     },
+    "JOBMA_LINK_EXPIRATION_DAYS": {
+      "description": "The number of days for Jobma links to expire",
+      "required": false
+    },
     "JOBMA_WEBHOOK_ACCESS_TOKEN": {
       "description": "The Jobma access token used by us to verify that a postback came from Jobma",
       "required": false

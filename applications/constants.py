@@ -40,6 +40,15 @@ REVIEWABLE_APP_STATES = [
     AppStates.AWAITING_SUBMISSION_REVIEW.value,
 ]
 
+
+REVIEW_COMPLETED_STATES = [
+    AppStates.AWAITING_PAYMENT.value,
+    AppStates.COMPLETE.value,
+    AppStates.REJECTED.value,
+    AppStates.REFUNDED.value,
+]
+
+
 VALID_APP_STATE_CHOICES = list(
     zip((member.value for member in AppStates), (member.value for member in AppStates))
 )
