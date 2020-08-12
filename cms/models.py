@@ -638,6 +638,7 @@ class LetterTemplatePage(Page):
     )
     signature_image = models.ForeignKey(
         Image,
+        blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name="+",
