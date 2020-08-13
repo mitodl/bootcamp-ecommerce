@@ -75,10 +75,15 @@ class LineSerializer(serializers.ModelSerializer):
 
     order = OrderPartialSerializer(read_only=True)
     price = serializers.DecimalField(decimal_places=2, max_digits=20)
+    run_key = serializers.SerializerMethodField()
+
+    def get_run_key(self, line):
+        """get run_key from bootcamp_run"""
+        return line.bootcamp_run.run_key
 
     class Meta:
         model = Line
-        fields = ("order", "run_key", "price", "description")
+        fields = ("order", "price", "description", "run_key")
 
 
 class CheckoutDataSerializer(serializers.ModelSerializer):

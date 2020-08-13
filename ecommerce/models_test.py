@@ -6,8 +6,6 @@ import pytest
 from main.utils import serialize_model_object
 from ecommerce.factories import LineFactory, OrderFactory, ReceiptFactory
 from ecommerce.models import Order, Line
-from klasses.factories import BootcampRunFactory
-from klasses.models import BootcampRun
 
 
 pytestmark = pytest.mark.django_db
@@ -31,9 +29,9 @@ def test_line_str():
     """Test Line.__str__"""
     line = LineFactory.create()
     assert str(line) == (
-        "Line for {order}, price={price}, run_key={run_key}, description={description}".format(
+        "Line for {order}, price={price}, bootcamp_run_id={bootcamp_run_id}, description={description}".format(
             order=line.order,
-            run_key=line.run_key,
+            bootcamp_run_id=line.bootcamp_run_id,
             price=line.price,
             description=line.description,
         )
@@ -88,16 +86,14 @@ def test_empty_line():
 
 def test_no_bootcamp_run():
     """If there is no BootcampRun there should be an empty string"""
-    line = LineFactory.create()
-    assert BootcampRun.objects.filter(run_key=line.run_key).exists() is False
+    line = LineFactory.create(bootcamp_run=None)
     assert line.order.run_title == ""
 
 
 def test_run_title():
-    """run_title should be bootcamp run display title for the given run_key"""
-    bootcamp_run = BootcampRunFactory.create()
-    line = LineFactory.create(run_key=bootcamp_run.run_key)
-    assert line.order.run_title == bootcamp_run.display_title
+    """run_title should return the bootcamp run title"""
+    line = LineFactory.create()
+    assert line.order.run_title == line.bootcamp_run.display_title
 
 
 @pytest.fixture
@@ -106,13 +102,12 @@ def lines_fulfilled():
     order_fulfilled_1 = OrderFactory.create(status=Order.FULFILLED)
     line_fulfilled_1 = LineFactory.create(order=order_fulfilled_1)
     user = order_fulfilled_1.user
-    run_key = line_fulfilled_1.run_key
     order_fulfilled_2 = OrderFactory.create(user=user, status=Order.FULFILLED)
     line_fulfilled_2 = LineFactory.create(order=order_fulfilled_2)
     order_created = OrderFactory.create(user=user, status=Order.CREATED)
-    LineFactory.create(order=order_created, run_key=run_key)
+    LineFactory.create(order=order_created, bootcamp_run=line_fulfilled_1.bootcamp_run)
 
-    yield line_fulfilled_1, line_fulfilled_2, user, run_key
+    yield line_fulfilled_1, line_fulfilled_2, user
 
 
 # pylint: disable=redefined-outer-name
@@ -120,9 +115,9 @@ def test_fulfilled_for_user(lines_fulfilled):
     """
     Test for the fulfilled_for_user classmethod
     """
-    line_fulfilled_1, line_fulfilled_2, user, _ = lines_fulfilled
+    line_fulfilled_1, line_fulfilled_2, user = lines_fulfilled
     assert list(Line.fulfilled_for_user(user)) == sorted(
-        [line_fulfilled_1, line_fulfilled_2], key=lambda x: x.run_key
+        [line_fulfilled_1, line_fulfilled_2], key=lambda x: x.bootcamp_run_id
     )
 
 
@@ -130,17 +125,21 @@ def test_for_user_bootcamp_run(lines_fulfilled):
     """
     Test for the for_user_bootcamp_run classmethod
     """
-    line_fulfilled_1, _, user, run_key = lines_fulfilled
-    assert list(Line.for_user_bootcamp_run(user, run_key)) == [line_fulfilled_1]
+    line_fulfilled_1, _, user = lines_fulfilled
+    assert list(Line.for_user_bootcamp_run(user, line_fulfilled_1.bootcamp_run)) == [
+        line_fulfilled_1
+    ]
 
 
 def test_total_paid_for_bootcamp_run(lines_fulfilled):
     """
     Test for the total_paid_for_bootcamp_run classmethod
     """
-    line_fulfilled_1, _, user, run_key = lines_fulfilled
+    line_fulfilled_1, _, user = lines_fulfilled
     assert (
-        Line.total_paid_for_bootcamp_run(user, run_key).get("total")
+        Line.total_paid_for_bootcamp_run(user, line_fulfilled_1.bootcamp_run).get(
+            "total"
+        )
         == line_fulfilled_1.price
     )
 

@@ -67,6 +67,7 @@ def create_unfulfilled_order(*, application, payment_amount):
         run_key=run_key,
         description="Installment for {}".format(bootcamp_run.title),
         price=payment_amount,
+        bootcamp_run=bootcamp_run,
     )
     order.save_and_log(application.user)
     return order
@@ -103,6 +104,7 @@ def create_refund_order(*, user, bootcamp_run, amount, application=None):
         run_key=bootcamp_run.run_key,
         description="Refund for {}".format(bootcamp_run.title),
         price=refund_amount,
+        bootcamp_run=bootcamp_run,
     )
     order.save_and_log(user)
     return order
@@ -129,7 +131,7 @@ def process_refund(*, user, bootcamp_run, amount):
             Order.objects.select_related("line")
             .filter(
                 Q(user=user)
-                & Q(line__run_key=bootcamp_run.run_key)
+                & Q(line__bootcamp_run=bootcamp_run)
                 & Q(status=Order.FULFILLED)
             )
             .values_list("total_price_paid", flat=True)
@@ -194,11 +196,13 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
     # http://apps.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_WM/Secure_Acceptance_WM.pdf
     # Section: API Fields
 
-    run_key = None
     line = order.line_set.first()
     if line is not None:
-        run_key = line.run_key
-    bootcamp_run = BootcampRun.objects.get(run_key=run_key)
+        bootcamp_run = line.bootcamp_run
+    else:
+        raise EcommerceException("Unable to find line for order {}".format(order.id))
+
+    run_key = bootcamp_run.run_key
 
     # NOTE: be careful about max length here, many (all?) string fields have a max
     # length of 255. At the moment none of these fields should go over that, due to database
@@ -423,12 +427,10 @@ def serialize_user_bootcamp_run(user, bootcamp_run):
         "start_date": bootcamp_run.start_date,
         "end_date": bootcamp_run.end_date,
         "price": bootcamp_run.personal_price(user),
-        "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run.run_key).get(
-            "total"
-        )
+        "total_paid": Line.total_paid_for_bootcamp_run(user, bootcamp_run).get("total")
         or Decimal("0.00"),
         "payments": LineSerializer(
-            Line.for_user_bootcamp_run(user, bootcamp_run.run_key), many=True
+            Line.for_user_bootcamp_run(user, bootcamp_run), many=True
         ).data,
         "installments": InstallmentSerializer(
             bootcamp_run.installment_set.order_by("deadline"), many=True

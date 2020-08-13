@@ -40,12 +40,9 @@ class BootcampRun(models.Model):
         default=None,
         max_length=10,
     )
-    run_key = models.IntegerField()
+    run_key = models.IntegerField(unique=True, db_index=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
-
-    class Meta:
-        unique_together = ("run_key", "source")
 
     @property
     def price(self):
