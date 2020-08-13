@@ -633,10 +633,22 @@ class LetterTemplatePage(Page):
     rejection_text = RichTextField(
         default=REJECTION_DEFAULT_LETTER_TEXT.replace("\n", "<br />\n")
     )
+    signatory_name = models.CharField(
+        max_length=100, default="", help_text="Name of the signatory."
+    )
+    signature_image = models.ForeignKey(
+        Image,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Upload an image that will render in the program description section.",
+    )
 
     content_panels = Page.content_panels + [
         FieldPanel("acceptance_text"),
         FieldPanel("rejection_text"),
+        FieldPanel("signatory_name"),
+        ImageChooserPanel("signature_image"),
     ]
 
     base_form_class = LetterTemplatePageForm
