@@ -165,6 +165,7 @@ MIDDLEWARE = (
     "social_django.middleware.SocialAuthExceptionMiddleware",
     "wagtail.core.middleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    "main.middleware.CachelessAPIMiddleware",
 )
 
 # enable the nplusone profiler only in debug mode
