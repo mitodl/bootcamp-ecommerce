@@ -225,6 +225,9 @@ class CatalogGridSectionFactory(wagtail_factories.PageFactory):
 class LetterTemplatePageFactory(wagtail_factories.PageFactory):
     """Factory class for the LetterTemplatePage"""
 
+    signatory_name = factory.fuzzy.FuzzyText(prefix="Test ")
+    signature_image = factory.SubFactory(wagtail_factories.ImageFactory)
+
     class Meta:
         model = models.LetterTemplatePage
 
