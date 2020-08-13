@@ -47,6 +47,11 @@ http {
             try_files /static/images/favicon.ico /favicon.ico;
         }
 
+        location ~* /static/hash.txt {
+            expires -1;
+            add_header Cache-Control private;
+        }
+
         location ~* /static/(.*$) {
             expires max;
             add_header Access-Control-Allow-Origin *;
