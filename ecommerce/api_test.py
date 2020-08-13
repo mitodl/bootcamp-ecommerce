@@ -286,7 +286,9 @@ def test_data():
     InstallmentFactory.create(bootcamp_run=run_not_paid)
 
     order = OrderFactory.create(user=profile.user, status=Order.FULFILLED)
-    LineFactory.create(order=order, run_key=run_paid.run_key, price=627.34)
+    LineFactory.create(
+        order=order, run_key=run_paid.run_key, bootcamp_run=run_paid, price=627.34
+    )
 
     return profile.user, run_paid, run_not_paid
 
@@ -306,7 +308,7 @@ def test_serialize_user_run_paid(test_data):
         "price": run_paid.personal_price(user),
         "total_paid": Decimal("627.34"),
         "payments": LineSerializer(
-            Line.for_user_bootcamp_run(user, run_paid.run_key), many=True
+            Line.for_user_bootcamp_run(user, run_paid), many=True
         ).data,
         "installments": InstallmentSerializer(
             run_paid.installment_set.order_by("deadline"), many=True
@@ -352,7 +354,7 @@ def test_serialize_user_bootcamp_runs(test_data):
             "price": run_paid.price,
             "total_paid": Decimal("627.34"),
             "payments": LineSerializer(
-                Line.for_user_bootcamp_run(user, run_paid.run_key), many=True
+                Line.for_user_bootcamp_run(user, run_paid), many=True
             ).data,
             "installments": InstallmentSerializer(
                 run_paid.installment_set.order_by("deadline"), many=True
@@ -415,6 +417,7 @@ def test_refund_enrollment(has_enrollment, has_application, user):
     LineFactory.create(
         price=3,
         run_key=bootcamp_run.run_key,
+        bootcamp_run=bootcamp_run,
         order=OrderFactory(
             user=user,
             application=application,
@@ -475,7 +478,12 @@ def test_refund_exceeds_payment(has_application, user):
         total_price_paid=10,
     )
     for order in orders:
-        LineFactory.create(price=10, run_key=bootcamp_run.run_key, order=order)
+        LineFactory.create(
+            price=10,
+            run_key=bootcamp_run.run_key,
+            bootcamp_run=bootcamp_run,
+            order=order,
+        )
 
     with pytest.raises(EcommerceException) as exc:
         process_refund(user=user, bootcamp_run=bootcamp_run, amount=45.50)
@@ -512,7 +520,10 @@ def test_complete_successful_order(enrollment_exists):
         user=application.user,
     )
     LineFactory.create(
-        order=order, price=installment.amount, run_key=application.bootcamp_run.run_key
+        order=order,
+        price=installment.amount,
+        run_key=application.bootcamp_run.run_key,
+        bootcamp_run=application.bootcamp_run,
     )
     if enrollment_exists:
         BootcampRunEnrollmentFactory.create(

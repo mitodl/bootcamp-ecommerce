@@ -87,7 +87,7 @@ def test_line_serializer(line):
     Test for line serializer result
     """
     expected = {
-        "run_key": line.run_key,
+        "run_key": line.bootcamp_run.run_key,
         "description": line.description,
         "price": line.price,
         "order": {
@@ -116,6 +116,7 @@ def test_checkout_data(has_paid):
             order__application=application,
             order__user=user,
             run_key=run.run_key,
+            bootcamp_run=run,
         )
 
     InstallmentFactory.create(bootcamp_run=run)

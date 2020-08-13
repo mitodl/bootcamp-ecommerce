@@ -186,7 +186,7 @@ class UserBootcampRunStatement(RetrieveAPIView):
         (or raises a 404 if they have no payments for the specified bootcamp run)
         """
         bootcamp_run = self.get_object()
-        if Line.for_user_bootcamp_run(request.user, bootcamp_run.run_key).count() == 0:
+        if Line.for_user_bootcamp_run(request.user, bootcamp_run).count() == 0:
             raise Http404
         return Response(
             {

@@ -31,6 +31,7 @@ class Order(AuditableModel, TimestampedModel):
     STATUSES = [CREATED, FULFILLED, FAILED, REFUNDED]
 
     user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
+
     status = CharField(
         choices=[(status, status) for status in STATUSES],
         default=CREATED,
@@ -88,7 +89,7 @@ class Order(AuditableModel, TimestampedModel):
         line = self.line_set.first()
         if not line:
             return None
-        return BootcampRun.objects.filter(run_key=line.run_key).first()
+        return line.bootcamp_run
 
 
 class OrderAudit(AuditModel):
@@ -114,15 +115,16 @@ class Line(TimestampedModel):
 
     order = ForeignKey(Order, on_delete=CASCADE)
     run_key = IntegerField()
+    bootcamp_run = ForeignKey(BootcampRun, null=True, on_delete=SET_NULL)
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
 
     def __str__(self):
         """Description for Line"""
-        return "Line for {order}, price={price}, run_key={run_key}, description={description}".format(
+        return "Line for {order}, price={price}, bootcamp_run_id={bootcamp_run_id}, description={description}".format(
             order=self.order,
             price=self.price,
-            run_key=self.run_key,
+            bootcamp_run_id=self.bootcamp_run_id,
             description=self.description,
         )
 
@@ -131,27 +133,27 @@ class Line(TimestampedModel):
         """
         Returns the list of lines for fulfilled orders for a specific user
         """
-        return cls.objects.filter(
-            order__user=user, order__status=Order.FULFILLED
-        ).order_by("run_key")
+        return cls.objects.filter(order__user=user, order__status=Order.FULFILLED)
 
     @classmethod
-    def for_user_bootcamp_run(cls, user, run_key):
+    def for_user_bootcamp_run(cls, user, bootcamp_run):
         """
         Returns all the orders that are associated to the payment of a specific run_key
         """
         return (
             cls.fulfilled_for_user(user)
-            .filter(run_key=run_key)
+            .filter(bootcamp_run=bootcamp_run)
             .order_by("order__created_on")
         )
 
     @classmethod
-    def total_paid_for_bootcamp_run(cls, user, run_key):
+    def total_paid_for_bootcamp_run(cls, user, bootcamp_run):
         """
         Returns the total amount paid for a bootcamp run
         """
-        return cls.for_user_bootcamp_run(user, run_key).aggregate(total=Sum("price"))
+        return cls.for_user_bootcamp_run(user, bootcamp_run).aggregate(
+            total=Sum("price")
+        )
 
 
 class Receipt(TimestampedModel):

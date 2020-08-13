@@ -373,7 +373,7 @@ def fulfilled_order(test_data):
     """Create a fulfilled order for testing"""
     user, _, bootcamp_run = test_data
     order = OrderFactory.create(user=user, status=Order.FULFILLED)
-    LineFactory.create(order=order, run_key=bootcamp_run.run_key, price=123.45)
+    LineFactory.create(order=order, bootcamp_run=bootcamp_run, price=123.45)
     return order
 
 

@@ -10,7 +10,7 @@ from applications.factories import BootcampApplicationFactory
 from ecommerce.api import make_reference_id, generate_cybersource_sa_signature
 from ecommerce.models import Line, Order, Receipt
 from profiles.factories import UserFactory
-
+from klasses.factories import BootcampRunFactory
 
 FAKE = faker.Factory.create()
 
@@ -33,6 +33,7 @@ class LineFactory(DjangoModelFactory):
     order = SubFactory(OrderFactory)
     price = SelfAttribute("order.total_price_paid")
     run_key = Sequence(lambda n: n)
+    bootcamp_run = SubFactory(BootcampRunFactory, run_key=run_key)
     description = FuzzyText(prefix="Line ")
 
     class Meta:
