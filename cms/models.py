@@ -665,10 +665,11 @@ class LetterTemplatePage(Page):
 <h2>Rejection letter:</h2><br />
 {render_template(text=self.rejection_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)}
 """
+        signatory = {"name": self.signatory_name, "image": self.signature_image}
         return render(
             request,
             "letter_template_page.html",
-            context={"preview": True, "content": content},
+            context={"preview": True, "content": content, "signatory": signatory},
         )
 
     def serve(self, request, *args, **kwargs):

@@ -9,18 +9,20 @@ from cms.models import LetterTemplatePage
 from mail.v2.api import render_email_templates, send_message
 
 
-def email_letter(applicant_letter):
+def email_letter(applicant_letter, signatory):
     """
     Email the applicant letter
 
     Args:
         applicant_letter (ApplicantLetter): The rendered applicant letter in the database
+        signatory (dict): The signatory name and signature
     """
 
     subject, text_body, html_body = render_email_templates(
         "applicant_letter",
         {
             "content": applicant_letter.letter_text,
+            "signatory": signatory,
             "subject": applicant_letter.letter_subject,
             "base_url": settings.SITE_BASE_URL,
         },
@@ -76,7 +78,9 @@ def render_applicant_letter_text(application, *, letter_type):
         },
     )
 
-    return subject, rendered_text
+    signatory_details = {"name": page.signatory_name, "image": page.signature_image}
+
+    return subject, rendered_text, signatory_details
 
 
 def create_and_send_applicant_letter(application, *, letter_type):
@@ -89,11 +93,13 @@ def create_and_send_applicant_letter(application, *, letter_type):
     """
     from applications.models import ApplicantLetter
 
-    subject, text = render_applicant_letter_text(application, letter_type=letter_type)
+    subject, text, signatory = render_applicant_letter_text(
+        application, letter_type=letter_type
+    )
     letter = ApplicantLetter.objects.create(
         application=application,
         letter_text=text,
         letter_subject=subject,
         letter_type=letter_type,
     )
-    email_letter(letter)
+    email_letter(letter, signatory)

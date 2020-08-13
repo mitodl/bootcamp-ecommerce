@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static render_bundle wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags %}
+{% load static render_bundle wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags image_version_url %}
 
 {% block title %}{{ site_name }} | Letter{% endblock %}
 
@@ -26,8 +26,8 @@
     </div>
     <p>
       Sincerely,<br />
-      <img src="{% static "images/signature-mariah-rawding.png" %}" alt="Signature for Mariah Rawding" /><br />
-      Mariah Rawding<br />
+      <img src="{% if signatory.image %}{% image_version_url signatory.image "fill-300x300" %}{% else %}{% static "images/signature-mariah-rawding.png" %}{% endif %}" alt="Signature for {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}" /><br />
+      {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}<br />
       MIT Bootcamps Admissions
     </p>
   </div>
