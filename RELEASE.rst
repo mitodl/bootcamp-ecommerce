@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.51.1
+Version 0.51.1 (Released August 17, 2020)
 --------------
 
 - Refresh old interview links (#959)
