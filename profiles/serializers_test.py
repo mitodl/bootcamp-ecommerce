@@ -185,6 +185,7 @@ def test_create_user_serializer(
 
     assert serializer.is_valid()
     user = serializer.save()
+    assert user.is_active is False
     if hubspot_api_key is not None:
         mock_user_sync.assert_called_with(user.id)
     else:
