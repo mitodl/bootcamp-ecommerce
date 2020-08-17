@@ -243,7 +243,11 @@ class UserSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             user = User.objects.create_user(
-                username, email=email, password=password, **validated_data
+                username,
+                email=email,
+                password=password,
+                is_active=False,
+                **validated_data,
             )
             LegalAddress.objects.create(user=user)
             Profile.objects.create(user=user)
