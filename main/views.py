@@ -60,6 +60,8 @@ def react(request, **kwargs):
                 "purchase_date_utc": request.POST["signed_date_time"],
             }
         )
+    else:
+        context["CSOURCE_PAYLOAD"] = None
     return render(request, "bootcamp/react.html", context)
 
 

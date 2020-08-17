@@ -129,6 +129,7 @@ class HomePage(Page, CommonProperties):
             **super().get_context(request, *args, **kwargs),
             "site_name": settings.SITE_NAME,
             "title": self.title,
+            "CSOURCE_PAYLOAD": None,
         }
 
     @property
@@ -198,6 +199,7 @@ class BootcampPage(Page, CommonProperties):
             "site_name": settings.SITE_NAME,
             "title": self.title,
             "apply_url": reverse("applications"),
+            "CSOURCE_PAYLOAD": None,
         }
 
     @property
@@ -483,6 +485,7 @@ class ResourcePage(Page):
         return {
             **super().get_context(request, *args, **kwargs),
             "site_name": settings.SITE_NAME,
+            "CSOURCE_PAYLOAD": None,
         }
 
 

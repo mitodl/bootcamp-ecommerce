@@ -43,7 +43,8 @@ def test_cybersource_context(client, user):
     client.force_login(user)
     url = reverse("applications")
     resp = client.get(url)
-    assert "CSOURCE_PAYLOAD" not in resp.context
+    assert "CSOURCE_PAYLOAD" in resp.context
+    assert resp.context["CSOURCE_PAYLOAD"] is None
     resp = client.post(
         url,
         {
