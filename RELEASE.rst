@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.51.1 (Released August 17, 2020)
+--------------
+
+- Refresh old interview links (#959)
+- Send IP address to cybersource (#955)
+- Fixes button styles issues
+
 Version 0.51.0 (Released August 07, 2020)
 --------------
 
