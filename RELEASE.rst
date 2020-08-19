@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.52.0
+Version 0.52.0 (Released August 19, 2020)
 --------------
 
 - set user.is_active to False on creation (#978)
