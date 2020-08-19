@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.52.0 (Released August 19, 2020)
+--------------
+
+- set user.is_active to False on creation (#978)
+- add cache-control header to hash.txt and api urls (#944)
+- Add signatory name and signature customization options for acceptance/rejection letter
+
 Version 0.51.1 (Released August 17, 2020)
 --------------
 
