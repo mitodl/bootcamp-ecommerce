@@ -1,10 +1,13 @@
 """Setup all CMS related stuff (home page, catalog etc.)"""
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
+from django.utils.text import slugify
+from wagtail.core.blocks import StreamValue
 from wagtail.core.models import Site, Page
 
-from cms.models import HomePage
+from cms.models import HomePage, ResourcePage, ResourcePagesSettings, LetterTemplatePage
 
 HOME_PAGE_SLUG = "home"
 DEFAULT_WAGTAIL_HOMEPAGE_PROPS = dict(
@@ -14,6 +17,31 @@ DEFAULT_HOMEPAGE_PROPS = dict(
     title="MIT Bootcamps", tagline="Learn Innovation and Entrepreneurship from MIT"
 )
 DEFAULT_SITE_PROPS = dict(hostname="localhost", port=80, is_default_site=True)
+
+
+def create_resource_page_under_parent(title, parent):
+    """Get/Create a resource page with the given title under the parent page"""
+    resource = ResourcePage.objects.filter(slug=slugify(title)).first()
+    if not resource:
+        resource = ResourcePage(
+            slug=slugify(title),
+            title=title,
+            content=StreamValue(
+                "content",
+                [
+                    {
+                        "type": "content",
+                        "value": {
+                            "heading": title,
+                            "detail": f"<p>Stock {title.lower()} page.</p>",
+                        },
+                    }
+                ],
+                is_lazy=True,
+            ),
+        )
+        parent.add_child(instance=resource)
+    return resource
 
 
 class Command(BaseCommand):
@@ -78,6 +106,35 @@ class Command(BaseCommand):
         # all changes the Site object will also get deleted along with this root.
         if wagtail_default_home_page:
             wagtail_default_home_page.delete()
+
+        # Setup resource pages
+        resource_settings = ResourcePagesSettings.for_site(site)
+        resource_settings.apply_page = create_resource_page_under_parent(
+            "How to Apply", valid_home_page
+        )
+        resource_settings.about_us_page = create_resource_page_under_parent(
+            "About Us", valid_home_page
+        )
+        resource_settings.bootcamps_programs_page = create_resource_page_under_parent(
+            "Bootcamps Programs", valid_home_page
+        )
+        resource_settings.terms_of_service_page = create_resource_page_under_parent(
+            "Terms of Service", valid_home_page
+        )
+        resource_settings.privacy_policy_page = create_resource_page_under_parent(
+            "Privacy Policy", valid_home_page
+        )
+        resource_settings.save()
+
+        # Setup acceptance/rejection pages
+        if not LetterTemplatePage.objects.exists():
+            valid_home_page.add_child(
+                instance=LetterTemplatePage(
+                    title="Letter Template",
+                    signatory_name="Default Signatory Name",
+                    signature_image=None,
+                )
+            )
 
     def remove_home_page(self):
         """
