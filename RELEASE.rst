@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.52.1 (Released August 20, 2020)
+--------------
+
+- change recpatcha script domain (#976)
+- Updated configure_cms mgmt command to create resource and letter template - #882
+
 Version 0.52.0 (Released August 19, 2020)
 --------------
 
