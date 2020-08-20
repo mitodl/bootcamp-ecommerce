@@ -70,7 +70,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         # Populate order data
         data = super().to_representation(instance)
         orders = Order.objects.filter(
-            user=instance.user, line__run_key=instance.bootcamp_run.run_key
+            user=instance.user, line__bootcamp_run_id=instance.bootcamp_run.id
         )
         if orders.exists():
             amount_paid = Decimal(0)

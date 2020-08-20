@@ -1,7 +1,7 @@
 """
 Factories for ecommerce models
 """
-from factory import LazyAttribute, SelfAttribute, Sequence, SubFactory
+from factory import LazyAttribute, SelfAttribute, SubFactory
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice, FuzzyDecimal, FuzzyText
 import faker
@@ -32,8 +32,7 @@ class LineFactory(DjangoModelFactory):
 
     order = SubFactory(OrderFactory)
     price = SelfAttribute("order.total_price_paid")
-    run_key = Sequence(lambda n: n)
-    bootcamp_run = SubFactory(BootcampRunFactory, run_key=run_key)
+    bootcamp_run = SubFactory(BootcampRunFactory)
     description = FuzzyText(prefix="Line ")
 
     class Meta:

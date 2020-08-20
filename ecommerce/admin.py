@@ -18,7 +18,7 @@ class LineAdmin(TimestampedModelAdmin):
     model = Line
     include_timestamps_in_list = True
     readonly_fields = get_field_names(Line)
-    list_display = ("order", "run_key", "bootcamp_run_id", "price", "description")
+    list_display = ("order", "bootcamp_run_id", "price", "description")
 
     def has_add_permission(self, request):
         return False

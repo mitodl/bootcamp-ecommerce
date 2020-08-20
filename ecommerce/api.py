@@ -51,7 +51,6 @@ def create_unfulfilled_order(*, application, payment_amount):
     """
     payment_amount = Decimal(payment_amount)
     bootcamp_run = application.bootcamp_run
-    run_key = bootcamp_run.run_key
 
     if payment_amount <= 0:
         raise ValidationError("Payment is less than or equal to zero")
@@ -64,7 +63,6 @@ def create_unfulfilled_order(*, application, payment_amount):
     )
     Line.objects.create(
         order=order,
-        run_key=run_key,
         description="Installment for {}".format(bootcamp_run.title),
         price=payment_amount,
         bootcamp_run=bootcamp_run,
@@ -101,7 +99,6 @@ def create_refund_order(*, user, bootcamp_run, amount, application=None):
     )
     Line.objects.create(
         order=order,
-        run_key=bootcamp_run.run_key,
         description="Refund for {}".format(bootcamp_run.title),
         price=refund_amount,
         bootcamp_run=bootcamp_run,

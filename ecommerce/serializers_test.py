@@ -115,7 +115,6 @@ def test_checkout_data(has_paid):
             order__status=Order.FULFILLED,
             order__application=application,
             order__user=user,
-            run_key=run.run_key,
             bootcamp_run=run,
         )
 
