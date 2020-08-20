@@ -8,6 +8,7 @@ from django.db.models import (
     ForeignKey,
     IntegerField,
     SET_NULL,
+    PROTECT,
     TextField,
     Sum,
 )
@@ -114,8 +115,7 @@ class Line(TimestampedModel):
     """
 
     order = ForeignKey(Order, on_delete=CASCADE)
-    run_key = IntegerField()
-    bootcamp_run = ForeignKey(BootcampRun, null=True, on_delete=SET_NULL)
+    bootcamp_run = ForeignKey(BootcampRun, null=False, on_delete=PROTECT)
     price = DecimalField(decimal_places=2, max_digits=20)
     description = TextField()
 

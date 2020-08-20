@@ -84,12 +84,6 @@ def test_empty_line():
     assert order.run_title == ""
 
 
-def test_no_bootcamp_run():
-    """If there is no BootcampRun there should be an empty string"""
-    line = LineFactory.create(bootcamp_run=None)
-    assert line.order.run_title == ""
-
-
 def test_run_title():
     """run_title should return the bootcamp run title"""
     line = LineFactory.create()

@@ -286,9 +286,7 @@ def test_data():
     InstallmentFactory.create(bootcamp_run=run_not_paid)
 
     order = OrderFactory.create(user=profile.user, status=Order.FULFILLED)
-    LineFactory.create(
-        order=order, run_key=run_paid.run_key, bootcamp_run=run_paid, price=627.34
-    )
+    LineFactory.create(order=order, bootcamp_run=run_paid, price=627.34)
 
     return profile.user, run_paid, run_not_paid
 
@@ -416,7 +414,6 @@ def test_refund_enrollment(has_enrollment, has_application, user):
     refund_amount = 1.50
     LineFactory.create(
         price=3,
-        run_key=bootcamp_run.run_key,
         bootcamp_run=bootcamp_run,
         order=OrderFactory(
             user=user,
@@ -445,7 +442,6 @@ def test_refund_enrollment(has_enrollment, has_application, user):
     assert order.status == Order.FULFILLED
     assert Line.objects.filter(
         order=order,
-        run_key=bootcamp_run.run_key,
         price=-refund_amount,
         description="Refund for {}".format(bootcamp_run.title),
     ).exists()
@@ -478,12 +474,7 @@ def test_refund_exceeds_payment(has_application, user):
         total_price_paid=10,
     )
     for order in orders:
-        LineFactory.create(
-            price=10,
-            run_key=bootcamp_run.run_key,
-            bootcamp_run=bootcamp_run,
-            order=order,
-        )
+        LineFactory.create(price=10, bootcamp_run=bootcamp_run, order=order)
 
     with pytest.raises(EcommerceException) as exc:
         process_refund(user=user, bootcamp_run=bootcamp_run, amount=45.50)
@@ -520,10 +511,7 @@ def test_complete_successful_order(enrollment_exists):
         user=application.user,
     )
     LineFactory.create(
-        order=order,
-        price=installment.amount,
-        run_key=application.bootcamp_run.run_key,
-        bootcamp_run=application.bootcamp_run,
+        order=order, price=installment.amount, bootcamp_run=application.bootcamp_run
     )
     if enrollment_exists:
         BootcampRunEnrollmentFactory.create(

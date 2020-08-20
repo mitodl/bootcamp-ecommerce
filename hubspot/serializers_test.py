@@ -64,7 +64,7 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
             user=application.user,
             status=Order.FULFILLED,
         )
-        LineFactory.create(order=order, run_key=application.bootcamp_run.run_key)
+        LineFactory.create(order=order, bootcamp_run=application.bootcamp_run)
         serialized_data["total_price_paid"] = pay_amount
 
     data = HubspotDealSerializer(instance=application).data

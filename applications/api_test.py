@@ -89,7 +89,6 @@ def test_derive_application_state():
         order__user=app.user,
         order__application=app,
         order__total_price_paid=installment.amount,
-        run_key=app.bootcamp_run.run_key,
         bootcamp_run=app.bootcamp_run,
         price=installment.amount,
     )
