@@ -14,7 +14,7 @@ from applications.models import ApplicantLetter
 pytestmark = pytest.mark.django_db
 
 
-def test_email_letter(settings, mocker):
+def test_email_letter(settings, mocker, letter_template_page):
     """email_letter should email an ApplicantLetter"""
     settings.MAILGUN_FROM_EMAIL = "from@testing.fake"
     settings.BOOTCAMP_REPLY_TO_ADDRESS = "to@testing.fake"
@@ -29,7 +29,11 @@ def test_email_letter(settings, mocker):
         return_value=(subject, text_body, html_body),
     )
     send_patched = mocker.patch("applications.mail_api.send_message")
-    email_letter(applicant_letter)
+    signatory = {
+        "name": letter_template_page.signatory_name,
+        "image": letter_template_page.signature_image,
+    }
+    email_letter(applicant_letter, signatory)
     assert send_patched.call_count == 1
     anymail = send_patched.call_args[0][0]
     assert anymail.subject == subject
@@ -44,6 +48,7 @@ def test_email_letter(settings, mocker):
             "content": applicant_letter.letter_text,
             "subject": applicant_letter.letter_subject,
             "base_url": settings.SITE_BASE_URL,
+            "signatory": signatory,
         },
     )
 
@@ -62,9 +67,13 @@ def test_render_applicant_letter_text(
     setattr(letter_template_page, field, "Dear {{ first_name }}")
     letter_template_page.save()
     application = BootcampApplicationFactory.create()
-    subject, text = render_applicant_letter_text(application, letter_type=letter_type)
+    subject, text, signatory = render_applicant_letter_text(
+        application, letter_type=letter_type
+    )
     assert expected_subject == subject
     assert text == f"Dear {application.user.profile.first_and_last_names[0]}"
+    assert signatory["name"] == letter_template_page.signatory_name
+    assert signatory["image"] == letter_template_page.signature_image
 
 
 def test_create_and_send_applicant_letter(mocker):
@@ -75,7 +84,7 @@ def test_create_and_send_applicant_letter(mocker):
     application = BootcampApplicationFactory.create()
     patched_render = mocker.patch(
         "applications.mail_api.render_applicant_letter_text",
-        return_value=(subject, text),
+        return_value=(subject, text, {}),
     )
     patched_email = mocker.patch("applications.mail_api.email_letter")
     create_and_send_applicant_letter(application, letter_type=letter_type)
@@ -84,5 +93,5 @@ def test_create_and_send_applicant_letter(mocker):
     assert letter.application == application
     assert letter.letter_subject == subject
     assert letter.letter_text == text
-    patched_email.assert_called_once_with(letter)
+    patched_email.assert_called_once_with(letter, {})
     patched_render.assert_called_once_with(application, letter_type=letter_type)

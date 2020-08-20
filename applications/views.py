@@ -28,6 +28,7 @@ from applications.models import (
     ApplicationStepSubmission,
     BootcampApplication,
 )
+from cms.models import LetterTemplatePage
 from ecommerce.models import Order
 from klasses.models import BootcampRun, Bootcamp
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
@@ -229,4 +230,9 @@ class LettersView(TemplateView):
         """
         hash_code = kwargs.get("hash")
         letter = get_object_or_404(ApplicantLetter, hash=hash_code)
-        return {"content": letter.letter_text}
+        letter_template = LetterTemplatePage.objects.get()
+        signatory_details = {
+            "name": letter_template.signatory_name,
+            "image": letter_template.signature_image,
+        }
+        return {"content": letter.letter_text, "signatory": signatory_details}
