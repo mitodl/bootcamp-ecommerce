@@ -18,6 +18,7 @@ export const qsPartialTokenSelector = createParamSelector("partial_token")
 export const qsVerificationCodeSelector = createParamSelector(
   "verification_code"
 )
+export const qsErrorCodeSelector = createParamSelector("errors")
 export const qsBackendSelector = createParamSelector(
   "backend",
   STATE_REGISTER_BACKEND_EMAIL

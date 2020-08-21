@@ -11,6 +11,7 @@ import RegisterDetailsPage from "./RegisterDetailsPage"
 import RegisterExtraDetailsPage from "./RegisterExtraDetailsPage"
 import RegisterDeniedPage from "./RegisterDeniedPage"
 import RegisterErrorPage from "./RegisterErrorPage"
+import RegisterRetryCompliancePage from "./RegisterRetryCompliancePage"
 
 const RegisterPages = () => (
   <React.Fragment>
@@ -30,6 +31,11 @@ const RegisterPages = () => (
         exact
         path={routes.register.extra}
         component={RegisterExtraDetailsPage}
+      />
+      <Route
+        exact
+        path={routes.register.retry}
+        component={RegisterRetryCompliancePage}
       />
       <Route
         exact

@@ -12,8 +12,12 @@ import { MetaTags } from "react-meta-tags"
 import auth from "../../lib/queries/auth"
 import { STATE_ERROR, handleAuthResponse } from "../../lib/auth"
 import queries from "../../lib/queries"
-import { qsBackendSelector, qsPartialTokenSelector } from "../../lib/selectors"
-import { formatTitle } from "../../util/util"
+import {
+  qsBackendSelector,
+  qsErrorCodeSelector,
+  qsPartialTokenSelector
+} from "../../lib/selectors"
+import { formatTitle, isNilOrBlank, transformError } from "../../util/util"
 
 import RegisterDetailsForm from "../../components/forms/RegisterDetailsForm"
 
@@ -24,13 +28,14 @@ import type {
   LegalAddress,
   Country,
   HttpAuthResponse,
-  PartialProfile
+  PartialProfile,
+  User
 } from "../../flow/authTypes"
 
 type RegisterProps = {|
   location: Location,
   history: RouterHistory,
-  params: { partialToken: string, backend: string }
+  params: { partialToken: string, backend: string, errors: string }
 |}
 
 type StateProps = {|
@@ -40,7 +45,6 @@ type StateProps = {|
 type DispatchProps = {|
   registerDetails: (
     name: string,
-    password: string,
     legalAddress: LegalAddress,
     partialToken: string,
     backend: string
@@ -53,7 +57,39 @@ type Props = {|
   ...DispatchProps
 |}
 
-export class RegisterDetailsPage extends React.Component<Props> {
+type State = {
+  user: ?User
+}
+
+export class RegisterRetryCompliancePage extends React.Component<Props, State> {
+  state = {
+    user: null
+  }
+
+  async componentDidMount() {
+    const {
+      registerDetails,
+      history,
+      params: { partialToken, backend }
+    } = this.props
+    const { body } = await registerDetails(
+      // $FlowFixMe
+      null,
+      // $FlowFixMe
+      null,
+      partialToken,
+      backend
+    )
+
+    if (!isNilOrBlank(body.errors)) {
+      // there is still a compliance issue, set user data in state
+      this.setState({ user: body.extra_data })
+    } else {
+      // compliance check just passed, nothing to see here, move along
+      handleAuthResponse(history, body, {})
+    }
+  }
+
   async onSubmit(detailsData: any, { setSubmitting, setErrors }: any) {
     const {
       history,
@@ -64,7 +100,6 @@ export class RegisterDetailsPage extends React.Component<Props> {
       // $FlowFixMe
       const { body } = await registerDetails(
         detailsData.profile,
-        detailsData.password,
         detailsData.legal_address,
         partialToken,
         backend
@@ -81,9 +116,12 @@ export class RegisterDetailsPage extends React.Component<Props> {
   }
 
   render() {
-    const { countries } = this.props
-
-    return (
+    const {
+      countries,
+      params: { errors }
+    } = this.props
+    const { user } = this.state
+    return countries && user ? (
       <div className="container auth-page registration-page">
         <MetaTags>
           <title>{formatTitle(REGISTER_DETAILS_PAGE_TITLE)}</title>
@@ -93,23 +131,42 @@ export class RegisterDetailsPage extends React.Component<Props> {
         </div>
         <div className="bootcamp-form auth-card card-shadow row">
           <div className="col-12 auth-step">Steps 1 of 2</div>
+          {!isNilOrBlank(errors) && (
+            <div className="col-12 text-danger">
+              <p>
+                There was a problem validating your name and address:{" "}
+                {transformError(errors)}.<br /> If this happens more than once,
+                please contact{" "}
+                <a
+                  href={SETTINGS.support_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  customer support
+                </a>
+                .
+              </p>
+            </div>
+          )}
           <div className="col-12">
             <RegisterDetailsForm
               onSubmit={this.onSubmit.bind(this)}
               countries={countries}
-              includePassword={true}
+              includePassword={false}
+              user={user}
             />
           </div>
         </div>
       </div>
-    )
+    ) : null
   }
 }
 
 const mapStateToProps = createStructuredSelector({
   params: createStructuredSelector({
     partialToken: qsPartialTokenSelector,
-    backend:      qsBackendSelector
+    backend:      qsBackendSelector,
+    errors:       qsErrorCodeSelector
   }),
   countries: queries.users.countriesSelector
 })
@@ -118,16 +175,14 @@ const mapPropsToConfig = () => [queries.users.countriesQuery()]
 
 const registerDetails = (
   profile: PartialProfile,
-  password: string,
   legalAddress: LegalAddress,
   partialToken: string,
   backend
 ) =>
   mutateAsync(
     // $FlowFixMe
-    auth.registerDetailsMutation(
+    auth.registerComplianceMutation(
       profile,
-      password,
       legalAddress,
       partialToken,
       backend
@@ -142,4 +197,4 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   // $FlowFixMe
   connectRequest(mapPropsToConfig)
-)(RegisterDetailsPage)
+)(RegisterRetryCompliancePage)

@@ -19,7 +19,13 @@ describe("RegisterDetailsForm", () => {
   const countries = makeCountries()
 
   const renderForm = () =>
-    mount(<RegisterDetailsForm onSubmit={onSubmitStub} countries={countries} />)
+    mount(
+      <RegisterDetailsForm
+        onSubmit={onSubmitStub}
+        countries={countries}
+        includePassword={true}
+      />
+    )
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()

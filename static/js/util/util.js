@@ -3,7 +3,7 @@ import Decimal from "decimal.js-light"
 import * as R from "ramda"
 import moment from "moment"
 
-import { ORDER_FULFILLED } from "../constants"
+import { CS_DEFAULT, CS_ERROR_MESSAGES, ORDER_FULFILLED } from "../constants"
 
 import type { BootcampRun } from "../flow/bootcampTypes"
 import type { HttpResponse } from "../flow/httpTypes"
@@ -210,3 +210,9 @@ export const formatRunDateRange = (run: BootcampRun) =>
   `${run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} - ${
     run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"
   }`
+
+export const recoverableErrorCode = (error: string) =>
+  error ? error.match(/(CS_101|CS_102)/g) : null
+
+export const transformError = (error: string) =>
+  CS_ERROR_MESSAGES[recoverableErrorCode(error) || CS_DEFAULT]

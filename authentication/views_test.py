@@ -1,5 +1,6 @@
 """Tests for authentication views"""
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,too-many-public-methods
+import json
 from contextlib import contextmanager, ExitStack
 from unittest.mock import patch
 
@@ -36,6 +37,7 @@ from compliance.test_utils import (
     mock_cybersource_wsdl_operation,
 )
 from profiles.factories import UserFactory, UserSocialAuthFactory
+from profiles.serializers import UserSerializer
 from main import features
 from main.test_utils import any_instance_of, MockResponse
 
@@ -131,6 +133,7 @@ class AuthStateMachine(RuleBasedStateMachine):
 
     ConfirmationSentAuthStates = Bundle("confirmation-sent")
     ConfirmationRedeemedAuthStates = Bundle("confirmation-redeemed")
+    RegisterDetailsAuthStates = Bundle("register-details")
     RegisterExtraDetailsAuthStates = Bundle("register-details-extra")
 
     LoginPasswordAuthStates = Bundle("login-password")
@@ -465,11 +468,9 @@ class AuthStateMachine(RuleBasedStateMachine):
                 },
                 {
                     "flow": auth_state["flow"],
-                    "partial_token": None,
                     "state": SocialAuthState.STATE_ERROR_TEMPORARY,
-                    "errors": [
-                        "Unable to register at this time, please try again later"
-                    ],
+                    "errors": ["Error code: CS_0"],
+                    "extra_data": {"name": self.user.profile.name},
                 },
             )
 
@@ -615,9 +616,9 @@ class AuthStateMachine(RuleBasedStateMachine):
                 },
                 {
                     "flow": auth_state["flow"],
-                    "partial_token": None,
                     "errors": ["Error code: CS_700"],
                     "state": SocialAuthState.STATE_USER_BLOCKED,
+                    "extra_data": {"name": "Sally Smith"},
                 },
             )
             assert ExportsInquiryLog.objects.filter(user__email=self.email).exists()
@@ -656,14 +657,75 @@ class AuthStateMachine(RuleBasedStateMachine):
                 },
                 {
                     "flow": auth_state["flow"],
-                    "partial_token": None,
-                    "errors": [
-                        "Unable to register at this time, please try again later"
-                    ],
+                    "errors": ["Error code: CS_0"],
                     "state": SocialAuthState.STATE_ERROR_TEMPORARY,
+                    "extra_data": {"name": "Sally Smith"},
                 },
             )
             assert not ExportsInquiryLog.objects.filter(user__email=self.email).exists()
+            assert len(mail.outbox) == 0
+
+    @rule(auth_state=consumes(RegisterDetailsAuthStates))
+    def register_compliance_export_reject_retry_blocked(self, auth_state):
+        """Complete the register compliance page with a retryable block exception"""
+        self.user = User.objects.get(email=self.email)
+        with export_check_response("150_reject"):
+            assert_api_call(
+                self.client,
+                reverse(
+                    "psa-register-compliance", kwargs={"backend_name": EmailAuth.name}
+                ),
+                {
+                    "flow": auth_state["flow"],
+                    "partial_token": auth_state["partial_token"],
+                },
+                {
+                    "flow": auth_state["flow"],
+                    "errors": ["Error code: CS_150"],
+                    "state": SocialAuthState.STATE_ERROR_TEMPORARY,
+                    "extra_data": json.loads(
+                        json.dumps(UserSerializer(self.user).data)
+                    ),
+                },
+            )
+            assert ExportsInquiryLog.objects.filter(user__email=self.email).exists()
+            assert (
+                ExportsInquiryLog.objects.get(user__email=self.email).computed_result
+                == RESULT_DENIED
+            )
+            assert len(mail.outbox) == 0
+
+    @rule(auth_state=consumes(RegisterDetailsAuthStates))
+    def register_compliance_export_reject_retry_again(self, auth_state):
+        """Complete the register compliance page with a retryable exception result"""
+        self.user = User.objects.get(email=self.email)
+        with override_settings(**get_cybersource_test_settings()), patch(
+            "authentication.pipeline.compliance.api.verify_user_with_exports",
+            side_effect=Exception("register_details_export_temporary_error"),
+        ):
+            assert_api_call(
+                self.client,
+                reverse(
+                    "psa-register-compliance", kwargs={"backend_name": EmailAuth.name}
+                ),
+                {
+                    "flow": auth_state["flow"],
+                    "partial_token": auth_state["partial_token"],
+                },
+                {
+                    "flow": auth_state["flow"],
+                    "errors": ["Error code: CS_0"],
+                    "state": SocialAuthState.STATE_ERROR_TEMPORARY,
+                    "extra_data": json.loads(
+                        json.dumps(UserSerializer(self.user).data)
+                    ),
+                },
+            )
+            assert ExportsInquiryLog.objects.filter(user__email=self.email).exists()
+            assert (
+                ExportsInquiryLog.objects.get(user__email=self.email).computed_result
+                == RESULT_DENIED
+            )
             assert len(mail.outbox) == 0
 
     @rule(auth_state=consumes(RegisterExtraDetailsAuthStates))
