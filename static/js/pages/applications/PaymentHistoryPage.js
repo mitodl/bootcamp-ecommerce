@@ -5,6 +5,7 @@ import { compose, path, pathOr } from "ramda"
 import { connectRequest } from "redux-query-react"
 
 import Address from "../../components/Address"
+import FullLoader from "../../components/loaders/FullLoader"
 
 import { calcOrderBalances } from "../../lib/applicationApi"
 import queries from "../../lib/queries"
@@ -31,7 +32,7 @@ type Props = OwnProps & {
 }
 export function PaymentHistoryPage({ application, countries }: Props) {
   if (!application || !countries) {
-    return null
+    return <FullLoader />
   }
 
   const {

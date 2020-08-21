@@ -148,6 +148,11 @@ $border-style: 1px solid $black;
 
   .collapse-link {
     text-align: right;
+
+    button {
+      display: inline-flex;
+      justify-content: center;
+    }
   }
 }
 
