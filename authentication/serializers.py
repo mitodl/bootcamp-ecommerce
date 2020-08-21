@@ -25,6 +25,8 @@ from authentication.exceptions import (
     UserTryAgainLaterException,
 )
 from authentication.utils import SocialAuthState
+from compliance.constants import REASON_CODES_RETRYABLE
+from profiles.serializers import UserSerializer
 
 PARTIAL_PIPELINE_TOKEN_KEY = "partial_pipeline_token"
 
@@ -144,9 +146,16 @@ class SocialAuthSerializer(serializers.Serializer):
         except InvalidEmail:
             result = SocialAuthState(SocialAuthState.STATE_INVALID_EMAIL)
         except UserExportBlockedException as exc:
+            next_state = (
+                SocialAuthState.STATE_ERROR_TEMPORARY
+                if exc.reason_code in REASON_CODES_RETRYABLE
+                else SocialAuthState.STATE_USER_BLOCKED
+            )
             result = SocialAuthState(
-                SocialAuthState.STATE_USER_BLOCKED,
+                next_state,
+                partial=exc.partial,
                 errors=[f"Error code: CS_{exc.reason_code}"],
+                user=exc.user,
             )
         except RequireProfileException as exc:
             result = SocialAuthState(
@@ -156,10 +165,12 @@ class SocialAuthSerializer(serializers.Serializer):
             result = SocialAuthState(
                 SocialAuthState.STATE_REGISTER_DETAILS, partial=exc.partial
             )
-        except UserTryAgainLaterException:
+        except UserTryAgainLaterException as exc:
             result = SocialAuthState(
                 SocialAuthState.STATE_ERROR_TEMPORARY,
-                errors=["Unable to register at this time, please try again later"],
+                partial=exc.partial,
+                errors=[f"Error code: CS_{exc.reason_code}"],
+                user=exc.user,
             )
         except AuthException as exc:
             log.exception("Received unexpected AuthException")
@@ -295,6 +306,20 @@ class RegisterDetailsSerializer(SocialAuthSerializer):
     """Serializer for registration details"""
 
     password = serializers.CharField(min_length=8, write_only=True)
+
+    def create(self, validated_data):
+        """Try to 'save' the request"""
+        return super()._authenticate(SocialAuthState.FLOW_REGISTER)
+
+
+class RegisterComplianceSerializer(SocialAuthSerializer):
+    """Serializer for registration compliance"""
+
+    def get_extra_data(self, instance):
+        """Serialize extra_data as a UserSerializer is user is not None"""
+        if instance.user:
+            return UserSerializer(instance.user).data
+        return {}
 
     def create(self, validated_data):
         """Try to 'save' the request"""

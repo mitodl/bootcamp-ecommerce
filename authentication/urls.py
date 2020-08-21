@@ -9,6 +9,7 @@ from authentication.views import (
     RegisterEmailView,
     RegisterConfirmView,
     RegisterDetailsView,
+    RegisterComplianceView,
     RegisterExtraDetailsView,
     get_social_auth_types,
     CustomPasswordResetView,
@@ -44,6 +45,11 @@ urlpatterns = [
                     "extra/",
                     RegisterExtraDetailsView.as_view(),
                     name="psa-register-extra",
+                ),
+                path(
+                    "retry/",
+                    RegisterComplianceView.as_view(),
+                    name="psa-register-compliance",
                 ),
             ]
         ),

@@ -9,7 +9,6 @@ export type AuthStates =
   | "invalid-email"
   | "user-blocked"
   | "error"
-  | "error-temporary"
   | "login/email"
   | "login/password"
   | "login/backend"
@@ -19,6 +18,7 @@ export type AuthStates =
   | "register/details"
   | "register/extra"
   | "register/required"
+  | "register/retry"
 
 export type AuthFlow = "register" | "login"
 
@@ -26,10 +26,6 @@ export type AuthErrors = Array<string>
 
 export type AuthFieldErrors = {
   [string]: string
-}
-
-export type AuthExtraData = {
-  name?: string
 }
 
 export type AuthResponse = {
@@ -40,7 +36,7 @@ export type AuthResponse = {
   errors:        AuthErrors,
   field_errors:  AuthFieldErrors,
   redirect_url:  ?string,
-  extra_data:    AuthExtraData
+  extra_data:    Object
 }
 
 export type PartialProfile = {
@@ -55,11 +51,6 @@ export type LegalAddress = {
   state_or_territory?: string,
   postal_code?: string,
   is_complete: boolean
-}
-
-export type ExtendedLegalAddress = LegalAddress & {
-  city: string,
-  email: string
 }
 
 export type Profile = {

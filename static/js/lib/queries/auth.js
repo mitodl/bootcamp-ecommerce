@@ -86,6 +86,22 @@ export default {
     }
   }),
 
+  registerComplianceMutation: (
+    profile: PartialProfile,
+    legalAddress: LegalAddress,
+    partialToken: string,
+    backend: string
+  ) => ({
+    ...DEFAULT_OPTIONS,
+    url:  `/api/register/${backend}/retry/`,
+    body: {
+      profile,
+      legal_address: legalAddress,
+      flow:          FLOW_REGISTER,
+      partial_token: partialToken
+    }
+  }),
+
   registerExtraDetailsMutation: (
     profileData: ProfileForm,
     partialToken: string,

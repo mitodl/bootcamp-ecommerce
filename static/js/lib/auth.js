@@ -12,7 +12,6 @@ export const FLOW_REGISTER = "register"
 export const FLOW_LOGIN = "login"
 
 export const STATE_ERROR = "error"
-export const STATE_ERROR_TEMPORARY = "error-temporary"
 export const STATE_SUCCESS = "success"
 export const STATE_INACTIVE = "inactive"
 export const STATE_INVALID_EMAIL = "invalid-email"
@@ -28,6 +27,7 @@ export const STATE_REGISTER_CONFIRM = "register/confirm"
 export const STATE_REGISTER_DETAILS = "register/details"
 export const STATE_REGISTER_EXTRA_DETAILS = "register/extra"
 export const STATE_REGISTER_REQUIRED = "register/required"
+export const STATE_ERROR_TEMPORARY = "register/retry"
 
 export const STATE_REGISTER_BACKEND_EDX = "edxorg"
 export const STATE_REGISTER_BACKEND_EMAIL = "email"
@@ -106,8 +106,16 @@ export const handleAuthResponse = (
     history.push(`${routes.register.extra}?${params}`)
   } else if (state === STATE_USER_BLOCKED) {
     history.push(`${routes.register.denied}?${getErrorQs(errors)}`)
+  } else if (state === STATE_ERROR_TEMPORARY) {
+    const params = qs.stringify({
+      partial_token,
+      backend,
+      errors
+    })
+    // Need to get new context from django
+    window.location = `${routes.register.retry}?${params}`
   } else if (
-    includes(state, [STATE_ERROR, STATE_ERROR_TEMPORARY]) &&
+    includes(state, [STATE_ERROR, STATE_USER_BLOCKED]) &&
     isEmpty(field_errors)
   ) {
     // otherwise we're in some kind of error state, explicit or otherwise

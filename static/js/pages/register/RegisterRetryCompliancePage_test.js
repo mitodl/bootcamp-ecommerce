@@ -2,7 +2,7 @@
 import { assert } from "chai"
 import sinon from "sinon"
 
-import RegisterDetailsPage from "./RegisterDetailsPage"
+import RegisterRetryCompliancePage from "./RegisterRetryCompliancePage"
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import {
   STATE_REGISTER_EXTRA_DETAILS,
@@ -15,43 +15,52 @@ import {
 } from "../../lib/auth"
 import { routes } from "../../lib/urls"
 import { makeRegisterAuthResponse } from "../../factories/auth"
-import { makeCountries } from "../../factories/user"
-import { REGISTER_DETAILS_PAGE_TITLE } from "../../constants"
+import { makeCountries, makeUser } from "../../factories/user"
 
-describe("RegisterDetailsPage", () => {
+describe("RegisterRetryCompliancePage", () => {
   const countries = makeCountries()
-  const detailsData = {
+  const retryData = {
     profile: {
-      name: "Sally"
+      name: "Joe"
     },
-    password:      "password1",
     legal_address: {
-      address: "main st"
+      address: "Elm St"
     }
   }
   const partialToken = "partialTokenTestValue"
   const body = {
     flow:          FLOW_REGISTER,
     partial_token: partialToken,
-    ...detailsData
+    ...retryData
   }
-  let helper, renderPage, setSubmittingStub, setErrorsStub
+  let helper, renderPage, setSubmittingStub, setErrorsStub, user
 
   beforeEach(() => {
+    user = makeUser()
     helper = new IntegrationTestHelper()
     helper.handleRequestStub.withArgs("/api/countries/").returns({
       status: 200,
       body:   countries
     })
 
+    helper.handleRequestStub.withArgs("/api/register/email/retry").returns({
+      body: makeRegisterAuthResponse({
+        state:      STATE_ERROR_TEMPORARY,
+        extra_data: user
+      })
+    })
+
     setSubmittingStub = helper.sandbox.stub()
     setErrorsStub = helper.sandbox.stub()
 
-    renderPage = helper.configureReduxQueryRenderer(RegisterDetailsPage, {
-      location: {
-        search: `?backend=${STATE_REGISTER_BACKEND_EDX}&partial_token=${partialToken}`
+    renderPage = helper.configureReduxQueryRenderer(
+      RegisterRetryCompliancePage,
+      {
+        location: {
+          search: `?backend=${STATE_REGISTER_BACKEND_EDX}&partial_token=${partialToken}&errors=CS_150`
+        }
       }
-    })
+    )
   })
 
   afterEach(() => {
@@ -60,13 +69,16 @@ describe("RegisterDetailsPage", () => {
 
   it("displays a form", async () => {
     const { wrapper } = await renderPage()
-
-    assert.ok(wrapper.find("RegisterDetailsForm").exists())
-    assert.equal(wrapper.find("h1").text(), REGISTER_DETAILS_PAGE_TITLE)
+    wrapper.find("RegisterRetryCompliancePage").setState({ user: user })
+    wrapper.update()
+    const detailsForm = wrapper.find("RegisterDetailsForm")
+    assert.isFalse(detailsForm.prop("includePassword"))
   })
 
   it("handles onSubmit for an error response", async () => {
     const { wrapper } = await renderPage()
+    wrapper.find("RegisterRetryCompliancePage").setState({ user: user })
+    wrapper.update()
     const error = "error message"
     const fieldErrors = {
       name: error
@@ -81,14 +93,14 @@ describe("RegisterDetailsPage", () => {
 
     const onSubmit = wrapper.find("RegisterDetailsForm").prop("onSubmit")
 
-    await onSubmit(detailsData, {
+    await onSubmit(retryData, {
       setSubmitting: setSubmittingStub,
       setErrors:     setErrorsStub
     })
 
     sinon.assert.calledWith(
       helper.handleRequestStub,
-      `/api/register/${STATE_REGISTER_BACKEND_EDX}/details/`,
+      `/api/register/${STATE_REGISTER_BACKEND_EDX}/retry/`,
       "POST",
       { body, headers: undefined, credentials: undefined }
     )
@@ -159,14 +171,15 @@ describe("RegisterDetailsPage", () => {
   ].forEach(([state, errors, pathname, backend, search, count]) => {
     it(`redirects to ${pathname} when it receives auth state ${state} for backend ${backend}`, async () => {
       const { wrapper } = await helper.configureReduxQueryRenderer(
-        RegisterDetailsPage,
+        RegisterRetryCompliancePage,
         {
           location: {
             search: `?backend=${backend}&partial_token=${partialToken}`
           }
         }
       )()
-
+      wrapper.find("RegisterRetryCompliancePage").setState({ user: user })
+      wrapper.update()
       helper.handleRequestStub.returns({
         body: makeRegisterAuthResponse({
           state,
@@ -178,14 +191,14 @@ describe("RegisterDetailsPage", () => {
 
       const onSubmit = wrapper.find("RegisterDetailsForm").prop("onSubmit")
 
-      await onSubmit(detailsData, {
+      await onSubmit(retryData, {
         setSubmitting: setSubmittingStub,
         setErrors:     setErrorsStub
       })
 
       sinon.assert.calledWith(
         helper.handleRequestStub,
-        `/api/register/${backend}/details/`,
+        `/api/register/${backend}/retry/`,
         "POST",
         { body, headers: undefined, credentials: undefined }
       )

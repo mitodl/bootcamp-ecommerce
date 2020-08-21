@@ -21,23 +21,6 @@ from compliance.factories import ExportsInquiryLogFactory
 
 
 @pytest.fixture
-def backend_settings(settings):
-    """A dictionary of settings for the backend"""
-    return {"USER_FIELDS": settings.SOCIAL_AUTH_EMAIL_USER_FIELDS}
-
-
-@pytest.fixture
-def mock_email_backend(mocker, backend_settings):
-    """Fixture that returns a fake EmailAuth backend object"""
-    backend = mocker.Mock()
-    backend.name = "email"
-    backend.setting.side_effect = lambda key, default, **kwargs: backend_settings.get(
-        key, default
-    )
-    return backend
-
-
-@pytest.fixture
 def mock_create_profile_strategy(mocker):
     """Fixture that returns a valid strategy for create_profile"""
     strategy = mocker.Mock()

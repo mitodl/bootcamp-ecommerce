@@ -157,7 +157,12 @@ describe("RegisterExtraDetailsPage", () => {
 
   //
   ;[
-    [STATE_ERROR_TEMPORARY, [], routes.register.error, ""],
+    [
+      STATE_ERROR_TEMPORARY,
+      ["Error code: CS_101"],
+      routes.register.retry,
+      `?errors=Error%20code%3A%20CS_101`
+    ],
     [STATE_ERROR, [], routes.register.error, ""], // cover the case with an error but no  messages
     [
       STATE_USER_BLOCKED,
@@ -191,11 +196,16 @@ describe("RegisterExtraDetailsPage", () => {
         "POST",
         { body, headers: undefined, credentials: undefined }
       )
+      if (state !== STATE_ERROR_TEMPORARY) {
+        assert.include(helper.browserHistory.location, {
+          pathname,
+          search
+        })
+      } else {
+        assert.include(window.location.pathname, pathname)
+        assert.include(window.location.search, search)
+      }
 
-      assert.include(helper.browserHistory.location, {
-        pathname,
-        search
-      })
       if (state === STATE_ERROR) {
         sinon.assert.calledWith(setErrorsStub, {})
       } else {

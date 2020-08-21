@@ -231,3 +231,14 @@ export const FACET_OPTION_LABEL_KEYS = {
 }
 
 export const FACET_ORDER = [BOOTCAMP_FACET_KEY, STATUS_FACET_KEY]
+
+export const CS_101 = "CS_101"
+export const CS_102 = "CS_102"
+export const CS_DEFAULT = "CS_DEFAULT"
+
+export const CS_ERROR_MESSAGES = {
+  [CS_101]:
+    "Missing required fields. Please modify your name/address and try again",
+  [CS_102]:     "Invalid data. Please modify your name/address and try again",
+  [CS_DEFAULT]: "Please try again"
+}

@@ -1,5 +1,7 @@
 // @flow
+/* global SETTINGS: false */
 import React from "react"
+import { clone } from "ramda"
 import { Formik, Form } from "formik"
 
 import {
@@ -8,11 +10,14 @@ import {
 } from "../../lib/validation"
 import { LegalAddressFields } from "./ProfileFormFields"
 
-import type { Country } from "../../flow/authTypes"
+import type { Country, User } from "../../flow/authTypes"
+import { isNilOrBlank } from "../../util/util"
 
 type Props = {
   onSubmit: Function,
-  countries: Array<Country>
+  countries: Array<Country>,
+  includePassword: boolean,
+  user?: User
 }
 
 const INITIAL_VALUES = {
@@ -31,35 +36,50 @@ const INITIAL_VALUES = {
   }
 }
 
-const RegisterDetailsForm = ({ onSubmit, countries }: Props) => (
-  <Formik
-    onSubmit={onSubmit}
-    validationSchema={legalAddressValidation.concat(passwordValidation)}
-    initialValues={INITIAL_VALUES}
-    render={({ isSubmitting, setFieldValue, setFieldTouched, values }) => (
-      <Form>
-        <LegalAddressFields
-          countries={countries}
-          setFieldValue={setFieldValue}
-          setFieldTouched={setFieldTouched}
-          values={values}
-          includePassword={true}
-        />
-        <div>
-          <div className="required">*=Required</div>
-          <div className="row submit-row no-gutters justify-content-end">
-            <button
-              type="submit"
-              className="btn btn-outline-danger large-font"
-              disabled={isSubmitting}
-            >
-              Continue
-            </button>
+const RegisterDetailsForm = ({
+  onSubmit,
+  countries,
+  user,
+  includePassword
+}: Props) => {
+  const initialValues =
+    user && !isNilOrBlank(user) ? user : clone(INITIAL_VALUES)
+  if (includePassword) {
+    // $FlowFixMe
+    initialValues.password = ""
+  }
+  return (
+    <Formik
+      onSubmit={onSubmit}
+      validationSchema={legalAddressValidation.concat(
+        includePassword ? passwordValidation : null
+      )}
+      initialValues={initialValues}
+      render={({ isSubmitting, setFieldValue, setFieldTouched, values }) => (
+        <Form>
+          <LegalAddressFields
+            countries={countries}
+            setFieldValue={setFieldValue}
+            setFieldTouched={setFieldTouched}
+            values={values}
+            includePassword={includePassword}
+          />
+          <div>
+            <div className="required">*=Required</div>
+            <div className="row submit-row no-gutters justify-content-end">
+              <button
+                type="submit"
+                className="btn btn-outline-danger large-font"
+                disabled={isSubmitting}
+              >
+                Continue
+              </button>
+            </div>
           </div>
-        </div>
-      </Form>
-    )}
-  />
-)
+        </Form>
+      )}
+    />
+  )
+}
 
 export default RegisterDetailsForm

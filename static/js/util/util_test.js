@@ -23,10 +23,12 @@ import {
   getFilenameFromPath,
   getFilenameFromMediaPath,
   isErrorResponse,
-  parsePrice
+  parsePrice,
+  transformError
 } from "./util"
 
 import type { HttpResponse } from "../flow/httpTypes"
+import { CS_101, CS_102, CS_DEFAULT, CS_ERROR_MESSAGES } from "../constants"
 
 describe("util", () => {
   describe("createForm", () => {
@@ -279,6 +281,18 @@ describe("util", () => {
         }
         assert.equal(formatRunDateRange(run), expectedText)
       })
+    })
+  })
+
+  //
+  ;[
+    ["CS_101", CS_ERROR_MESSAGES[CS_101]],
+    ["CS_102", CS_ERROR_MESSAGES[CS_102]],
+    ["CS_150", CS_ERROR_MESSAGES[CS_DEFAULT]],
+    ["FOO", CS_ERROR_MESSAGES[CS_DEFAULT]]
+  ].forEach(([errorCode, errorMsg]) => {
+    it(`transformError returns '${errorMsg}' for error code '${errorCode}'`, () => {
+      assert.equal(transformError(errorCode), errorMsg)
     })
   })
 })

@@ -34,7 +34,8 @@ export const routes = {
     details:     "details/",
     error:       "error/",
     extra:       "extra/",
-    denied:      "denied/"
+    denied:      "denied/",
+    retry:       "retry/"
   }),
 
   account: include("/account/", {

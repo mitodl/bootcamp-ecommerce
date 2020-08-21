@@ -55,6 +55,7 @@ urlpatterns = (
         ),
         path("create-account/", react, name="signup"),
         path("create-account/details/", react, name="signup-details"),
+        path("create-account/retry/", react, name="signup-retry"),
         path("create-account/extra/", react, name="signup-extra"),
         path("create-account/denied/", react, name="signup-denied"),
         path("create-account/error/", react, name="signup-error"),

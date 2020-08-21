@@ -21,11 +21,11 @@ class SocialAuthState:  # pylint: disable=too-many-instance-attributes
     STATE_REGISTER_DETAILS = "register/details"
     STATE_REGISTER_EXTRA_DETAILS = "register/extra"
     STATE_REGISTER_REQUIRED = "register/required"
+    STATE_ERROR_TEMPORARY = "register/retry"
 
     # end states
     STATE_SUCCESS = "success"
     STATE_ERROR = "error"
-    STATE_ERROR_TEMPORARY = "error-temporary"
     STATE_INACTIVE = "inactive"
     STATE_INVALID_EMAIL = "invalid-email"
     STATE_USER_BLOCKED = "user-blocked"
