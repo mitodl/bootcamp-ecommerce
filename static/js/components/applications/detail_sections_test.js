@@ -13,6 +13,9 @@ import {
   PaymentDetail
 } from "./detail_sections"
 import {
+  AWAITING_RESUME,
+  AWAITING_USER_SUBMISSIONS,
+  AWAITING_SUBMISSION_REVIEW,
   PAYMENT,
   PROFILE_VIEW,
   REVIEW_STATUS_APPROVED,
@@ -70,13 +73,40 @@ describe("application detail section component", () => {
 
     //
     ;[
-      [false, false, undefined],
-      [true, false, "Add Resume or LinkedIn Profile"],
-      [true, true, "View/Edit Resume or LinkedIn Profile"]
-    ].forEach(([ready, fulfilled, expLinkText]) => {
+      [false, false, AWAITING_RESUME, undefined],
+      [true, false, AWAITING_RESUME, "Add Resume or LinkedIn Profile"],
+      [
+        true,
+        false,
+        AWAITING_USER_SUBMISSIONS,
+        "Add Resume or LinkedIn Profile"
+      ],
+      [
+        true,
+        false,
+        AWAITING_SUBMISSION_REVIEW,
+        "Add Resume or LinkedIn Profile"
+      ],
+      [true, false, "AWAITING_PAYMENT", undefined],
+      [true, true, AWAITING_RESUME, "View/Edit Resume or LinkedIn Profile"],
+      [
+        true,
+        true,
+        AWAITING_USER_SUBMISSIONS,
+        "View/Edit Resume or LinkedIn Profile"
+      ],
+      [
+        true,
+        true,
+        AWAITING_SUBMISSION_REVIEW,
+        "View/Edit Resume or LinkedIn Profile"
+      ],
+      [true, true, "AWAITING_PAYMENT", undefined]
+    ].forEach(([ready, fulfilled, state, expLinkText]) => {
       it(`should show correct link if ready === ${String(
         ready
-      )}, fulfilled === ${String(fulfilled)}`, () => {
+      )}, fulfilled === ${String(fulfilled)}, state === ${state}`, () => {
+        applicationDetail.state = state
         const wrapper = shallow(
           <ResumeDetail
             {...defaultProps}

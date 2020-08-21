@@ -11,7 +11,10 @@ import {
   PROFILE_VIEW,
   REVIEW_STATUS_REJECTED,
   TAKE_VIDEO_INTERVIEW,
-  RESUME_UPLOAD
+  RESUME_UPLOAD,
+  AWAITING_RESUME,
+  AWAITING_USER_SUBMISSIONS,
+  AWAITING_SUBMISSION_REVIEW
 } from "../../constants"
 
 import type { DrawerChangePayload } from "../../reducers/drawer"
@@ -64,6 +67,11 @@ type ResumeDetailProps = DetailSectionProps & {
 
 export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
   const { ready, fulfilled, openDrawer, applicationDetail } = props
+  const isEditable = [
+    AWAITING_RESUME,
+    AWAITING_USER_SUBMISSIONS,
+    AWAITING_SUBMISSION_REVIEW
+  ].includes(applicationDetail.state)
 
   return (
     <ProgressDetailRow className="resume" fulfilled={fulfilled}>
@@ -76,7 +84,7 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
           </div>
         )}
       </div>
-      {ready && (
+      {ready && isEditable && (
         <div className="col-12 col-sm-5 text-sm-right">
           <button
             className="btn-link borderless"

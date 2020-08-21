@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 import pytest
-
+from django_fsm import TransitionNotAllowed
 
 from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
@@ -86,31 +86,37 @@ def test_submission_types():
 
 
 @pytest.mark.parametrize(
-    "file_name,expected",
+    "file_name,state,expected",
     [
-        ("resume.pdf", True),
-        ("resume", False),
-        ("resume.doc", True),
-        ("resume.docx", True),
-        ("resume.png", False),
+        ("resume.pdf", AppStates.AWAITING_RESUME.value, True),
+        ("resume.pdf", AppStates.AWAITING_SUBMISSION_REVIEW.value, True),
+        ("resume.pdf", AppStates.AWAITING_USER_SUBMISSIONS.value, True),
+        ("resume.pdf", AppStates.AWAITING_PAYMENT.value, False),
+        ("resume", AppStates.AWAITING_RESUME.value, False),
+        ("resume.doc", AppStates.AWAITING_RESUME.value, True),
+        ("resume.docx", AppStates.AWAITING_SUBMISSION_REVIEW.value, True),
+        ("resume.png", AppStates.AWAITING_RESUME.value, False),
     ],
 )
-def test_bootcamp_application_resume_file_validation(file_name, expected):
+def test_bootcamp_application_resume_file_validation(file_name, state, expected):
     """
     A BootcampApplication should raise an exception if profile is not complete or extension is not allowed
     """
-    bootcamp_application = BootcampApplicationFactory(
-        state=AppStates.AWAITING_RESUME.value
-    )
+    bootcamp_application = BootcampApplicationFactory(state=state)
     resume_file = SimpleUploadedFile(file_name, b"file_content")
 
     if expected:
+        new_state = (
+            AppStates.AWAITING_USER_SUBMISSIONS.value
+            if state == AppStates.AWAITING_RESUME.value
+            else state
+        )
         bootcamp_application.add_resume(resume_file=resume_file)
-        assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS.value
+        assert bootcamp_application.state == new_state
     else:
-        with pytest.raises(ValidationError):
+        with pytest.raises((ValidationError, TransitionNotAllowed)):
             bootcamp_application.add_resume(resume_file=resume_file)
-        assert bootcamp_application.state == AppStates.AWAITING_RESUME.value
+        assert bootcamp_application.state == state
 
 
 @pytest.mark.django_db

@@ -180,8 +180,12 @@ class BootcampApplication(TimestampedModel):
         source=[
             AppStates.AWAITING_RESUME.value,
             AppStates.AWAITING_USER_SUBMISSIONS.value,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
         ],
-        target=AppStates.AWAITING_USER_SUBMISSIONS.value,
+        target=RETURN_VALUE(
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ),
     )
     def add_resume(self, *, resume_file=None, linkedin_url=None):
         """Add resume and/or linkedin URL to the application and transition to a new state"""
@@ -193,6 +197,10 @@ class BootcampApplication(TimestampedModel):
             self.linkedin_url = linkedin_url
         self.resume_upload_date = now_in_utc()
         self.save()
+
+        if self.state == AppStates.AWAITING_RESUME.value:
+            return AppStates.AWAITING_USER_SUBMISSIONS.value
+        return self.state
 
     @transition(
         field=state,
