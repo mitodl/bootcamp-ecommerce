@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.52.2 (Released August 21, 2020)
+--------------
+
+- add implementation for letter template page customized signatory details
+
 Version 0.52.1 (Released August 20, 2020)
 --------------
 
