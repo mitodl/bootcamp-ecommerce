@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.52.3 (Released August 24, 2020)
+--------------
+
+- Allow users to update resume until submission is reviewed (#963)
+- Quiet template absent variable errors - #974
+- Update Line to join by bootcamp_run_id
+
 Version 0.52.2 (Released August 21, 2020)
 --------------
 
