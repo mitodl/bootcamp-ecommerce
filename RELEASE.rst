@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.52.3
+Version 0.52.3 (Released August 24, 2020)
 --------------
 
 - Allow users to update resume until submission is reviewed (#963)
