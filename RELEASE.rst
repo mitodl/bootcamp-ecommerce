@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.53.0
+--------------
+
+- Create codeql-analysis.yml (#986)
+- remove run key from line
+- Allow user to retry cybersource compliance validation (#969)
+
 Version 0.52.3 (Released August 24, 2020)
 --------------
 
