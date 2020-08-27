@@ -1,6 +1,7 @@
 // @flow
 import React from "react"
 import { Spinner } from "reactstrap"
+import Delayed from "./Delayed"
 
 type Props = {
   loading: boolean,
@@ -17,7 +18,11 @@ const ButtonWithLoader = (props: Props) => {
       }
       {...otherProps}
     >
-      {loading && <Spinner type="grow" />}
+      {loading && (
+        <Delayed delay={1000}>
+          <Spinner type="grow" />
+        </Delayed>
+      )}
       {children}
     </button>
   )

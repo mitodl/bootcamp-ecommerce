@@ -5,7 +5,8 @@ button.borderless {
   border: none;
 }
 
-.button-with-loader {
-  display: inline-flex;
+button.button-with-loader {
+  display: inline-flex !important;
   justify-content: center;
+  align-items: center;
 }
