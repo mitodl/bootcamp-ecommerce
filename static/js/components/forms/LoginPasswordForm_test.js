@@ -30,6 +30,6 @@ describe("LoginPasswordForm", () => {
 
     const form = wrapper.find("Formik").dive()
     assert.ok(findFormikFieldByName(form, "password").exists())
-    assert.ok(form.find("button[type='submit']").exists())
+    assert.ok(form.find("ButtonWithLoader[type='submit']").exists())
   })
 })

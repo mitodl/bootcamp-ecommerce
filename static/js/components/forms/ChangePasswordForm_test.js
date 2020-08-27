@@ -36,6 +36,6 @@ describe("ChangePasswordForm", () => {
     assert.ok(findFormikFieldByName(form, "oldPassword").exists())
     assert.ok(findFormikFieldByName(form, "newPassword").exists())
     assert.ok(findFormikFieldByName(form, "confirmPassword").exists())
-    assert.ok(form.find("button[type='submit']").exists())
+    assert.ok(form.find("ButtonWithLoader[type='submit']").exists())
   })
 })

@@ -100,7 +100,7 @@ describe("ResumeLinkedIn", () => {
     it("renders correctly", async () => {
       const { inner } = await renderFormik()
 
-      assert.isTrue(inner.find("button[type='submit']").exists())
+      assert.isTrue(inner.find("ButtonWithLoader[type='submit']").exists())
       assert.isTrue(
         inner
           .find(Field)
