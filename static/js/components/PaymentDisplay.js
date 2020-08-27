@@ -12,6 +12,7 @@ import Decimal from "decimal.js-light"
 import FormError from "./forms/elements/FormError"
 import { closeDrawer } from "../reducers/drawer"
 import queries from "../lib/queries"
+import ButtonWithLoader from "./loaders/ButtonWithLoader"
 import {
   formatRunDateRange,
   createForm,
@@ -100,13 +101,13 @@ export const PaymentDisplay = (props: Props) => {
           render={({ isSubmitting, isValidating }) => (
             <Form>
               <Field type="number" name="amount" placeholder="Enter Amount" />
-              <button
+              <ButtonWithLoader
                 className="btn-danger"
                 type="submit"
-                disabled={isValidating || isSubmitting}
+                loading={isValidating || isSubmitting}
               >
                 Pay Now
-              </button>
+              </ButtonWithLoader>
               <ErrorMessage name="amount" component={FormError} />
             </Form>
           )}

@@ -7,6 +7,7 @@ import { profileValidation, legalAddressValidation } from "../../lib/validation"
 import { LegalAddressFields, ProfileFields } from "./ProfileFormFields"
 
 import type { Country, CurrentUser } from "../../flow/authTypes"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 type Props = {
   onSubmit: Function,
@@ -51,13 +52,13 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
         <div className="row">
           <h2 className="col-6">Profile</h2>
           <div className="col-6 text-right">
-            <button
+            <ButtonWithLoader
               type="submit"
-              disabled={isSubmitting}
+              loading={isSubmitting}
               className="btn-danger"
             >
               Save
-            </button>
+            </ButtonWithLoader>
           </div>
         </div>
         {errors && errors.general ? (

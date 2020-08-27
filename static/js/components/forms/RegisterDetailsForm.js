@@ -9,6 +9,7 @@ import {
   legalAddressValidation
 } from "../../lib/validation"
 import { LegalAddressFields } from "./ProfileFormFields"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 import type { Country, User } from "../../flow/authTypes"
 import { isNilOrBlank } from "../../util/util"
@@ -67,13 +68,13 @@ const RegisterDetailsForm = ({
           <div>
             <div className="required">*=Required</div>
             <div className="row submit-row no-gutters justify-content-end">
-              <button
+              <ButtonWithLoader
                 type="submit"
                 className="btn btn-outline-danger large-font"
-                disabled={isSubmitting}
+                loading={isSubmitting}
               >
                 Continue
-              </button>
+              </ButtonWithLoader>
             </div>
           </div>
         </Form>

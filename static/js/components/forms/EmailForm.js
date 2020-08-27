@@ -7,6 +7,7 @@ import { Formik, Field, Form, ErrorMessage } from "formik"
 import FormError from "./elements/FormError"
 import { EmailInput } from "./elements/inputs"
 import { emailFieldValidation } from "../../lib/validation"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 const emailValidation = yup.object().shape({
   email: emailFieldValidation
@@ -40,13 +41,13 @@ const EmailForm = ({ onSubmit, children }: EmailFormProps) => (
         </div>
         {children && <div className="form-group">{children}</div>}
         <div className="row submit-row no-gutters justify-content-end">
-          <button
+          <ButtonWithLoader
             type="submit"
             className="btn btn-danger large-font"
-            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             Submit
-          </button>
+          </ButtonWithLoader>
         </div>
       </Form>
     )}

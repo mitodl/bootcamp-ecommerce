@@ -10,6 +10,7 @@ import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik"
 import * as yup from "yup"
 
 import SupportLink from "./SupportLink"
+import ButtonWithLoader from "./loaders/ButtonWithLoader"
 import FormError from "./forms/elements/FormError"
 import { closeDrawer } from "../reducers/drawer"
 import applications, {
@@ -210,13 +211,13 @@ export class ResumeLinkedIn extends React.Component<Props> {
                 </div>
                 <ErrorMessage name="linkedInUrl" component={FormError} />
               </div>
-              <button
+              <ButtonWithLoader
                 className="btn-danger"
                 type="submit"
-                disabled={isSubmitting}
+                loading={isSubmitting}
               >
                 Submit
-              </button>
+              </ButtonWithLoader>
             </Form>
           )}
         />
