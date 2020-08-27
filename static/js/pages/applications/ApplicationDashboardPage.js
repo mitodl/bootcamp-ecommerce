@@ -7,7 +7,7 @@ import { requestAsync } from "redux-query"
 import { connectRequest } from "redux-query-react"
 import { createStructuredSelector } from "reselect"
 import { MetaTags } from "react-meta-tags"
-import { Collapse, Spinner } from "reactstrap"
+import { Collapse } from "reactstrap"
 import * as R from "ramda"
 import moment from "moment"
 import wait from "waait"
@@ -22,6 +22,7 @@ import {
   ReviewDetail,
   VideoInterviewDetail
 } from "../../components/applications/detail_sections"
+import ButtonWithLoader from "../../components/loaders/ButtonWithLoader"
 import FullLoader from "../../components/loaders/FullLoader"
 import SupportLink from "../../components/SupportLink"
 
@@ -490,19 +491,16 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 )}
               </div>
               <div className="col-5 text-right collapse-link">
-                <button
+                <ButtonWithLoader
                   className="btn-text borderless expand-collapse"
                   aria-expanded={isOpen ? "true" : "false"}
                   onClick={R.partial(this.loadAndRevealAppDetail, [
                     String(application.id)
                   ])}
-                  disabled={!!allApplicationDetailLoading[application.id]}
+                  loading={!!allApplicationDetailLoading[application.id]}
                 >
-                  {allApplicationDetailLoading[application.id] && (
-                    <Spinner type="grow" />
-                  )}
                   {isOpen ? "Collapse −" : "Expand ＋"}
-                </button>
+                </ButtonWithLoader>
               </div>
             </div>
           </div>

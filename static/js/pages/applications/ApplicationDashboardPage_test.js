@@ -434,6 +434,13 @@ describe("ApplicationDashboardPage", () => {
             [fakeApplicationDetail.id]: isLoading
           }
         )
+        assert.equal(
+          wrapper
+            .find("ButtonWithLoader")
+            .at(0)
+            .prop("loading"),
+          isLoading
+        )
       })
     })
   })

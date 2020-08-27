@@ -4,3 +4,8 @@ button.borderless {
   display: inline;
   border: none;
 }
+
+.button-with-loader {
+  display: inline-flex;
+  justify-content: center;
+}
