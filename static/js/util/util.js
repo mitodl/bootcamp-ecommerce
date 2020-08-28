@@ -117,21 +117,6 @@ export const newSetWithout = (set: Set<*>, valueToDelete: any): Set<*> => {
   return newSet
 }
 
-/**
- * Returns a Promise that executes a function after a given number of milliseconds then resolves
- */
-export const timeoutPromise = (
-  funcToExecute: Function,
-  timeoutMs: number
-): Promise<*> => {
-  return new Promise(resolve =>
-    setTimeout(() => {
-      funcToExecute()
-      resolve()
-    }, timeoutMs)
-  )
-}
-
 export const formatPrice = (price: ?string | number | Decimal): string => {
   if (price === null || price === undefined) {
     return ""
