@@ -17,8 +17,6 @@ from main import features
 from main.views import react, BackgroundImagesCSSView, index
 
 root_urlpatterns = [url("", include(wagtail_urls))]
-if not features.is_enabled(features.CMS_HOME_PAGE):
-    root_urlpatterns = [path("", index, name="deprecated-home")] + root_urlpatterns
 
 urlpatterns = (
     [
