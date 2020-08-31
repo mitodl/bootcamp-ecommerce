@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.54.0
+--------------
+
+- fix serialize-javascript security alert
+
 Version 0.53.0 (Released August 31, 2020)
 --------------
 
