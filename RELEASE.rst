@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.53.0
+Version 0.53.0 (Released August 31, 2020)
 --------------
 
 - Create codeql-analysis.yml (#986)
