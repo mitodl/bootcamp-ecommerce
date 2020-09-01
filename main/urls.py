@@ -13,12 +13,9 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 
-from main import features
-from main.views import react, BackgroundImagesCSSView, index
+from main.views import react, BackgroundImagesCSSView
 
 root_urlpatterns = [url("", include(wagtail_urls))]
-if not features.is_enabled(features.CMS_HOME_PAGE):
-    root_urlpatterns = [path("", index, name="deprecated-home")] + root_urlpatterns
 
 urlpatterns = (
     [

@@ -1,9 +1,0 @@
-#home {
-  @include breakpoint(phone) {
-    padding: 40px 0 25px 0;
-  }
-
-  .btn {
-    width: 265px;
-  }
-}

@@ -3,7 +3,6 @@ from functools import wraps
 from django.conf import settings
 
 SOCIAL_AUTH_API = "SOCIAL_AUTH_API"
-CMS_HOME_PAGE = "CMS_HOME_PAGE"
 
 
 def is_enabled(name, default=None):

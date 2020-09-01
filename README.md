@@ -18,7 +18,6 @@ Add the following settings in your `.env` file
 # Replace this value with your own /etc/hosts alias for this app
 BOOTCAMP_ECOMMERCE_BASE_URL=http://boot.odl.local
 FEATURE_SOCIAL_AUTH_API=True
-FEATURE_CMS_HOME_PAGE=True
 # Replace this with an email address you would like to set as the "from" address in Bootcamp emails
 MAILGUN_FROM_EMAIL=your-email@example.com
 # Replace this with an email address you would like all Bootcamp emails to go to
