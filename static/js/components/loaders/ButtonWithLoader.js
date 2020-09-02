@@ -5,14 +5,15 @@ import Delayed from "./Delayed"
 
 type Props = {
   loading: boolean,
+  disabled?: boolean,
   className?: string,
   children?: any
 }
 const ButtonWithLoader = (props: Props) => {
-  const { loading, children, className, ...otherProps } = props
+  const { loading, disabled, children, className, ...otherProps } = props
   return (
     <button
-      disabled={loading}
+      disabled={disabled !== undefined ? disabled : loading}
       className={
         className ? `${className} button-with-loader` : "button-with-loader"
       }

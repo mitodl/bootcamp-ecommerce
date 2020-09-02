@@ -131,7 +131,8 @@ export class NewApplication extends React.Component<Props, State> {
               <ButtonWithLoader
                 className="btn-red btn-inverse"
                 onClick={this.handleSubmit}
-                loading={createAppIsPending || !selectedBootcamp}
+                loading={createAppIsPending}
+                disabled={createAppIsPending || !selectedBootcamp}
               >
                 Continue
               </ButtonWithLoader>

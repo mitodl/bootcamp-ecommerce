@@ -4,6 +4,7 @@ import { shallow } from "enzyme"
 import { assert } from "chai"
 
 import ButtonWithLoader from "./ButtonWithLoader"
+import { shouldIf } from "../../lib/test_utils"
 
 describe("ButtonWithLoader", () => {
   it("renders a button with props", () => {
@@ -35,5 +36,25 @@ describe("ButtonWithLoader", () => {
         .find("Spinner")
         .exists()
     )
+  })
+
+  describe("disabled", () => {
+    [
+      [undefined, true, true],
+      [undefined, false, false],
+      [true, true, true],
+      [true, false, true],
+      [false, true, false],
+      [false, false, false]
+    ].forEach(([disabled, loading, expectedDisabled]) => {
+      it(`${shouldIf(expectedDisabled)} be disabled if disabled is ${String(
+        disabled
+      )} and loading is ${String(loading)}`, () => {
+        const wrapper = shallow(
+          <ButtonWithLoader loading={loading} disabled={disabled} />
+        )
+        assert.equal(wrapper.prop("disabled"), expectedDisabled)
+      })
+    })
   })
 })
