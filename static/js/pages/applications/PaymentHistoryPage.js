@@ -41,6 +41,11 @@ export function PaymentHistoryPage({ application, countries }: Props) {
     totalPrice,
     balanceRemaining
   } = calcOrderBalances(application)
+
+  const isRefund = (order: any) => {
+    return order.total_price_paid < 0
+  }
+
   return (
     <div className="payment-history container">
       <div className="payment-history-header">
@@ -75,13 +80,17 @@ export function PaymentHistoryPage({ application, countries }: Props) {
               <h2 className="col-12">Order Information</h2>
               <div className="order">
                 <div className="payment-date row">
-                  <div className="col-3 key">Payment Date:</div>
+                  <div className="col-3 key">
+                    {isRefund(order) ? "Refund Date:" : "Payment Date:"}
+                  </div>
                   <div className="col-9">
                     {formatReadableDateFromStr(order.updated_on)}
                   </div>
                 </div>
                 <div className="amount-paid row">
-                  <div className="col-3 key">Amount Paid:</div>
+                  <div className="col-3 key">
+                    {isRefund(order) ? "Amount Refunded:" : "Amount Paid:"}
+                  </div>
                   <div className="col-9">
                     {formatPrice(order.total_price_paid)}
                   </div>
@@ -90,10 +99,12 @@ export function PaymentHistoryPage({ application, countries }: Props) {
                   <div className="col-3 key">Balance:</div>
                   <div className="col-9">{formatPrice(balance)}</div>
                 </div>
-                <div className="payment-method row">
-                  <div className="col-3 key">Payment Method:</div>
-                  <div className="col-9">{order.payment_method}</div>
-                </div>
+                {order.payment_method ? (
+                  <div className="payment-method row">
+                    <div className="col-3 key">Payment Method:</div>
+                    <div className="col-9">{order.payment_method}</div>
+                  </div>
+                ) : null}
               </div>
               <hr />
             </div>

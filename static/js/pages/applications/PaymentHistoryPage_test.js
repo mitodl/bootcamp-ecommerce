@@ -13,7 +13,7 @@ import {
   formatReadableDateFromStr,
   formatRunDateRange
 } from "../../util/util"
-import { generateOrder } from "../../factories"
+import { generateOrder, generateLegacyOrderPartial } from "../../factories"
 import { isIf, shouldIf } from "../../lib/test_utils"
 
 describe("PaymentHistoryPage", () => {
@@ -67,15 +67,18 @@ describe("PaymentHistoryPage", () => {
 
   it("renders order information", async () => {
     fakeApplicationDetail.orders.push(generateOrder())
-    const { wrapper } = await renderPage()
 
+    const { wrapper } = await renderPage()
     const { ordersAndBalances } = calcOrderBalances(fakeApplicationDetail)
+
     fakeApplicationDetail.orders.forEach((order, i) => {
       const orderWrapper = wrapper.find(".order").at(i)
+      assert.include(orderWrapper.find(".payment-date").text(), "Payment Date:")
       assert.include(
         orderWrapper.find(".payment-date").text(),
         formatReadableDateFromStr(order.updated_on)
       )
+      assert.include(orderWrapper.find(".amount-paid").text(), "Amount Paid:")
       assert.include(
         orderWrapper.find(".amount-paid").text(),
         formatPrice(order.total_price_paid)
@@ -89,6 +92,52 @@ describe("PaymentHistoryPage", () => {
         order.payment_method
       )
     })
+  })
+
+  it("renders refund information", async () => {
+    const refund = {
+      ...generateLegacyOrderPartial(),
+      total_price_paid: -10,
+      payment_method:   "Visa:1234"
+    }
+
+    fakeApplicationDetail.orders = [refund]
+
+    const { wrapper } = await renderPage()
+    const { ordersAndBalances } = calcOrderBalances(fakeApplicationDetail)
+
+    const orderWrapper = wrapper.find(".order")
+    assert.include(orderWrapper.find(".payment-date").text(), "Refund Date:")
+    assert.include(
+      orderWrapper.find(".payment-date").text(),
+      formatReadableDateFromStr(refund.updated_on)
+    )
+    assert.include(orderWrapper.find(".amount-paid").text(), "Amount Refunded:")
+    assert.include(
+      orderWrapper.find(".amount-paid").text(),
+      formatPrice(refund.total_price_paid)
+    )
+    assert.include(
+      orderWrapper.find(".balance").text(),
+      formatPrice(ordersAndBalances[0].balance)
+    )
+    assert.include(
+      orderWrapper.find(".payment-method").text(),
+      refund.payment_method
+    )
+  })
+
+  it("does not render the payment method if it is blank", async () => {
+    const nullPaymentMethodOrder = {
+      ...generateLegacyOrderPartial(),
+      total_price_paid: 10,
+      payment_method:   ""
+    }
+
+    fakeApplicationDetail.orders = [nullPaymentMethodOrder]
+
+    const { wrapper } = await renderPage()
+    assert.isNotOk(wrapper.find(".payment-method").exists())
   })
 
   it("renders the summary", async () => {
