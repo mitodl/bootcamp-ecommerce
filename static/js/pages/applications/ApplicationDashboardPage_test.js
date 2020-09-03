@@ -203,12 +203,14 @@ describe("ApplicationDashboardPage", () => {
       ]
       applicationDetail.submissions = []
       defaultProps = {
-        applications:         [application],
-        allApplicationDetail: { [application.id]: applicationDetail },
-        currentUser:          makeCompleteUser(),
-        fetchAppDetail:       sinon.stub(),
-        openDrawer:           openDrawerStub,
-        location:             {
+        applications:                [application],
+        applicationsLoading:         false,
+        allApplicationDetail:        { [application.id]: applicationDetail },
+        allApplicationDetailLoading: {},
+        currentUser:                 makeCompleteUser(),
+        fetchAppDetail:              sinon.stub(),
+        openDrawer:                  openDrawerStub,
+        location:                    {
           search: ""
         }
       }
@@ -400,6 +402,46 @@ describe("ApplicationDashboardPage", () => {
       } else {
         assert.isFalse(link.exists())
       }
+    })
+  })
+
+  describe("loaders", () => {
+    [true, false].forEach(isLoading => {
+      it(`${shouldIf(
+        isLoading
+      )} show a loader while loading the page`, async () => {
+        helper.isLoadingStub.returns(isLoading)
+        const { wrapper } = await renderPage()
+        assert.equal(wrapper.find("FullLoader").exists(), isLoading)
+      })
+
+      it(`${shouldIf(
+        isLoading
+      )} show a loader when expanding a detail view`, async () => {
+        const { wrapper } = await renderPage()
+        helper.isLoadingStub.returns(isLoading)
+        wrapper
+          .find(".expand-collapse")
+          .at(0)
+          .prop("onClick")()
+        await wait(10)
+        wrapper.update()
+        assert.deepEqual(
+          wrapper
+            .find("ApplicationDashboardPage")
+            .prop("allApplicationDetailLoading"),
+          {
+            [fakeApplicationDetail.id]: isLoading
+          }
+        )
+        assert.equal(
+          wrapper
+            .find("ButtonWithLoader")
+            .at(0)
+            .prop("loading"),
+          isLoading
+        )
+      })
     })
   })
 })

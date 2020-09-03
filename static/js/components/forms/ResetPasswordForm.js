@@ -7,6 +7,7 @@ import { Formik, Field, Form, ErrorMessage } from "formik"
 import { PasswordInput } from "./elements/inputs"
 import FormError from "./elements/FormError"
 import { resetPasswordFormValidation } from "../../lib/validation"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 type Props = {
   onSubmit: Function
@@ -46,13 +47,13 @@ const ResetPasswordForm = ({ onSubmit }: Props) => (
           <ErrorMessage name="confirmPassword" component={FormError} />
         </div>
         <div className="row submit-row no-gutters justify-content-end">
-          <button
+          <ButtonWithLoader
             type="submit"
             className="btn btn-danger large-font"
-            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             Submit
-          </button>
+          </ButtonWithLoader>
         </div>
       </Form>
     )}

@@ -24,6 +24,7 @@ import { isErrorResponse } from "../util/util"
 import type { User } from "../flow/authTypes"
 import type { BootcampRun } from "../flow/bootcampTypes"
 import type { NewApplicationResponse } from "../flow/applicationTypes"
+import ButtonWithLoader from "./loaders/ButtonWithLoader"
 
 const noAvailableBootcampsMsg =
   "There are no bootcamps that are currently open for application."
@@ -127,13 +128,14 @@ export class NewApplication extends React.Component<Props, State> {
               <DropdownMenu>{items}</DropdownMenu>
             </Dropdown>
             <div className="mb-3 d-flex justify-content-end">
-              <button
+              <ButtonWithLoader
                 className="btn-red btn-inverse"
                 onClick={this.handleSubmit}
+                loading={createAppIsPending}
                 disabled={createAppIsPending || !selectedBootcamp}
               >
                 Continue
-              </button>
+              </ButtonWithLoader>
             </div>
             {requestFailed && (
               <p className="form-error">

@@ -21,9 +21,30 @@ export const appQueryKey = applicationsKey
 export const applicationsSelector = (state: any): ?Array<Application> =>
   state.entities[applicationsKey]
 
+export const applicationsLoadingSelector = (state: any): boolean =>
+  state.queries[applicationsKey] && state.queries[applicationsKey].isPending
+
 export const allApplicationDetailSelector = (
   state: any
 ): { [string]: ApplicationDetail } => state.entities[applicationDetailKey]
+
+const appDetailPrefix = "appDetail."
+export const allApplicationDetailLoadingSelector = (
+  state: any
+): { number: boolean } => {
+  const applicationIds = Object.keys(state.queries)
+    .filter(key => key.startsWith(appDetailPrefix))
+    .map(key => key.substr(appDetailPrefix.length))
+  const loading = {}
+
+  for (const applicationId of applicationIds) {
+    const key = `${appDetailPrefix}${applicationId}`
+    loading[applicationId] =
+      (state.queries[key] && state.queries[key].isPending) || false
+  }
+
+  return loading
+}
 
 // HACK: This wouldn't work with R.curry for some reason. Settling for a function that returns a function.
 export const appDetailQuerySelector = (state: any) => (
@@ -65,7 +86,7 @@ export default {
     }
   }),
   applicationDetailQuery: (applicationId: string, force?: boolean) => ({
-    queryKey:  `appDetail.${applicationId}`,
+    queryKey:  `${appDetailPrefix}${applicationId}`,
     url:       applicationDetailAPI.param({ applicationId }).toString(),
     transform: (json: ?ApplicationDetail) => {
       return {

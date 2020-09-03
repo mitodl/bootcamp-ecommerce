@@ -1,13 +1,18 @@
 /* global SETTINGS: false */
+import React from "react"
 import { assert } from "chai"
 import sinon from "sinon"
 import wait from "waait"
 import { last, prop } from "ramda"
+import { shallow } from "enzyme"
 
-import NewApplication from "./NewApplication"
+import NewApplication, {
+  NewApplication as InnerNewApplication
+} from "./NewApplication"
 import IntegrationTestHelper from "../util/integration_test_helper"
 import { makeUser } from "../factories/user"
 import { generateFakeRun } from "../factories"
+import { isIf, shouldIf } from "../lib/test_utils"
 
 describe("NewApplication", () => {
   const getBootcampsUrl = "/api/bootcampruns/?available=true"
@@ -109,4 +114,48 @@ describe("NewApplication", () => {
       fakeNewApplication
     ])
   })
+
+  //
+  ;[
+    [true, true, true, true],
+    [true, false, false, false],
+    [false, true, true, true],
+    [false, false, true, false]
+  ].forEach(
+    ([hasSelectedBootcamp, pending, expectedDisabled, expectedSpinner]) => {
+      it(`if a bootcamp ${isIf(
+        hasSelectedBootcamp
+      )} selected and API request ${isIf(
+        pending
+      )} pending, then the button ${shouldIf(
+        expectedDisabled
+      )} be disabled, and a spinner ${shouldIf(
+        expectedSpinner
+      )} be shown`, async () => {
+        helper.isLoadingStub.returns(pending)
+        const wrapper = shallow(
+          <InnerNewApplication
+            currentUser={fakeUser}
+            bootcampRuns={fakeBootcampRuns}
+            appliedRunIds={[fakeAppliedId]}
+            createAppIsPending={pending}
+          />
+        )
+        if (hasSelectedBootcamp) {
+          wrapper.setState({
+            selectedBootcamp: fakeBootcampRuns[0]
+          })
+        }
+
+        assert.equal(
+          wrapper.find("ButtonWithLoader").prop("disabled"),
+          expectedDisabled
+        )
+        assert.equal(
+          wrapper.find("ButtonWithLoader").prop("loading"),
+          expectedSpinner
+        )
+      })
+    }
+  )
 })

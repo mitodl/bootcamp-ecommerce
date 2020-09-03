@@ -22,6 +22,8 @@ import {
   ReviewDetail,
   VideoInterviewDetail
 } from "../../components/applications/detail_sections"
+import ButtonWithLoader from "../../components/loaders/ButtonWithLoader"
+import FullLoader from "../../components/loaders/FullLoader"
 import SupportLink from "../../components/SupportLink"
 
 import { addErrorNotification, addSuccessNotification } from "../../actions"
@@ -34,8 +36,10 @@ import queries from "../../lib/queries"
 import { isQueryInErrorState } from "../../lib/redux_query"
 import {
   allApplicationDetailSelector,
+  allApplicationDetailLoadingSelector,
   appDetailQuerySelector,
-  applicationsSelector
+  applicationsSelector,
+  applicationsLoadingSelector
 } from "../../lib/queries/applications"
 import { currentUserSelector } from "../../lib/queries/users"
 import { routes } from "../../lib/urls"
@@ -102,7 +106,9 @@ const getAppStepSubmissions = (
 type Props = {
   location: Location,
   applications: Array<Application>,
+  applicationsLoading: boolean,
   allApplicationDetail: ApplicationDetailState,
+  allApplicationDetailLoading: { number: boolean },
   appDetailQueryStatus: (applicationId: string) => ?QueryState,
   currentUser: User,
   fetchAppDetail: (
@@ -432,6 +438,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
 
   renderApplicationCard = (application: Application) => {
     const { collapseVisible } = this.state
+    const { allApplicationDetailLoading } = this.props
 
     const isOpen = collapseVisible[String(application.id)]
     const thumbnailSrc = application.bootcamp_run.page ?
@@ -484,15 +491,16 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 )}
               </div>
               <div className="col-5 text-right collapse-link">
-                <button
+                <ButtonWithLoader
                   className="btn-text borderless expand-collapse"
                   aria-expanded={isOpen ? "true" : "false"}
                   onClick={R.partial(this.loadAndRevealAppDetail, [
                     String(application.id)
                   ])}
+                  loading={!!allApplicationDetailLoading[application.id]}
                 >
                   {isOpen ? "Collapse −" : "Expand ＋"}
-                </button>
+                </ButtonWithLoader>
               </div>
             </div>
           </div>
@@ -506,13 +514,13 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
   }
 
   render() {
-    const { currentUser, applications } = this.props
+    const { currentUser, applications, applicationsLoading } = this.props
 
-    if (!applications || !currentUser) {
+    if (!currentUser) {
       return null
     }
 
-    const hasApplications = applications.length > 0
+    const hasApplications = applications && applications.length > 0
 
     return (
       <div className="container applications-page">
@@ -544,7 +552,9 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         </div>
         <div className="row mt-4">
           <div className="col-12">
-            {hasApplications ? (
+            {applicationsLoading ? (
+              <FullLoader />
+            ) : hasApplications ? (
               applications.map(this.renderApplicationCard)
             ) : (
               <React.Fragment>
@@ -570,10 +580,12 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
 }
 
 const mapStateToProps = createStructuredSelector({
-  applications:         applicationsSelector,
-  allApplicationDetail: allApplicationDetailSelector,
-  currentUser:          currentUserSelector,
-  appDetailQueryStatus: appDetailQuerySelector
+  applications:                applicationsSelector,
+  applicationsLoading:         applicationsLoadingSelector,
+  allApplicationDetail:        allApplicationDetailSelector,
+  allApplicationDetailLoading: allApplicationDetailLoadingSelector,
+  currentUser:                 currentUserSelector,
+  appDetailQueryStatus:        appDetailQuerySelector
 })
 
 const mapDispatchToProps = dispatch => ({

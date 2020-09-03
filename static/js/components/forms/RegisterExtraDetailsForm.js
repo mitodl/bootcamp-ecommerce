@@ -4,6 +4,7 @@ import { Formik, Form } from "formik"
 
 import { profileValidation } from "../../lib/validation"
 import { ProfileFields } from "./ProfileFormFields"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 type Props = {
   onSubmit: Function
@@ -34,13 +35,13 @@ const RegisterExtraDetailsForm = ({ onSubmit }: Props) => (
         <div>
           <div className="required">*=Required</div>
           <div className="row submit-row no-gutters justify-content-end">
-            <button
+            <ButtonWithLoader
               type="submit"
               className="btn btn-outline-danger large-font"
-              disabled={isSubmitting}
+              loading={isSubmitting}
             >
               Continue
-            </button>
+            </ButtonWithLoader>
           </div>
         </div>
       </Form>

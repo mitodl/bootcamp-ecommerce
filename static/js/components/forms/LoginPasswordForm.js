@@ -9,6 +9,7 @@ import FormError from "./elements/FormError"
 import { PasswordInput } from "./elements/inputs"
 import { passwordFieldValidation } from "../../lib/validation"
 import { routes } from "../../lib/urls"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 const passwordValidation = yup.object().shape({
   password: passwordFieldValidation
@@ -40,13 +41,13 @@ const LoginPasswordForm = ({ onSubmit }: LoginPasswordFormProps) => (
           </Link>
         </div>
         <div className="row submit-row no-gutters justify-content-end">
-          <button
+          <ButtonWithLoader
             type="submit"
             className="btn btn-danger large-font"
-            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             Submit
-          </button>
+          </ButtonWithLoader>
         </div>
       </Form>
     )}

@@ -14,6 +14,7 @@ import {
   formatRunDateRange
 } from "../../util/util"
 import { generateOrder } from "../../factories"
+import { isIf, shouldIf } from "../../lib/test_utils"
 
 describe("PaymentHistoryPage", () => {
   let helper, countries, fakeApplicationDetail, renderPage
@@ -124,6 +125,17 @@ describe("PaymentHistoryPage", () => {
     assert.deepEqual(wrapper.find("Address").props(), {
       application: fakeApplicationDetail,
       countries
+    })
+  })
+
+  //
+  ;[true, false].forEach(isLoading => {
+    it(`${shouldIf(isLoading)} show a loader if the page ${isIf(
+      isLoading
+    )} loading`, async () => {
+      helper.isLoadingStub.returns(isLoading)
+      const { wrapper } = await renderPage()
+      assert.equal(wrapper.find("FullLoader").exists(), isLoading)
     })
   })
 })

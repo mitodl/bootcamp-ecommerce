@@ -9,6 +9,7 @@ import ScaledRecaptcha from "../ScaledRecaptcha"
 import { EmailInput } from "./elements/inputs"
 import FormError from "./elements/FormError"
 import { emailFieldValidation } from "../../lib/validation"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 const emailValidation = yup.object().shape({
   email:     emailFieldValidation,
@@ -63,13 +64,13 @@ const RegisterEmailForm = ({ onSubmit }: Props) => (
           .
         </div>
         <div className="row submit-row no-gutters justify-content-end">
-          <button
+          <ButtonWithLoader
             type="submit"
             className="btn btn-danger large-font"
-            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             Submit
-          </button>
+          </ButtonWithLoader>
         </div>
       </Form>
     )}

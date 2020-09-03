@@ -39,7 +39,7 @@ describe("Register forms", () => {
 
       assert.ok(emailField.exists())
       assert.equal(emailField.prop("autoComplete"), "email")
-      assert.isOk(form.find("button[type='submit']").exists())
+      assert.isOk(form.find("ButtonWithLoader[type='submit']").exists())
     })
 
     it("includes a recaptch if enabled", () => {

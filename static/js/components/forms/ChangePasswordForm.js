@@ -7,6 +7,7 @@ import { Formik, Field, Form, ErrorMessage } from "formik"
 import { PasswordInput } from "./elements/inputs"
 import FormError from "./elements/FormError"
 import { changePasswordFormValidation } from "../../lib/validation"
+import ButtonWithLoader from "../loaders/ButtonWithLoader"
 
 type Props = {
   onSubmit: Function
@@ -60,13 +61,13 @@ const ChangePasswordForm = ({ onSubmit }: Props) => (
           </div>
         </section>
         <div className="row submit-row no-gutters justify-content-end">
-          <button
+          <ButtonWithLoader
             type="submit"
             className="btn btn-danger large-font"
-            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             Submit
-          </button>
+          </ButtonWithLoader>
         </div>
       </Form>
     )}
