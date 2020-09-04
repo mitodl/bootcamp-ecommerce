@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.54.1
+--------------
+
+- Add loaders for API requests (#987)
+- Remove Payment component, used in the previous version of this application (#989)
+
 Version 0.54.0 (Released September 04, 2020)
 --------------
 
