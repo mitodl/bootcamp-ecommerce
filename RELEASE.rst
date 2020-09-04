@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.54.1
+Version 0.54.1 (Released September 04, 2020)
 --------------
 
 - Add loaders for API requests (#987)
