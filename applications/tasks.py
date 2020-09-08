@@ -3,11 +3,13 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
+from django.db import transaction
 from django.db.models import Q
 
 from applications.constants import SUBMISSION_STATUS_PENDING, REVIEW_COMPLETED_STATES
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from applications import api
+from jobma.models import Interview
 from main.celery import app
 from main.utils import now_in_utc
 
@@ -54,3 +56,14 @@ def refresh_pending_interview_links():
             submission.bootcamp_application.id,
             submission.bootcamp_application.user.email,
         )
+    # For reasons unknown, a few applications had interviews with null urls and/or no submissions.
+    applications = BootcampApplication.objects.filter(
+        Q(submissions__isnull=True)
+        | Q(submissions__videointerviews__isnull=True)
+        | Q(submissions__videointerviews__interview__interview_url__isnull=True)
+    )
+    for application in applications:
+        submission = application.submissions.first()
+        if submission and submission.content_object:
+            submission.content_object.interview.delete()
+        api.populate_interviews_in_jobma(application)
