@@ -3,13 +3,11 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
-from django.db import transaction
 from django.db.models import Q
 
 from applications.constants import SUBMISSION_STATUS_PENDING, REVIEW_COMPLETED_STATES
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from applications import api
-from jobma.models import Interview
 from main.celery import app
 from main.utils import now_in_utc
 
