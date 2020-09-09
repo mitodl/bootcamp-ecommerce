@@ -133,29 +133,13 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
   }
 
   async componentDidMount() {
-    const {
-      applications,
-      addSuccessNotification,
-      addErrorNotification
-    } = this.props
+    const { applications } = this.props
     if (applications) {
       const orderId = this.getOrderIdFromCybersourceParams()
       if (orderId) {
         await this.handleCybersourcePageLoad(orderId)
       }
     }
-
-    // TODO: make sure to remove this in the PR
-    addSuccessNotification({
-      props: {
-        text: "success!"
-      }
-    })
-    addErrorNotification({
-      props: {
-        text: "oh no!"
-      }
-    })
   }
 
   async componentDidUpdate(prevProps: Props, prevState: State) {
