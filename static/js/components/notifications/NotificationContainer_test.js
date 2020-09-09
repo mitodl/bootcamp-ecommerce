@@ -148,7 +148,9 @@ describe("NotificationContainer component", () => {
 
   //
   ;[true, false].forEach(filterAlertType => {
-    it(`${shouldIf(filterAlertType)} based on alert types`, async () => {
+    it(`${shouldIf(
+      filterAlertType
+    )} filter alerts based on alert types`, async () => {
       const { inner } = await render(
         {
           ui: {
