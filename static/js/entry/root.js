@@ -7,7 +7,8 @@ import { AppContainer } from "react-hot-loader"
 
 import configureStore from "../store/configureStore"
 import Router, { routes } from "../Router"
-import FooterNotifications from "../components/notifications/FooterNotifications"
+import NotificationContainer from "../components/notifications/NotificationContainer"
+import { ALERT_TYPE_ERROR, ALERT_TYPE_SUCCESS } from "../constants"
 import { AppTypeContext, SPA_APP_CONTEXT } from "../contextDefinitions"
 
 // Zendesk react module
@@ -50,7 +51,9 @@ window.addEventListener("DOMContentLoaded", () => {
   )
   renderApp(
     <Provider store={store}>
-      <FooterNotifications />
+      <NotificationContainer
+        alertTypes={[ALERT_TYPE_SUCCESS, ALERT_TYPE_ERROR]}
+      />
     </Provider>,
     "#footer-notifications"
   )
