@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.55.0
+Version 0.55.0 (Released September 09, 2020)
 --------------
 
 - update receipt for refunds
