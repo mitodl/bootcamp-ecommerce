@@ -126,16 +126,17 @@ def populate_interviews_in_jobma(application):
         if not interview.interview_url:
             create_interview_in_jobma(interview)
 
-            video_interview_submission, _ = VideoInterviewSubmission.objects.get_or_create(
-                interview=interview
-            )
-            ApplicationStepSubmission.objects.get_or_create(
-                bootcamp_application=application,
-                run_application_step=run_step,
-                defaults={
-                    "object_id": video_interview_submission.id,
-                    "content_type": ContentType.objects.get_for_model(
-                        video_interview_submission
-                    ),
-                },
-            )
+        # Make sure a VideoInterviewSubmission & ApplicationStepSubmission exist
+        video_interview_submission, _ = VideoInterviewSubmission.objects.get_or_create(
+            interview=interview
+        )
+        ApplicationStepSubmission.objects.get_or_create(
+            bootcamp_application=application,
+            run_application_step=run_step,
+            defaults={
+                "object_id": video_interview_submission.id,
+                "content_type": ContentType.objects.get_for_model(
+                    video_interview_submission
+                ),
+            },
+        )

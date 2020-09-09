@@ -22,7 +22,7 @@ from applications.tasks import (
 )
 from ecommerce.test_utils import create_test_application
 from jobma.factories import InterviewFactory, JobFactory
-from jobma.models import Interview
+from jobma.models import Interview, Job
 from klasses.factories import BootcampRunFactory
 from main.utils import now_in_utc
 
@@ -33,6 +33,26 @@ pytestmark = pytest.mark.django_db
 def application():
     """An application for testing"""
     yield create_test_application()
+
+
+@pytest.fixture
+def mock_jobma_client(mocker):
+    """Mock create_interview_in_jobma function"""
+    yield mocker.patch(
+        "jobma.api.get_jobma_client",
+        return_value=mocker.Mock(
+            post=mocker.Mock(
+                return_value=mocker.Mock(
+                    json=mocker.Mock(
+                        return_value={
+                            "interview_link": "http://fake.interview.link",
+                            "interview_token": "foo",
+                        }
+                    )
+                )
+            )
+        ),
+    )
 
 
 def test_create_and_send_applicant_letter(
@@ -88,17 +108,13 @@ def test_create_and_send_applicant_letter(
         ],
     ],
 )  # pylint:disable=too-many-locals
-def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments
-    mocker, settings, state, status, old_link, old_run, recreated
+def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments,redefined-outer-name
+    mocker, settings, state, status, old_link, old_run, recreated, mock_jobma_client
 ):
     """ Test that refresh_pending_interview_links updates links only when appropriate """
     now = now_in_utc()
     settings.JOBMA_LINK_EXPIRATION_DAYS = 0 if old_link else 30
     mock_log = mocker.patch("applications.tasks.log.debug")
-    create_interview = mocker.patch(
-        "applications.api.create_interview_in_jobma",
-        return_value="http://fake.interview.link",
-    )
 
     run = BootcampRunFactory.create(
         start_date=(now + timedelta(days=(-10 if old_run else 10)))
@@ -127,7 +143,7 @@ def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments
 
     new_interview = Interview.objects.get(applicant=bootcamp_app.user)
     if recreated:
-        assert create_interview.call_count == 1
+        assert mock_jobma_client.call_count == 1
         assert new_interview.id != interview.id
         mock_log.assert_called_once_with(
             "Interview recreated for submission %d, application %d, user %s",
@@ -138,3 +154,41 @@ def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments
     else:
         mock_log.assert_not_called()
         assert new_interview.id == interview.id
+
+
+def test_refresh_pending_interview_links_bad_interviews(  # pylint:disable=too-many-arguments,redefined-outer-name
+    mock_jobma_client
+):
+    """ Test that refresh_pending_interview_links handles missing submissions & empty urls """
+    applications = BootcampApplicationFactory.create_batch(2)
+
+    for bootcamp_app in applications:
+        step = ApplicationStepFactory.create(
+            bootcamp=bootcamp_app.bootcamp_run.bootcamp,
+            submission_type=SUBMISSION_VIDEO,
+        )
+        BootcampRunApplicationStepFactory.create(
+            bootcamp_run=bootcamp_app.bootcamp_run, application_step=step
+        )
+        JobFactory.create(run=bootcamp_app.bootcamp_run)
+    app_no_interview_url = applications[1]
+    interview = InterviewFactory.create(
+        job=Job.objects.get(run=app_no_interview_url.bootcamp_run),
+        applicant=app_no_interview_url.user,
+        interview_url=None,
+    )
+    interview_submission = VideoInterviewSubmissionFactory.create(interview=interview)
+    ApplicationStepSubmissionFactory.create(
+        run_application_step=app_no_interview_url.bootcamp_run.application_steps.first(),
+        bootcamp_application=app_no_interview_url,
+        is_pending=True,
+        content_object=interview_submission,
+        submission_status=SUBMISSION_STATUS_PENDING,
+    )
+    refresh_pending_interview_links()
+    assert mock_jobma_client.call_count == 2
+    for bootcamp_app in applications:
+        assert (
+            bootcamp_app.submissions.first().content_object.interview.interview_url
+            is not None
+        )
