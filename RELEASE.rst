@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.55.1
+--------------
+
+- Check for and fix missing submissions & null interview urls (#1000)
+
 Version 0.55.0 (Released September 09, 2020)
 --------------
 
