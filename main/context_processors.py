@@ -39,7 +39,7 @@ def js_settings(request):
                     "help_widget_key": settings.ZENDESK_CONFIG.get("HELP_WIDGET_KEY"),
                 },
                 "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
-                "upload_max_size": settings.MAX_FILE_UPLOAD_SIZE,
+                "upload_max_size": settings.MAX_FILE_UPLOAD_MB * 1_000_000,
                 "support_url": settings.SUPPORT_URL,
                 "terms_url": get_resource_page_urls(request.site)["terms_of_service"],
             }
