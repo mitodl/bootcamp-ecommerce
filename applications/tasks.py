@@ -64,4 +64,7 @@ def refresh_pending_interview_links():
         submission = application.submissions.first()
         if submission and submission.content_object:
             submission.content_object.interview.delete()
-        api.populate_interviews_in_jobma(application)
+        try:
+            api.populate_interviews_in_jobma(application)
+        except:
+            log.exception("Exception processing application %d", application.id)

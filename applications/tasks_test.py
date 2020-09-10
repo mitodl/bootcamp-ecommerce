@@ -157,9 +157,10 @@ def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments,r
 
 
 def test_refresh_pending_interview_links_bad_interviews(  # pylint:disable=too-many-arguments,redefined-outer-name
-    mock_jobma_client
+    mocker, mock_jobma_client
 ):
     """ Test that refresh_pending_interview_links handles missing submissions & empty urls """
+    mock_log = mocker.patch("applications.tasks.log.error")
     applications = BootcampApplicationFactory.create_batch(2)
 
     for bootcamp_app in applications:
@@ -170,8 +171,8 @@ def test_refresh_pending_interview_links_bad_interviews(  # pylint:disable=too-m
         BootcampRunApplicationStepFactory.create(
             bootcamp_run=bootcamp_app.bootcamp_run, application_step=step
         )
-        JobFactory.create(run=bootcamp_app.bootcamp_run)
     app_no_interview_url = applications[1]
+    JobFactory.create(run=app_no_interview_url.bootcamp_run)
     interview = InterviewFactory.create(
         job=Job.objects.get(run=app_no_interview_url.bootcamp_run),
         applicant=app_no_interview_url.user,
@@ -186,9 +187,11 @@ def test_refresh_pending_interview_links_bad_interviews(  # pylint:disable=too-m
         submission_status=SUBMISSION_STATUS_PENDING,
     )
     refresh_pending_interview_links()
-    assert mock_jobma_client.call_count == 2
-    for bootcamp_app in applications:
-        assert (
-            bootcamp_app.submissions.first().content_object.interview.interview_url
-            is not None
-        )
+    assert mock_jobma_client.call_count == 1
+    mock_log.assert_called_once_with(
+        "Exception processing application %d", applications[0].id, exc_info=True
+    )
+    assert (
+        app_no_interview_url.submissions.first().content_object.interview.interview_url
+        is not None
+    )
