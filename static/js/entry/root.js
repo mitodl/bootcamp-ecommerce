@@ -40,21 +40,19 @@ const renderApp = (component, selector) => {
   )
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  const store = configureStore()
+const store = configureStore()
 
-  renderApp(
-    <Router history={createBrowserHistory()} store={store}>
-      {routes}
-    </Router>,
-    "#app-container"
-  )
-  renderApp(
-    <Provider store={store}>
-      <NotificationContainer
-        alertTypes={[ALERT_TYPE_SUCCESS, ALERT_TYPE_ERROR]}
-      />
-    </Provider>,
-    "#footer-notifications"
-  )
-})
+renderApp(
+  <Router history={createBrowserHistory()} store={store}>
+    {routes}
+  </Router>,
+  "#app-container"
+)
+renderApp(
+  <Provider store={store}>
+    <NotificationContainer
+      alertTypes={[ALERT_TYPE_SUCCESS, ALERT_TYPE_ERROR]}
+    />
+  </Provider>,
+  "#footer-notifications"
+)
