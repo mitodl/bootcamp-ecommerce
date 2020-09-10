@@ -1,6 +1,7 @@
 // @flow
 import Decimal from "decimal.js-light"
 import * as R from "ramda"
+import _ from "lodash"
 import moment from "moment"
 
 import { CS_DEFAULT, CS_ERROR_MESSAGES, ORDER_FULFILLED } from "../constants"
@@ -194,6 +195,29 @@ export const getFirstResponseBodyError = (
     return errors
   }
   return errors.length === 0 ? null : errors[0]
+}
+
+export const getXhrResponseError = (response: Object): ?string => {
+  if (_.isString(response)) {
+    try {
+      response = JSON.parse(response)
+    } catch (e) {
+      return null
+    }
+  }
+  if (!_.isObject(response)) {
+    return null
+  }
+  if (_.isArray(response) && response.length > 0) {
+    return response[0]
+  }
+  if (response.errors && response.errors.length > 0) {
+    return response.errors[0]
+  }
+  if (response.error && response.error !== "") {
+    return response.error
+  }
+  return null
 }
 
 export const parsePrice = (priceStr: string | number): Decimal => {

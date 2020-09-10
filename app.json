@@ -284,6 +284,10 @@
       "description": "The API url for mailfun",
       "required": false
     },
+    "MAX_FILE_UPLOAD_SIZE": {
+      "description": "The maximum size in bytes for an uploaded file",
+      "required": false
+    },
     "MEDIA_ROOT": {
       "description": "Django MEDIA_ROOT setting",
       "required": false

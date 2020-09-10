@@ -209,6 +209,8 @@ export const NEW_APPLICATION = "newApplication"
 export const TAKE_VIDEO_INTERVIEW = "TAKE_VIDEO_INTERVIEW"
 export const RESUME_UPLOAD = "resumeUpload"
 
+export const DEFAULT_MAX_RESUME_FILE_SIZE = 10000000 // 10MB
+
 export const JOBMA = "Jobma"
 export const JOBMA_SITE = "jobma.com"
 

@@ -1581,6 +1581,13 @@
   dependencies:
     "@material/feature-targeting" "^3.1.0"
 
+"@mitodl/react-dropzone-uploader@2.11.4":
+  version "2.11.4"
+  resolved "https://registry.yarnpkg.com/@mitodl/react-dropzone-uploader/-/react-dropzone-uploader-2.11.4.tgz#0e7ac2194aefdb272e9d877429e90272a042e4f8"
+  integrity sha512-hkNZgJQGAmPd6nfRLLqH4TCL2F2O7MBze6EvZ9pTBMvVlC0uC1+JCh/0ZP4SLnuBCy2K06U8Ul7IyVVwjnZCNw==
+  dependencies:
+    "@babel/runtime" "^7.1.2"
+
 "@octokit/auth-token@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@octokit/auth-token/-/auth-token-2.4.0.tgz#b64178975218b99e4dfe948253f0673cbbb59d9f"
@@ -8986,13 +8993,6 @@ react-dom@16.13.1:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.19.1"
-
-react-dropzone-uploader@^2.11.0:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/react-dropzone-uploader/-/react-dropzone-uploader-2.11.0.tgz#6579e83f4f98c8248a3f3b5825c436ca3d6441cf"
-  integrity sha512-1DpdPMGKP7vYL5SeCh13HCl+Xrz0F6jGrDPU5Tj2ojEIXGMCtfflrZhyXdr7u40IkQ+hYjAUEEtJW24SiY8WRA==
-  dependencies:
-    "@babel/runtime" "^7.1.2"
 
 react-fast-compare@^2.0.1:
   version "2.0.4"
