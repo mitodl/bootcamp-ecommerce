@@ -4,7 +4,10 @@ import React from "react"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { mutateAsync, requestAsync } from "redux-query"
-import Dropzone from "react-dropzone-uploader"
+import Dropzone, {
+  formatBytes,
+  formatDuration
+} from "@mitodl/react-dropzone-uploader"
 import { values, join, keys } from "ramda"
 import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik"
 import * as yup from "yup"
@@ -21,21 +24,154 @@ import queries from "../lib/queries"
 import {
   getFilenameFromMediaPath,
   getFirstResponseBodyError,
+  getXhrResponseError,
   isErrorResponse,
   isNilOrBlank
 } from "../util/util"
 import { appResumeAPI } from "../lib/urls"
-import { ALLOWED_FILE_EXTENSIONS } from "../constants"
+import {
+  ALLOWED_FILE_EXTENSIONS,
+  DEFAULT_MAX_RESUME_FILE_SIZE
+} from "../constants"
 
 import type {
   ApplicationDetail,
   ResumeLinkedInResponse
 } from "../flow/applicationTypes"
+import type IPreviewProps from "@mitodl/react-dropzone-uploader"
 
 type UploaderProps = {
   application: ApplicationDetail,
   resumeFilename: ?string,
   onSuccessfulUpload: Function
+}
+
+const defaultUploadErrorText = "Your file failed to upload."
+
+/*
+ * Custom component to pass to react-dropzone-uploader. Used to display the file being uploaded, progress bar, and
+ * error messages.
+ */
+class CustomPreview extends React.PureComponent<IPreviewProps> {
+  render() {
+    const {
+      className,
+      imageClassName,
+      style,
+      imageStyle,
+      fileWithMeta: {
+        cancel,
+        remove,
+        restart,
+        meta: { response }
+      },
+      meta: {
+        name = "",
+        percent = 0,
+        size = 0,
+        previewUrl,
+        status,
+        duration,
+        validationError
+      },
+      isUpload,
+      canCancel,
+      canRemove,
+      canRestart,
+      extra: { minSizeBytes }
+    } = this.props
+
+    let fileNameDisplay = `${name || "?"}, ${formatBytes(size)}`
+    if (duration) {
+      fileNameDisplay = `${fileNameDisplay}, ${formatDuration(duration)}`
+    }
+    let errorText = null
+
+    if (status === "error_file_size" || status === "error_validation") {
+      if (status === "error_file_size") {
+        errorText = size < minSizeBytes ? "File too small" : "File too large"
+      } else if (status === "error_validation") {
+        errorText = String(validationError)
+      }
+    }
+
+    if (
+      status === "error_upload_params" ||
+      status === "exception_upload" ||
+      status === "error_upload"
+    ) {
+      errorText = getXhrResponseError(response) || defaultUploadErrorText
+    } else if (status === "aborted") {
+      errorText = "Cancelled"
+    }
+
+    return (
+      <div className={className} style={style}>
+        {previewUrl && (
+          <img
+            className={imageClassName}
+            style={imageStyle}
+            src={previewUrl}
+            alt={fileNameDisplay}
+            title={fileNameDisplay}
+          />
+        )}
+        {!previewUrl && (
+          <span className="dzu-previewFileName">{fileNameDisplay}</span>
+        )}
+
+        <div className="dzu-previewStatusContainer">
+          {isUpload && !errorText && (
+            <progress
+              max={100}
+              value={
+                status === "done" || status === "headers_received" ?
+                  100 :
+                  percent
+              }
+            />
+          )}
+        </div>
+        {status === "uploading" && canCancel && (
+          <button className="borderless" onClick={cancel}>
+            <i className="material-icons" onClick={cancel}>
+              close
+            </i>
+          </button>
+        )}
+        {!["preparing", "getting_upload_params", "uploading", "done"].includes(
+          status
+        ) &&
+          canRemove && (
+          <button className="borderless" onClick={remove}>
+            <i className="material-icons" onClick={remove}>
+                close
+            </i>
+          </button>
+        )}
+        {status === "done" && canRemove && (
+          <button className="borderless" onClick={remove}>
+            <i className="material-icons" onClick={remove}>
+              check
+            </i>
+          </button>
+        )}
+        {[
+          "error_upload_params",
+          "exception_upload",
+          "error_upload",
+          "aborted",
+          "ready"
+        ].includes(status) &&
+          canRestart && (
+          <button className="borderless" onClick={restart}>
+            <i className="material-icons">refresh</i>
+          </button>
+        )}
+        {errorText && <div className="error text-left">{errorText}</div>}
+      </div>
+    )
+  }
 }
 
 export const ResumeUploader = (props: UploaderProps) => {
@@ -52,7 +188,8 @@ export const ResumeUploader = (props: UploaderProps) => {
   }
 
   const inputContent = (
-    <div>
+    // This key is needed to avoid a warning in react-dropzone-uploader
+    <div key="input-content">
       Drag Files or Click to Browse.
       <br />
       <span className="file-types">
@@ -78,6 +215,8 @@ export const ResumeUploader = (props: UploaderProps) => {
           dropzone: { minHeight: 200, maxHeight: 250 }
         }}
         accept={join(",", values(ALLOWED_FILE_EXTENSIONS))}
+        maxSizeBytes={SETTINGS.upload_max_size || DEFAULT_MAX_RESUME_FILE_SIZE}
+        PreviewComponent={CustomPreview}
       />
       {!isNilOrBlank(resumeFilename) && (
         <p className="uploaded">

@@ -3,6 +3,11 @@
     color: $med-dark-gray;
   }
 
+  .error {
+    color: $error-red;
+    font-weight: 600;
+  }
+
   .uploaded {
     text-overflow: ellipsis;
     overflow-x: hidden;
@@ -29,6 +34,40 @@
 
     .file-types {
       font-size: 16px;
+    }
+
+    .dzu-previewContainer {
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      > * {
+        flex-grow: 0;
+      }
+
+      .error {
+        flex: 0 0 100%;
+      }
+
+      .dzu-previewFileName {
+        flex-grow: 1;
+        white-space: nowrap;
+        text-align: left;
+      }
+
+      .dzu-previewStatusContainer {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+      }
+
+      button {
+        display: inline-flex;
+        flex-shrink: 1;
+      }
+    }
+
+    i.material-icons {
+      cursor: pointer;
     }
 
     button.dzu-submitButton {

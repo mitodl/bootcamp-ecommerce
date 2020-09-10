@@ -72,6 +72,8 @@ target/
 # webpack
 static/bundles
 node_modules
+yalc.lock
+.yalc/
 
 # JS directories
 !static/js/lib
