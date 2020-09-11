@@ -41,6 +41,8 @@
     {% block footer %}
       {% include "footer.html" %}
     {% endblock %}
+    {% block postfooter %}
+    {% endblock %}
     {% if zendesk_config.help_widget_enabled %}
       <script type="text/javascript">
         if (typeof zE !== 'undefined') {

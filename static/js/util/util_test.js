@@ -1,5 +1,4 @@
 import { assert } from "chai"
-import sinon from "sinon"
 import moment from "moment"
 import _ from "lodash"
 
@@ -19,7 +18,6 @@ import {
   formatStartEndDateStrings,
   newSetWithout,
   newSetWith,
-  timeoutPromise,
   getFilenameFromPath,
   getFilenameFromMediaPath,
   isErrorResponse,
@@ -175,14 +173,6 @@ describe("util", () => {
     const set = new Set([1, 2, 3])
     assert.deepEqual(newSetWithout(set, 3), new Set([1, 2]))
     assert.deepEqual(newSetWithout(set, 4), set)
-  })
-
-  it("timeoutPromise returns a Promise that executes a function after a delay then resolves", async () => {
-    const func = sinon.stub()
-    const promise = timeoutPromise(func, 10)
-    sinon.assert.callCount(func, 0)
-    await promise
-    sinon.assert.callCount(func, 1)
   })
 
   //

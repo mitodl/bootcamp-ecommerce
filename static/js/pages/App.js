@@ -19,19 +19,14 @@ import ReviewAdminPages from "./applications/ReviewAdminPages"
 import EmailConfirmPage from "./settings/EmailConfirmPage"
 import AccountSettingsPage from "./settings/AccountSettingsPage"
 
+import { handleCmsNotifications } from "../lib/notifications"
 import users, { currentUserSelector } from "../lib/queries/users"
 import { routes } from "../lib/urls"
 
-import {
-  ALERT_TYPE_TEXT,
-  CMS_NOTIFICATION_SELECTOR,
-  CMS_SITE_WIDE_NOTIFICATION,
-  CMS_NOTIFICATION_LCL_STORAGE_ID,
-  CMS_NOTIFICATION_ID_ATTR
-} from "../constants"
 import type { Match } from "react-router"
 
 import { addUserNotification } from "../actions"
+import { ALERT_TYPE_TEXT } from "../constants"
 
 import type { CurrentUser } from "../flow/authTypes"
 
@@ -44,32 +39,7 @@ type Props = {
 export class App extends Component<Props> {
   componentDidMount() {
     const { addUserNotification } = this.props
-    const cmsNotification = document.querySelector(CMS_NOTIFICATION_SELECTOR)
-    if (cmsNotification) {
-      const notificationId = cmsNotification.getAttribute(
-        CMS_NOTIFICATION_ID_ATTR
-      )
-      const notificationHtml = cmsNotification.innerHTML
-      if (
-        window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID) !==
-        notificationId
-      ) {
-        addUserNotification({
-          [CMS_SITE_WIDE_NOTIFICATION]: {
-            type:  ALERT_TYPE_TEXT,
-            props: {
-              text: (
-                <div
-                  className="site-wide"
-                  dangerouslySetInnerHTML={{ __html: notificationHtml }}
-                />
-              ),
-              persistedId: notificationId
-            }
-          }
-        })
-      }
-    }
+    handleCmsNotifications(addUserNotification)
   }
 
   render() {
@@ -83,7 +53,7 @@ export class App extends Component<Props> {
     return (
       <div className="app">
         <SiteNavbar />
-        <NotificationContainer />
+        <NotificationContainer alertTypes={[ALERT_TYPE_TEXT]} />
         <div className="body-content">
           <Switch>
             <Route

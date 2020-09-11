@@ -6,11 +6,13 @@ import NotificationContainer, {
 } from "./NotificationContainer"
 import { TextNotification } from "."
 import {
+  ALERT_TYPE_SUCCESS,
   ALERT_TYPE_TEXT,
   CMS_NOTIFICATION_LCL_STORAGE_ID,
   CMS_SITE_WIDE_NOTIFICATION
 } from "../../constants"
 import IntegrationTestHelper from "../../util/integration_test_helper"
+import { shouldIf } from "../../lib/test_utils"
 
 describe("NotificationContainer component", () => {
   const messages = {
@@ -118,13 +120,13 @@ describe("NotificationContainer component", () => {
     assert.isNull(window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID))
   })
 
-  it("removes cms notifictaion, adds it in the local storage", async () => {
+  it("removes cms notification, adds it in the local storage", async () => {
     const { inner } = await render({
       ui: {
         userNotifications: {
           [CMS_SITE_WIDE_NOTIFICATION]: {
             type:  ALERT_TYPE_TEXT,
-            props: { text: "Cms Notifictaion", persistedId: 1 }
+            props: { text: "Cms Notification", persistedId: 1 }
           }
         }
       }
@@ -142,5 +144,31 @@ describe("NotificationContainer component", () => {
       window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID),
       1
     )
+  })
+
+  //
+  ;[true, false].forEach(filterAlertType => {
+    it(`${shouldIf(
+      filterAlertType
+    )} filter alerts based on alert types`, async () => {
+      const { inner } = await render(
+        {
+          ui: {
+            userNotifications: {
+              aMessage: {
+                type:  ALERT_TYPE_TEXT,
+                props: { text: "some text" }
+              }
+            }
+          }
+        },
+        filterAlertType ?
+          {
+            alertTypes: [ALERT_TYPE_SUCCESS]
+          } :
+          {}
+      )
+      assert.equal(inner.find("Alert").exists(), !filterAlertType)
+    })
   })
 })
