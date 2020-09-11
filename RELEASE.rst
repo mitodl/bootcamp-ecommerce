@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.55.1
+--------------
+
+- Add support for sticky notifications (#993)
+- Add a try..except block to refresh_pending_interview_links (#1006)
+- Fixed react-dropzone-uploader bugs (#996)
+- Check for and fix missing submissions & null interview urls (#1000)
+
 Version 0.55.0 (Released September 09, 2020)
 --------------
 
