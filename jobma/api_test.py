@@ -62,8 +62,8 @@ def test_create_interview(
                 reverse("jobma-webhook", kwargs={"pk": interview.id}),
             ),
             "candidate": {
-                "first_name": interview.applicant.profile.first_and_last_names[0],
-                "last_name": interview.applicant.profile.first_and_last_names[1],
+                "first_name": interview.applicant.legal_address.first_name,
+                "last_name": interview.applicant.legal_address.last_name,
                 "phone": "",
                 "email": interview.applicant.email,
             },

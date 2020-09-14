@@ -61,17 +61,3 @@ def test_profile_is_complete_zero():
     """Test that Profile.is_complete returns True even if one of the values is 0"""
     profile = ProfileFactory.create(company_size=0)
     assert profile.is_complete is True
-
-
-@pytest.mark.parametrize(
-    "name, expected",
-    [
-        ["Onename", ["Onename", ""]],
-        ["Two names", ["Two", "names"]],
-        ["Three names or more", ["Three", "names or more"]],
-    ],
-)
-def test_profile_first_and_last_names(name, expected):
-    """Profile.first_and_last_names should properly split the name"""
-    profile = ProfileFactory.create(name=name)
-    assert list(profile.first_and_last_names) == expected

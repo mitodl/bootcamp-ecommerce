@@ -71,7 +71,7 @@ def test_render_applicant_letter_text(
         application, letter_type=letter_type
     )
     assert expected_subject == subject
-    assert text == f"Dear {application.user.profile.first_and_last_names[0]}"
+    assert text == f"Dear {application.user.legal_address.first_name}"
     assert signatory["name"] == letter_template_page.signatory_name
     assert signatory["image"] == letter_template_page.signature_image
 

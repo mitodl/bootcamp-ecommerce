@@ -1,7 +1,7 @@
 """
 Factories for bootcamp models
 """
-from factory import Faker, Sequence, SubFactory
+from factory import Faker, Sequence, SubFactory, LazyAttribute
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyDecimal, FuzzyText
 import faker
@@ -33,6 +33,9 @@ class BootcampRunFactory(DjangoModelFactory):
     )
     end_date = Faker(
         "date_time_this_year", before_now=False, after_now=True, tzinfo=pytz.UTC
+    )
+    novoed_course_stub = LazyAttribute(
+        lambda bootcamp_run: "-".join(bootcamp_run.title.lower().split(" "))[0:20]
     )
 
     class Meta:

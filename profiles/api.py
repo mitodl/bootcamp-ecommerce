@@ -206,3 +206,35 @@ def find_available_username(initial_username_base):
         )
         # If there is space for 4 digits for the suffix, the minimum value it could be is 1000, or 10^3
         current_min_suffix = 10 ** (available_suffix_digits - 1)
+
+
+def get_first_and_last_names(user):
+    """
+    Returns a the most reliable values we have for a user's first and last name based on
+    what they have entered for their legal address and profile.
+
+    Args:
+        user (django.contrib.auth.models.User):
+
+    Returns:
+        (str or None, str or None): A tuple containing the first name and last name, or None if those
+            values could not be determined with the user information we have
+    """
+    legal_address = getattr(user, "legal_address", None)
+    if (
+        legal_address is not None
+        and legal_address.first_name
+        and legal_address.last_name
+    ):
+        return legal_address.first_name, legal_address.last_name
+    profile = getattr(user, "profile", None)
+    if profile is None or not profile.name:
+        return None, None
+    name = profile.name or ""
+    names = name.split(maxsplit=1)
+    if len(names) == 0:
+        return "", ""
+    elif len(names) == 1:
+        return names[0], ""
+    else:
+        return tuple(names)

@@ -9,9 +9,10 @@ from profiles.api import (
     fetch_user,
     fetch_users,
     find_available_username,
+    get_first_and_last_names,
 )
 from profiles.utils import usernameify
-from profiles.factories import UserFactory
+from profiles.factories import UserFactory, LegalAddressFactory, ProfileFactory
 
 User = get_user_model()
 
@@ -172,3 +173,20 @@ def test_full_username_creation():
     assert available_username == "{}1".format(
         new_generated_username[0 : expected_username_max - 1]
     )
+
+
+@pytest.mark.django_db
+def test_get_first_and_last_names():
+    """get_first_and_last_names should fetch the most reliable values for a user's first and last name"""
+    user = UserFactory.create(profile=None, legal_address=None)
+    assert get_first_and_last_names(user) == (None, None)
+    profile = ProfileFactory.create(user=user, name="Mononymous")
+    user.refresh_from_db()
+    assert get_first_and_last_names(user) == ("Mononymous", "")
+    profile.name = "John Profile"
+    profile.save()
+    user.refresh_from_db()
+    assert get_first_and_last_names(user) == ("John", "Profile")
+    LegalAddressFactory.create(user=user, first_name="Jane", last_name="Address")
+    user.refresh_from_db()
+    assert get_first_and_last_names(user) == ("Jane", "Address")

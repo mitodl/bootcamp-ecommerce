@@ -6,6 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 import hashlib
 import hmac
+from types import SimpleNamespace
 
 from django.core.mail import EmailMessage
 import pytest
@@ -67,6 +68,41 @@ def bootcamp_run(application):
     Creates a purchasable bootcamp run. Bootcamp run price is at least $200, in two installments
     """
     yield application.bootcamp_run
+
+
+@pytest.fixture
+def paid_order_elements():
+    """
+    Sets up a scenario where a fully-paid order has been created for a bootcamp application
+    """
+    installment = InstallmentFactory.create()
+    application = BootcampApplicationFactory.create(
+        bootcamp_run=installment.bootcamp_run, state=AppStates.AWAITING_PAYMENT
+    )
+    order = OrderFactory.create(
+        status=Order.CREATED,
+        total_price_paid=installment.amount,
+        application=application,
+        user=application.user,
+    )
+    line = LineFactory.create(
+        order=order, price=installment.amount, bootcamp_run=application.bootcamp_run
+    )
+    return SimpleNamespace(
+        order=order,
+        line=line,
+        run=installment.bootcamp_run,
+        application=application,
+        user=application.user,
+    )
+
+
+@pytest.fixture
+def patched_novoed_tasks(mocker):
+    """
+    Patches NovoEd tasks in the ecommerce API
+    """
+    return mocker.patch("ecommerce.api.novoed_tasks")
 
 
 @pytest.mark.parametrize("payment_amount", [0, -1.23])
@@ -498,35 +534,81 @@ def test_bad_refund_amount(amount):
 
 
 @pytest.mark.parametrize("enrollment_exists", [True, False])
-def test_complete_successful_order(enrollment_exists):
+def test_complete_successful_order(paid_order_elements, enrollment_exists):
     """Test that enrollment, application values updated correctly on successful order"""
-    installment = InstallmentFactory.create()
-    application = BootcampApplicationFactory.create(
-        bootcamp_run=installment.bootcamp_run, state=AppStates.AWAITING_PAYMENT
-    )
-    order = OrderFactory.create(
-        status=Order.CREATED,
-        total_price_paid=installment.amount,
-        application=application,
-        user=application.user,
-    )
-    LineFactory.create(
-        order=order, price=installment.amount, bootcamp_run=application.bootcamp_run
-    )
     if enrollment_exists:
         BootcampRunEnrollmentFactory.create(
-            user=order.user,
-            bootcamp_run=application.bootcamp_run,
+            user=paid_order_elements.user,
+            bootcamp_run=paid_order_elements.run,
             active=False,
             change_status=ENROLL_CHANGE_STATUS_REFUNDED,
         )
-    complete_successful_order(order)
+    complete_successful_order(paid_order_elements.order)
     assert (
-        BootcampApplication.objects.get(id=application.id).state
-        == AppStates.COMPLETE.value
+        BootcampApplication.objects.filter(
+            id=paid_order_elements.application.id, state=AppStates.COMPLETE.value
+        ).exists()
+        is True
     )
     enrollment = BootcampRunEnrollment.objects.get(
-        user=application.user, bootcamp_run=application.bootcamp_run
+        user=paid_order_elements.user, bootcamp_run=paid_order_elements.run
     )
     assert enrollment.active is True
     assert enrollment.change_status is None
+
+
+@pytest.mark.parametrize(
+    "feature_flag,has_stub",
+    [[True, True], [True, False], [False, True], [False, False]],
+)
+def test_complete_successful_order_novoed(
+    settings, paid_order_elements, patched_novoed_tasks, feature_flag, has_stub
+):
+    """
+    complete_successful_order should call a task that enrolls the given user in a NovoEd course
+    """
+    settings.FEATURES["NOVOED_INTEGRATION"] = feature_flag
+    if not has_stub:
+        paid_order_elements.run.novoed_course_stub = None
+        paid_order_elements.run.save()
+    complete_successful_order(paid_order_elements.order)
+    if feature_flag and has_stub:
+        patched_novoed_tasks.enroll_users_in_novoed_course.delay.assert_called_once_with(
+            user_ids=[paid_order_elements.user.id],
+            novoed_course_stub=paid_order_elements.run.novoed_course_stub,
+        )
+    else:
+        patched_novoed_tasks.enroll_users_in_novoed_course.delay.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "feature_flag,has_stub",
+    [[True, True], [True, False], [False, True], [False, False]],
+)
+def test_refund_novoed(
+    settings, paid_order_elements, patched_novoed_tasks, feature_flag, has_stub
+):
+    """
+    process_refund should call a task that unenrolls the user from a NovoEd course
+    """
+    settings.FEATURES["NOVOED_INTEGRATION"] = feature_flag
+    if not has_stub:
+        paid_order_elements.run.novoed_course_stub = None
+        paid_order_elements.run.save()
+    paid_order_elements.order.status = Order.FULFILLED
+    paid_order_elements.order.save()
+    BootcampRunEnrollmentFactory.create(
+        user=paid_order_elements.user, bootcamp_run=paid_order_elements.run
+    )
+    process_refund(
+        user=paid_order_elements.user,
+        bootcamp_run=paid_order_elements.run,
+        amount=paid_order_elements.line.price,
+    )
+    if feature_flag and has_stub:
+        patched_novoed_tasks.unenroll_user_from_novoed_course.delay.assert_called_once_with(
+            user_id=paid_order_elements.user.id,
+            novoed_course_stub=paid_order_elements.run.novoed_course_stub,
+        )
+    else:
+        patched_novoed_tasks.unenroll_user_from_novoed_course.delay.assert_not_called()

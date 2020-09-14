@@ -14,6 +14,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls.base import clear_url_caches
 
 from rest_framework.renderers import JSONRenderer
+from rest_framework import status
 from requests.exceptions import HTTPError
 
 from main import features
@@ -85,9 +86,18 @@ class MockResponse:
         if url:
             self.url = url
 
+    @property
+    def ok(self):  # pylint: disable=missing-docstring
+        return status.HTTP_200_OK <= self.status_code < status.HTTP_400_BAD_REQUEST
+
     def json(self):
-        """ Return json content"""
+        """Return json content"""
         return json.loads(self.content)
+
+    def raise_for_status(self):
+        """Raises an exception"""
+        if not self.ok:
+            raise HTTPError(response=self)
 
 
 class MockHttpError(HTTPError):

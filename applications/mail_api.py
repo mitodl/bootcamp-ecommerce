@@ -7,6 +7,7 @@ from applications.constants import LETTER_TYPE_APPROVED, LETTER_TYPE_REJECTED
 from cms.api import render_template
 from cms.models import LetterTemplatePage
 from mail.v2.api import render_email_templates, send_message
+from profiles.api import get_first_and_last_names
 
 
 def email_letter(applicant_letter, signatory):
@@ -63,8 +64,7 @@ def render_applicant_letter_text(application, *, letter_type):
     else:
         raise ValueError(f"Unexpected letter type {letter_type}")
 
-    profile = application.user.profile
-    first_name, last_name = profile.first_and_last_names
+    first_name, last_name = get_first_and_last_names(application.user)
     rendered_text = render_template(
         text=template_text,
         context={
