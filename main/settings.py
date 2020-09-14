@@ -657,10 +657,10 @@ if BOOTCAMP_ECOMMERCE_USE_S3 and (
 if BOOTCAMP_ECOMMERCE_USE_S3:
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-MAX_FILE_UPLOAD_SIZE = get_string(
-    "MAX_FILE_UPLOAD_SIZE",
-    10_000_000,  # 10 MB
-    description="The maximum size in bytes for an uploaded file",
+MAX_FILE_UPLOAD_MB = get_int(
+    "MAX_FILE_UPLOAD_MB",
+    10,
+    description="The maximum size in megabytes for an uploaded file",
 )
 
 # Celery

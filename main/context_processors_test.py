@@ -61,7 +61,7 @@ def test_get_context_js_settings(mocker, settings, patched_get_resource_page_url
     settings.RECAPTCHA_SITE_KEY = "SITE_KEY"
     settings.SUPPORT_URL = "http://example.com/support"
     settings.SENTRY_DSN = "http://example.com/sentry"
-    settings.MAX_FILE_UPLOAD_SIZE = 123
+    settings.MAX_FILE_UPLOAD_MB = 123
     settings.ZENDESK_CONFIG = {
         "HELP_WIDGET_ENABLED": False,
         "HELP_WIDGET_KEY": "fake_key",
@@ -81,7 +81,7 @@ def test_get_context_js_settings(mocker, settings, patched_get_resource_page_url
             "help_widget_key": settings.ZENDESK_CONFIG["HELP_WIDGET_KEY"],
         },
         "recaptchaKey": settings.RECAPTCHA_SITE_KEY,
-        "upload_max_size": settings.MAX_FILE_UPLOAD_SIZE,
+        "upload_max_size": 123_000_000,
         "support_url": settings.SUPPORT_URL,
         "terms_url": patched_get_resource_page_urls.return_value["terms_of_service"],
     }
