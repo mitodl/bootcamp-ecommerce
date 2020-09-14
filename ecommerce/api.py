@@ -5,13 +5,13 @@ from base64 import b64encode
 from collections import namedtuple
 import csv
 from datetime import datetime, timedelta
-from dateutil.parser import parse as parse_datetime
 from decimal import Decimal
 import hashlib
 import hmac
 import logging
 import uuid
 
+from dateutil.parser import parse as parse_datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -115,13 +115,13 @@ def create_refund_order(*, user, bootcamp_run, amount, application=None):
         total_price_paid=refund_amount,
         user=user,
         application=application,
+        payment_type=Order.REFUND_TYPE,
     )
     Line.objects.create(
         order=order,
         description="Refund for {}".format(bootcamp_run.title),
         price=refund_amount,
         bootcamp_run=bootcamp_run,
-        payment_type=Order.REFUND_TYPE,
     )
     order.save_and_log(user)
     return order
