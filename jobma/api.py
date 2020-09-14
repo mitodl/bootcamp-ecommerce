@@ -6,6 +6,7 @@ from django.conf import settings
 from django.urls import reverse
 from requests import Session
 
+from profiles.api import get_first_and_last_names
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ def create_interview_in_jobma(interview):
     client = get_jobma_client()
     url = urljoin(settings.JOBMA_BASE_URL, "interviews")
     job = interview.job
-    first_name, last_name = interview.applicant.profile.first_and_last_names
+    first_name, last_name = get_first_and_last_names(interview.applicant)
     response = client.post(
         url,
         json={

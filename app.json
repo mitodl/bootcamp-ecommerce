@@ -304,6 +304,18 @@
       "default": "Bootcamp e-commerce",
       "description": "Application identifier in New Relic."
     },
+    "NOVOED_API_BASE_URL": {
+      "description": "The base URL of the NovoEd API",
+      "required": false
+    },
+    "NOVOED_API_KEY": {
+      "description": "The NovoEd API key",
+      "required": false
+    },
+    "NOVOED_API_SECRET": {
+      "description": "The NovoEd API secret",
+      "required": false
+    },
     "PGBOUNCER_DEFAULT_POOL_SIZE": {
       "value": "50"
     },

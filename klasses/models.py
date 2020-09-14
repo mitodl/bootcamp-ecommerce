@@ -43,6 +43,7 @@ class BootcampRun(models.Model):
     run_key = models.IntegerField(unique=True, db_index=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
+    novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)
 
     @property
     def price(self):
@@ -220,6 +221,7 @@ class BootcampRunEnrollment(TimestampedModel):
     change_status = models.CharField(
         choices=ENROLL_CHANGE_STATUS_CHOICES, max_length=20, null=True, blank=True
     )
+    novoed_sync_date = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(
         default=True,
         help_text="Indicates whether or not this enrollment should be considered active",

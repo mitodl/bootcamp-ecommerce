@@ -104,7 +104,7 @@ class AuditableModel(Model):
         Saves the object and creates an audit object.
 
         Args:
-            acting_user (django.contrib.auth.models.User):
+            acting_user (django.contrib.auth.models.User or None):
                 The user who made the change to the model. May be None if inapplicable.
         """
         before_obj = self.__class__.objects.filter(id=self.id).first()

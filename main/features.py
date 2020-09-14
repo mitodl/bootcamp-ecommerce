@@ -3,6 +3,7 @@ from functools import wraps
 from django.conf import settings
 
 SOCIAL_AUTH_API = "SOCIAL_AUTH_API"
+NOVOED_INTEGRATION = "NOVOED_INTEGRATION"
 
 
 def is_enabled(name, default=None):

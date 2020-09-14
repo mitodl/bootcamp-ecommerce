@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     "authentication",
     "compliance",
     "jobma",
+    "novoed",
 )
 
 DISABLE_WEBPACK_LOADER_STATS = get_bool(
@@ -848,6 +849,14 @@ JOBMA_LINK_EXPIRATION_DAYS = get_int(
     "JOBMA_LINK_EXPIRATION_DAYS",
     29,
     description="The number of days for Jobma links to expire",
+)
+
+NOVOED_API_KEY = get_string("NOVOED_API_KEY", None, description="The NovoEd API key")
+NOVOED_API_SECRET = get_string(
+    "NOVOED_API_SECRET", None, description="The NovoEd API secret"
+)
+NOVOED_API_BASE_URL = get_string(
+    "NOVOED_API_BASE_URL", None, description="The base URL of the NovoEd API"
 )
 
 # Relative URL to be used by Djoser for the link in the password reset email
