@@ -562,14 +562,12 @@ def import_wire_transfer(wire_transfer, header_row):
     Import a wire transfer. If the WireTransferReceipt already exists, the information will be updated,
     otherwise it will be created
     """
-    # TODO: what if a user hasn't been created yet?
     user = User.objects.get(email=wire_transfer.learner_email)
     bootcamp_run = BootcampRun.objects.get(
         bootcamp__title__iexact=wire_transfer.bootcamp_name,
         start_date__gte=wire_transfer.bootcamp_start_date - timedelta(days=1),
         start_date__lte=wire_transfer.bootcamp_start_date + timedelta(days=1),
     )
-    # TODO: what if they haven't filled out an application?
     application = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
 
     if WireTransferReceipt.objects.filter(wire_transfer_id=wire_transfer.id).exists():
@@ -608,10 +606,13 @@ def import_wire_transfers(csv_path):
     """
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
 
-    for wire_transfer in wire_transfers:
-        try:
-            import_wire_transfer(wire_transfer, header_row)
-        except:  # pylint: disable=bare-except
-            raise WireTransferImportException(
-                f"Error while importing row with Id column={wire_transfer.id}"
-            )
+    with transaction.atomic():
+        # transaction is here so, if there is a missing user and we error,
+        # make sure not to write only half the wire transfers
+        for wire_transfer in wire_transfers:
+            try:
+                import_wire_transfer(wire_transfer, header_row)
+            except:  # pylint: disable=bare-except
+                raise WireTransferImportException(
+                    f"Error while importing row with Id column={wire_transfer.id}"
+                )
