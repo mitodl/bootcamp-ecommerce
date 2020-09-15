@@ -60,15 +60,27 @@ def test_orderpartial_serializer(line):
     assert OrderPartialSerializer(line.order).data == expected
 
 
-@pytest.mark.parametrize("has_receipt", [True, False])
-def test_application_order_serializer(line, has_receipt, settings):
+@pytest.mark.parametrize(
+    "has_receipt, payment_type, expected_payment_method",
+    [
+        [True, Order.CYBERSOURCE_TYPE, "PayPal"],
+        [False, Order.CYBERSOURCE_TYPE, None],
+        [True, Order.WIRE_TRANSFER_TYPE, "Wire Transfer"],
+        [False, Order.WIRE_TRANSFER_TYPE, "Wire Transfer"],
+    ],
+)
+def test_application_order_serializer(
+    line, has_receipt, payment_type, expected_payment_method, settings
+):
     """
     Test application order serializer result
     """
     settings.CYBERSOURCE_SECURITY_KEY = "secure!"
     order = line.order
+    order.payment_type = payment_type
+    order.save()
     if has_receipt:
-        ReceiptFactory.create(order=order)
+        ReceiptFactory.create(order=order, data={"req_payment_method": "paypal"})
 
     assert ApplicationOrderSerializer(order).data == {
         "id": order.id,
@@ -76,9 +88,7 @@ def test_application_order_serializer(line, has_receipt, settings):
         "total_price_paid": line.price,
         "created_on": serializer_date_format(order.created_on),
         "updated_on": serializer_date_format(order.updated_on),
-        "payment_method": line.order.receipt_set.order_by("id").last().payment_method
-        if has_receipt
-        else None,
+        "payment_method": expected_payment_method,
     }
 
 

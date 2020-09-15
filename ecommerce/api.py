@@ -540,20 +540,20 @@ def parse_wire_transfer_csv(csv_path):
         if field not in header_index_lookup:
             raise WireTransferImportException(f"Unable to find column header {field}")
 
-    wire_transfers = []
-    for row in rows[header_row_index + 1 :]:
-        wire_transfers.append(
-            WireTransfer(
-                id=int(row[header_index_lookup[WIRE_TRANSFER_ID]]),
-                learner_email=row[header_index_lookup[WIRE_TRANSFER_LEARNER_EMAIL]],
-                amount=Decimal(row[header_index_lookup[WIRE_TRANSFER_AMOUNT]]),
-                bootcamp_start_date=parse_datetime(
-                    row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_START_DATE]]
-                ),
-                bootcamp_name=row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_NAME]],
-                row=row,
-            )
+    wire_transfers = [
+        WireTransfer(
+            id=int(row[header_index_lookup[WIRE_TRANSFER_ID]]),
+            learner_email=row[header_index_lookup[WIRE_TRANSFER_LEARNER_EMAIL]],
+            amount=Decimal(row[header_index_lookup[WIRE_TRANSFER_AMOUNT]]),
+            bootcamp_start_date=parse_datetime(
+                row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_START_DATE]]
+            ),
+            bootcamp_name=row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_NAME]],
+            row=row,
         )
+        for row in rows[header_row_index + 1 :]
+    ]
+
     return wire_transfers, header_row
 
 
@@ -574,26 +574,29 @@ def import_wire_transfer(wire_transfer, header_row):
         log.info("Wire transfer %d already imported, skipping...", wire_transfer.id)
         return
 
-    order = Order.objects.create(
-        status=Order.FULFILLED,
-        total_price_paid=wire_transfer.amount,
-        application=application,
-        user=user,
-        payment_type=Order.WIRE_TRANSFER_TYPE,
-    )
-    Line.objects.create(
-        order=order,
-        run_key=bootcamp_run.run_key,
-        description=f"Wire transfer payment for {bootcamp_run}",
-        price=wire_transfer.amount,
-    )
-    order.save_and_log(None)  # save record in audit table
+    with transaction.atomic():
+        order = Order.objects.create(
+            status=Order.FULFILLED,
+            total_price_paid=wire_transfer.amount,
+            application=application,
+            user=user,
+            payment_type=Order.WIRE_TRANSFER_TYPE,
+        )
+        Line.objects.create(
+            order=order,
+            bootcamp_run=bootcamp_run,
+            description=f"Wire transfer payment for {bootcamp_run}",
+            price=wire_transfer.amount,
+        )
+        order.save_and_log(None)  # save record in audit table
 
-    WireTransferReceipt.objects.create(
-        wire_transfer_id=wire_transfer.id,
-        data={header_row[col]: value for col, value in enumerate(wire_transfer.row)},
-        order=order,
-    )
+        WireTransferReceipt.objects.create(
+            wire_transfer_id=wire_transfer.id,
+            data={
+                header_row[col]: value for col, value in enumerate(wire_transfer.row)
+            },
+            order=order,
+        )
     log.info("Wire transfer %d successfully imported", wire_transfer.id)
 
 
