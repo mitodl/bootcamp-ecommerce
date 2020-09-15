@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.55.2
+--------------
+
+- Updated Heroku nginx config and Django settings for file upload size (#1004)
+- Added NovoEd integration for adding/removing enrollments (#1002)
+
 Version 0.55.1 (Released September 15, 2020)
 --------------
 
