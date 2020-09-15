@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.55.1
+Version 0.55.1 (Released September 15, 2020)
 --------------
 
 - Add support for sticky notifications (#993)
