@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.55.2
+Version 0.55.2 (Released September 16, 2020)
 --------------
 
 - Updated Heroku nginx config and Django settings for file upload size (#1004)
