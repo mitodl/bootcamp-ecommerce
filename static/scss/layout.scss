@@ -37,7 +37,8 @@
 @import "button";
 @import "loader";
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -135,5 +136,16 @@ body {
   .col-35 {
     flex: 0 0 35%;
     max-width: 35%;
+  }
+}
+
+@media print {
+  /* All your print styles go here */
+  .nav-wrapper,
+  .notifications,
+  .print,
+  #footer,
+  #footer-notifications {
+    display: none !important;
   }
 }
