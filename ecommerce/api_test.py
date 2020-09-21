@@ -730,10 +730,22 @@ def test_parse_wire_transfer_csv_missing_header(tmp_path):
     assert ex.value.args[0] == "Unable to find column header Amount"
 
 
-def test_import_wire_transfer():
+@pytest.mark.parametrize(
+    "with_bootcamp_title,with_run_title",
+    [
+        [True, True],
+        [True, False],
+        [False, True],  # False, False is an error handled in a separate test
+    ],
+)
+def test_import_wire_transfer(with_bootcamp_title, with_run_title):
     """import_wire_transfer should store a wire transfer in the database and create an order for it"""
     user = User.objects.create(email="hdoof@odl.mit.edu")
-    run = BootcampRunFactory.create(bootcamp__title="How to be Evil")
+    title = "How to be Evil"
+    run = BootcampRunFactory.create(
+        **{"title": title} if with_run_title else {},
+        **{"bootcamp__title": title} if with_bootcamp_title else {},
+    )
     application = BootcampApplicationFactory.create(bootcamp_run=run, user=user)
     wire_transfer = WireTransfer(
         id=2,

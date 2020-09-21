@@ -564,7 +564,8 @@ def import_wire_transfer(wire_transfer, header_row):
     """
     user = User.objects.get(email=wire_transfer.learner_email)
     bootcamp_run = BootcampRun.objects.get(
-        bootcamp__title__iexact=wire_transfer.bootcamp_name,
+        Q(title__iexact=wire_transfer.bootcamp_name)
+        | Q(bootcamp__title__iexact=wire_transfer.bootcamp_name),
         start_date__gte=wire_transfer.bootcamp_start_date - timedelta(days=1),
         start_date__lte=wire_transfer.bootcamp_start_date + timedelta(days=1),
     )
