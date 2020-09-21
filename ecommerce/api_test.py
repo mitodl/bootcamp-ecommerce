@@ -806,6 +806,25 @@ def test_import_wire_transfers_missing_run():
         import_wire_transfer(wire_transfer, [])
 
 
+def test_import_wire_transfers_duplicate_run():
+    """import_wire_transfer should error if a title matches two separate runs"""
+    doof_email = "hdoof@odl.mit.edu"
+    title = "How to be Evil"
+    run = BootcampRunFactory.create(bootcamp__title=title)
+    BootcampRunFactory.create(title=title)
+    User.objects.create(email=doof_email)
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email=doof_email,
+        amount=Decimal(100),
+        bootcamp_start_date=datetime(2019, 12, 21),
+        bootcamp_name=run.title,
+        row=[],
+    )
+    with pytest.raises(BootcampRun.DoesNotExist):
+        import_wire_transfer(wire_transfer, [])
+
+
 @pytest.mark.parametrize("delta", [timedelta(days=2), timedelta(days=-2)])
 def test_import_wire_transfers_run_out_of_bounds_date(delta):
     """import_wire_transfer should error if the given starting date for a bootcamp doesn't match any run"""
