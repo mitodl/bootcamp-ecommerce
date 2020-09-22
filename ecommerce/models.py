@@ -28,8 +28,12 @@ class Order(AuditableModel, TimestampedModel):
     FAILED = "failed"
     CREATED = "created"
     REFUNDED = "refunded"
-
     STATUSES = [CREATED, FULFILLED, FAILED, REFUNDED]
+
+    CYBERSOURCE_TYPE = "cybersource"
+    WIRE_TRANSFER_TYPE = "wiretransfer"
+    REFUND_TYPE = "refund"
+    PAYMENT_TYPES = [CYBERSOURCE_TYPE, WIRE_TRANSFER_TYPE, REFUND_TYPE]
 
     user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
 
@@ -46,6 +50,11 @@ class Order(AuditableModel, TimestampedModel):
         blank=True,
         db_index=True,
         related_name="orders",
+    )
+    payment_type = CharField(
+        choices=[(payment_type, payment_type) for payment_type in PAYMENT_TYPES],
+        default=CYBERSOURCE_TYPE,
+        max_length=30,
     )
 
     def __str__(self):
@@ -183,3 +192,20 @@ class Receipt(TimestampedModel):
             return "Receipt for order {}".format(self.order.id)
         else:
             return "Receipt with no attached order"
+
+
+class WireTransferReceipt(TimestampedModel):
+    """
+    A record of a wire transfer
+    """
+
+    wire_transfer_id = IntegerField()
+    order = ForeignKey(Order, null=True, on_delete=CASCADE)
+    data = JSONField()
+
+    def __str__(self):
+        """Description of WireTransferReceipt"""
+        if self.order:
+            return f"Wire transfer receipt for order {self.order.id}"
+        else:
+            return "Wire transfer receipt with no attached order"

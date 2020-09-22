@@ -43,10 +43,13 @@ class ApplicationOrderSerializer(serializers.ModelSerializer):
 
     def get_payment_method(self, order):
         """Get the payment method used in the last receipt for the order"""
-        # There should only be one receipt for an order most of the time, but it's possible
-        # there is a duplicate or a Cybersource error in one of the receipts.
-        receipt = order.receipt_set.order_by("id").last()
-        return receipt.payment_method if receipt is not None else None
+        if order.payment_type == Order.CYBERSOURCE_TYPE:
+            # There should only be one receipt for an order most of the time, but it's possible
+            # there is a duplicate or a Cybersource error in one of the receipts.
+            receipt = order.receipt_set.order_by("id").last()
+            return receipt.payment_method if receipt is not None else None
+        elif order.payment_type == Order.WIRE_TRANSFER_TYPE:
+            return "Wire Transfer"
 
     class Meta:
         model = Order

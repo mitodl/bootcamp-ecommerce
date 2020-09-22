@@ -2,12 +2,14 @@
 Test for ecommerce functions
 """
 from base64 import b64encode
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 import hashlib
 import hmac
+from pathlib import Path
 from types import SimpleNamespace
 
+from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
 import pytest
 import pytz
@@ -20,18 +22,26 @@ from ecommerce.api import (
     generate_cybersource_sa_payload,
     generate_cybersource_sa_signature,
     get_new_order_by_reference_number,
+    import_wire_transfers,
+    import_wire_transfer,
     ISO_8601_FORMAT,
     make_reference_id,
+    parse_wire_transfer_csv,
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
     send_receipt_email,
     create_refund_order,
     complete_successful_order,
     process_refund,
+    WireTransfer,
 )
-from ecommerce.exceptions import EcommerceException, ParseException
+from ecommerce.exceptions import (
+    EcommerceException,
+    ParseException,
+    WireTransferImportException,
+)
 from ecommerce.factories import LineFactory, OrderFactory
-from ecommerce.models import Line, Order
+from ecommerce.models import Line, Order, WireTransferReceipt
 from ecommerce.serializers import LineSerializer
 from ecommerce.test_utils import create_test_application, create_test_order
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
@@ -40,13 +50,14 @@ from klasses.factories import (
     InstallmentFactory,
     BootcampRunEnrollmentFactory,
 )
-from klasses.models import BootcampRunEnrollment
+from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from main.test_utils import any_instance_of
 from profiles.factories import ProfileFactory
 
 
 pytestmark = pytest.mark.django_db
+User = get_user_model()
 
 
 # pylint: disable=redefined-outer-name, unused-argument
@@ -612,3 +623,256 @@ def test_refund_novoed(
         )
     else:
         patched_novoed_tasks.unenroll_user_from_novoed_course.delay.assert_not_called()
+
+
+def test_parse_wire_transfer_csv():
+    """parse_wire_transfer_csv should convert CSV input to WireTransfer objects"""
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+    assert header_row == [
+        "Id",
+        "Date transfers requested ",
+        "Learner Email",
+        "Zendesk Ticket",
+        "Bootcamp ID",
+        "Payor Name",
+        "Learner email",
+        "Payment Date",
+        "Bootcamp Name",
+        "Bootcamp Start Date",
+        "Amount",
+        "Transfer Type",
+        "SAP doc # - Cash Application",
+        "Order Updated By",
+        "Refund Order ID",
+        "Order Completed Date",
+        "Errors",
+        "Ignore?",
+    ]
+    assert wire_transfers == [
+        WireTransfer(
+            id=2,
+            learner_email="hdoof@odl.mit.edu",
+            amount=Decimal(100),
+            bootcamp_start_date=datetime(2019, 12, 21),
+            bootcamp_name="How to be Evil",
+            row=[
+                "2",
+                "11/1/1973",
+                "hdoof@odl.mit.edu",
+                "",
+                "1",
+                "Heinz Doofenschmirtz",
+                "hdoof@odl.mit.edu",
+                "Oct 20, 2019",
+                "How to be Evil",
+                "Dec 21, 2019",
+                "100",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+            ],
+        ),
+        WireTransfer(
+            id=3,
+            learner_email="pplatypus@odl.mit.edu",
+            amount=Decimal(50),
+            bootcamp_start_date=datetime(2019, 12, 21),
+            bootcamp_name="How to be Evil",
+            row=[
+                "3",
+                "11/1/1944",
+                "pplatypus@odl.mit.edu",
+                "",
+                "1",
+                "Perry the Platypus",
+                "pplatypus@odl.mit.edu",
+                "Oct 20, 2019",
+                "How to be Evil",
+                "Dec 21, 2019",
+                "50",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+            ],
+        ),
+    ]
+
+
+def test_parse_wire_transfer_csv_no_header(tmp_path):
+    """parse_wire_transfer_csv should error if no header is found"""
+    path = tmp_path / "test.csv"
+    open(path, "w")  # create file
+    with pytest.raises(WireTransferImportException) as ex:
+        parse_wire_transfer_csv(path)
+
+    assert ex.value.args[0] == "Unable to find header row"
+
+
+def test_parse_wire_transfer_csv_missing_header(tmp_path):
+    """parse_wire_transfer_csv should error if not all fields are present"""
+    path = tmp_path / "test.csv"
+    with open(path, "w") as f:
+        f.write("Learner Email,Id\n")
+        f.write("hdoof@odl.mit.edu,20\n")
+
+    with pytest.raises(WireTransferImportException) as ex:
+        parse_wire_transfer_csv(path)
+
+    assert ex.value.args[0] == "Unable to find column header Amount"
+
+
+@pytest.mark.parametrize(
+    "with_bootcamp_title,with_run_title",
+    [
+        [True, True],
+        [True, False],
+        [False, True],  # False, False is an error handled in a separate test
+    ],
+)
+def test_import_wire_transfer(with_bootcamp_title, with_run_title):
+    """import_wire_transfer should store a wire transfer in the database and create an order for it"""
+    user = User.objects.create(email="hdoof@odl.mit.edu")
+    title = "How to be Evil"
+    run = BootcampRunFactory.create(
+        **{"title": title} if with_run_title else {},
+        **{"bootcamp__title": title} if with_bootcamp_title else {},
+    )
+    application = BootcampApplicationFactory.create(bootcamp_run=run, user=user)
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email=user.email,
+        amount=Decimal(100),
+        bootcamp_start_date=run.start_date,
+        bootcamp_name=run.bootcamp.title,
+        row=[],
+    )
+    import_wire_transfer(wire_transfer, [])
+    receipt = WireTransferReceipt.objects.get(wire_transfer_id=wire_transfer.id)
+    assert receipt.data == {}
+    order = receipt.order
+    assert order.status == Order.FULFILLED
+    assert order.total_price_paid == wire_transfer.amount
+    assert order.application == application
+    assert order.user == user
+    assert order.payment_type == Order.WIRE_TRANSFER_TYPE
+    line = order.line_set.get()
+    assert line.price == wire_transfer.amount
+    assert line.bootcamp_run == run
+    assert order.orderaudit_set.count() == 1
+
+    # function should handle importing twice by skipping the second import attempt
+    import_wire_transfer(wire_transfer, [])
+    assert WireTransferReceipt.objects.count() == 1
+    assert Order.objects.count() == 1
+    assert Line.objects.count() == 1
+
+
+def test_import_wire_transfer_missing_user():
+    """import_wire_transfer should error if a user does not exist"""
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email="hdoof@odl.mit.edu",
+        amount=Decimal(100),
+        bootcamp_start_date=datetime(2019, 12, 21),
+        bootcamp_name="How to be Evil",
+        row=[],
+    )
+    with pytest.raises(User.DoesNotExist):
+        import_wire_transfer(wire_transfer, [])
+
+
+def test_import_wire_transfers_missing_run():
+    """import_wire_transfer should error if a run doesn't match up with anything in the database"""
+    doof_email = "hdoof@odl.mit.edu"
+    User.objects.create(email=doof_email)
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email=doof_email,
+        amount=Decimal(100),
+        bootcamp_start_date=datetime(2019, 12, 21),
+        bootcamp_name="How to be Evil",
+        row=[],
+    )
+    with pytest.raises(BootcampRun.DoesNotExist):
+        import_wire_transfer(wire_transfer, [])
+
+
+def test_import_wire_transfers_duplicate_run():
+    """import_wire_transfer should error if a title matches two separate runs"""
+    doof_email = "hdoof@odl.mit.edu"
+    title = "How to be Evil"
+    run = BootcampRunFactory.create(bootcamp__title=title)
+    BootcampRunFactory.create(title=title, start_date=run.start_date)
+    User.objects.create(email=doof_email)
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email=doof_email,
+        amount=Decimal(100),
+        bootcamp_start_date=run.start_date,
+        bootcamp_name=title,
+        row=[],
+    )
+    with pytest.raises(BootcampRun.MultipleObjectsReturned):
+        import_wire_transfer(wire_transfer, [])
+
+
+@pytest.mark.parametrize("delta", [timedelta(days=2), timedelta(days=-2)])
+def test_import_wire_transfers_run_out_of_bounds_date(delta):
+    """import_wire_transfer should error if the given starting date for a bootcamp doesn't match any run"""
+    doof_email = "hdoof@odl.mit.edu"
+    run = BootcampRunFactory.create(bootcamp__title="How to be Evil")
+    User.objects.create(email=doof_email)
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email=doof_email,
+        amount=Decimal(100),
+        bootcamp_start_date=run.start_date + delta,
+        bootcamp_name=run.bootcamp.title,
+        row=[...],
+    )
+    with pytest.raises(BootcampRun.DoesNotExist):
+        import_wire_transfer(wire_transfer, [])
+
+
+def test_import_wire_transfers_missing_application():
+    """import_wire_transfer should error if a user hasn't created an application yet"""
+    doof_email = "hdoof@odl.mit.edu"
+    User.objects.create(email=doof_email)
+    run = BootcampRunFactory.create(bootcamp__title="How to be Evil")
+    wire_transfer = WireTransfer(
+        id=2,
+        learner_email=doof_email,
+        amount=Decimal(100),
+        bootcamp_start_date=run.start_date,
+        bootcamp_name=run.bootcamp.title,
+        row=[],
+    )
+    with pytest.raises(BootcampApplication.DoesNotExist):
+        import_wire_transfer(wire_transfer, [])
+
+
+def test_import_wire_transfers(mocker):
+    """import_wire_transfers should iterate through the list of wire transfers, processing one at a time"""
+    import_mock = mocker.patch("ecommerce.api.import_wire_transfer")
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    import_wire_transfers(csv_path)
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+    for wire_transfer in wire_transfers:
+        import_mock.assert_any_call(wire_transfer, header_row)
+
+
+def test_import_wire_transfers_error(mocker):
+    """import_wire_transfers should reraise errors"""
+    mocker.patch("ecommerce.api.import_wire_transfer", side_effect=ZeroDivisionError)
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    with pytest.raises(WireTransferImportException):
+        import_wire_transfers(csv_path)

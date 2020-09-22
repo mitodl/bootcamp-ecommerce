@@ -2,11 +2,9 @@
 Tests for the utils module
 """
 import datetime
-import unittest
 import operator as op
 from math import ceil
 
-from django.test import override_settings, TestCase
 import pytest
 import pytz
 
@@ -17,6 +15,7 @@ from main.utils import (
     chunks,
     now_in_utc,
     first_or_none,
+    first_matching_item,
     is_near_now,
     get_error_response_summary,
     unique,
@@ -62,6 +61,13 @@ def test_first_or_none():
     assert first_or_none(set()) is None
     assert first_or_none([1, 2, 3]) == 1
     assert first_or_none(range(1, 5)) == 1
+
+
+def test_first_matching_item():
+    """first_matching_item should return the first item where the predicate function returns true"""
+    assert first_matching_item([1, 2, 3, 4, 5], lambda x: x % 2 == 0) == 2
+    assert first_matching_item([], lambda x: True) is None
+    assert first_matching_item(["x", "y", "z"], lambda x: False) is None
 
 
 def test_max_or_none():
@@ -233,82 +239,70 @@ def test_get_error_response_summary(
     assert (f"url: {url}" in summary) is exp_url_in_summary
 
 
-class SerializerTests(TestCase):
+@pytest.mark.django_db
+def test_jsonfield(settings):
     """
-    Tests for serialize_model
+    Test a model with a JSONField is handled correctly
     """
-
-    def test_jsonfield(self):
-        """
-        Test a model with a JSONField is handled correctly
-        """
-        with override_settings(CYBERSOURCE_SECURITY_KEY="asdf"):
-            receipt = ReceiptFactory.create()
-            assert serialize_model_object(receipt) == {
-                "created_on": format_as_iso8601(receipt.created_on),
-                "data": receipt.data,
-                "id": receipt.id,
-                "updated_on": format_as_iso8601(receipt.updated_on),
-                "order": receipt.order.id,
-            }
+    settings.CYBERSOURCE_SECURITY_KEY = "asdf"
+    receipt = ReceiptFactory.create()
+    assert serialize_model_object(receipt) == {
+        "created_on": format_as_iso8601(receipt.created_on),
+        "data": receipt.data,
+        "id": receipt.id,
+        "updated_on": format_as_iso8601(receipt.updated_on),
+        "order": receipt.order.id,
+    }
 
 
-class FieldNamesTests(unittest.TestCase):
+def test_get_field_names():
     """
-    Tests for get_field_names
+    Assert that get_field_names does not include related fields
     """
-
-    def test_get_field_names(self):
-        """
-        Assert that get_field_names does not include related fields
-        """
-        assert set(get_field_names(Order)) == {
-            "user",
-            "status",
-            "total_price_paid",
-            "application",
-            "created_on",
-            "updated_on",
-        }
+    assert set(get_field_names(Order)) == {
+        "user",
+        "status",
+        "total_price_paid",
+        "application",
+        "created_on",
+        "updated_on",
+        "payment_type",
+    }
 
 
-class UtilTests(unittest.TestCase):
+def test_chunks():
     """
-    Tests for assorted utility functions
+    test for chunks
     """
+    input_list = list(range(113))
+    output_list = []
+    for nums in chunks(input_list):
+        output_list += nums
+    assert output_list == input_list
 
-    def test_chunks(self):
-        """
-        test for chunks
-        """
-        input_list = list(range(113))
-        output_list = []
-        for nums in chunks(input_list):
-            output_list += nums
-        assert output_list == input_list
+    output_list = []
+    for nums in chunks(input_list, chunk_size=1):
+        output_list += nums
+    assert output_list == input_list
 
-        output_list = []
-        for nums in chunks(input_list, chunk_size=1):
-            output_list += nums
-        assert output_list == input_list
+    output_list = []
+    for nums in chunks(input_list, chunk_size=124):
+        output_list += nums
+    assert output_list == input_list
 
-        output_list = []
-        for nums in chunks(input_list, chunk_size=124):
-            output_list += nums
-        assert output_list == input_list
 
-    def test_chunks_iterable(self):
-        """
-        test that chunks works on non-list iterables too
-        """
-        count = 113
-        input_range = range(count)
-        chunk_output = []
-        for chunk in chunks(input_range, chunk_size=10):
-            chunk_output.append(chunk)
-        assert len(chunk_output) == ceil(113 / 10)
+def test_chunks_iterable():
+    """
+    test that chunks works on non-list iterables too
+    """
+    count = 113
+    input_range = range(count)
+    chunk_output = []
+    for chunk in chunks(input_range, chunk_size=10):
+        chunk_output.append(chunk)
+    assert len(chunk_output) == ceil(113 / 10)
 
-        range_list = []
-        for chunk in chunk_output:
-            range_list += chunk
-        assert range_list == list(range(count))
+    range_list = []
+    for chunk in chunk_output:
+        range_list += chunk
+    assert range_list == list(range(count))

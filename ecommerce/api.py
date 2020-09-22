@@ -2,14 +2,18 @@
 Functions for ecommerce
 """
 from base64 import b64encode
-from datetime import datetime
+from collections import namedtuple
+import csv
+from datetime import datetime, timedelta
 from decimal import Decimal
 import hashlib
 import hmac
 import logging
 import uuid
 
+from dateutil.parser import parse as parse_datetime
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
 from django_fsm import TransitionNotAllowed
@@ -19,9 +23,21 @@ from rest_framework.exceptions import ValidationError
 from applications.models import BootcampApplication
 from applications.serializers import BootcampApplicationDetailSerializer
 from ecommerce import tasks
-from ecommerce.constants import CYBERSOURCE_DECISION_CANCEL
-from ecommerce.exceptions import EcommerceException, ParseException
-from ecommerce.models import Line, Order
+from ecommerce.constants import (
+    CYBERSOURCE_DECISION_CANCEL,
+    WIRE_TRANSFER_AMOUNT,
+    WIRE_TRANSFER_ID,
+    WIRE_TRANSFER_LEARNER_EMAIL,
+    WIRE_TRANSFER_HEADER_FIELDS,
+    WIRE_TRANSFER_BOOTCAMP_START_DATE,
+    WIRE_TRANSFER_BOOTCAMP_NAME,
+)
+from ecommerce.exceptions import (
+    EcommerceException,
+    ParseException,
+    WireTransferImportException,
+)
+from ecommerce.models import Line, Order, WireTransferReceipt
 from klasses.api import deactivate_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.models import BootcampRun, BootcampRunEnrollment
@@ -33,6 +49,7 @@ from main import features
 from main.utils import remove_html_tags
 from novoed import tasks as novoed_tasks
 
+User = get_user_model()
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 log = logging.getLogger(__name__)
 _REFERENCE_NUMBER_PREFIX = "BOOTCAMP-"
@@ -61,6 +78,7 @@ def create_unfulfilled_order(*, application, payment_amount):
         total_price_paid=payment_amount,
         user=application.user,
         application=application,
+        payment_type=Order.CYBERSOURCE_TYPE,
     )
     Line.objects.create(
         order=order,
@@ -97,6 +115,7 @@ def create_refund_order(*, user, bootcamp_run, amount, application=None):
         total_price_paid=refund_amount,
         user=user,
         application=application,
+        payment_type=Order.REFUND_TYPE,
     )
     Line.objects.create(
         order=order,
@@ -483,3 +502,121 @@ def send_receipt_email(application_id):
             EMAIL_RECEIPT,
         )
     )
+
+
+WireTransfer = namedtuple(
+    "WireTransfer",
+    ["id", "learner_email", "amount", "bootcamp_start_date", "bootcamp_name", "row"],
+)
+
+
+def parse_wire_transfer_csv(csv_path):
+    """
+    Read CSV file and convert to WireTransfer objects for further processing
+
+    Args:
+        csv_path (str): Path to the CSV file
+
+    Returns:
+        (list of WireTransfer, list):
+    """
+    with open(csv_path) as csv_file:
+        rows = list(csv.reader(csv_file))
+
+    for col, row in enumerate(rows):
+        if WIRE_TRANSFER_LEARNER_EMAIL in row:
+            header_row = row
+            header_row_index = col
+            break
+    else:
+        raise WireTransferImportException("Unable to find header row")
+
+    header_index_lookup = {}
+    for col, cell in enumerate(header_row):
+        if cell in WIRE_TRANSFER_HEADER_FIELDS:
+            header_index_lookup[cell] = col
+
+    for field in WIRE_TRANSFER_HEADER_FIELDS:
+        if field not in header_index_lookup:
+            raise WireTransferImportException(f"Unable to find column header {field}")
+
+    wire_transfers = [
+        WireTransfer(
+            id=int(row[header_index_lookup[WIRE_TRANSFER_ID]]),
+            learner_email=row[header_index_lookup[WIRE_TRANSFER_LEARNER_EMAIL]],
+            amount=Decimal(row[header_index_lookup[WIRE_TRANSFER_AMOUNT]]),
+            bootcamp_start_date=parse_datetime(
+                row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_START_DATE]]
+            ),
+            bootcamp_name=row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_NAME]],
+            row=row,
+        )
+        for row in rows[header_row_index + 1 :]
+    ]
+
+    return wire_transfers, header_row
+
+
+def import_wire_transfer(wire_transfer, header_row):
+    """
+    Import a wire transfer. If the WireTransferReceipt already exists, the information will be updated,
+    otherwise it will be created
+    """
+    user = User.objects.get(email=wire_transfer.learner_email)
+    bootcamp_run = BootcampRun.objects.get(
+        Q(title__iexact=wire_transfer.bootcamp_name)
+        | Q(bootcamp__title__iexact=wire_transfer.bootcamp_name),
+        start_date__gte=wire_transfer.bootcamp_start_date - timedelta(days=1),
+        start_date__lte=wire_transfer.bootcamp_start_date + timedelta(days=1),
+    )
+    application = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
+
+    if WireTransferReceipt.objects.filter(wire_transfer_id=wire_transfer.id).exists():
+        log.info("Wire transfer %d already imported, skipping...", wire_transfer.id)
+        return
+
+    with transaction.atomic():
+        order = Order.objects.create(
+            status=Order.FULFILLED,
+            total_price_paid=wire_transfer.amount,
+            application=application,
+            user=user,
+            payment_type=Order.WIRE_TRANSFER_TYPE,
+        )
+        Line.objects.create(
+            order=order,
+            bootcamp_run=bootcamp_run,
+            description=f"Wire transfer payment for {bootcamp_run}",
+            price=wire_transfer.amount,
+        )
+        order.save_and_log(None)  # save record in audit table
+
+        WireTransferReceipt.objects.create(
+            wire_transfer_id=wire_transfer.id,
+            data={
+                header_row[col]: value for col, value in enumerate(wire_transfer.row)
+            },
+            order=order,
+        )
+    log.info("Wire transfer %d successfully imported", wire_transfer.id)
+
+
+def import_wire_transfers(csv_path):
+    """
+    Import orders from a CSV file with file transfers
+
+    Args:
+        csv_path (str): Path to a CSV file
+    """
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+
+    with transaction.atomic():
+        # transaction is here so, if there is a missing user and we error,
+        # make sure not to write only half the wire transfers
+        for wire_transfer in wire_transfers:
+            try:
+                import_wire_transfer(wire_transfer, header_row)
+            except:  # pylint: disable=bare-except
+                raise WireTransferImportException(
+                    f"Error while importing row with Id column={wire_transfer.id}"
+                )
