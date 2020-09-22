@@ -811,17 +811,17 @@ def test_import_wire_transfers_duplicate_run():
     doof_email = "hdoof@odl.mit.edu"
     title = "How to be Evil"
     run = BootcampRunFactory.create(bootcamp__title=title)
-    BootcampRunFactory.create(title=title)
+    BootcampRunFactory.create(title=title, start_date=run.start_date)
     User.objects.create(email=doof_email)
     wire_transfer = WireTransfer(
         id=2,
         learner_email=doof_email,
         amount=Decimal(100),
-        bootcamp_start_date=datetime(2019, 12, 21),
-        bootcamp_name=run.title,
+        bootcamp_start_date=run.start_date,
+        bootcamp_name=title,
         row=[],
     )
-    with pytest.raises(BootcampRun.DoesNotExist):
+    with pytest.raises(BootcampRun.MultipleObjectsReturned):
         import_wire_transfer(wire_transfer, [])
 
 
