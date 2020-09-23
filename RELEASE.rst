@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.56.0
+--------------
+
+- Handle wire transfers (#924)
+
 Version 0.55.3 (Released September 23, 2020)
 --------------
 
