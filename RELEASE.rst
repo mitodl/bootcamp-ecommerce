@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.55.3
+Version 0.55.3 (Released September 23, 2020)
 --------------
 
 - remove navbar and footer from the print version of the payment statements
