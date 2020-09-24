@@ -127,9 +127,15 @@ class HomePage(Page, CommonProperties):
     def get_context(self, request, *args, **kwargs):
         return {
             **super().get_context(request, *args, **kwargs),
+            "CSOURCE_PAYLOAD": None,
             "site_name": settings.SITE_NAME,
             "title": self.title,
-            "CSOURCE_PAYLOAD": None,
+            # properties
+            "alumni": self.alumni,
+            "catalog": self.catalog,
+            "learning_resources": self.learning_resources,
+            "program_description_section": self.program_description_section,
+            "three_column_image_text_section": self.three_column_image_text_section,
         }
 
     @property
@@ -243,6 +249,18 @@ class BootcampRunPage(BootcampPage):
     )
 
     content_panels = [FieldPanel("bootcamp_run")] + BootcampPage.content_panels
+
+    def get_context(self, request, *args, **kwargs):
+        return {
+            **super().get_context(request, *args, **kwargs),
+            # properties
+            "admissions_section": self.admissions_section,
+            "alumni": self.alumni,
+            "instructors": self.instructors,
+            "learning_resources": self.learning_resources,
+            "program_description_section": self.program_description_section,
+            "three_column_image_text_section": self.three_column_image_text_section,
+        }
 
 
 class BootcampRunChildPage(Page):
