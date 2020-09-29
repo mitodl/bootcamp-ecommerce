@@ -171,6 +171,9 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
     def get_queryset(self, request):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("order__user")
