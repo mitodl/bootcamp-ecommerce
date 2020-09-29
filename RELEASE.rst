@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.57.0
+--------------
+
+- add filter for payment type in admin order
+- fixes mailing address formatting
+
 Version 0.56.0 (Released September 23, 2020)
 --------------
 
