@@ -43,7 +43,7 @@ class OrderAdmin(TimestampedModelAdmin):
         "application_link",
     ]
     list_display = ("id", "get_user_email", "status", "application_id")
-    list_filter = ("status",)
+    list_filter = ("status", "payment_type")
     search_fields = ("user__email", "user__username")
     raw_id_fields = ("user", "application")
 
