@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 
 from main.admin import TimestampedModelAdmin
 from main.utils import get_field_names
-from ecommerce.models import Line, Order, OrderAudit, Receipt
+from ecommerce.models import Line, Order, OrderAudit, Receipt, WireTransferReceipt
 from applications import models as application_models
 
 
@@ -156,7 +156,65 @@ class ReceiptAdmin(TimestampedModelAdmin):
     order_link.short_description = "Order"
 
 
+class WireTransferReceiptAdmin(TimestampedModelAdmin):
+    """Admin for WireTransferReceipt"""
+
+    model = WireTransferReceipt
+    include_created_on_in_list = True
+    readonly_fields = get_field_names(WireTransferReceipt) + ["order_link"]
+    list_display = ("id", "get_user_email", "order_link", "get_order_status")
+    search_fields = ("order__user__email", "order__user__username")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        """Overrides base queryset"""
+        return super().get_queryset(request).select_related("order__user")
+
+    def get_user_email(self, obj):
+        """Returns the user email"""
+        if obj.order is None:
+            return None
+        return obj.order.user.email
+
+    get_user_email.short_description = "User"
+    get_user_email.admin_order_field = "order__user__email"
+
+    def get_order_status(self, obj):
+        """Returns the order status"""
+        if obj.order is None:
+            return None
+        return obj.order.status
+
+    get_order_status.short_description = "Status"
+    get_order_status.admin_order_field = "order__status"
+
+    def order_link(self, obj):
+        """Returns a link to the related order"""
+        if obj.order is None:
+            return None
+        return mark_safe(
+            '<a href="{}">Order ({})</a>'.format(
+                reverse(
+                    "admin:ecommerce_{}_change".format(Order._meta.model_name),
+                    args=(obj.order.id,),
+                ),  # pylint: disable=protected-access
+                obj.order.id,
+            )
+        )
+
+    order_link.short_description = "Order"
+
+
 admin.site.register(Line, LineAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderAudit, OrderAuditAdmin)
 admin.site.register(Receipt, ReceiptAdmin)
+admin.site.register(WireTransferReceipt, WireTransferReceiptAdmin)
