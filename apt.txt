@@ -5,6 +5,7 @@ libpq-dev
 libjpeg-dev
 zlib1g-dev
 net-tools
+xmlsec1
 
 # developer requirements
 postgresql-client

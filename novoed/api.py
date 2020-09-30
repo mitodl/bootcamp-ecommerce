@@ -1,9 +1,11 @@
 """API functionality for integrating with NovoEd"""
 from urllib.parse import urljoin
 import logging
+import operator
 
 import requests
 from django.conf import settings
+from djangosaml2idp.processors import BaseProcessor
 from rest_framework import status
 
 from klasses.models import BootcampRunEnrollment
@@ -37,6 +39,7 @@ def enroll_in_novoed_course(user, novoed_course_stub):
         "first_name": first_name,
         "last_name": last_name,
         "email": user.email,
+        "external_id": str(user.id),
     }
     new_user_url = urljoin(
         settings.NOVOED_API_BASE_URL, f"{novoed_course_stub}/{REGISTER_USER_URL_STUB}"
@@ -82,3 +85,20 @@ def unenroll_from_novoed_course(user, novoed_course_stub):
     )
     resp = requests.post(unenroll_user_url, json=unenroll_user_req_body)
     resp.raise_for_status()
+
+
+class NovoEdSamlProcessor(BaseProcessor):
+    """
+    SAML request processor that overrides the default to allow for specialized functionality
+    when responding to auth requests.
+    """
+
+    def create_identity(self, user, sp_attribute_mapping):
+        results = {}
+        for user_attr, out_attr in sp_attribute_mapping.items():
+            # This line allows the attribute map for a ServiceProvider record to have keys that refer to
+            # an object path (e.g.: "profile.name") rather than just a property name
+            attr = operator.attrgetter(user_attr)(user)
+            if attr is not None:
+                results[out_attr] = attr() if callable(attr) else attr
+        return results

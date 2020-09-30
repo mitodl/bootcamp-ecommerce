@@ -61,6 +61,7 @@ def test_enroll_in_novoed_course(
             "first_name": novoed_user.legal_address.first_name,
             "last_name": novoed_user.legal_address.last_name,
             "email": novoed_user.email,
+            "external_id": str(novoed_user.id),
         },
     )
     assert result == (exp_created, exp_existing)
