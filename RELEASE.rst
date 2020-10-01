@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.57.1
+Version 0.57.1 (Released October 01, 2020)
 --------------
 
 - Optimize Profile and Home page context
