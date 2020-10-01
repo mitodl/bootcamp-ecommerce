@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.57.2
+--------------
+
+- Configured IdP for NovoEd to enable login via SAML (#1015)
+
 Version 0.57.1 (Released October 01, 2020)
 --------------
 
