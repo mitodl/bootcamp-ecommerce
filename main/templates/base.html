@@ -48,10 +48,10 @@
         if (typeof zE !== 'undefined') {
             zE('webWidget', 'prefill', {
                 name: {
-                    value: '{{user.name}}',
+                    value: '{% if user.is_authenticated %}{{ user.profile.name }}{% endif %}',
                 },
                 email: {
-                    value: '{{user.email}}',
+                    value: '{% if user.is_authenticated %}{{ user.email }}{% endif %}',
                 }
             });
             // set page title as a search term
