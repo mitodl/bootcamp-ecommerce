@@ -218,7 +218,7 @@ def get_first_and_last_names(user):
 
     Returns:
         (str or None, str or None): A tuple containing the first name and last name, or None if those
-            values could not be determined with the user information we have
+            values could not be determined with the user information we have.
     """
     legal_address = getattr(user, "legal_address", None)
     if (

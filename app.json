@@ -6,6 +6,9 @@
   ],
   "buildpacks": [
     {
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
+    },
+    {
       "url": "https://github.com/heroku/heroku-buildpack-nodejs"
     },
     {
@@ -314,6 +317,22 @@
     },
     "NOVOED_API_SECRET": {
       "description": "The NovoEd API secret",
+      "required": false
+    },
+    "NOVOED_SAML_CERT": {
+      "description": "Contents of the SAML certificate for NovoEd ('\n' line separators)",
+      "required": false
+    },
+    "NOVOED_SAML_CONFIG_TTL_HOURS": {
+      "description": "The number of hours that the SAML config is expected to be accurate",
+      "required": false
+    },
+    "NOVOED_SAML_DEBUG": {
+      "description": "Flag indicating whether the SAML config should be set to debug mode",
+      "required": false
+    },
+    "NOVOED_SAML_KEY": {
+      "description": "Contents of the SAML key for NovoEd ('\n' line separators)",
       "required": false
     },
     "PGBOUNCER_DEFAULT_POOL_SIZE": {

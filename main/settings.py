@@ -17,7 +17,11 @@ from urllib.parse import urljoin, urlparse
 
 from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files.temp import NamedTemporaryFile
 import dj_database_url
+import saml2
+from saml2.saml import NAMEID_FORMAT_UNSPECIFIED, NAMEID_FORMAT_PERSISTENT
+from saml2.sigver import get_xmlsec_binary
 
 from main.envs import get_string, get_bool, get_int, get_list, get_any
 from main.sentry import init_sentry
@@ -92,7 +96,6 @@ WEBPACK_LOADER = {
 
 
 # Application definition
-
 INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.auth",
@@ -129,6 +132,7 @@ INSTALLED_APPS = (
     "taggit",
     "django_filters",
     "rest_framework_serializer_extensions",
+    "djangosaml2idp",
     # Our INSTALLED_APPS
     "backends",
     "main",
@@ -301,7 +305,7 @@ SOCIAL_AUTH_EMAIL_VALIDATION_FUNCTION = (
 SOCIAL_AUTH_EMAIL_VALIDATION_URL = "/"
 
 LOGIN_REDIRECT_URL = "/"
-LOGIN_URL = "/"
+LOGIN_URL = "/signin/"
 LOGIN_ERROR_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -872,3 +876,77 @@ DJOSER = {
     "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": True,
     "EMAIL": {"password_reset": "authentication.views.CustomPasswordResetEmail"},
 }
+
+# NovoEd SAML settings (using Bootcamps app as IdP)
+IDP_BASE_URL = urljoin(BOOTCAMP_ECOMMERCE_BASE_URL, "/idp")
+_novoed_saml_key = get_string(
+    "NOVOED_SAML_KEY",
+    None,
+    description="Contents of the SAML key for NovoEd ('\n' line separators)",
+)
+_novoed_saml_cert = get_string(
+    "NOVOED_SAML_CERT",
+    None,
+    description="Contents of the SAML certificate for NovoEd ('\n' line separators)",
+)
+NOVOED_SAML_DEBUG = get_bool(
+    "NOVOED_SAML_DEBUG",
+    False,
+    description="Flag indicating whether the SAML config should be set to debug mode",
+)
+NOVOED_SAML_CONFIG_TTL_HOURS = get_int(
+    "NOVOED_SAML_CONFIG_TTL_HOURS",
+    365 * 24,
+    description="The number of hours that the SAML config is expected to be accurate",
+)
+
+if _novoed_saml_key and _novoed_saml_cert:
+    with NamedTemporaryFile(prefix="saml_", suffix=".key", delete=False) as f:
+        lines = _novoed_saml_key.split("\\n")
+        for line in lines:
+            f.write(f"{line}\n".encode("utf-8"))
+        _novoed_saml_key_file_path = f.name
+    with NamedTemporaryFile(prefix="saml_", suffix=".cert", delete=False) as f:
+        lines = _novoed_saml_cert.split("\\n")
+        for line in lines:
+            f.write(f"{line}\n".encode("utf-8"))
+        _novoed_saml_cert_file_path = f.name
+    SAML_IDP_CONFIG = {
+        "debug": NOVOED_SAML_DEBUG,
+        "xmlsec_binary": get_xmlsec_binary(
+            ["/usr/bin/xmlsec1", "/usr/local/bin/xmlsec1"]
+        ),
+        "entityid": f"{IDP_BASE_URL}/metadata",
+        "description": "MIT Bootcamps",
+        "service": {
+            "idp": {
+                "name": "Bootcamp IdP",
+                "endpoints": {
+                    "single_sign_on_service": [
+                        (f"{IDP_BASE_URL}/sso/post", saml2.BINDING_HTTP_POST),
+                        (f"{IDP_BASE_URL}/sso/redirect", saml2.BINDING_HTTP_REDIRECT),
+                    ],
+                    "single_logout_service": [
+                        (f"{IDP_BASE_URL}/slo/post", saml2.BINDING_HTTP_POST),
+                        (f"{IDP_BASE_URL}/slo/redirect", saml2.BINDING_HTTP_REDIRECT),
+                    ],
+                },
+                "name_id_format": [NAMEID_FORMAT_UNSPECIFIED, NAMEID_FORMAT_PERSISTENT],
+                "sign_response": False,
+                "sign_assertion": False,
+                "want_authn_requests_signed": False,
+            }
+        },
+        # Signing
+        "key_file": _novoed_saml_key_file_path,
+        "cert_file": _novoed_saml_cert_file_path,
+        # Encryption
+        "encryption_keypairs": [
+            {
+                "key_file": _novoed_saml_key_file_path,
+                "cert_file": _novoed_saml_cert_file_path,
+            }
+        ],
+        "additional_cert_files": [],
+        "valid_for": NOVOED_SAML_CONFIG_TTL_HOURS,
+    }

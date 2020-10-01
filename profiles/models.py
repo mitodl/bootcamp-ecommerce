@@ -21,6 +21,7 @@ from profiles.constants import (
     HIGHEST_EDUCATION_CHOICES,
     COUNTRIES_REQUIRING_POSTAL_CODE,
 )
+from profiles import api as profile_api
 
 
 def generate_change_email_code():
@@ -202,6 +203,16 @@ class Profile(TimestampedModel):
                 ],
             )
         )
+
+    @property
+    def first_name(self):
+        """Returns the first name of the profile user"""
+        return profile_api.get_first_and_last_names(self.user)[0]
+
+    @property
+    def last_name(self):
+        """Returns the last name of the profile user"""
+        return profile_api.get_first_and_last_names(self.user)[1]
 
     def __str__(self):
         return "Profile for user {}".format(self.user)
