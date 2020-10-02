@@ -67,6 +67,10 @@
       "description": "Email to send ecommerce alerts to",
       "required": false
     },
+    "BOOTCAMP_ECOMMERCE_SAML_BASE_URL": {
+      "description": "(Optional) If provided, this base URL will be used instead of BOOTCAMP_ECOMMERCE_BASE_URL for SAML login/logout URLs",
+      "required": false
+    },
     "BOOTCAMP_EMAIL_BACKEND": {
       "description": "The backend for email sending",
       "required": false

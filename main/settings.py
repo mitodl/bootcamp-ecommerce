@@ -878,7 +878,17 @@ DJOSER = {
 }
 
 # NovoEd SAML settings (using Bootcamps app as IdP)
-IDP_BASE_URL = urljoin(BOOTCAMP_ECOMMERCE_BASE_URL, "/idp")
+BOOTCAMP_ECOMMERCE_SAML_BASE_URL = get_string(
+    "BOOTCAMP_ECOMMERCE_SAML_BASE_URL",
+    None,
+    description=(
+        "(Optional) If provided, this base URL will be used instead of BOOTCAMP_ECOMMERCE_BASE_URL "
+        "for SAML login/logout URLs"
+    ),
+)
+IDP_BASE_URL = urljoin(
+    BOOTCAMP_ECOMMERCE_SAML_BASE_URL or BOOTCAMP_ECOMMERCE_BASE_URL, "/idp"
+)
 _novoed_saml_key = get_string(
     "NOVOED_SAML_KEY",
     None,
