@@ -370,6 +370,10 @@
       "description": "The log level for Sentry",
       "required": false
     },
+    "SESSION_ENGINE_BACKEND": {
+      "description": "The backend that will support user sessions. This should be a module within django.contrib.sessions.backends. Possible values: signed_cookies, db, cached_db, cache, file. (https://docs.djangoproject.com/en/3.1/topics/http/sessions/#configuring-the-session-engine)",
+      "required": false
+    },
     "SITE_NAME": {
       "description": "The site name for the app",
       "required": false

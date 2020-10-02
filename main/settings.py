@@ -185,7 +185,17 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_ENGINE_BACKEND = get_string(
+    "SESSION_ENGINE_BACKEND",
+    "signed_cookies",
+    description=(
+        "The backend that will support user sessions. This should be a module within django.contrib.sessions.backends. "
+        "Possible values: signed_cookies, db, cached_db, cache, file. "
+        "(https://docs.djangoproject.com/en/3.1/topics/http/sessions/#configuring-the-session-engine)"
+    ),
+    required=False,
+)
+SESSION_ENGINE = f"django.contrib.sessions.backends.{SESSION_ENGINE_BACKEND}"
 
 # the full URL of the current application is mandatory
 BOOTCAMP_ECOMMERCE_BASE_URL = get_string(
