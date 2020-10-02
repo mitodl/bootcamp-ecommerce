@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.57.3
+--------------
+
+- Added setting for overriding base SAML URL (#1034)
+
 Version 0.57.2 (Released October 02, 2020)
 --------------
 
