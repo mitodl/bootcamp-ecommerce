@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.57.4
+Version 0.57.4 (Released October 02, 2020)
 --------------
 
 - Added setting for overriding SESSION_ENGINE (#1037)
