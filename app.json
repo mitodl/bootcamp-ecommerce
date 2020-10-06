@@ -339,6 +339,10 @@
       "description": "Contents of the SAML key for NovoEd ('\n' line separators)",
       "required": false
     },
+    "NOVOED_SAML_LOGIN_URL": {
+      "description": "The SP-initiated SAML login URL for NovoEd",
+      "required": false
+    },
     "PGBOUNCER_DEFAULT_POOL_SIZE": {
       "value": "50"
     },

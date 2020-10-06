@@ -127,7 +127,8 @@ export const makeApplicationDetail = (): ApplicationDetail => {
     orders:                [generateOrder()],
     created_on:            moment().format(),
     price:                 price,
-    user:                  makeUser()
+    user:                  makeUser(),
+    enrollment:            null
   }
 }
 

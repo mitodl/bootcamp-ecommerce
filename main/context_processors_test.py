@@ -84,4 +84,5 @@ def test_get_context_js_settings(mocker, settings, patched_get_resource_page_url
         "upload_max_size": 123_000_000,
         "support_url": settings.SUPPORT_URL,
         "terms_url": patched_get_resource_page_urls.return_value["terms_of_service"],
+        "novoed_login_url": settings.NOVOED_SAML_LOGIN_URL,
     }

@@ -9,9 +9,9 @@ import {
   REVIEW_STATUS_PENDING
 } from "../constants"
 
-import type { BootcampRun } from "./bootcampTypes"
+import type { BootcampRun, BootcampRunEnrollment } from "./bootcampTypes"
 import type { User } from "./authTypes"
-import type {HttpResponse} from "./httpTypes"
+import type { HttpResponse } from "./httpTypes"
 
 export type Application = {
   id:           number,
@@ -74,7 +74,8 @@ export type ApplicationDetail = ResumeLinkedInDetail & {
   orders:                Array<ApplicationOrder>,
   created_on:            string,
   price:                 number,
-  user:                  User
+  user:                  User,
+  enrollment:            ?BootcampRunEnrollment,
 }
 
 export type SubmissionReview = {

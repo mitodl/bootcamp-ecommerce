@@ -1,11 +1,12 @@
 // @flow
 declare var SETTINGS: {
-  gaTrackingID:    string,
-  reactGaDebug:    boolean,
-  recaptchaKey:    ?string,
-  upload_max_size: number,
-  support_url:     string,
-  terms_url:       string,
+  gaTrackingID:     string,
+  reactGaDebug:     boolean,
+  recaptchaKey:     ?string,
+  upload_max_size:  number,
+  support_url:      string,
+  terms_url:        string,
+  novoed_login_url: ?string,
   zendesk_config:  {
     help_widget_enabled: boolean,
     help_widget_key: ?string

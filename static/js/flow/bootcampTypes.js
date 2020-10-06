@@ -34,9 +34,17 @@ export type BootcampRun = {
   run_key: string,
   start_date: ?string,
   end_date: ?string,
+  novoed_course_stub: ?string,
   bootcamp: Bootcamp,
   page?: ?BootcampRunPage,
   installments: Array<Installment>,
+}
+
+export type BootcampRunEnrollment = {
+  id: number,
+  user_id: number,
+  bootcamp_run_id: number,
+  novoed_sync_date: ?string,
 }
 
 export type PayableBootcampRun = {

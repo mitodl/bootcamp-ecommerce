@@ -1,4 +1,5 @@
 // @flow
+/* global SETTINGS: false */
 import React from "react"
 import { shallow } from "enzyme"
 import sinon from "sinon"
@@ -10,7 +11,8 @@ import {
   ResumeDetail,
   VideoInterviewDetail,
   ReviewDetail,
-  PaymentDetail
+  PaymentDetail,
+  BootcampStartDetail
 } from "./detail_sections"
 import {
   AWAITING_RESUME,
@@ -265,6 +267,39 @@ describe("application detail section component", () => {
       sinon.assert.calledWith(openDrawerStub, {
         type: PAYMENT,
         meta: { application: applicationDetail }
+      })
+    })
+  })
+
+  describe("BootcampStartDetail", () => {
+    let applicationDetail
+    beforeEach(() => {
+      applicationDetail = makeApplicationDetail()
+    })
+    //
+    ;[
+      [false, false, undefined],
+      [true, false, undefined],
+      [true, true, "Start Bootcamp"]
+    ].forEach(([ready, fulfilled, expLinkText]) => {
+      it(`should show correct link if ready === ${String(
+        ready
+      )}, fulfilled === ${String(fulfilled)}`, () => {
+        SETTINGS.novoed_login_url = "https://novoed.com"
+        const wrapper = shallow(
+          <BootcampStartDetail
+            {...defaultProps}
+            ready={ready}
+            fulfilled={fulfilled}
+            applicationDetail={applicationDetail}
+          />
+        )
+        const link = wrapper.find("ProgressDetailRow a")
+        assert.equal(link.exists(), expLinkText !== undefined)
+        if (expLinkText !== undefined) {
+          assert.equal(link.prop("children"), expLinkText)
+          assert.equal(link.prop("href"), SETTINGS.novoed_login_url)
+        }
       })
     })
   })
