@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.57.5
+--------------
+
+- Added link to NovoEd from application dashboard (#1041)
+- Updated caniuse-lite (#1042)
+
 Version 0.57.4 (Released October 02, 2020)
 --------------
 
