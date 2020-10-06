@@ -30,7 +30,7 @@ from applications.models import (
 )
 from cms.models import LetterTemplatePage
 from ecommerce.models import Order
-from klasses.models import BootcampRun, Bootcamp
+from klasses.models import BootcampRun, Bootcamp, BootcampRunEnrollment
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
 from main.utils import serializer_date_format
 
@@ -51,7 +51,15 @@ class BootcampApplicationViewset(
 
     def get_queryset(self):
         if self.action == "retrieve":
-            return BootcampApplication.objects.prefetch_state_data()
+            return BootcampApplication.objects.prefetch_state_data().prefetch_related(
+                Prefetch(
+                    "bootcamp_run__enrollments",
+                    queryset=BootcampRunEnrollment.objects.filter(
+                        user=self.request.user, active=True
+                    ),
+                    to_attr="application_enrollments",
+                )
+            )
         else:
             return (
                 BootcampApplication.objects.prefetch_related(
@@ -66,7 +74,9 @@ class BootcampApplicationViewset(
 
     def get_serializer_context(self):
         added_context = {}
-        if self.action == "list":
+        if self.action == "retrieve":
+            added_context = {"include_enrollment": True}
+        elif self.action == "list":
             added_context = {"include_page": True, "filtered_orders": True}
         return {**super().get_serializer_context(), **added_context}
 

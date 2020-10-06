@@ -4,7 +4,7 @@ Serializers for bootcamps
 from rest_framework import serializers
 
 from cms.serializers import BootcampRunPageSerializer
-from klasses.models import Bootcamp, BootcampRun, Installment
+from klasses.models import Bootcamp, BootcampRun, Installment, BootcampRunEnrollment
 
 
 class InstallmentSerializer(serializers.ModelSerializer):
@@ -51,7 +51,16 @@ class BootcampRunSerializer(serializers.ModelSerializer):
             "bootcamp",
             "title",
             "run_key",
+            "novoed_course_stub",
             "start_date",
             "end_date",
             "installments",
         ]
+
+
+class BootcampRunEnrollmentSerializer(serializers.ModelSerializer):
+    """Serializer for BootcampRunEnrollment model"""
+
+    class Meta:
+        model = BootcampRunEnrollment
+        fields = ["id", "user_id", "bootcamp_run_id", "novoed_sync_date"]

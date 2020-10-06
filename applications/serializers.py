@@ -13,7 +13,7 @@ from applications.exceptions import InvalidApplicationStateException
 from applications.models import VideoInterviewSubmission
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
-from klasses.serializers import BootcampRunSerializer
+from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
 from main.utils import now_in_utc
 from profiles.serializers import UserSerializer
 
@@ -128,6 +128,22 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             instance=bootcamp_application.bootcamp_run.application_steps.all(),
             many=True,
         ).data
+
+    def to_representation(self, instance):
+        added_fields = {}
+        if self.context.get("include_enrollment") is True:
+            # NOTE: Executes an additional query
+            enrollment = instance.user.enrollments.filter(
+                bootcamp_run=instance.bootcamp_run, active=True
+            ).first()
+            added_fields = {
+                "enrollment": (
+                    BootcampRunEnrollmentSerializer(instance=enrollment).data
+                    if enrollment
+                    else {}
+                )
+            }
+        return {**super().to_representation(instance), **added_fields}
 
     class Meta:
         model = models.BootcampApplication

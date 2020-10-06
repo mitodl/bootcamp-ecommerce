@@ -220,10 +220,7 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
   const { ready, fulfilled, openDrawer, applicationDetail } = props
 
   return (
-    <ProgressDetailRow
-      className="payment"
-      fulfilled={applicationDetail.is_paid_in_full}
-    >
+    <ProgressDetailRow className="payment" fulfilled={fulfilled}>
       <h3>Payment</h3>
       <div className="col-12 col-sm-6 status-text">
         <span className="label">Deadline: </span>
@@ -242,6 +239,41 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
           >
             Make a Payment
           </button>
+        </div>
+      ) : null}
+    </ProgressDetailRow>
+  )
+}
+
+type BootcampStartProps = {
+  ready: boolean,
+  fulfilled: boolean,
+  applicationDetail: ApplicationDetail
+}
+
+export const BootcampStartDetail = (
+  props: BootcampStartProps
+): React$Element<*> => {
+  const { ready, fulfilled, applicationDetail } = props
+
+  return (
+    <ProgressDetailRow className="bootcampStart" fulfilled={fulfilled}>
+      <h3>Bootcamp Starts</h3>
+      {applicationDetail.bootcamp_run.start_date && (
+        <div className="col-12 col-sm-6 status-text">
+          <span className="label">Start Date: </span>
+          {formatReadableDateFromStr(applicationDetail.bootcamp_run.start_date)}
+        </div>
+      )}
+      {ready && fulfilled ? (
+        <div className="col-12 col-sm-5 text-sm-right">
+          <a
+            href={SETTINGS.novoed_login_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Start Bootcamp
+          </a>
         </div>
       ) : null}
     </ProgressDetailRow>

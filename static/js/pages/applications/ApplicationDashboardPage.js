@@ -15,6 +15,7 @@ import qs from "query-string"
 import { reverse } from "named-urls"
 
 import {
+  BootcampStartDetail,
   PaymentDetail,
   ProfileDetail,
   QuizDetail,
@@ -426,12 +427,27 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       />
     )
 
+    const isNovoEdCourse = !!applicationDetail.bootcamp_run.novoed_course_stub
+    const novoEdEnrolled =
+      isNovoEdCourse &&
+      !!SETTINGS.novoed_login_url &&
+      !!applicationDetail.enrollment &&
+      !!applicationDetail.enrollment.novoed_sync_date
+    const bootcampStartRow = isNovoEdCourse ? (
+      <BootcampStartDetail
+        ready={novoEdEnrolled}
+        fulfilled={novoEdEnrolled}
+        applicationDetail={applicationDetail}
+      />
+    ) : null
+
     return (
       <div className="p-3 mt-3 application-detail">
         {profileRow}
         {resumeRow}
         {submissionStepRows}
         {paymentRow}
+        {bootcampStartRow}
       </div>
     )
   }
