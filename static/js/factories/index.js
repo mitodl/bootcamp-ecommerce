@@ -6,6 +6,7 @@ import casual from "casual-browserify"
 import type {
   BootcampRun,
   BootcampRunPage,
+  BootcampRunEnrollment,
   Installment,
   PayableBootcampRun,
   Payment
@@ -65,6 +66,14 @@ export const generateFakePayableRuns = (
     payments:     hasPayment ? [generateFakePayment({ runKey: i + 1 })] : [],
     installments: hasInstallment ? [generateFakeInstallment()] : []
   }))
+
+export const generateFakeEnrollment = (): BootcampRunEnrollment => ({
+  // $FlowFixMe: flow thinks that this may be undefined, but it won't ever be
+  id:               incr.next().value,
+  user_id:          casual.integer,
+  bootcamp_run_id:  casual.integer,
+  novoed_sync_date: moment().format()
+})
 
 export const generateLegacyOrderPartial = (): LegacyOrderPartial => ({
   // $FlowFixMe: flow thinks that this may be undefined, but it won't ever be

@@ -1,3 +1,4 @@
+/* global SETTINGS: false */
 import { assert } from "chai"
 
 import * as api from "./applicationApi"
@@ -5,7 +6,7 @@ import {
   makeApplication,
   makeApplicationDetail
 } from "../factories/application"
-import { generateOrder } from "../factories"
+import { generateFakeEnrollment, generateOrder } from "../factories"
 import { ORDER_STATUS_FAILED, ORDER_STATUS_FULFILLED } from "../constants"
 
 describe("applications API", () => {
@@ -73,5 +74,20 @@ describe("applications API", () => {
       api.findAppByRunTitle(applications, titleToSearch),
       applications[0]
     )
+  })
+
+  it("isNovoEdEnrolled should return true if certain settings are present and an enrollment has been synced", () => {
+    SETTINGS.novoed_login_url = null
+    const application = makeApplication()
+    application.bootcamp_run.novoed_course_stub = null
+    application.enrollment = null
+    assert.isFalse(api.isNovoEdEnrolled(application))
+    SETTINGS.novoed_login_url = "http://novoed.com"
+    application.bootcamp_run.novoed_course_stub = "some-bootcamp"
+    application.enrollment = generateFakeEnrollment()
+    application.enrollment.novoed_sync_date = null
+    assert.isFalse(api.isNovoEdEnrolled(application))
+    application.enrollment.novoed_sync_date = "2020-01-01T00:00:00.000000Z"
+    assert.isTrue(api.isNovoEdEnrolled(application))
   })
 })

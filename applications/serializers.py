@@ -14,7 +14,7 @@ from applications.models import VideoInterviewSubmission
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
-from main.utils import now_in_utc
+from main.utils import now_in_utc, first_or_none
 from profiles.serializers import UserSerializer
 
 
@@ -129,22 +129,6 @@ class BootcampApplicationDetailSerializer(serializers.ModelSerializer):
             many=True,
         ).data
 
-    def to_representation(self, instance):
-        added_fields = {}
-        if self.context.get("include_enrollment") is True:
-            # NOTE: Executes an additional query
-            enrollment = instance.user.enrollments.filter(
-                bootcamp_run=instance.bootcamp_run, active=True
-            ).first()
-            added_fields = {
-                "enrollment": (
-                    BootcampRunEnrollmentSerializer(instance=enrollment).data
-                    if enrollment
-                    else {}
-                )
-            }
-        return {**super().to_representation(instance), **added_fields}
-
     class Meta:
         model = models.BootcampApplication
         fields = [
@@ -170,6 +154,21 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
 
     bootcamp_run = BootcampRunSerializer()
     has_payments = serializers.SerializerMethodField()
+    enrollment = serializers.SerializerMethodField()
+
+    def get_enrollment(self, application):
+        """Returns a serialized BootcampRunEnrollment, or None if the user is not enrolled in the given run"""
+        # Using ".all()" and id comparison to allow for query optimization via prefetch
+        user_enrollment = first_or_none(
+            enrollment
+            for enrollment in application.user.enrollments.all()
+            if enrollment.bootcamp_run_id == application.bootcamp_run_id
+        )
+        return (
+            None
+            if user_enrollment is None
+            else BootcampRunEnrollmentSerializer(instance=user_enrollment).data
+        )
 
     def get_has_payments(self, application):
         """Return true if the user has any fulfilled orders for this application"""
@@ -184,7 +183,14 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BootcampApplication
-        fields = ["id", "state", "created_on", "bootcamp_run", "has_payments"]
+        fields = [
+            "id",
+            "state",
+            "created_on",
+            "bootcamp_run",
+            "enrollment",
+            "has_payments",
+        ]
 
 
 class SubmissionReviewSerializer(InterviewUrlMixin, serializers.ModelSerializer):

@@ -3,7 +3,7 @@ import casual from "casual-browserify"
 import moment from "moment"
 import { sum } from "ramda"
 
-import { generateFakeRun, generateOrder } from "./index"
+import { generateFakeRun, generateOrder, generateFakeEnrollment } from "./index"
 import { incrementer } from "../util/util"
 import {
   APP_STATE_TEXT_MAP,
@@ -37,6 +37,7 @@ export const makeApplication = (): Application => ({
   state:        casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
   created_on:   moment().format(),
   bootcamp_run: generateFakeRun(),
+  enrollment:   generateFakeEnrollment(),
   has_payments: casual.boolean
 })
 

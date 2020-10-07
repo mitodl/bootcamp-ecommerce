@@ -31,6 +31,7 @@ import { addErrorNotification, addSuccessNotification } from "../../actions"
 import { openDrawer } from "../../reducers/drawer"
 import {
   findAppByRunTitle,
+  isNovoEdEnrolled,
   isStatusPollingFinished
 } from "../../lib/applicationApi"
 import queries from "../../lib/queries"
@@ -427,12 +428,8 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       />
     )
 
-    const isNovoEdCourse = !!applicationDetail.bootcamp_run.novoed_course_stub
-    const novoEdEnrolled =
-      isNovoEdCourse &&
-      !!SETTINGS.novoed_login_url &&
-      !!applicationDetail.enrollment &&
-      !!applicationDetail.enrollment.novoed_sync_date
+    const isNovoEdCourse = !!application.bootcamp_run.novoed_course_stub
+    const novoEdEnrolled = isNovoEdEnrolled(application)
     const bootcampStartRow = isNovoEdCourse ? (
       <BootcampStartDetail
         ready={novoEdEnrolled}
@@ -460,6 +457,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     const thumbnailSrc = application.bootcamp_run.page ?
       application.bootcamp_run.page.thumbnail_image_src :
       null
+    const titleText = application.bootcamp_run.bootcamp.title
 
     return (
       <div className="application-card" key={application.id}>
@@ -469,7 +467,20 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
           <div className="container p-0 pt-3 pt-sm-0 pl-sm-3 application-card-top">
             <div className="row">
               <div className={`col-12 col-md-6 mr-auto no-padding`}>
-                <h2>{application.bootcamp_run.bootcamp.title}</h2>
+                <h2>
+                  {isNovoEdEnrolled(application) ? (
+                    <a
+                      href={SETTINGS.novoed_login_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {titleText}
+                      <i className="material-icons">open_in_new</i>
+                    </a>
+                  ) : (
+                    titleText
+                  )}
+                </h2>
                 <div className="run-details">
                   <div>
                     <span className="label">Location:</span>{" "}
