@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.57.5
+Version 0.57.5 (Released October 07, 2020)
 --------------
 
 - Added link to NovoEd from application dashboard (#1041)
