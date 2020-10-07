@@ -13,6 +13,7 @@ import FormError from "./forms/elements/FormError"
 import { closeDrawer } from "../reducers/drawer"
 import queries from "../lib/queries"
 import ButtonWithLoader from "./loaders/ButtonWithLoader"
+import SupportLink from "./SupportLink"
 import {
   formatRunDateRange,
   createForm,
@@ -91,12 +92,24 @@ export const PaymentDisplay = (props: Props) => {
           validate={validate}
           onSubmit={async (values, actions) => {
             const amount = values.amount
-            await sendPayment({
-              application_id: application.id,
-              payment_amount: roundToCent(amount)
-            })
-            actions.resetForm()
-            closeDrawer()
+            try {
+              await sendPayment({
+                application_id: application.id,
+                payment_amount: roundToCent(amount)
+              })
+              actions.resetForm()
+              closeDrawer()
+            } catch {
+              actions.setErrors({
+                amount: (
+                  <span>
+                    Something went wrong while submitting your payment. Please
+                    try again, or <SupportLink />
+                  </span>
+                )
+              })
+              actions.setSubmitting(false)
+            }
           }}
           render={({ isSubmitting, isValidating }) => (
             <Form>
@@ -129,6 +142,9 @@ const mapDispatchToProps = dispatch => ({
     const {
       body: { url, payload }
     } = result
+    if (!url || !payload) {
+      throw new Error(result.body)
+    }
     const form = createForm(url, payload)
     const body = document.querySelector("body")
     if (!body) {

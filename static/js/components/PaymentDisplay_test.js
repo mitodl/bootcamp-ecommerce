@@ -183,5 +183,23 @@ describe("PaymentDisplay", () => {
         }
       )
     })
+
+    it("calls setErrors if the payment API fails", async () => {
+      helper.handleRequestStub.withArgs(paymentAPI.toString()).returns({
+        status: 400,
+        body:   ["Invalid application state"]
+      })
+      const setErrorsStub = helper.sandbox.stub()
+      const setSubmittingStub = helper.sandbox.stub()
+      const { formik } = await renderFormik()
+      await formik.prop("onSubmit")(
+        { amount: 1 },
+        { setErrors: setErrorsStub, setSubmitting: setSubmittingStub }
+      )
+      sinon.assert.calledWith(setSubmittingStub, false)
+      sinon.assert.calledWith(setErrorsStub, {
+        amount: sinon.match.any
+      })
+    })
   })
 })
