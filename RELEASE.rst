@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.57.6
+--------------
+
+- Added NovoEd link to title in collapsed dashboard card (#1044)
+- fixing variable name exceptions
+- Show payment error message (#1039)
+
 Version 0.57.5 (Released October 07, 2020)
 --------------
 
