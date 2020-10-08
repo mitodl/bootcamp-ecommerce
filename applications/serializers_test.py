@@ -34,8 +34,12 @@ from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from jobma.factories import InterviewFactory
-from klasses.factories import BootcampRunFactory, InstallmentFactory
-from klasses.serializers import BootcampRunSerializer
+from klasses.factories import (
+    BootcampRunFactory,
+    InstallmentFactory,
+    BootcampRunEnrollmentFactory,
+)
+from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
 from main.utils import serializer_date_format
 from profiles.factories import UserFactory
 from profiles.serializers import UserSerializer
@@ -131,8 +135,8 @@ def test_application_detail_serializer_nested(app_data):
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
 
 
-@pytest.mark.parametrize("has_payments", [True, False])
-def test_application_list_serializer(app_data, has_payments):
+@pytest.mark.parametrize("has_payments,has_enrollment", [[True, False], [False, True]])
+def test_application_list_serializer(app_data, has_payments, has_enrollment):
     """
     BootcampApplicationListSerializer should return serialized versions of all of a user's
     bootcamp applications
@@ -142,6 +146,16 @@ def test_application_list_serializer(app_data, has_payments):
     if has_payments:
         for app in user_applications:
             OrderFactory.create(application=app, status=Order.FULFILLED)
+    enrollment = (
+        None
+        if not has_enrollment
+        else (
+            BootcampRunEnrollmentFactory.create(
+                user=app_data.application.user,
+                bootcamp_run=app_data.application.bootcamp_run,
+            )
+        )
+    )
     data = BootcampApplicationSerializer(instance=user_applications, many=True).data
     assert data == [
         {
@@ -151,6 +165,9 @@ def test_application_list_serializer(app_data, has_payments):
             "bootcamp_run": BootcampRunSerializer(
                 instance=application.bootcamp_run
             ).data,
+            "enrollment": BootcampRunEnrollmentSerializer(instance=enrollment).data
+            if enrollment and application.id == app_data.application.id
+            else None,
             "has_payments": has_payments,
         }
         for application in user_applications

@@ -21,6 +21,23 @@ $border-style: 1px solid $black;
     color: $med-dark-gray;
   }
 
+  h2 a {
+    display: inline-flex;
+    align-items: center;
+
+    i {
+      padding-left: 3px;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    &:visited {
+      color: $link-blue;
+    }
+  }
+
   .run-details {
     .w-100 {
       margin-bottom: 8px;

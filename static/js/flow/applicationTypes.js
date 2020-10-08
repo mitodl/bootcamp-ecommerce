@@ -18,6 +18,7 @@ export type Application = {
   state:        string,
   created_on:   any,
   bootcamp_run: BootcampRun,
+  enrollment:   ?BootcampRunEnrollment,
   has_payments: boolean,
 }
 

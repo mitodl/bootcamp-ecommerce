@@ -1,3 +1,4 @@
+/* global SETTINGS: false */
 import * as R from "ramda"
 
 import { ORDER_STATUS_FAILED, ORDER_STATUS_FULFILLED } from "../constants"
@@ -44,3 +45,9 @@ export const findAppByRunTitle = (
       application.bootcamp_run.title === bootcampRunTitle
   )
 }
+
+export const isNovoEdEnrolled = (application: Application): boolean =>
+  !!application.bootcamp_run.novoed_course_stub &&
+  !!SETTINGS.novoed_login_url &&
+  !!application.enrollment &&
+  !!application.enrollment.novoed_sync_date
