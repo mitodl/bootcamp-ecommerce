@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.57.6
+Version 0.57.6 (Released October 09, 2020)
 --------------
 
 - Added NovoEd link to title in collapsed dashboard card (#1044)
