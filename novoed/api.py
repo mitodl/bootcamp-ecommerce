@@ -10,7 +10,11 @@ from rest_framework import status
 
 from klasses.models import BootcampRunEnrollment
 from main.utils import now_in_utc
-from novoed.constants import REGISTER_USER_URL_STUB, UNENROLL_USER_URL_STUB
+from novoed.constants import (
+    REGISTER_USER_URL_STUB,
+    UNENROLL_USER_URL_STUB,
+    SAML_ID_STAGING_PREFIX,
+)
 from profiles.api import get_first_and_last_names
 
 log = logging.getLogger(__name__)
@@ -100,5 +104,11 @@ class NovoEdSamlProcessor(BaseProcessor):
             # an object path (e.g.: "profile.name") rather than just a property name
             attr = operator.attrgetter(user_attr)(user)
             if attr is not None:
-                results[out_attr] = attr() if callable(attr) else attr
+                attr_value = attr() if callable(attr) else attr
+                if user_attr == "id" and settings.ENVIRONMENT not in {
+                    "prod",
+                    "production",
+                }:
+                    attr_value = "".join([SAML_ID_STAGING_PREFIX, str(attr_value)])
+                results[out_attr] = attr_value
         return results
