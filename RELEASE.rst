@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.58.0
+Version 0.58.0 (Released October 14, 2020)
 --------------
 
 - Updated node deps to support yargs-parser-13.1.2
