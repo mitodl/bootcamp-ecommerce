@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.58.1
+Version 0.58.1 (Released October 16, 2020)
 --------------
 
 - Changed SAML config to use different identifiers for staging (#1051)
