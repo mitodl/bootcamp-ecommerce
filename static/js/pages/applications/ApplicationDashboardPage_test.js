@@ -350,11 +350,14 @@ describe("ApplicationDashboardPage", () => {
 
     //
     ;[
-      [false, false, "before submissions are approved"],
-      [true, false, "before the user finishes paying"],
-      [true, true, "after payment is complete"]
-    ].forEach(([submissionsComplete, hasPaid, desc]) => {
+      [false, false, true, "before submissions are approved"],
+      [true, false, true, "before the user finishes paying"],
+      [true, true, true, "after payment is complete"],
+      [true, true, false, "if the run is no longer payable"]
+    ].forEach(([submissionsComplete, hasPaid, isPayable, desc]) => {
       it(`shows details about payment status ${desc}`, async () => {
+        const newApplication = Object.assign({}, application)
+        newApplication.bootcamp_run.is_payable = isPayable
         let newApplicationDetail = Object.assign({}, applicationDetail)
         if (!submissionsComplete) {
           newApplicationDetail = setToAwaitingReview(newApplicationDetail)
@@ -365,6 +368,7 @@ describe("ApplicationDashboardPage", () => {
         }
         const props = {
           ...defaultProps,
+          applications:         [newApplication],
           allApplicationDetail: {
             [application.id]: newApplicationDetail
           }
@@ -374,7 +378,7 @@ describe("ApplicationDashboardPage", () => {
         const paymentDetail = wrapper.find("PaymentDetail")
         assert.isTrue(paymentDetail.exists())
         assert.deepEqual(paymentDetail.props(), {
-          ready:             submissionsComplete,
+          ready:             submissionsComplete && isPayable,
           fulfilled:         hasPaid,
           openDrawer:        openDrawerStub,
           applicationDetail: newApplicationDetail

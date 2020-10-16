@@ -372,7 +372,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       />
     )
 
-    let stepFulfilled, submissionApproved
+    let stepFulfilled, submissionApproved, paymentReady
     const submissionStepRows = applicationDetail.run_application_steps.map(
       (step: ApplicationRunStep) => {
         // If this is the first required submission, the user should only be able
@@ -415,10 +415,15 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       }
     )
 
-    // If there are no submissions required for this application, payment should be ready after the resume
-    // requirement is fulfilled. Otherwise, it should only be ready if the last submission was approved.
-    const paymentReady =
-      submissionApproved === undefined ? resumeFulfilled : submissionApproved
+    if (!application.bootcamp_run.is_payable) {
+      paymentReady = false
+    } else {
+      // If there are no submissions required for this application, payment should be ready after the resume
+      // requirement is fulfilled. Otherwise, it should only be ready if the last submission was approved.
+      paymentReady =
+        submissionApproved === undefined ? resumeFulfilled : submissionApproved
+    }
+
     const paymentRow = (
       <PaymentDetail
         ready={paymentReady}

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.models import TimestampedModel
+from main.utils import now_in_utc
 from klasses.constants import (
     ApplicationSource,
     INTEGRATION_PREFIX_PRODUCT,
@@ -153,6 +154,20 @@ class BootcampRun(models.Model):
             str: the integration id
         """
         return f"{INTEGRATION_PREFIX_PRODUCT}{self.id}"
+
+    @property
+    def is_payable(self):
+        """
+        Returns True if the start date is set and is in the future
+
+        Returns:
+            bool: True if the start date is set and is in the future
+        """
+        # NOTE: We have an Installment model with a 'deadline' property. Those installments are meant to
+        # specify increments when a user should pay for the bootcamp run. Practically, those deadlines are just
+        # "suggestions". For now, we're making a conscious decision to prevent a user from making payments based on
+        # the bootcamp run start date rather than the last installment deadline date.
+        return self.start_date is not None and now_in_utc() < self.start_date
 
     def personal_price(self, user):
         """
