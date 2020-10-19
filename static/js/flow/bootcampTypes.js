@@ -38,6 +38,7 @@ export type BootcampRun = {
   bootcamp: Bootcamp,
   page?: ?BootcampRunPage,
   installments: Array<Installment>,
+  is_payable: boolean
 }
 
 export type BootcampRunEnrollment = {

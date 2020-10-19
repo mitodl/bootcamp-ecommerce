@@ -101,6 +101,21 @@ def test_bootcamp_run_display_title():
     assert bootcamp_run_without_dates.display_title == bootcamp_title
 
 
+@pytest.mark.parametrize(
+    "future_start_date,expected_result", [[True, True], [False, False], [None, False]]
+)
+def test_bootcamp_run_is_payable(future_start_date, expected_result):
+    """is_payable should return True if the start date is set and is in the future"""
+    if future_start_date is None:
+        start_date = None
+    elif future_start_date:
+        start_date = now_in_utc() + timedelta(days=10)
+    else:
+        start_date = now_in_utc() - timedelta(days=10)
+    run = BootcampRunFactory.build(start_date=start_date)
+    assert run.is_payable is expected_result
+
+
 def test_next_installment():
     """
     It should return the installment with the closest date to now in the future

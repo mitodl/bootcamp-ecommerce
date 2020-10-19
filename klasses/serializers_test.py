@@ -1,6 +1,8 @@
 """
 Tests for bootcamp serializers
 """
+from datetime import timedelta
+
 import pytest
 
 from cms.factories import BootcampRunPageFactory
@@ -11,7 +13,7 @@ from klasses.serializers import (
     BootcampRunSerializer,
     InstallmentSerializer,
 )
-from main.utils import serializer_date_format
+from main.utils import serializer_date_format, now_in_utc
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 
@@ -42,7 +44,7 @@ def test_bootcamp_serializer():
 
 def test_bootcamp_run_serializer():
     """BootcampRunSerializer should serialize the bootcamp run"""
-    run = BootcampRunFactory.create()
+    run = BootcampRunFactory.create(start_date=now_in_utc() + timedelta(days=10))
     installment = InstallmentFactory.create(bootcamp_run=run)
     assert BootcampRunSerializer(run).data == {
         "id": run.id,
@@ -54,6 +56,7 @@ def test_bootcamp_run_serializer():
         "run_key": run.run_key,
         "installments": [InstallmentSerializer(installment).data],
         "novoed_course_stub": run.novoed_course_stub,
+        "is_payable": True,
     }
 
 

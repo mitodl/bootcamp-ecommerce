@@ -43,7 +43,8 @@ export const generateFakeRun = (): BootcampRun => ({
     id:    incr.next().value,
     title: casual.title
   },
-  installments: _.times(2).map(() => generateFakeInstallment())
+  installments: _.times(2).map(() => generateFakeInstallment()),
+  is_payable:   casual.boolean
 })
 
 export const generateFakePayableRuns = (
