@@ -8,7 +8,7 @@ import SubmissionFacets from "./SubmissionFacets"
 import { makeApplicationFacets } from "../factories/application"
 import {
   STATUS_FACET_KEY,
-  BOOTCAMP_FACET_KEY,
+  BOOTCAMP_RUN_FACET_KEY,
   REVIEW_STATUS_DISPLAY_MAP
 } from "../constants"
 
@@ -35,7 +35,7 @@ describe("SubmissionFacets", () => {
     facets.bootcamps.forEach(({ title }, i) => {
       assert.equal(
         bootcampFacetOptions.at(i).prop("facetKey"),
-        BOOTCAMP_FACET_KEY
+        BOOTCAMP_RUN_FACET_KEY
       )
       assert.equal(bootcampFacetOptions.at(i).text(), title)
     })

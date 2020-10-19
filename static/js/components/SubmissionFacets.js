@@ -8,7 +8,7 @@ import { identity } from "ramda"
 
 import {
   STATUS_FACET_KEY,
-  BOOTCAMP_FACET_KEY,
+  BOOTCAMP_RUN_FACET_KEY,
   FACET_DISPLAY_NAMES,
   FACET_OPTION_LABEL_KEYS,
   FACET_ORDER,
@@ -22,15 +22,15 @@ export const facetOptionSerialization = {
     qsKey:      "review_status",
     getQSValue: prop("review_status")
   },
-  [BOOTCAMP_FACET_KEY]: {
-    qsKey:      "bootcamp_id",
+  [BOOTCAMP_RUN_FACET_KEY]: {
+    qsKey:      "bootcamp_run_id",
     getQSValue: prop("id")
   }
 }
 
 export const facetOptionLabels = {
   [STATUS_FACET_KEY]:   status => REVIEW_STATUS_DISPLAY_MAP[status][0],
-  [BOOTCAMP_FACET_KEY]: identity
+  [BOOTCAMP_RUN_FACET_KEY]: identity
 }
 
 type OptionProps = {

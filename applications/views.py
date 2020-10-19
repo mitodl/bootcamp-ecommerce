@@ -131,19 +131,19 @@ class ReviewSubmissionPagination(LimitOffsetPagination):
             .order_by("count")
         )
         qs = (
-            queryset.values("bootcamp_application__bootcamp_run__bootcamp")
-            .filter(bootcamp_application__bootcamp_run__bootcamp=OuterRef("pk"))
+            queryset.values("bootcamp_application__bootcamp_run")
+            .filter(bootcamp_application__bootcamp_run=OuterRef("pk"))
             .order_by()
             .annotate(count=Count("*"))
             .values("count")
         )
-        bootcamps = (
-            Bootcamp.objects.values("id", "title")
+        bootcamp_runs = (
+            BootcampRun.objects.values("id", "title")
             .annotate(count=Subquery(qs, output_field=IntegerField()))
             .filter(count__gte=1)
             .distinct()
         )
-        return {"review_statuses": statuses, "bootcamps": bootcamps}
+        return {"review_statuses": statuses, "bootcamp_runs": bootcamp_runs}
 
 
 class ReviewSubmissionViewSet(
