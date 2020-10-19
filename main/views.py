@@ -3,10 +3,11 @@ bootcamp views
 """
 import json
 
+from django.contrib.auth.views import redirect_to_login
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-
+from main import settings
 from main.utils import has_all_keys
 
 
@@ -96,3 +97,10 @@ def page_500(request, *args, **kwargs):  # pylint: disable=unused-argument
     Overridden handler for the 404 error pages.
     """
     return standard_error_page(request, 500, "500.html")
+
+
+def cms_login_redirect_view(request):
+    """
+    Redirects wagtain's login page to site's login page
+    """
+    return redirect_to_login(reverse("wagtailadmin_home"), login_url=settings.LOGIN_URL)

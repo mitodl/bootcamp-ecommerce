@@ -61,3 +61,12 @@ def test_cybersource_context(client, user):
         "bootcamp_run_purchased": fake_title,
         "purchase_date_utc": fake_datetime,
     }
+
+
+@pytest.mark.django_db
+def test_cms_login_redirection(client, settings):
+    """
+    Test that login page of cms redirects user to login page of site
+    """
+    response = client.get("/cms", follow=True)
+    assert response.request["PATH_INFO"] == settings.LOGIN_URL
