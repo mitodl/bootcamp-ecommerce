@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.59.0
+--------------
+
+- node-fetch dependency upgrade to version 2.6.1
+- Prevented payment if bootcamp run start date is in the past (#1052)
+
 Version 0.58.1 (Released October 16, 2020)
 --------------
 
