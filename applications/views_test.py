@@ -207,6 +207,7 @@ def test_review_submission_list(admin_drf_client, submission_factory):
                     "id": bootcamp_run.id,
                     "title": bootcamp_run.title,
                     "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "end_date": serializer_date_format(bootcamp_run.end_date),
                     "count": 4,
                 }
                 for bootcamp_run in sorted(bootcamp_runs, key=lambda b: b.id)
@@ -275,6 +276,7 @@ def test_review_submission_list_query_bootcamp_run_id(admin_drf_client):
                     "id": bootcamp_run.id,
                     "title": bootcamp_run.title,
                     "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "end_date": serializer_date_format(bootcamp_run.end_date),
                     "count": 1,
                 }
             ],
@@ -326,6 +328,7 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
                     "id": bootcamp_run.id,
                     "title": bootcamp_run.title,
                     "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "end_date": serializer_date_format(bootcamp_run.end_date),
                     "count": 1,
                 }
             ],
@@ -390,6 +393,7 @@ def test_review_submission_list_query_review_status_in(
                     "id": bootcamp_run.id,
                     "title": bootcamp_run.title,
                     "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "end_date": serializer_date_format(bootcamp_run.end_date),
                     "count": 1,
                 }
                 for bootcamp_run in sorted(bootcamp_runs, key=lambda b: b.id)

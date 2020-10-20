@@ -15,7 +15,7 @@ import {
 } from "../constants"
 
 import type { FacetOption, SubmissionFacetData } from "../flow/applicationTypes"
-import { formatReadableDateFromStr } from "../util/util"
+import { formatStartEndDateStrings } from "../util/util"
 
 export const facetOptionSerialization = {
   [STATUS_FACET_KEY]: {
@@ -30,8 +30,8 @@ export const facetOptionSerialization = {
 
 export const facetOptionLabels = {
   [STATUS_FACET_KEY]:       ([status]) => REVIEW_STATUS_DISPLAY_MAP[status][0],
-  [BOOTCAMP_RUN_FACET_KEY]: ([title, startDate]) =>
-    `${title}: ${startDate ? formatReadableDateFromStr(startDate) : "TBD"}`
+  [BOOTCAMP_RUN_FACET_KEY]: ([title, startDate, endDate]) =>
+    `${title}: ${formatStartEndDateStrings(startDate, endDate)}`
 }
 
 type OptionProps = {

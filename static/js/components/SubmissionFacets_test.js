@@ -33,14 +33,17 @@ describe("SubmissionFacets", () => {
       .find(".facet")
       .at(0)
       .find("Option")
-    facets.bootcamp_runs.forEach(({ title, startDate }, i) => {
+    // $FlowFixMe
+    facets.bootcamp_runs.forEach(({ title, startDate, endDate }, i) => {
       assert.equal(
         bootcampFacetOptions.at(i).prop("facetKey"),
         BOOTCAMP_RUN_FACET_KEY
       )
       assert.equal(
         bootcampFacetOptions.at(i).text(),
-        `${title}: ${formatReadableDateFromStr(startDate)}`
+        `${title}: ${formatReadableDateFromStr(
+          startDate
+        )} - ${formatReadableDateFromStr(endDate)}`
       )
     })
 

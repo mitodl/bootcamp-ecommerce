@@ -138,7 +138,7 @@ class ReviewSubmissionPagination(LimitOffsetPagination):
             .values("count")
         )
         bootcamp_runs = (
-            BootcampRun.objects.values("id", "title", "start_date")
+            BootcampRun.objects.values("id", "title", "start_date", "end_date")
             .annotate(count=Subquery(qs, output_field=IntegerField()))
             .filter(count__gte=1)
             .distinct()

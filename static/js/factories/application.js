@@ -84,6 +84,7 @@ export const makeApplicationFacets = (): SubmissionFacetData => {
       id,
       title:      casual.title,
       start_date: moment().format(),
+      end_date:   moment().format(),
       count:      casual.integer(1, 10)
     }))
   }
