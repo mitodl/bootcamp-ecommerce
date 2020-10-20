@@ -98,6 +98,7 @@ export type SubmissionReviewState = {
 type BootcampFacetOption = {
   id:    number,
   title: string,
+  start_date: string,
   count: number
 }
 

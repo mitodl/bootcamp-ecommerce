@@ -228,8 +228,8 @@ export const FACET_DISPLAY_NAMES = {
 }
 
 export const FACET_OPTION_LABEL_KEYS = {
-  [STATUS_FACET_KEY]:   "review_status",
-  [BOOTCAMP_RUN_FACET_KEY]: "title"
+  [STATUS_FACET_KEY]:   ["review_status"],
+  [BOOTCAMP_RUN_FACET_KEY]: ["title", "start_date"]
 }
 
 export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY]

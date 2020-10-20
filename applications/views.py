@@ -30,9 +30,9 @@ from applications.models import (
 )
 from cms.models import LetterTemplatePage
 from ecommerce.models import Order
-from klasses.models import BootcampRun, Bootcamp
+from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
-from main.utils import serializer_date_format
+from main.utils import serializer_date_format, now_in_utc
 
 
 class BootcampApplicationViewset(
@@ -138,7 +138,7 @@ class ReviewSubmissionPagination(LimitOffsetPagination):
             .values("count")
         )
         bootcamp_runs = (
-            BootcampRun.objects.values("id", "title")
+            BootcampRun.objects.values("id", "title", "start_date")
             .annotate(count=Subquery(qs, output_field=IntegerField()))
             .filter(count__gte=1)
             .distinct()
@@ -164,6 +164,7 @@ class ReviewSubmissionViewSet(
         ApplicationStepSubmission.objects.filter(
             Q(submission_status=SUBMISSION_STATUS_SUBMITTED)
             & Q(bootcamp_application__state__in=REVIEWABLE_APP_STATES)
+            & Q(bootcamp_application__bootcamp_run__end_date__gte=now_in_utc())
         )
         .select_related(
             "bootcamp_application__user__profile",

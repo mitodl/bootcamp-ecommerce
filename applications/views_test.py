@@ -1,7 +1,8 @@
 """Tests for bootcamp application views"""
+from datetime import timedelta
+
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
-
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
@@ -16,6 +17,7 @@ from applications.constants import (
 )
 from applications.factories import (
     BootcampApplicationFactory,
+    BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     ApplicantLetterFactory,
     QuizSubmissionFactory,
@@ -30,8 +32,9 @@ from applications.views import BootcampApplicationViewset
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
-from klasses.factories import BootcampRunFactory, BootcampFactory
+from klasses.factories import BootcampRunFactory
 from main.test_utils import assert_drf_json_equal
+from main.utils import serializer_date_format, now_in_utc
 from profiles.factories import UserFactory
 
 
@@ -166,14 +169,18 @@ def test_review_submission_list(admin_drf_client, submission_factory):
     """
     The review submission list view should return a list of all submissions
     """
-    bootcamps = BootcampFactory.create_batch(3)
+    bootcamp_runs = BootcampRunFactory.create_batch(3)
     submissions = []
-    for bootcamp in bootcamps:
+    for bootcamp_run in bootcamp_runs:
+        application_step = BootcampRunApplicationStepFactory(
+            bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
+        )
         for review_status in ALL_REVIEW_STATUSES:
             submissions.append(
                 ApplicationStepSubmissionFactory.create(
                     review_status=review_status,
-                    bootcamp_application__bootcamp_run__bootcamp=bootcamp,
+                    bootcamp_application__bootcamp_run=bootcamp_run,
+                    run_application_step=application_step,
                     content_object=submission_factory.create(),
                     is_review_ready=True,
                 )
@@ -185,6 +192,7 @@ def test_review_submission_list(admin_drf_client, submission_factory):
     result["facets"]["review_statuses"] = sorted(
         result["facets"]["review_statuses"], key=lambda s: s["review_status"]
     )
+
     assert result == {
         "count": len(submissions),
         "next": None,
@@ -194,31 +202,67 @@ def test_review_submission_list(admin_drf_client, submission_factory):
             for submission in sorted(submissions, key=lambda s: s.id)
         ],
         "facets": {
-            "bootcamps": [
+            "bootcamp_runs": [
                 {
-                    "id": bootcamp.id,
-                    "title": bootcamp.title,
-                    "count": len(ALL_REVIEW_STATUSES),
+                    "id": bootcamp_run.id,
+                    "title": bootcamp_run.title,
+                    "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "count": 4,
                 }
-                for bootcamp in sorted(bootcamps, key=lambda b: b.id)
+                for bootcamp_run in sorted(bootcamp_runs, key=lambda b: b.id)
             ],
             "review_statuses": [
-                {"review_status": review_status, "count": len(bootcamps)}
+                {"review_status": review_status, "count": len(bootcamp_runs)}
                 for review_status in sorted(ALL_REVIEW_STATUSES)
             ],
         },
     }
 
 
-def test_review_submission_list_query_bootcamp_id(admin_drf_client):
+def test_review_submission_list_expired(admin_drf_client):
     """
-    The review submission list view should return a list of submissions filtered by bootcamp id
+    The review submission list view should not return submissions if run ended
+    """
+    bootcamp_runs = BootcampRunFactory.create_batch(
+        3, end_date=now_in_utc() - timedelta(weeks=1)
+    )
+    submissions = []
+    for bootcamp_run in bootcamp_runs:
+        application_step = BootcampRunApplicationStepFactory(
+            bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
+        )
+        for review_status in ALL_REVIEW_STATUSES:
+            submissions.append(
+                ApplicationStepSubmissionFactory.create(
+                    review_status=review_status,
+                    bootcamp_application__bootcamp_run=bootcamp_run,
+                    run_application_step=application_step,
+                    content_object=VideoInterviewSubmissionFactory.create(),
+                    is_review_ready=True,
+                )
+            )
+    url = reverse("submissions_api-list")
+    resp = admin_drf_client.get(url, dict(limit=100))
+    assert resp.status_code == status.HTTP_200_OK
+    result = resp.json()
+    assert result == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+        "facets": {"bootcamp_runs": [], "review_statuses": []},
+    }
+
+
+def test_review_submission_list_query_bootcamp_run_id(admin_drf_client):
+    """
+    The review submission list view should return a list of submissions filtered by bootcamp run id
     """
     submission = ApplicationStepSubmissionFactory.create(is_review_ready=True)
-    bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp
+    bootcamp_run = submission.bootcamp_application.bootcamp_run
     ApplicationStepSubmissionFactory.create_batch(3)
     url = reverse("submissions_api-list")
-    resp = admin_drf_client.get(url, {"bootcamp_id": bootcamp.id})
+    resp = admin_drf_client.get(url, {"bootcamp_run_id": bootcamp_run.id})
     assert resp.status_code == status.HTTP_200_OK
     assert resp.json() == {
         "count": 1,
@@ -226,7 +270,14 @@ def test_review_submission_list_query_bootcamp_id(admin_drf_client):
         "previous": None,
         "results": [SubmissionReviewSerializer(instance=submission).data],
         "facets": {
-            "bootcamps": [{"id": bootcamp.id, "title": bootcamp.title, "count": 1}],
+            "bootcamp_runs": [
+                {
+                    "id": bootcamp_run.id,
+                    "title": bootcamp_run.title,
+                    "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "count": 1,
+                }
+            ],
             "review_statuses": [
                 {"review_status": submission.review_status, "count": 1}
             ],
@@ -260,7 +311,7 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
         ),
     ]
     submission = next(filter(lambda s: s.review_status == review_status, submissions))
-    bootcamp = submission.bootcamp_application.bootcamp_run.bootcamp
+    bootcamp_run = submission.bootcamp_application.bootcamp_run
     url = reverse("submissions_api-list")
     resp = admin_drf_client.get(url, {"review_status": review_status})
     assert resp.status_code == status.HTTP_200_OK
@@ -270,7 +321,14 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
         "previous": None,
         "results": [SubmissionReviewSerializer(instance=submission).data],
         "facets": {
-            "bootcamps": [{"id": bootcamp.id, "title": bootcamp.title, "count": 1}],
+            "bootcamp_runs": [
+                {
+                    "id": bootcamp_run.id,
+                    "title": bootcamp_run.title,
+                    "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "count": 1,
+                }
+            ],
             "review_statuses": [
                 {"review_status": submission.review_status, "count": 1}
             ],
@@ -304,17 +362,16 @@ def test_review_submission_list_query_review_status_in(
     submissions = list(
         filter(lambda s: s.review_status in review_statuses, submissions)
     )
-    bootcamps = [
-        submission.bootcamp_application.bootcamp_run.bootcamp
-        for submission in submissions
+    bootcamp_runs = [
+        submission.bootcamp_application.bootcamp_run for submission in submissions
     ]
     url = reverse("submissions_api-list")
     resp = admin_drf_client.get(url, {"review_status__in": ",".join(review_statuses)})
     assert resp.status_code == status.HTTP_200_OK
     json = resp.json()
     json["results"] = sorted(json["results"], key=lambda s: s["id"])
-    json["facets"]["bootcamps"] = sorted(
-        json["facets"]["bootcamps"], key=lambda b: b["id"]
+    json["facets"]["bootcamp_runs"] = sorted(
+        json["facets"]["bootcamp_runs"], key=lambda b: b["id"]
     )
     json["facets"]["review_statuses"] = sorted(
         json["facets"]["review_statuses"], key=lambda s: s["review_status"]
@@ -328,9 +385,14 @@ def test_review_submission_list_query_review_status_in(
             for submission in sorted(submissions, key=lambda s: s.id)
         ],
         "facets": {
-            "bootcamps": [
-                {"id": bootcamp.id, "title": bootcamp.title, "count": 1}
-                for bootcamp in sorted(bootcamps, key=lambda b: b.id)
+            "bootcamp_runs": [
+                {
+                    "id": bootcamp_run.id,
+                    "title": bootcamp_run.title,
+                    "start_date": serializer_date_format(bootcamp_run.start_date),
+                    "count": 1,
+                }
+                for bootcamp_run in sorted(bootcamp_runs, key=lambda b: b.id)
             ],
             "review_statuses": [
                 {"review_status": submission.review_status, "count": 1}
