@@ -223,12 +223,12 @@ export const STATUS_FACET_KEY = "review_statuses"
 export const BOOTCAMP_RUN_FACET_KEY = "bootcamp_runs"
 
 export const FACET_DISPLAY_NAMES = {
-  [STATUS_FACET_KEY]:   "Application Status",
+  [STATUS_FACET_KEY]:       "Application Status",
   [BOOTCAMP_RUN_FACET_KEY]: "Bootcamp Run"
 }
 
 export const FACET_OPTION_LABEL_KEYS = {
-  [STATUS_FACET_KEY]:   ["review_status"],
+  [STATUS_FACET_KEY]:       ["review_status"],
   [BOOTCAMP_RUN_FACET_KEY]: ["title", "start_date"]
 }
 

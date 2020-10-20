@@ -82,9 +82,9 @@ export const makeApplicationFacets = (): SubmissionFacetData => {
     })),
     bootcamp_runs: [1, 2, 3].map(id => ({
       id,
-      title: casual.title,
+      title:      casual.title,
       start_date: moment().format(),
-      count: casual.integer(1, 10)
+      count:      casual.integer(1, 10)
     }))
   }
 

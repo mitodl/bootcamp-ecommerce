@@ -4,7 +4,6 @@ import qs from "query-string"
 import urljoin from "url-join"
 import { prop, omit } from "ramda"
 import { useLocation, useHistory } from "react-router"
-import { identity } from "ramda"
 
 import {
   STATUS_FACET_KEY,
@@ -16,7 +15,7 @@ import {
 } from "../constants"
 
 import type { FacetOption, SubmissionFacetData } from "../flow/applicationTypes"
-import {formatReadableDateFromStr} from "../util/util"
+import { formatReadableDateFromStr } from "../util/util"
 
 export const facetOptionSerialization = {
   [STATUS_FACET_KEY]: {
@@ -30,8 +29,9 @@ export const facetOptionSerialization = {
 }
 
 export const facetOptionLabels = {
-  [STATUS_FACET_KEY]:   ([status]) => REVIEW_STATUS_DISPLAY_MAP[status][0],
-  [BOOTCAMP_RUN_FACET_KEY]: ([title, startDate]) => `${title}: ${startDate ? formatReadableDateFromStr(startDate) : "TBD"}`
+  [STATUS_FACET_KEY]:       ([status]) => REVIEW_STATUS_DISPLAY_MAP[status][0],
+  [BOOTCAMP_RUN_FACET_KEY]: ([title, startDate]) =>
+    `${title}: ${startDate ? formatReadableDateFromStr(startDate) : "TBD"}`
 }
 
 type OptionProps = {
@@ -72,7 +72,7 @@ export function Option({ option, facetKey }: OptionProps) {
 
   return (
     <div className={className} onClick={cb}>
-      {facetOptionLabels[facetKey](labelKey.map(label=>option[label]))}
+      {facetOptionLabels[facetKey](labelKey.map(label => option[label]))}
     </div>
   )
 }

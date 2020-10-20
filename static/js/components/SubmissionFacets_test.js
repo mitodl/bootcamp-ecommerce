@@ -11,7 +11,7 @@ import {
   BOOTCAMP_RUN_FACET_KEY,
   REVIEW_STATUS_DISPLAY_MAP
 } from "../constants"
-import {formatReadableDateFromStr} from "../util/util"
+import { formatReadableDateFromStr } from "../util/util"
 
 describe("SubmissionFacets", () => {
   let helper, facets, render
@@ -38,7 +38,10 @@ describe("SubmissionFacets", () => {
         bootcampFacetOptions.at(i).prop("facetKey"),
         BOOTCAMP_RUN_FACET_KEY
       )
-      assert.equal(bootcampFacetOptions.at(i).text(), `${title}: ${formatReadableDateFromStr(startDate)}`)
+      assert.equal(
+        bootcampFacetOptions.at(i).text(),
+        `${title}: ${formatReadableDateFromStr(startDate)}`
+      )
     })
 
     const reviewFacetOptions = wrapper
@@ -57,8 +60,8 @@ describe("SubmissionFacets", () => {
 
   it("should bold options that are currently selected", async () => {
     const url = `/?${qs.stringify({
-      review_status: facets.review_statuses[0].review_status,
-      bootcamp_run_id:   facets.bootcamp_runs[0].id
+      review_status:   facets.review_statuses[0].review_status,
+      bootcamp_run_id: facets.bootcamp_runs[0].id
     })}`
     helper.browserHistory.push(url)
 

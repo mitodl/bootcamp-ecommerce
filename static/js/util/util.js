@@ -4,14 +4,7 @@ import * as R from "ramda"
 import _ from "lodash"
 import moment from "moment"
 
-import {
-  BOOTCAMP_RUN_FACET_KEY,
-  CS_DEFAULT,
-  CS_ERROR_MESSAGES,
-  ORDER_FULFILLED,
-  REVIEW_STATUS_DISPLAY_MAP,
-  STATUS_FACET_KEY
-} from "../constants"
+import { CS_DEFAULT, CS_ERROR_MESSAGES, ORDER_FULFILLED } from "../constants"
 
 import type { BootcampRun } from "../flow/bootcampTypes"
 import type { HttpResponse } from "../flow/httpTypes"
