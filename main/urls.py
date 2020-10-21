@@ -13,7 +13,7 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 
-from main.views import react, BackgroundImagesCSSView
+from main.views import react, BackgroundImagesCSSView, cms_login_redirect_view
 
 root_urlpatterns = [url("", include(wagtail_urls))]
 
@@ -73,6 +73,7 @@ urlpatterns = (
             ServeView.as_view(),
             name="wagtailimages_serve",
         ),
+        re_path(r"^cms/login", cms_login_redirect_view, name="wagtailadmin_login"),
         re_path(r"^cms/", include(wagtailadmin_urls)),
         re_path(r"^documents/", include(wagtaildocs_urls)),
         re_path(r"^idp/", include("djangosaml2idp.urls")),
