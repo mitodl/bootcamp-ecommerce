@@ -70,9 +70,11 @@ export function Option({ option, facetKey }: OptionProps) {
     facetIsActive ? "font-weight-bold" : ""
   }`.trim()
 
+  const facetLabelParams = labelKey.map(label => option[label])
+
   return (
     <div className={className} onClick={cb}>
-      {facetOptionLabels[facetKey](labelKey.map(label => option[label]))}
+      {facetOptionLabels[facetKey](facetLabelParams)}
     </div>
   )
 }

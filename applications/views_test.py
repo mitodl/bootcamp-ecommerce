@@ -1,5 +1,6 @@
 """Tests for bootcamp application views"""
 from datetime import timedelta
+from types import SimpleNamespace
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -39,6 +40,28 @@ from profiles.factories import UserFactory
 
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def bootcamp_run_submissions():
+    """ Generate bootcamp runs and submissions """
+    bootcamp_runs = BootcampRunFactory.create_batch(3)
+    submissions = []
+    for bootcamp_run in bootcamp_runs:
+        application_step = BootcampRunApplicationStepFactory(
+            bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
+        )
+        for review_status in ALL_REVIEW_STATUSES:
+            submissions.append(
+                ApplicationStepSubmissionFactory.create(
+                    review_status=review_status,
+                    bootcamp_application__bootcamp_run=bootcamp_run,
+                    run_application_step=application_step,
+                    content_object=VideoInterviewSubmissionFactory.create(),
+                    is_review_ready=True,
+                )
+            )
+    return SimpleNamespace(bootcamp_runs=bootcamp_runs, submissions=submissions)
 
 
 @pytest.mark.parametrize(
@@ -165,26 +188,12 @@ def test_review_submission_update(admin_drf_client, review_status, application_s
 @pytest.mark.parametrize(
     "submission_factory", [QuizSubmissionFactory, VideoInterviewSubmissionFactory]
 )
-def test_review_submission_list(admin_drf_client, submission_factory):
+def test_review_submission_list(
+    admin_drf_client, submission_factory, bootcamp_run_submissions
+):
     """
     The review submission list view should return a list of all submissions
     """
-    bootcamp_runs = BootcampRunFactory.create_batch(3)
-    submissions = []
-    for bootcamp_run in bootcamp_runs:
-        application_step = BootcampRunApplicationStepFactory(
-            bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
-        )
-        for review_status in ALL_REVIEW_STATUSES:
-            submissions.append(
-                ApplicationStepSubmissionFactory.create(
-                    review_status=review_status,
-                    bootcamp_application__bootcamp_run=bootcamp_run,
-                    run_application_step=application_step,
-                    content_object=submission_factory.create(),
-                    is_review_ready=True,
-                )
-            )
     url = reverse("submissions_api-list")
     resp = admin_drf_client.get(url, dict(limit=100))
     assert resp.status_code == status.HTTP_200_OK
@@ -194,12 +203,14 @@ def test_review_submission_list(admin_drf_client, submission_factory):
     )
 
     assert result == {
-        "count": len(submissions),
+        "count": len(bootcamp_run_submissions.submissions),
         "next": None,
         "previous": None,
         "results": [
             SubmissionReviewSerializer(instance=submission).data
-            for submission in sorted(submissions, key=lambda s: s.id)
+            for submission in sorted(
+                bootcamp_run_submissions.submissions, key=lambda s: s.id
+            )
         ],
         "facets": {
             "bootcamp_runs": [
@@ -210,38 +221,28 @@ def test_review_submission_list(admin_drf_client, submission_factory):
                     "end_date": serializer_date_format(bootcamp_run.end_date),
                     "count": 4,
                 }
-                for bootcamp_run in sorted(bootcamp_runs, key=lambda b: b.id)
+                for bootcamp_run in sorted(
+                    bootcamp_run_submissions.bootcamp_runs, key=lambda b: b.id
+                )
             ],
             "review_statuses": [
-                {"review_status": review_status, "count": len(bootcamp_runs)}
+                {
+                    "review_status": review_status,
+                    "count": len(bootcamp_run_submissions.bootcamp_runs),
+                }
                 for review_status in sorted(ALL_REVIEW_STATUSES)
             ],
         },
     }
 
 
-def test_review_submission_list_expired(admin_drf_client):
+def test_review_submission_list_expired(admin_drf_client, bootcamp_run_submissions):
     """
     The review submission list view should not return submissions if run ended
     """
-    bootcamp_runs = BootcampRunFactory.create_batch(
-        3, end_date=now_in_utc() - timedelta(weeks=1)
-    )
-    submissions = []
-    for bootcamp_run in bootcamp_runs:
-        application_step = BootcampRunApplicationStepFactory(
-            bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
-        )
-        for review_status in ALL_REVIEW_STATUSES:
-            submissions.append(
-                ApplicationStepSubmissionFactory.create(
-                    review_status=review_status,
-                    bootcamp_application__bootcamp_run=bootcamp_run,
-                    run_application_step=application_step,
-                    content_object=VideoInterviewSubmissionFactory.create(),
-                    is_review_ready=True,
-                )
-            )
+    for run in bootcamp_run_submissions.bootcamp_runs:
+        run.end_date = now_in_utc() - timedelta(weeks=1)
+        run.save()
     url = reverse("submissions_api-list")
     resp = admin_drf_client.get(url, dict(limit=100))
     assert resp.status_code == status.HTTP_200_OK
