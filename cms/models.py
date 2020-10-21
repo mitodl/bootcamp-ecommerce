@@ -244,9 +244,15 @@ class BootcampRunPage(BootcampPage):
     bootcamp_run = models.OneToOneField(
         "klasses.BootcampRun",
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         help_text="The bootcamp run for this page",
     )
+
+    def copy(self, *args, **kwargs):  # pylint: disable=signature-differs
+        kwargs["exclude_fields"] = kwargs.get("exclude_fields", []) + ["bootcamp_run"]
+        kwargs["keep_live"] = False
+        return super().copy(*args, **kwargs)
 
     content_panels = [FieldPanel("bootcamp_run")] + BootcampPage.content_panels
 
