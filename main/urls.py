@@ -68,12 +68,12 @@ urlpatterns = (
         ),
         re_path(r"^review/", react, name="review"),
         # Wagtail
-        re_path(r"^cms/login", cms_login_redirect_view, name="wagtailadmin_login"),
         re_path(
             r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",
             ServeView.as_view(),
             name="wagtailimages_serve",
         ),
+        re_path(r"^cms/login", cms_login_redirect_view, name="wagtailadmin_login"),
         re_path(r"^cms/", include(wagtailadmin_urls)),
         re_path(r"^documents/", include(wagtaildocs_urls)),
         re_path(r"^idp/", include("djangosaml2idp.urls")),

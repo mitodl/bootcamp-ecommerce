@@ -3,11 +3,12 @@ bootcamp views
 """
 import json
 
+from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from main import settings
+
 from main.utils import has_all_keys
 
 
@@ -101,6 +102,6 @@ def page_500(request, *args, **kwargs):  # pylint: disable=unused-argument
 
 def cms_login_redirect_view(request):
     """
-    Redirects wagtain's login page to site's login page
+    Redirects cms login page to site's login page
     """
     return redirect_to_login(reverse("wagtailadmin_home"), login_url=settings.LOGIN_URL)
