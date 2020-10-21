@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.59.0
+Version 0.59.0 (Released October 21, 2020)
 --------------
 
 - node-fetch dependency upgrade to version 2.6.1
