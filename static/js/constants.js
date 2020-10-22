@@ -220,19 +220,19 @@ export const ALLOWED_FILE_EXTENSIONS = {
 
 // Submission facets
 export const STATUS_FACET_KEY = "review_statuses"
-export const BOOTCAMP_FACET_KEY = "bootcamps"
+export const BOOTCAMP_RUN_FACET_KEY = "bootcamp_runs"
 
 export const FACET_DISPLAY_NAMES = {
-  [STATUS_FACET_KEY]:   "Application Status",
-  [BOOTCAMP_FACET_KEY]: "Bootcamp"
+  [STATUS_FACET_KEY]:       "Application Status",
+  [BOOTCAMP_RUN_FACET_KEY]: "Bootcamp Run"
 }
 
 export const FACET_OPTION_LABEL_KEYS = {
-  [STATUS_FACET_KEY]:   "review_status",
-  [BOOTCAMP_FACET_KEY]: "title"
+  [STATUS_FACET_KEY]:       ["review_status"],
+  [BOOTCAMP_RUN_FACET_KEY]: ["title", "start_date", "end_date"]
 }
 
-export const FACET_ORDER = [BOOTCAMP_FACET_KEY, STATUS_FACET_KEY]
+export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY]
 
 export const CS_101 = "CS_101"
 export const CS_102 = "CS_102"

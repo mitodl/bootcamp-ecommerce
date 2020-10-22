@@ -19,7 +19,7 @@ def test_application_step_submission_filterset_bootcamp_id():
     matching = ApplicationStepSubmissionFactory.create()
     nonmatching = ApplicationStepSubmissionFactory.create()
 
-    params = {"bootcamp_id": matching.bootcamp_application.bootcamp_run.bootcamp.id}
+    params = {"bootcamp_run_id": matching.bootcamp_application.bootcamp_run.id}
 
     query = ApplicationStepSubmissionFilterSet(
         params, queryset=ApplicationStepSubmission.objects.all()

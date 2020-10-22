@@ -80,10 +80,12 @@ export const makeApplicationFacets = (): SubmissionFacetData => {
       review_status: status,
       count:         casual.integer(1, 10)
     })),
-    bootcamps: [1, 2, 3].map(id => ({
+    bootcamp_runs: [1, 2, 3].map(id => ({
       id,
-      title: casual.title,
-      count: casual.integer(1, 10)
+      title:      casual.title,
+      start_date: moment().format(),
+      end_date:   moment().format(),
+      count:      casual.integer(1, 10)
     }))
   }
 

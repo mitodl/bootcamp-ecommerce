@@ -4,11 +4,10 @@ import qs from "query-string"
 import urljoin from "url-join"
 import { prop, omit } from "ramda"
 import { useLocation, useHistory } from "react-router"
-import { identity } from "ramda"
 
 import {
   STATUS_FACET_KEY,
-  BOOTCAMP_FACET_KEY,
+  BOOTCAMP_RUN_FACET_KEY,
   FACET_DISPLAY_NAMES,
   FACET_OPTION_LABEL_KEYS,
   FACET_ORDER,
@@ -16,21 +15,23 @@ import {
 } from "../constants"
 
 import type { FacetOption, SubmissionFacetData } from "../flow/applicationTypes"
+import { formatStartEndDateStrings } from "../util/util"
 
 export const facetOptionSerialization = {
   [STATUS_FACET_KEY]: {
     qsKey:      "review_status",
     getQSValue: prop("review_status")
   },
-  [BOOTCAMP_FACET_KEY]: {
-    qsKey:      "bootcamp_id",
+  [BOOTCAMP_RUN_FACET_KEY]: {
+    qsKey:      "bootcamp_run_id",
     getQSValue: prop("id")
   }
 }
 
 export const facetOptionLabels = {
-  [STATUS_FACET_KEY]:   status => REVIEW_STATUS_DISPLAY_MAP[status][0],
-  [BOOTCAMP_FACET_KEY]: identity
+  [STATUS_FACET_KEY]:       ([status]) => REVIEW_STATUS_DISPLAY_MAP[status][0],
+  [BOOTCAMP_RUN_FACET_KEY]: ([title, startDate, endDate]) =>
+    `${title}: ${formatStartEndDateStrings(startDate, endDate)}`
 }
 
 type OptionProps = {
@@ -69,9 +70,11 @@ export function Option({ option, facetKey }: OptionProps) {
     facetIsActive ? "font-weight-bold" : ""
   }`.trim()
 
+  const facetLabelParams = labelKey.map(label => option[label])
+
   return (
     <div className={className} onClick={cb}>
-      {facetOptionLabels[facetKey](option[labelKey])}
+      {facetOptionLabels[facetKey](facetLabelParams)}
     </div>
   )
 }

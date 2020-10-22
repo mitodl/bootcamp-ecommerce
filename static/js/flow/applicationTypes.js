@@ -98,6 +98,8 @@ export type SubmissionReviewState = {
 type BootcampFacetOption = {
   id:    number,
   title: string,
+  start_date: string,
+  end_date: string,
   count: number
 }
 
@@ -109,7 +111,7 @@ type ReviewStatusFacetOption = {
 export type FacetOption = BootcampFacetOption | ReviewStatusFacetOption
 
 export type SubmissionFacetData = {
-  bootcamps:       Array<BootcampFacetOption>,
+  bootcamp_runs:   Array<BootcampFacetOption>,
   review_statuses: Array<ReviewStatusFacetOption>
 }
 

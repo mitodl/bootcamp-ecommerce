@@ -8,9 +8,10 @@ import SubmissionFacets from "./SubmissionFacets"
 import { makeApplicationFacets } from "../factories/application"
 import {
   STATUS_FACET_KEY,
-  BOOTCAMP_FACET_KEY,
+  BOOTCAMP_RUN_FACET_KEY,
   REVIEW_STATUS_DISPLAY_MAP
 } from "../constants"
+import { formatReadableDateFromStr } from "../util/util"
 
 describe("SubmissionFacets", () => {
   let helper, facets, render
@@ -32,12 +33,18 @@ describe("SubmissionFacets", () => {
       .find(".facet")
       .at(0)
       .find("Option")
-    facets.bootcamps.forEach(({ title }, i) => {
+    // $FlowFixMe
+    facets.bootcamp_runs.forEach(({ title, startDate, endDate }, i) => {
       assert.equal(
         bootcampFacetOptions.at(i).prop("facetKey"),
-        BOOTCAMP_FACET_KEY
+        BOOTCAMP_RUN_FACET_KEY
       )
-      assert.equal(bootcampFacetOptions.at(i).text(), title)
+      assert.equal(
+        bootcampFacetOptions.at(i).text(),
+        `${title}: ${formatReadableDateFromStr(
+          startDate
+        )} - ${formatReadableDateFromStr(endDate)}`
+      )
     })
 
     const reviewFacetOptions = wrapper
@@ -56,8 +63,8 @@ describe("SubmissionFacets", () => {
 
   it("should bold options that are currently selected", async () => {
     const url = `/?${qs.stringify({
-      review_status: facets.review_statuses[0].review_status,
-      bootcamp_id:   facets.bootcamps[0].id
+      review_status:   facets.review_statuses[0].review_status,
+      bootcamp_run_id: facets.bootcamp_runs[0].id
     })}`
     helper.browserHistory.push(url)
 
@@ -89,7 +96,7 @@ describe("SubmissionFacets", () => {
 
     assert.equal(
       helper.currentLocation.search,
-      "?bootcamp_id=1&review_status=approved"
+      "?bootcamp_run_id=1&review_status=approved"
     )
   })
 })
