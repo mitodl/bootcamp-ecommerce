@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.59.1
+Version 0.59.1 (Released October 22, 2020)
 --------------
 
 - Added cms-login to bootcamp-login redirection (#1060)
