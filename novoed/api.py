@@ -51,9 +51,6 @@ def enroll_in_novoed_course(user, novoed_course_stub):
     resp = requests.post(new_user_url, json=new_user_req_body)
     created, existed = False, False
     if resp.status_code == status.HTTP_200_OK:
-        BootcampRunEnrollment.objects.filter(
-            user=user, bootcamp_run__novoed_course_stub=novoed_course_stub
-        ).update(novoed_sync_date=now_in_utc())
         created = True
     elif resp.status_code == status.HTTP_207_MULTI_STATUS:
         existed = True
@@ -65,6 +62,14 @@ def enroll_in_novoed_course(user, novoed_course_stub):
         )
     else:
         resp.raise_for_status()
+    # Update the 'novoed_sync_date' value for the enrollment that matches this user/run, as long as we got a response
+    # that indicated the enrollment exists in NovoEd, and the existing sync date is None
+    if created or existed:
+        BootcampRunEnrollment.objects.filter(
+            user=user,
+            bootcamp_run__novoed_course_stub=novoed_course_stub,
+            novoed_sync_date=None,
+        ).update(novoed_sync_date=now_in_utc())
     return created, existed
 
 
