@@ -5,7 +5,9 @@ import pytest
 from rest_framework import status
 from requests.exceptions import HTTPError
 
+from klasses.factories import BootcampRunEnrollmentFactory
 from main.test_utils import MockResponse
+from main.utils import now_in_utc
 from profiles.factories import UserFactory
 from novoed.api import enroll_in_novoed_course, unenroll_from_novoed_course
 from novoed.constants import REGISTER_USER_URL_STUB, UNENROLL_USER_URL_STUB
@@ -41,15 +43,29 @@ def patched_post(mocker):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "response_status,exp_created,exp_existing",
-    [[status.HTTP_200_OK, True, False], [status.HTTP_207_MULTI_STATUS, False, True]],
+    "response_status,exp_created,exp_existing,exp_update_sync_date",
+    [
+        [status.HTTP_200_OK, True, False, True],
+        [status.HTTP_207_MULTI_STATUS, False, True, True],
+        [status.HTTP_204_NO_CONTENT, False, False, False],
+    ],
 )
 def test_enroll_in_novoed_course(
-    patched_post, novoed_user, response_status, exp_created, exp_existing
-):
+    patched_post,
+    novoed_user,
+    response_status,
+    exp_created,
+    exp_existing,
+    exp_update_sync_date,
+):  # pylint:disable=too-many-arguments
     """
     enroll_in_novoed_course should make a request to enroll a user in NovoEd and return flags indicating the results
     """
+    enrollment = BootcampRunEnrollmentFactory.create(
+        user=novoed_user,
+        bootcamp_run__novoed_course_stub=FAKE_COURSE_STUB,
+        novoed_sync_date=None,
+    )
     patched_post.return_value = MockResponse(content=None, status_code=response_status)
     result = enroll_in_novoed_course(novoed_user, FAKE_COURSE_STUB)
     patched_post.assert_called_once_with(
@@ -65,6 +81,25 @@ def test_enroll_in_novoed_course(
         },
     )
     assert result == (exp_created, exp_existing)
+    enrollment.refresh_from_db()
+    assert (enrollment.novoed_sync_date is not None) == exp_update_sync_date
+
+
+@pytest.mark.django_db
+def test_enroll_in_novoed_course_no_update(patched_post, novoed_user):
+    """enroll_in_novoed_course should not update the NovoEd sync date if it has already been set"""
+    dt = now_in_utc()
+    enrollment = BootcampRunEnrollmentFactory.create(
+        user=novoed_user,
+        bootcamp_run__novoed_course_stub=FAKE_COURSE_STUB,
+        novoed_sync_date=dt,
+    )
+    patched_post.return_value = MockResponse(
+        content=None, status_code=status.HTTP_200_OK
+    )
+    enroll_in_novoed_course(novoed_user, FAKE_COURSE_STUB)
+    enrollment.refresh_from_db()
+    assert enrollment.novoed_sync_date == dt
 
 
 @pytest.mark.django_db
