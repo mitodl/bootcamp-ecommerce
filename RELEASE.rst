@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.59.2
+Version 0.59.2 (Released October 26, 2020)
 --------------
 
 - Filter submissions by run instead of bootcamp (#1063)
