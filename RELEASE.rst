@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.60.0
+--------------
+
+- Changed NovoEd API to update the sync date if a NovoEd enrollment already exists (#1058)
+- add copy bootcamp feature
+
 Version 0.59.2 (Released October 26, 2020)
 --------------
 
