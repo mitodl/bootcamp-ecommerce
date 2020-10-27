@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.60.0
+Version 0.60.0 (Released October 27, 2020)
 --------------
 
 - Changed NovoEd API to update the sync date if a NovoEd enrollment already exists (#1058)
