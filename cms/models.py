@@ -250,6 +250,7 @@ class BootcampRunPage(BootcampPage):
     )
 
     def copy(self, *args, **kwargs):  # pylint: disable=signature-differs
+        kwargs["copy_revisions"] = False
         kwargs["exclude_fields"] = kwargs.get("exclude_fields", []) + ["bootcamp_run"]
         kwargs["keep_live"] = False
         return super().copy(*args, **kwargs)
