@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.60.1
+--------------
+
+- fixing copy revision bug
+
 Version 0.60.0 (Released October 27, 2020)
 --------------
 
