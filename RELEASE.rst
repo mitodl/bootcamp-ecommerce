@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.61.0
+--------------
+
+- cryptography version update from 3.1 to 3.2.1
+
 Version 0.60.1 (Released October 29, 2020)
 --------------
 
