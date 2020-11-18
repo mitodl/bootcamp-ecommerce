@@ -66,7 +66,7 @@ def derive_application_state(
         or not bootcamp_application.user.legal_address.is_complete
     ):
         return AppStates.AWAITING_PROFILE_COMPLETION.value
-    if not bootcamp_application.resume_file:
+    if not bootcamp_application.resume_file and not bootcamp_application.linkedin_url:
         return AppStates.AWAITING_RESUME.value
     submissions = list(bootcamp_application.submissions.all())
     submission_review_statuses = [
