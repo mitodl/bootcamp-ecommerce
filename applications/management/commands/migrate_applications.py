@@ -30,6 +30,15 @@ class Command(BaseCommand):
             required=True,
         )
         parser.add_argument(
+            "--state",
+            type=str,
+            help=(
+                "(Optional) If provided, only applications with the given state will be migrated."
+            ),
+            choices=APPROVED_APP_STATES,
+            required=False,
+        )
+        parser.add_argument(
             "--users",
             type=str,
             help=(
@@ -51,7 +60,9 @@ class Command(BaseCommand):
             help="Migrate applications even if the 'from' run and 'to' run belong to different bootcamps.",
         )
 
-    def handle(self, *args, **options):  # pylint: disable=too-many-locals
+    def handle(
+        self, *args, **options
+    ):  # pylint: disable=too-many-locals,too-many-branches
         from_run_property = options["from_run"]
         to_run_property = options["to_run"]
         from_run = fetch_bootcamp_run(from_run_property)
@@ -64,9 +75,14 @@ class Command(BaseCommand):
                 fetch_user(user_property) for user_property in users_property.split(",")
             ]
         )
-        application_filter = dict(bootcamp_run=from_run, state__in=APPROVED_APP_STATES)
+
+        application_filter = dict(bootcamp_run=from_run)
         if users:
             application_filter["user__in"] = users
+        if options["state"]:
+            application_filter["state"] = options["state"]
+        else:
+            application_filter["state__in"] = APPROVED_APP_STATES
         from_run_applications = BootcampApplication.objects.filter(**application_filter)
 
         if not from_run_applications.exists():
