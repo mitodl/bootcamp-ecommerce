@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.61.1
+Version 0.61.1 (Released November 18, 2020)
 --------------
 
 - Added command to migrate applications from one run to another (#1077)
