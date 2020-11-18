@@ -314,6 +314,19 @@ def get_field_names(model):
     ]
 
 
+def is_empty_file(file_field):
+    """
+    Return True if the given file field object passed in is None or has no filename
+
+    Args:
+        file_field (django.db.models.FileField or None): A file field property of a model object
+
+    Returns:
+        bool: True if the given file field object passed in is None or has no filename
+    """
+    return file_field is None or not file_field.name
+
+
 def filter_dict_by_key_set(dict_to_filter, key_set):
     """Takes a dictionary and returns a copy with only the keys that exist in the given set"""
     return {key: dict_to_filter[key] for key in dict_to_filter.keys() if key in key_set}

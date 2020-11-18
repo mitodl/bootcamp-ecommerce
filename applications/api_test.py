@@ -51,6 +51,7 @@ def test_derive_application_state():
         user__profile=None,
         user__legal_address=None,
         resume_file=None,
+        linkedin_url=None,
     )
     assert derive_application_state(app) == AppStates.AWAITING_PROFILE_COMPLETION.value
 
@@ -62,6 +63,13 @@ def test_derive_application_state():
     assert derive_application_state(app) == AppStates.AWAITING_RESUME.value
 
     app.resume_file = SimpleUploadedFile("resume.txt", b"these are the file contents!")
+    app.save()
+    app.refresh_from_db()
+    assert derive_application_state(app) == AppStates.AWAITING_USER_SUBMISSIONS.value
+
+    # The resume requirement should be considered fulfilled if the user uploads a resume *or* provides a LinkedIn URL
+    app.resume_file = None
+    app.linkedin_url = "http://example.com/linkedin"
     app.save()
     app.refresh_from_db()
     assert derive_application_state(app) == AppStates.AWAITING_USER_SUBMISSIONS.value

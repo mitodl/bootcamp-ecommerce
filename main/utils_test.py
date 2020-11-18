@@ -4,6 +4,7 @@ Tests for the utils module
 import datetime
 import operator as op
 from math import ceil
+from types import SimpleNamespace
 
 import pytest
 import pytz
@@ -11,6 +12,7 @@ import pytz
 from ecommerce.factories import Order, ReceiptFactory
 from main.utils import (
     get_field_names,
+    is_empty_file,
     serialize_model_object,
     chunks,
     now_in_utc,
@@ -268,6 +270,16 @@ def test_get_field_names():
         "updated_on",
         "payment_type",
     }
+
+
+def test_is_empty_file():
+    """is_empty_file should return True if the given object is None or has a blank name property"""
+    fake_file = None
+    assert is_empty_file(fake_file) is True
+    fake_file = SimpleNamespace(name="")
+    assert is_empty_file(fake_file) is True
+    fake_file = SimpleNamespace(name="path/to/file.txt")
+    assert is_empty_file(fake_file) is False
 
 
 def test_chunks():

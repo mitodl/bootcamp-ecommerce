@@ -2,8 +2,8 @@
 from django.core.management.base import BaseCommand
 
 from applications.api import derive_application_state
+from applications.management.utils import fetch_bootcamp_run
 from applications.models import BootcampApplication
-from klasses.models import BootcampRun
 from profiles.api import fetch_user
 
 
@@ -26,10 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         user = fetch_user(options["user"])
         run_property = options["run"]
-        if run_property.isdigit():
-            bootcamp_run = BootcampRun.objects.get(id=run_property)
-        else:
-            bootcamp_run = BootcampRun.objects.get(title=run_property)
+        bootcamp_run = fetch_bootcamp_run(run_property)
         bootcamp_app = BootcampApplication.objects.get(
             user=user, bootcamp_run=bootcamp_run
         )
