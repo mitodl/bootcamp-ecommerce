@@ -89,9 +89,3 @@ docker-compose run --rm web ./manage.py seed_data
 # To delete seed data
 docker-compose run --rm web ./manage.py delete_seed_data
 ```
-
-### Running tests
-
-To run tests locally, run this command:
-
-    docker-compose run --rm web pytest

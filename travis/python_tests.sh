@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 status=0
 
+
+echohighlight() {
+  echo -e "\x1b[32;1m$@\x1b[0m"
+}
+
+
 function run_test {
+    echohighlight "[TEST SUITE] $@"  
     "$@"
     local test_status=$?
     if [ $test_status -ne 0 ]; then
         status=$test_status
     fi
+    echo ""    
     return $status
 }
 
