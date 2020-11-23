@@ -348,12 +348,13 @@ def make_reference_id(order):
     )
 
 
-def complete_successful_order(order):
+def complete_successful_order(order, send_receipt=True):
     """
     Once an order is fulfilled, we need to create an enrollment and notify other services.
 
     Args:
         order (Order): An order which has just been fulfilled
+        send_receipt (bool): Flag that indicates whether a receipt should be emailed to the user
     """
     order.status = Order.FULFILLED
     order.save_and_log(None)
@@ -380,7 +381,8 @@ def complete_successful_order(order):
                 user_ids=[order.user.id], novoed_course_stub=run.novoed_course_stub
             )
 
-    tasks.send_receipt_email.delay(application.id)
+    if send_receipt is True:
+        tasks.send_receipt_email.delay(application.id)
 
 
 def handle_rejected_order(*, order, decision):

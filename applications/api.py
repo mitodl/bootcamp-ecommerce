@@ -17,6 +17,7 @@ from applications.models import (
 from applications import tasks
 from jobma.api import create_interview_in_jobma
 from jobma.models import Interview, Job
+from profiles.api import is_user_info_complete
 
 
 def get_or_create_bootcamp_application(user, bootcamp_run_id):
@@ -59,12 +60,7 @@ def derive_application_state(
     Returns:
         str: The derived state of the bootcamp application based on related data
     """
-    if (
-        not hasattr(bootcamp_application.user, "profile")
-        or not bootcamp_application.user.profile.is_complete
-        or not hasattr(bootcamp_application.user, "legal_address")
-        or not bootcamp_application.user.legal_address.is_complete
-    ):
+    if not is_user_info_complete(bootcamp_application.user):
         return AppStates.AWAITING_PROFILE_COMPLETION.value
     if not bootcamp_application.resume_file and not bootcamp_application.linkedin_url:
         return AppStates.AWAITING_RESUME.value

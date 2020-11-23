@@ -5,7 +5,10 @@ from datetime import timedelta
 from django.conf import settings
 from django.db.models import Q
 
-from applications.constants import SUBMISSION_STATUS_PENDING, REVIEW_COMPLETED_STATES
+from applications.constants import (
+    SUBMISSION_STATUS_PENDING,
+    REVIEW_COMPLETED_APP_STATES,
+)
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from applications import api
 from main.celery import app
@@ -38,7 +41,7 @@ def refresh_pending_interview_links():
     for submission in (
         ApplicationStepSubmission.objects.select_related("bootcamp_application")
         .exclude(
-            Q(bootcamp_application__state__in=REVIEW_COMPLETED_STATES)
+            Q(bootcamp_application__state__in=REVIEW_COMPLETED_APP_STATES)
             | Q(bootcamp_application__bootcamp_run__start_date__lte=now)
         )
         .filter(

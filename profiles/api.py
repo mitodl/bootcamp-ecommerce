@@ -238,3 +238,21 @@ def get_first_and_last_names(user):
         return names[0], ""
     else:
         return tuple(names)
+
+
+def is_user_info_complete(user):
+    """
+    Returns True if the user has provided all of the required registration info
+
+    Args:
+        user (django.contrib.auth.models.User):
+
+    Returns:
+        bool: True if the user has provided all of the required registration info
+    """
+    return (
+        hasattr(user, "profile")
+        and user.profile.is_complete
+        and hasattr(user, "legal_address")
+        and user.legal_address.is_complete
+    )
