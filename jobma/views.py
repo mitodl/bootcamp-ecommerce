@@ -39,7 +39,7 @@ class JobmaWebhookView(GenericAPIView):
             ) in interview.videointerviewsubmission.app_step_submissions.filter(
                 submission_status=SUBMISSION_STATUS_PENDING
             ):
-                submission.bootcamp_application.complete_interview()
+                submission.bootcamp_application.complete_submission()
                 submission.bootcamp_application.save()
 
                 submission.submission_status = SUBMISSION_STATUS_SUBMITTED

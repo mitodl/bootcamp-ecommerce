@@ -89,3 +89,16 @@ docker-compose run --rm web ./manage.py seed_data
 # To delete seed data
 docker-compose run --rm web ./manage.py delete_seed_data
 ```
+
+The logic for determining the state of a user's application and advancing them through each step is complicated enough 
+that it's sometimes very annoying to test certain features. To help with this, there is a management command that 
+you can use to force a user's application into a certain state:
+
+```
+docker-compose run --rm web ./manage.py set_application_state -i <your application id> --state <desired state>
+
+# Examples:
+docker-compose run --rm web ./manage.py set_application_state -i 123 --state AWAITING_PAYMENT
+# Provide a user and run instead of a bootcamp application id
+docker-compose run --rm web ./manage.py set_application_state --user me@example.com --run "Bootcamp Run 1" --state AWAITING_RESUME
+```

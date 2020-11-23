@@ -192,7 +192,6 @@ class BootcampApplication(TimestampedModel):
         if resume_file:
             validate_file_extension(resume_file)
             self.resume_file = resume_file
-            self.resume_upload_date = now_in_utc()
         if linkedin_url:
             self.linkedin_url = linkedin_url
         self.resume_upload_date = now_in_utc()
@@ -226,8 +225,8 @@ class BootcampApplication(TimestampedModel):
         source=AppStates.AWAITING_USER_SUBMISSIONS.value,
         target=AppStates.AWAITING_SUBMISSION_REVIEW.value,
     )
-    def complete_interview(self):
-        """When the interview is completed, mark that it is ready for review"""
+    def complete_submission(self):
+        """When the submission is completed, mark that it is ready for review"""
 
     @transition(
         field=state,

@@ -10,6 +10,7 @@ from profiles.api import (
     fetch_users,
     find_available_username,
     get_first_and_last_names,
+    is_user_info_complete,
 )
 from profiles.utils import usernameify
 from profiles.factories import UserFactory, LegalAddressFactory, ProfileFactory
@@ -190,3 +191,13 @@ def test_get_first_and_last_names():
     LegalAddressFactory.create(user=user, first_name="Jane", last_name="Address")
     user.refresh_from_db()
     assert get_first_and_last_names(user) == ("Jane", "Address")
+
+
+@pytest.mark.django_db
+def test_is_user_info_complete():
+    """is_user_info_complete should return True if the user has a fully filled out profile and legal address"""
+    user = UserFactory.create(profile=None, legal_address=None)
+    assert is_user_info_complete(user) is False
+    ProfileFactory.create(user=user)
+    LegalAddressFactory.create(user=user)
+    assert is_user_info_complete(user) is True
