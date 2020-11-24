@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.62.0
+--------------
+
+- Added flag to run python tests only without pylint/cov/warnings (#1085)
+- Added seed data command for setting application state (#1084)
+- Replacing Travis with Github actions and using pytest instead of tox (#1086)
+
 Version 0.61.2 (Released November 24, 2020)
 --------------
 
