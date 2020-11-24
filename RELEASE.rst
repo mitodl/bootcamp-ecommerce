@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.61.2
+Version 0.61.2 (Released November 24, 2020)
 --------------
 
 - Add OWASP ZAP security scan with Github action (#1080)
