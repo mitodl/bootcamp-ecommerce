@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.62.0
+Version 0.62.0 (Released November 25, 2020)
 --------------
 
 - Added flag to run python tests only without pylint/cov/warnings (#1085)
