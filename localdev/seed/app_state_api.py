@@ -283,8 +283,7 @@ class AwaitingResumeStep(AppStep):
     @staticmethod
     def _fulfill(application, **kwargs):
         with open(
-            os.path.join(settings.BASE_DIR, DUMMY_RESUME_FILEPATH),
-            encoding=DUMMY_RESUME_ENCODING,
+            os.path.join(settings.BASE_DIR, DUMMY_RESUME_FILEPATH), "rb"
         ) as resume_file:
             application.add_resume(
                 resume_file=File(resume_file, name=DUMMY_RESUME_FILENAME),
