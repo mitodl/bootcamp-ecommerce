@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.63.0
+Version 0.63.0 (Released December 01, 2020)
 --------------
 
 - Fixed file handling for set_application_state command (#1088)
