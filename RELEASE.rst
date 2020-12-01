@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.63.0
+--------------
+
+- Fixed file handling for set_application_state command (#1088)
+- Added 'state' param to migrate_applications command (#1079)
+
 Version 0.62.0 (Released November 25, 2020)
 --------------
 
