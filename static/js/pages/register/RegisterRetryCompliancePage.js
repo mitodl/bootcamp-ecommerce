@@ -1,7 +1,10 @@
 // @flow
 /* global SETTINGS: false */
 import React from "react"
-import { REGISTER_DETAILS_PAGE_TITLE } from "../../constants"
+import {
+  CS_DEFAULT_MESSAGE,
+  REGISTER_DETAILS_PAGE_TITLE
+} from "../../constants"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { mutateAsync } from "redux-query"
@@ -115,6 +118,24 @@ export class RegisterRetryCompliancePage extends React.Component<Props, State> {
     }
   }
 
+  getTransformedErrorMessage(errors: string) {
+    // Clean the error string
+    const errorsList = errors
+      .trim()
+      .replace("Error code: ", "")
+      .split(",")
+    const errorMessage = "There was a problem validating your profile: "
+    // Populate a list of transformed error messages
+    const transformedErrors = []
+    errorsList.map(errorCode => {
+      transformedErrors.push(`*${transformError(errorCode)}`)
+    })
+    // Proper error message
+    if (transformedErrors.length === 0) return errorMessage + CS_DEFAULT_MESSAGE
+
+    return errorMessage + transformedErrors.join(", ")
+  }
+
   render() {
     const {
       countries,
@@ -134,9 +155,8 @@ export class RegisterRetryCompliancePage extends React.Component<Props, State> {
           {!isNilOrBlank(errors) && (
             <div className="col-12 text-danger">
               <p>
-                There was a problem validating your name and address:{" "}
-                {transformError(errors)}.<br /> If this happens more than once,
-                please contact{" "}
+                {this.getTransformedErrorMessage(errors)}.
+                <br /> If this happens more than once, please contact{" "}
                 <a
                   href={SETTINGS.support_url}
                   target="_blank"

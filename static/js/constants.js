@@ -236,11 +236,29 @@ export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY]
 
 export const CS_101 = "CS_101"
 export const CS_102 = "CS_102"
+
+// Invalid field error codes
+export const CS_301 = "CS_301"
+export const CS_302 = "CS_302"
+export const CS_303 = "CS_303"
+export const CS_304 = "CS_304"
+export const CS_305 = "CS_305"
+export const CS_306 = "CS_306"
+export const CS_307 = "CS_307"
+
 export const CS_DEFAULT = "CS_DEFAULT"
+export const CS_DEFAULT_MESSAGE =
+  "Please modify your name/address and try again"
 
 export const CS_ERROR_MESSAGES = {
-  [CS_101]:
-    "Missing required fields. Please modify your name/address and try again",
-  [CS_102]:     "Invalid data. Please modify your name/address and try again",
-  [CS_DEFAULT]: "Please try again"
+  [CS_301]:     "Invalid first name",
+  [CS_302]:     "Invalid last name",
+  [CS_303]:     "Invalid street address",
+  [CS_304]:     "Invalid city",
+  [CS_305]:     "Invalid country",
+  [CS_306]:     "Invalid state",
+  [CS_307]:     "Invalid postal code",
+  [CS_101]:     `Missing required fields. ${CS_DEFAULT_MESSAGE}`,
+  [CS_102]:     `Invalid data. ${CS_DEFAULT_MESSAGE}`,
+  [CS_DEFAULT]: CS_DEFAULT_MESSAGE
 }

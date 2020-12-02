@@ -169,7 +169,7 @@ class SocialAuthSerializer(serializers.Serializer):
             result = SocialAuthState(
                 SocialAuthState.STATE_ERROR_TEMPORARY,
                 partial=exc.partial,
-                errors=[f"Error code: CS_{exc.reason_code}"],
+                errors=[self.get_transformed_errors(exc)],
                 user=exc.user,
             )
         except AuthException as exc:
@@ -204,6 +204,12 @@ class SocialAuthSerializer(serializers.Serializer):
         self.instance = result
 
         return result
+
+    def get_transformed_errors(self, retry_exception):
+        """Generate the formatted errors"""
+        if retry_exception.errors:
+            return f"Error code: {','.join('CS_{}'.format(error) for error in retry_exception.errors)}"
+        return f"Error code: CS_{retry_exception.reason_code}"
 
 
 class LoginEmailSerializer(SocialAuthSerializer):

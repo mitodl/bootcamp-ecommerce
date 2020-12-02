@@ -17,14 +17,14 @@ from compliance.constants import (
     RESULT_DENIED,
     RESULT_SUCCESS,
     RESULT_UNKNOWN,
+    INVALID_REQUEST_REASON_CODES,
+    ComplianceAddressPayload,
 )
 from compliance.models import ExportsInquiryLog
-
 
 log = logging.getLogger()
 
 DecryptedLog = namedtuple("DecryptedLog", ["request", "response"])
-
 
 EXPORTS_REQUIRED_KEYS = [
     "CYBERSOURCE_WSDL_URL",
@@ -117,11 +117,17 @@ def log_exports_inquiry(user, response, last_sent, last_received):
     reason_code = int(response.reasonCode)
 
     if reason_code in TEMPORARY_FAILURE_REASON_CODES:
+
         # if it's a temporary failure in the CyberSource backend or
         # the request itself, no point in recording this
         log.error(
             "Unable to verify exports controls, received reasonCode: %s", reason_code
         )
+        if reason_code in INVALID_REQUEST_REASON_CODES:
+            return ComplianceValidationError(
+                reason_code=reason_code, reason_list=response.invalidField
+            )
+
         return None
 
     # if the data triggered a block list this will be truthy
@@ -132,7 +138,6 @@ def log_exports_inquiry(user, response, last_sent, last_received):
     encrypted_response = box.encrypt(xml_response, encoder=Base64Encoder).decode(
         "ascii"
     )
-
     return ExportsInquiryLog.objects.create(
         user=user,
         computed_result=compute_result_from_codes(reason_code, info_code),
@@ -185,24 +190,28 @@ def get_bill_to_address(user):
 
     # minimally require fields
     billing_address = {
-        "firstName": legal_address.first_name,
-        "lastName": legal_address.last_name,
-        "email": user.email,
-        "street1": legal_address.street_address_1,
-        "street2": legal_address.street_address_2,
-        "street3": legal_address.street_address_3,
-        "street4": legal_address.street_address_4,
-        "city": legal_address.city,
-        "country": legal_address.country,
+        ComplianceAddressPayload.CS_KEY_FIRST_NAME: legal_address.first_name,
+        ComplianceAddressPayload.CS_KEY_LAST_NAME: legal_address.last_name,
+        ComplianceAddressPayload.CS_KEY_EMAIL: user.email,
+        ComplianceAddressPayload.CS_KEY_STREET1: legal_address.street_address_1,
+        ComplianceAddressPayload.CS_KEY_STREET2: legal_address.street_address_2,
+        ComplianceAddressPayload.CS_KEY_STREET3: legal_address.street_address_3,
+        ComplianceAddressPayload.CS_KEY_STREET4: legal_address.street_address_4,
+        ComplianceAddressPayload.CS_KEY_CITY: legal_address.city,
+        ComplianceAddressPayload.CS_KEY_COUNTRY: legal_address.country,
     }
 
     # these are required for certain countries, we presume here that data was validated before it was written
     if legal_address.state_or_territory:
         # State is in US-MA format and we want that send part
-        billing_address["state"] = legal_address.state_or_territory.split("-")[1]
+        billing_address[
+            ComplianceAddressPayload.CS_KEY_STATE
+        ] = legal_address.state_or_territory.split("-")[1]
 
     if legal_address.postal_code:
-        billing_address["postalCode"] = legal_address.postal_code
+        billing_address[
+            ComplianceAddressPayload.CS_KEY_POSTAL_CODE
+        ] = legal_address.postal_code
 
     return billing_address
 
@@ -229,7 +238,6 @@ def verify_user_with_exports(user):
         payload["exportService"]["sanctionsLists"] = sanctions_lists
 
     response = client.service.runTransaction(**payload)
-
     return log_exports_inquiry(user, response, history.last_sent, history.last_received)
 
 
@@ -245,3 +253,11 @@ def get_latest_exports_inquiry(user):
             the latest record sorted by created_on
     """
     return user.exports_inquiries.order_by("-created_on").first()
+
+
+class ComplianceValidationError:
+    """Class to represent transformed error response"""
+
+    def __init__(self, reason_code, reason_list):
+        self.reason_code = reason_code
+        self.reason_list = reason_list

@@ -9,6 +9,7 @@ from nacl.encoding import Base64Encoder
 from nacl.public import SealedBox
 
 from compliance import api
+from compliance.api import ComplianceValidationError
 from compliance.constants import (
     RESULT_SUCCESS,
     RESULT_DENIED,
@@ -108,7 +109,8 @@ def test_verify_user_with_exports_temporary_errors(mocker, user, reason_code):
         "compliance.api.get_cybersource_client",
         return_value=(mock_client, mock_history),
     ):
-        assert api.verify_user_with_exports(user) is None
+        resp = api.verify_user_with_exports(user)
+        assert resp is None or isinstance(resp, ComplianceValidationError)
     mock_log.error.assert_called_once_with(
         "Unable to verify exports controls, received reasonCode: %s", reason_code
     )

@@ -12,7 +12,8 @@ from authentication.exceptions import (
     UserTryAgainLaterException,
 )
 from compliance import api
-from compliance.constants import REASON_CODES_RETRYABLE
+from compliance.api import ComplianceValidationError
+from compliance.constants import REASON_CODES_RETRYABLE, ComplianceAddressPayload
 from profiles.serializers import UserSerializer
 
 log = logging.getLogger()
@@ -63,6 +64,16 @@ def verify_exports_compliance(
         raise UserTryAgainLaterException(
             backend, current_partial, reason_code=0, user=user
         )
+    # export_inquiry in this scenario contains the reason code of failure
+    if isinstance(export_inquiry, ComplianceValidationError):
+        raise UserTryAgainLaterException(
+            backend,
+            current_partial,
+            reason_code=export_inquiry.reason_code,
+            user=user,
+            errors=compute_result_from_codes(export_inquiry),
+        )
+
     if export_inquiry.is_denied:
         log.info(
             "User with email '%s' was denied due to exports violation, for reason_code=%s, info_code=%s",
@@ -117,3 +128,28 @@ def verify_exports_compliance(
         raise AuthException("Unable to authenticate, please contact support")
 
     return {}
+
+
+def compute_result_from_codes(temporary_reason):
+    """
+    Determines the result from the reason and errors
+
+    Args:
+        temporary_reason (ComplianceValidationError): Object containing invalid reason and codes
+
+    Returns:
+        Array:
+            List of reason codes specific to the fields containing invalid data
+    """
+    error_codes = []
+    for reason in temporary_reason.reason_list:
+        try:
+            error_codes.append(
+                ComplianceAddressPayload.ADDRESS_PAYLOAD_ERROR_CODES[
+                    reason.replace("c:billTo/c:", "")
+                ]
+            )
+        except KeyError:
+            log.warning("Key was not found in ADDRESS_PAYLOAD_ERROR_CODES")
+
+    return error_codes

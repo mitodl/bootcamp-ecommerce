@@ -221,7 +221,11 @@ export const formatRunDateRange = (run: BootcampRun) =>
   }`
 
 export const recoverableErrorCode = (error: string) =>
-  error ? error.match(/(CS_101|CS_102)/g) : null
+  error ?
+    error.match(
+      /(CS_101|CS_102|CS_301|CS_302|CS_303|CS_304|CS_305|CS_306|CS_307)/g
+    ) :
+    null
 
 export const transformError = (error: string) =>
   CS_ERROR_MESSAGES[recoverableErrorCode(error) || CS_DEFAULT]
