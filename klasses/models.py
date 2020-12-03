@@ -1,5 +1,6 @@
 """Models for bootcamps"""
 import datetime
+from functools import partial
 
 import pytz
 from django.conf import settings
@@ -7,11 +8,12 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from main.models import TimestampedModel
-from main.utils import now_in_utc
+from main.utils import now_in_utc, format_month_day
 from klasses.constants import (
     ApplicationSource,
     INTEGRATION_PREFIX_PRODUCT,
     ENROLL_CHANGE_STATUS_CHOICES,
+    DATE_RANGE_MONTH_FMT,
 )
 
 
@@ -60,32 +62,31 @@ class BootcampRun(models.Model):
 
         Example return values:
         - Start/end in same month: "May 5 - 10, 2017"
-        - Start/end in different months: "May 5 - June 10, 2017"
+        - Start/end in different months: "May 5 - Sep 10, 2017"
         - Start/end in different years: "May 5, 2017 - May 5, 2018"
         - No end date: "May 5, 2017"
         """
-        month_day_format = "%b %-d"
+        _format_month_day = partial(format_month_day, month_fmt=DATE_RANGE_MONTH_FMT)
         if self.start_date and self.end_date:
-            start_date_month_day = self.start_date.strftime(month_day_format)
-            end_date_month_day = self.end_date.strftime(month_day_format)
+            start_month_day = _format_month_day(self.start_date)
             if self.start_date.year == self.end_date.year:
                 if self.start_date.month == self.end_date.month:
                     formatted_end_date = self.end_date.day
                 else:
-                    formatted_end_date = end_date_month_day
+                    formatted_end_date = _format_month_day(self.end_date)
                 return "{} - {}, {}".format(
-                    start_date_month_day, formatted_end_date, self.end_date.year
+                    start_month_day, formatted_end_date, self.end_date.year
                 )
             else:
                 return "{}, {} - {}, {}".format(
-                    start_date_month_day,
+                    start_month_day,
                     self.start_date.year,
-                    end_date_month_day,
+                    _format_month_day(self.end_date),
                     self.end_date.year,
                 )
         elif self.start_date:
             return "{}, {}".format(
-                self.start_date.strftime(month_day_format), self.start_date.year
+                _format_month_day(self.start_date), self.start_date.year
             )
         else:
             return ""

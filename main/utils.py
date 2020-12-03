@@ -401,3 +401,19 @@ def serializer_date_format(dt):
         Optional[str]: The string representing the datetime (or None)
     """
     return serializers.DateTimeField().to_representation(dt)
+
+
+def format_month_day(dt, month_fmt="%b"):
+    """
+    Formats the month and day of a datetime
+
+    Args:
+        dt (datetime.datetime): The datetime to be formatted
+        month_fmt (Optional[str]): The strftime-compatible month format
+
+    Returns:
+        str: The formatted month and day
+    """
+    # NOTE: This function is used instead of just 'strftime' because the '%-d' directive, which is used to produce a
+    # formatted day without trailing zeros, is platform-dependent.
+    return "{} {}".format(dt.strftime(month_fmt), dt.day)

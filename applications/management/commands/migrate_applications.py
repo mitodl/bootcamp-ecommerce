@@ -20,13 +20,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--from-run",
             type=str,
-            help="The id or title of the bootcamp run that users have already applied to.",
+            help="The id, title, or display title of the bootcamp run that users have already applied to.",
             required=True,
         )
         parser.add_argument(
             "--to-run",
             type=str,
-            help="The id or title of the bootcamp run for which new applications should be created.",
+            help="The id, title, or display title of the bootcamp run for which new applications should be created.",
             required=True,
         )
         parser.add_argument(

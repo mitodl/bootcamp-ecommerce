@@ -1,7 +1,8 @@
 """Management command to enroll users in a NovoEd course"""
 from django.core.management.base import BaseCommand, CommandError
 
-from klasses.models import BootcampRunEnrollment, BootcampRun
+from klasses.api import fetch_bootcamp_run
+from klasses.models import BootcampRunEnrollment
 from profiles.api import fetch_user
 from novoed.tasks import enroll_users_in_novoed_course
 
@@ -13,7 +14,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--run", type=str, help="The id or title of the bootcamp run", required=True
+            "--run",
+            type=str,
+            help="The id, title, or display title of the bootcamp run",
+            required=True,
         )
         parser.add_argument(
             "--user",
@@ -23,11 +27,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        run_property = options["run"]
-        if run_property.isdigit():
-            bootcamp_run = BootcampRun.objects.get(id=run_property)
-        else:
-            bootcamp_run = BootcampRun.objects.get(title=run_property)
+        bootcamp_run = fetch_bootcamp_run(options["run"])
         if bootcamp_run.novoed_course_stub is None:
             raise CommandError(
                 f"Bootcamp run '{bootcamp_run.title}' does not have a novoed_course_stub value"

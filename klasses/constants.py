@@ -10,6 +10,8 @@ class ApplicationSource:
     SOURCE_CHOICES = [None, SMAPPLY, FLUIDREVIEW]
 
 
+DATE_RANGE_MONTH_FMT = "%b"
+
 INTEGRATION_PREFIX_PRODUCT = "BootcampProduct-"
 
 ENROLL_CHANGE_STATUS_REFUNDED = "refunded"
