@@ -20,7 +20,10 @@ class Command(BaseCommand):
             required=True,
         )
         parser.add_argument(
-            "--run", type=str, help="The id or title of the bootcamp run", required=True
+            "--run",
+            type=str,
+            help="The id, title, or display title of the bootcamp run",
+            required=True,
         )
 
     def handle(self, *args, **options):

@@ -62,28 +62,31 @@ def test_bootcamp_run_payment_deadline():
     assert bootcamp_run.payment_deadline == installment_2.deadline
 
 
-def test_bootcamp_run_formatted_date_range():
+@pytest.mark.parametrize(
+    "start_date,end_date,exp_result",
+    [
+        [
+            datetime.strptime("01/01/2020", "%m/%d/%Y"),
+            datetime.strptime("01/01/2021", "%m/%d/%Y"),
+            "Jan 1, 2020 - Jan 1, 2021",
+        ],
+        [
+            datetime.strptime("01/01/2020", "%m/%d/%Y"),
+            datetime.strptime("02/01/2020", "%m/%d/%Y"),
+            "Jan 1 - Feb 1, 2020",
+        ],
+        [
+            datetime.strptime("01/01/2020", "%m/%d/%Y"),
+            datetime.strptime("01/15/2020", "%m/%d/%Y"),
+            "Jan 1 - 15, 2020",
+        ],
+        [datetime.strptime("01/01/2020", "%m/%d/%Y"), None, "Jan 1, 2020"],
+    ],
+)
+def test_bootcamp_run_formatted_date_range(start_date, end_date, exp_result):
     """Test that the formatted_date_range property returns expected values with various start/end dates"""
-    base_date = datetime(year=2017, month=1, day=1)
-    date_same_month = datetime(year=2017, month=1, day=10)
-    date_different_month = datetime(year=2017, month=2, day=1)
-    date_different_year = datetime(year=2018, month=1, day=1)
-    bootcamp_run = BootcampRunFactory.build(
-        start_date=base_date, end_date=date_same_month
-    )
-    assert bootcamp_run.formatted_date_range == "Jan 1 - 10, 2017"
-    bootcamp_run = BootcampRunFactory.build(
-        start_date=base_date, end_date=date_different_month
-    )
-    assert bootcamp_run.formatted_date_range == "Jan 1 - Feb 1, 2017"
-    bootcamp_run = BootcampRunFactory.build(
-        start_date=base_date, end_date=date_different_year
-    )
-    assert bootcamp_run.formatted_date_range == "Jan 1, 2017 - Jan 1, 2018"
-    bootcamp_run = BootcampRunFactory.build(start_date=base_date, end_date=None)
-    assert bootcamp_run.formatted_date_range == "Jan 1, 2017"
-    bootcamp_run = BootcampRunFactory.build(start_date=None, end_date=None)
-    assert bootcamp_run.formatted_date_range == ""
+    bootcamp_run = BootcampRunFactory.build(start_date=start_date, end_date=end_date)
+    assert bootcamp_run.formatted_date_range == exp_result
 
 
 def test_bootcamp_run_display_title():

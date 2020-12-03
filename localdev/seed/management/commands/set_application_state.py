@@ -22,7 +22,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--run",
             type=str,
-            help="The id or title of the bootcamp run",
+            help="The id, title, or display title of the bootcamp run",
             required=False,
         )
         parser.add_argument(

@@ -32,6 +32,7 @@ from main.utils import (
     filter_dict_by_key_set,
     partition_around_index,
     partition_to_lists,
+    format_month_day,
 )
 from main.test_utils import MockResponse, format_as_iso8601
 
@@ -318,3 +319,13 @@ def test_chunks_iterable():
     for chunk in chunk_output:
         range_list += chunk
     assert range_list == list(range(count))
+
+
+def test_format_month_day():
+    """
+    format_month_day should format the month and day from a datetime
+    """
+    dt = datetime.datetime(year=2020, month=1, day=1, tzinfo=pytz.UTC)
+    assert format_month_day(dt) == "Jan 1"
+    assert format_month_day(dt, month_fmt="%b") == "Jan 1"
+    assert format_month_day(dt, month_fmt="%B") == "January 1"
