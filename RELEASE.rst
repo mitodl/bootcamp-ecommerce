@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.63.1
+--------------
+
+- Added logic to fetch bootcamp runs by display title in mgmt commands (#1089)
+
 Version 0.63.0 (Released December 01, 2020)
 --------------
 
