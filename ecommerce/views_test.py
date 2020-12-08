@@ -44,6 +44,12 @@ def ecommerce_settings(settings):
     settings.ECOMMERCE_EMAIL = "ecommerce@example.com"
 
 
+@pytest.fixture(autouse=True)
+def patched_novoed_tasks(mocker):
+    """Fixture to patch novoed tasks"""
+    mocker.patch("applications.models.novoed_tasks")
+
+
 @pytest.fixture
 def application():
     """An application for testing"""
@@ -167,7 +173,7 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
     payment = 123
     order = create_test_order(application, payment, fulfilled=False)
     order.application = BootcampApplicationFactory.create(
-        state=AppStates.AWAITING_PAYMENT.value
+        bootcamp_run=bootcamp_run, user=user, state=AppStates.AWAITING_PAYMENT.value
     )
     order.save()
     data_before = order.to_dict()
@@ -209,10 +215,12 @@ def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_pa
     assert order.application.state == (
         AppStates.COMPLETE.value if has_paid else AppStates.AWAITING_PAYMENT.value
     )
-
-    assert BootcampRunEnrollment.objects.filter(
-        bootcamp_run=bootcamp_run, user=user
-    ).count() == (1 if has_paid else 0)
+    assert (
+        BootcampRunEnrollment.objects.filter(
+            bootcamp_run=order.application.bootcamp_run, user=order.application.user
+        ).exists()
+        is has_paid
+    )
 
     mock_tasks.send_receipt_email.delay.assert_called_once_with(order.application.id)
 

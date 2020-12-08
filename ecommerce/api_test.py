@@ -108,12 +108,10 @@ def paid_order_elements():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def patched_novoed_tasks(mocker):
-    """
-    Patches NovoEd tasks in the ecommerce API
-    """
-    return mocker.patch("ecommerce.api.novoed_tasks")
+    """Patched novoed-related tasks"""
+    return mocker.patch("klasses.api.novoed_tasks")
 
 
 @pytest.mark.parametrize("payment_amount", [0, -1.23])
@@ -443,12 +441,12 @@ def test_send_verify_email_change_email(mocker, user):
 
 @pytest.mark.parametrize("has_enrollment", [True, False])
 @pytest.mark.parametrize("has_application", [True, False])
-def test_refund_enrollment(has_enrollment, has_application, user):
+def test_refund_enrollment(patched_novoed_tasks, has_enrollment, has_application, user):
     """
     Test that deactivate_run_enrollment creates a refund order and
     updates enrollment and application objects
     """
-    bootcamp_run = BootcampRunFactory.create()
+    bootcamp_run = BootcampRunFactory.create(novoed_course_stub=None)
     if has_enrollment:
         BootcampRunEnrollmentFactory.create(bootcamp_run=bootcamp_run, user=user)
     application = (
@@ -470,19 +468,15 @@ def test_refund_enrollment(has_enrollment, has_application, user):
         ),
     )
     process_refund(user=user, bootcamp_run=bootcamp_run, amount=refund_amount)
+    enrollment = BootcampRunEnrollment.objects.filter(
+        user=user, bootcamp_run=bootcamp_run
+    ).first()
     if has_enrollment:
-        updated_enrollment = BootcampRunEnrollment.objects.get(
-            user=user, bootcamp_run=bootcamp_run
-        )
-        assert updated_enrollment.active is False
-        assert updated_enrollment.change_status == ENROLL_CHANGE_STATUS_REFUNDED
+        assert enrollment is not None
+        assert enrollment.active is False
+        assert enrollment.change_status == ENROLL_CHANGE_STATUS_REFUNDED
     else:
-        assert (
-            BootcampRunEnrollment.objects.filter(
-                user=user, bootcamp_run=bootcamp_run
-            ).first()
-            is None
-        )
+        assert enrollment is None
     order = Order.objects.get(
         total_price_paid=-refund_amount, application=application, user=user
     )
@@ -573,11 +567,12 @@ def test_complete_successful_order(paid_order_elements, enrollment_exists):
     [[True, True], [True, False], [False, True], [False, False]],
 )
 def test_complete_successful_order_novoed(
-    settings, paid_order_elements, patched_novoed_tasks, feature_flag, has_stub
+    mocker, settings, paid_order_elements, feature_flag, has_stub
 ):
     """
     complete_successful_order should call a task that enrolls the given user in a NovoEd course
     """
+    patched_novoed_tasks = mocker.patch("applications.models.novoed_tasks")
     settings.FEATURES["NOVOED_INTEGRATION"] = feature_flag
     if not has_stub:
         paid_order_elements.run.novoed_course_stub = None
