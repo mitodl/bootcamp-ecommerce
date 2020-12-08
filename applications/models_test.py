@@ -23,16 +23,18 @@ from applications.factories import (
 )
 from applications.constants import AppStates
 from ecommerce.test_utils import create_test_application, create_test_order
+from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.factories import (
     BootcampFactory,
     BootcampRunFactory,
     InstallmentFactory,
     PersonalPriceFactory,
 )
-from klasses.models import Installment, PersonalPrice
-
+from klasses.models import Installment, PersonalPrice, BootcampRunEnrollment
 
 # pylint: disable=redefined-outer-name,unused-argument
+from main.features import NOVOED_INTEGRATION
+
 pytestmark = pytest.mark.django_db
 
 
@@ -54,6 +56,12 @@ def bootcamp_run(application):
     Creates a purchasable bootcamp run. Bootcamp run price is at least $200, in two installments
     """
     yield application.bootcamp_run
+
+
+@pytest.fixture()
+def patched_novoed_tasks(mocker):
+    """Patched novoed-related tasks"""
+    return mocker.patch("applications.models.novoed_tasks")
 
 
 PAYMENT = 123
@@ -117,6 +125,58 @@ def test_bootcamp_application_resume_file_validation(file_name, state, expected)
         with pytest.raises((ValidationError, TransitionNotAllowed)):
             bootcamp_application.add_resume(resume_file=resume_file)
         assert bootcamp_application.state == state
+
+
+def test_bootcamp_application_complete(settings, patched_novoed_tasks):
+    """
+    BootcampApplication.complete should create an enrollment and call a task to enroll the user in the course on
+    NovoEd
+    """
+    settings.FEATURES[NOVOED_INTEGRATION] = True
+    novoed_course_stub = "course-stub"
+    bootcamp_application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_PAYMENT.value,
+        bootcamp_run__novoed_course_stub=novoed_course_stub,
+    )
+    bootcamp_application.complete()
+    assert BootcampRunEnrollment.objects.filter(
+        user=bootcamp_application.user,
+        bootcamp_run=bootcamp_application.bootcamp_run,
+        active=True,
+    ).exists()
+    patched_novoed_tasks.enroll_users_in_novoed_course.delay.assert_called_once_with(
+        user_ids=[bootcamp_application.user.id], novoed_course_stub=novoed_course_stub
+    )
+
+
+@pytest.mark.django_db
+def test_application_await_further_payment(mocker):
+    """
+    BootcampApplication.await_further_payment should call an API function to deactivate an enrollment
+    """
+    patched_deactivate = mocker.patch("applications.models.deactivate_run_enrollment")
+    bootcamp_application = BootcampApplicationFactory(state=AppStates.COMPLETE.value)
+    bootcamp_application.await_further_payment()
+    patched_deactivate.assert_called_once_with(
+        user=bootcamp_application.user,
+        bootcamp_run=bootcamp_application.bootcamp_run,
+        change_status=None,
+    )
+
+
+@pytest.mark.django_db
+def test_application_refund(mocker):
+    """
+    BootcampApplication.refund should call an API function to deactivate an enrollment
+    """
+    patched_deactivate = mocker.patch("applications.models.deactivate_run_enrollment")
+    bootcamp_application = BootcampApplicationFactory(state=AppStates.COMPLETE.value)
+    bootcamp_application.refund()
+    patched_deactivate.assert_called_once_with(
+        user=bootcamp_application.user,
+        bootcamp_run=bootcamp_application.bootcamp_run,
+        change_status=ENROLL_CHANGE_STATUS_REFUNDED,
+    )
 
 
 @pytest.mark.django_db

@@ -3,24 +3,125 @@ klasses API tests
 """
 import datetime
 
+import factory
 import pytest
 import pytz
+from django.db.models import signals
 
-from klasses.api import deactivate_run_enrollment, fetch_bootcamp_run
+from applications.constants import AppStates
+from applications.factories import BootcampApplicationFactory
+from applications.models import BootcampApplication
+from ecommerce.factories import LineFactory
+from klasses.api import (
+    deactivate_run_enrollment,
+    fetch_bootcamp_run,
+    adjust_app_state_for_new_price,
+)
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
-from klasses.factories import BootcampRunEnrollmentFactory
-from klasses.factories import BootcampRunFactory
+from klasses.factories import (
+    BootcampRunFactory,
+    BootcampRunEnrollmentFactory,
+    PersonalPriceFactory,
+    InstallmentFactory,
+)
 from klasses.models import BootcampRun
+from main.features import NOVOED_INTEGRATION
 
-pytestmark = pytest.mark.django_db
+RUN_PRICE = 1000
 
 
+@pytest.fixture(autouse=True)
+def default_settings(settings):
+    """
+    Default settings fixture for API tests
+    """
+    settings.FEATURES[NOVOED_INTEGRATION] = False
+
+
+@pytest.mark.django_db
 def test_deactivate_run_enrollment():
-    """Test that deactivate_run_enrollment updates enrollment fields correctly"""
-    enrollment = BootcampRunEnrollmentFactory.create()
-    deactivate_run_enrollment(enrollment, ENROLL_CHANGE_STATUS_REFUNDED)
-    assert enrollment.active is False
-    assert enrollment.change_status == ENROLL_CHANGE_STATUS_REFUNDED
+    """deactivate_run_enrollment should update enrollment fields correctly"""
+    enrollments = BootcampRunEnrollmentFactory.create_batch(
+        2, active=True, change_status=None
+    )
+    deactivate_run_enrollment(
+        run_enrollment=enrollments[0], change_status=ENROLL_CHANGE_STATUS_REFUNDED
+    )
+    enrollments[0].refresh_from_db()
+    assert enrollments[0].active is False
+    assert enrollments[0].change_status == ENROLL_CHANGE_STATUS_REFUNDED
+    deactivate_run_enrollment(
+        user=enrollments[1].user,
+        bootcamp_run=enrollments[1].bootcamp_run,
+        change_status=None,
+    )
+    enrollments[1].refresh_from_db()
+    assert enrollments[1].active is False
+    assert enrollments[1].change_status is None
+
+
+@pytest.mark.django_db
+def test_deactivate_run_enrollment_novoed(mocker, settings):
+    """deactivate_run_enrollment should run a task to unenroll users in NovoEd if the bootcamp run is NovoEd-enabled"""
+    settings.FEATURES[NOVOED_INTEGRATION] = True
+    patched_novoed_tasks = mocker.patch("klasses.api.novoed_tasks")
+    novoed_stub = "novoed-course"
+    enrollment = BootcampRunEnrollmentFactory.create(
+        bootcamp_run__novoed_course_stub=novoed_stub
+    )
+    deactivate_run_enrollment(run_enrollment=enrollment, change_status=None)
+    patched_novoed_tasks.unenroll_user_from_novoed_course.delay.assert_called_once_with(
+        user_id=enrollment.user.id, novoed_course_stub=novoed_stub
+    )
+
+
+def test_deactivate_run_enrollment_bad_kwargs(mocker):
+    """Test that deactivate_run_enrollment raises an exception if the wrong kwargs are provided"""
+    with pytest.raises(ValueError):
+        deactivate_run_enrollment(change_status=None)
+    with pytest.raises(ValueError):
+        deactivate_run_enrollment(user=mocker.Mock())
+    with pytest.raises(ValueError):
+        deactivate_run_enrollment(bootcamp_run=mocker.Mock())
+
+
+@factory.django.mute_signals(signals.post_save)
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "personal_price_amt,init_state,expected_state",
+    [
+        [RUN_PRICE - 10, AppStates.AWAITING_PAYMENT.value, AppStates.COMPLETE.value],
+        [RUN_PRICE + 10, AppStates.COMPLETE.value, AppStates.AWAITING_PAYMENT.value],
+        [None, AppStates.AWAITING_PAYMENT.value, AppStates.COMPLETE.value],
+    ],
+)
+def test_adjust_app_state_for_new_price(personal_price_amt, init_state, expected_state):
+    """
+    adjust_app_state_for_new_price should update a bootcamp application state if a personal price, compared with
+    the amount the user has already paid, does not match with the current application state.
+    """
+    app = BootcampApplicationFactory.create(state=init_state)
+    run = app.bootcamp_run
+    user = app.user
+    personal_price = (
+        PersonalPriceFactory.create(
+            price=personal_price_amt, user=user, bootcamp_run=run
+        )
+        if personal_price_amt
+        else None
+    )
+    InstallmentFactory.create(bootcamp_run=run, amount=RUN_PRICE)
+    # Create payments such that the user has paid the original bootcamp run price
+    LineFactory.create_batch(
+        2, order__user=user, bootcamp_run=run, price=int(RUN_PRICE / 2)
+    )
+    returned_app = adjust_app_state_for_new_price(
+        user=user, bootcamp_run=run, new_price=getattr(personal_price, "price", None)
+    )
+    app.refresh_from_db()
+    assert isinstance(returned_app, BootcampApplication)
+    assert returned_app.id == app.id
+    assert app.state == expected_state
 
 
 @pytest.mark.django_db

@@ -224,6 +224,9 @@ class PersonalPrice(models.Model):
     class Meta:
         unique_together = ("bootcamp_run", "user")
 
+    def __str__(self):
+        return f"user='{self.user.email}', run='{self.bootcamp_run.title}', price={self.price}"
+
 
 class BootcampRunEnrollment(TimestampedModel):
     """An enrollment in a bootcamp run by a user"""

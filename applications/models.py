@@ -30,8 +30,13 @@ from applications.constants import INTEGRATION_PREFIX
 from applications.utils import validate_file_extension
 from ecommerce.models import Order
 from jobma.models import Interview
+from klasses.api import deactivate_run_enrollment
+from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
+from klasses.models import BootcampRunEnrollment
+from main import features
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
+from novoed import tasks as novoed_tasks
 
 
 class ApplicationStep(models.Model):
@@ -169,14 +174,6 @@ class BootcampApplication(TimestampedModel):
 
     @transition(
         field=state,
-        source=AppStates.AWAITING_PAYMENT.value,
-        target=AppStates.COMPLETE.value,
-    )
-    def complete(self):
-        """Mark the application as completed"""
-
-    @transition(
-        field=state,
         source=[
             AppStates.AWAITING_RESUME.value,
             AppStates.AWAITING_USER_SUBMISSIONS.value,
@@ -255,6 +252,39 @@ class BootcampApplication(TimestampedModel):
 
     @transition(
         field=state,
+        source=AppStates.AWAITING_PAYMENT.value,
+        target=AppStates.COMPLETE.value,
+    )
+    def complete(self):
+        """Mark the application as completed"""
+        # import pdb; pdb.set_trace()
+        BootcampRunEnrollment.objects.update_or_create(
+            user=self.user,
+            bootcamp_run=self.bootcamp_run,
+            defaults={"active": True, "change_status": None},
+        )
+        if (
+            features.is_enabled(features.NOVOED_INTEGRATION)
+            and self.bootcamp_run.novoed_course_stub
+        ):
+            novoed_tasks.enroll_users_in_novoed_course.delay(
+                user_ids=[self.user.id],
+                novoed_course_stub=self.bootcamp_run.novoed_course_stub,
+            )
+
+    @transition(
+        field=state,
+        source=AppStates.COMPLETE.value,
+        target=AppStates.AWAITING_PAYMENT.value,
+    )
+    def await_further_payment(self):
+        """Mark the application as awaiting payment after a price change"""
+        deactivate_run_enrollment(
+            user=self.user, bootcamp_run=self.bootcamp_run, change_status=None
+        )
+
+    @transition(
+        field=state,
         source=[
             AppStates.COMPLETE.value,
             AppStates.AWAITING_PAYMENT.value,
@@ -264,6 +294,11 @@ class BootcampApplication(TimestampedModel):
     )
     def refund(self):
         """Mark the application as refunded"""
+        deactivate_run_enrollment(
+            user=self.user,
+            bootcamp_run=self.bootcamp_run,
+            change_status=ENROLL_CHANGE_STATUS_REFUNDED,
+        )
 
     def all_application_steps_submitted(self):
         """

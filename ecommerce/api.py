@@ -40,14 +40,12 @@ from ecommerce.exceptions import (
 from ecommerce.models import Line, Order, WireTransferReceipt
 from klasses.api import deactivate_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
-from klasses.models import BootcampRun, BootcampRunEnrollment
+from klasses.models import BootcampRun
 from klasses.serializers import InstallmentSerializer
 from mail.api import MailgunClient
 from mail.v2 import api as mail_api
 from mail.v2.constants import EMAIL_RECEIPT
-from main import features
 from main.utils import remove_html_tags
-from novoed import tasks as novoed_tasks
 
 User = get_user_model()
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -164,23 +162,15 @@ def process_refund(*, user, bootcamp_run, amount):
         amount=Decimal(amount),
         application=application,
     )
-    enrollment = BootcampRunEnrollment.objects.filter(
-        user=user, bootcamp_run=bootcamp_run
-    ).first()
-    if enrollment:
-        deactivate_run_enrollment(
-            enrollment, change_status=ENROLL_CHANGE_STATUS_REFUNDED
-        )
-        if (
-            features.is_enabled(features.NOVOED_INTEGRATION)
-            and bootcamp_run.novoed_course_stub
-        ):
-            novoed_tasks.unenroll_user_from_novoed_course.delay(
-                user_id=user.id, novoed_course_stub=bootcamp_run.novoed_course_stub
-            )
     if application:
         application.refund()
         application.save()
+    else:
+        deactivate_run_enrollment(
+            user=user,
+            bootcamp_run=bootcamp_run,
+            change_status=ENROLL_CHANGE_STATUS_REFUNDED,
+        )
 
 
 def generate_cybersource_sa_signature(payload):
@@ -359,14 +349,8 @@ def complete_successful_order(order, send_receipt=True):
     order.status = Order.FULFILLED
     order.save_and_log(None)
 
-    run = order.get_bootcamp_run()
     application = order.application
     if application.is_paid_in_full:
-        BootcampRunEnrollment.objects.update_or_create(
-            user=order.user,
-            bootcamp_run=run,
-            defaults={"active": True, "change_status": None},
-        )
         try:
             application.complete()
             application.save()
@@ -375,10 +359,6 @@ def complete_successful_order(order, send_receipt=True):
                 "Application received full payment but state cannot transition to COMPLETE from %s for order %d",
                 application.state,
                 order.id,
-            )
-        if features.is_enabled(features.NOVOED_INTEGRATION) and run.novoed_course_stub:
-            novoed_tasks.enroll_users_in_novoed_course.delay(
-                user_ids=[order.user.id], novoed_course_stub=run.novoed_course_stub
             )
 
     if send_receipt is True:
