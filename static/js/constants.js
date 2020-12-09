@@ -95,6 +95,8 @@ export const CA_ALPHA_2 = "CA"
 
 export const US_POSTAL_CODE_REGEX = /[0-9]{5}(-[0-9]{4}){0,1}/
 export const CA_POSTAL_CODE_REGEX = /[A-Z][0-9][A-Z] [0-9][A-Z][0-9]/
+export const NAME_REGEX = /^(?![~!@&)(+:'.?/,`-]+)([^/^$#*=[\]`%_;<>{}"|]+)$/
+
 export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
 export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
 

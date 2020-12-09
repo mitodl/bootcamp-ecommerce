@@ -18,6 +18,9 @@ log = logging.getLogger()
 
 US_POSTAL_RE = re.compile(r"[0-9]{5}(-[0-9]{4}){0,1}")
 CA_POSTAL_RE = re.compile(r"[A-Z]\d[A-Z] \d[A-Z]\d$", flags=re.I)
+USER_NAME_RE = re.compile(
+    r"^(?![~!@&)(+:'.?/,`-]+)([^/^$#*=\[\]`%_;<>{}\"|]+)$", flags=re.I
+)
 
 User = get_user_model()
 
@@ -37,6 +40,18 @@ class LegalAddressSerializer(serializers.ModelSerializer):
     # only required in the US/CA
     state_or_territory = serializers.CharField(max_length=255, allow_blank=True)
     postal_code = serializers.CharField(max_length=10, allow_blank=True)
+
+    def validate_first_name(self, value):
+        """Validates first name of the user"""
+        if value and not USER_NAME_RE.match(value):
+            raise serializers.ValidationError("First name is not valid")
+        return value
+
+    def validate_last_name(self, value):
+        """Validates last name of the user"""
+        if value and not USER_NAME_RE.match(value):
+            raise serializers.ValidationError("Last name is not valid")
+        return value
 
     def validate_street_address(self, value):
         """Validates an incoming street address list"""
