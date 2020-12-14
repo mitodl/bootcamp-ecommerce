@@ -7,6 +7,7 @@ import {
   CA_POSTAL_CODE_REGEX,
   COUNTRIES_REQUIRING_STATE,
   NAME_REGEX,
+  NAME_REGEX_FAIL_MESSAGE,
   US_ALPHA_2,
   US_POSTAL_CODE_REGEX
 } from "../constants"
@@ -79,13 +80,13 @@ export const legalAddressValidation = yup.object().shape({
       .string()
       .label("First Name")
       .trim()
-      .matches(NAME_REGEX, "Invalid First Name")
+      .matches(NAME_REGEX, NAME_REGEX_FAIL_MESSAGE)
       .required(),
     last_name: yup
       .string()
       .label("Last Name")
       .trim()
-      .matches(NAME_REGEX, "Invalid Last Name")
+      .matches(NAME_REGEX, NAME_REGEX_FAIL_MESSAGE)
       .required(),
     city: yup
       .string()

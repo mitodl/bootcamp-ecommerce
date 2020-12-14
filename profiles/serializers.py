@@ -19,7 +19,13 @@ log = logging.getLogger()
 US_POSTAL_RE = re.compile(r"[0-9]{5}(-[0-9]{4}){0,1}")
 CA_POSTAL_RE = re.compile(r"[A-Z]\d[A-Z] \d[A-Z]\d$", flags=re.I)
 USER_NAME_RE = re.compile(
-    r"^(?![~!@&)(+:'.?/,`-]+)([^/^$#*=\[\]`%_;<>{}\"|]+)$", flags=re.I
+    r"""
+    ^                               # Start of string
+    (?![~!@&)(+:'.?/,`-]+)          # String should not start from character(s) in this set - They can exist in elsewhere
+    ([^/^$#*=\[\]`%_;<>{}\"|]+)     # String should not contain characters(s) from this set - All invalid characters
+    $                               # End of string
+    """,
+    flags=re.I | re.VERBOSE | re.MULTILINE,
 )
 
 User = get_user_model()
