@@ -72,7 +72,6 @@ def var_parser(parser_func):
 
         if name in configured_envs:
             raise ValueError(f"Environment variable '{name}' was used more than once")
-
         value = environ.get(name, default)
 
         # attempt to parse the value before we store it in configured_envs
@@ -186,9 +185,10 @@ def parse_list(name, value, default):  # pylint: disable=unused-argument
             parsed_value = [
                 item.strip(" ").lstrip('"').rstrip('"')
                 for item in parsed_value.lstrip("[").rstrip("]").split(",")
+                if item
             ]
         else:
-            parsed_value = [item.strip(" ") for item in parsed_value.split(",")]
+            parsed_value = [item.strip(" ") for item in parsed_value.split(",") if item]
     return parsed_value
 
 

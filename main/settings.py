@@ -219,6 +219,22 @@ EDXORG_BASE_URL = get_string(
     required=True,
 )
 
+CACHEABLE_ENDPOINTS = tuple(
+    get_list(
+        "CACHEABLE_ENDPOINTS",
+        [],
+        description="A list of cacheable endpoints.",
+        required=False,
+    )
+)
+
+CACHEABLE_ENDPOINTS_CACHE_VALUE = get_string(
+    "CACHEABLE_ENDPOINTS_CACHE_VALUE",
+    "max-age=3600, public",
+    description="Cache-Control value for cacheable endpoints.",
+    required=False,
+)
+
 # use our own strategy because our pipeline is dependent on methods defined there
 SOCIAL_AUTH_STRATEGY = "authentication.strategy.DefaultStrategy"
 SOCIAL_AUTH_PIPELINE = (
