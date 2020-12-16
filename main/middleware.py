@@ -9,7 +9,7 @@ class CachelessAPIMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         """ Add a Cache-Control header to an API response """
         if request.path.startswith(settings.CACHEABLE_ENDPOINTS):
-            response["Cache-Control"] = "max-age=3600, public"
+            response["Cache-Control"] = settings.CACHEABLE_ENDPOINTS_CACHE_VALUE
         elif request.path.startswith("/api/"):
             response["Cache-Control"] = "private, no-store"
         return response

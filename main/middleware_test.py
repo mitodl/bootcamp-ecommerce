@@ -7,14 +7,14 @@ from main.middleware import CachelessAPIMiddleware
 
 
 @pytest.mark.parametrize(
-    "view, cache_value, cacheable_endpoint_cache_value",
+    "view, cache_value, cacheable_endpoints_cache_value",
     [
         ["applications", None, "max-age=3600, public"],
         ["applications_api-list", "private, no-store", "max-age=3600, public"],
     ],
 )
 def test_cacheless_api_middleware(
-    rf, view, cache_value, cacheable_endpoint_cache_value
+    rf, view, cache_value, cacheable_endpoints_cache_value
 ):
     """Tests that the response has a cache-control header for API URLs"""
     request = rf.get(reverse(view))
@@ -23,9 +23,12 @@ def test_cacheless_api_middleware(
         middleware.process_response(request, {}).get("Cache-Control", None)
         == cache_value
     )
-    with override_settings(CACHEABLE_ENDPOINTS=(reverse(view),)):
+    with override_settings(
+        CACHEABLE_ENDPOINTS=(reverse(view),),
+        CACHEABLE_ENDPOINTS_CACHE_VALUE=cacheable_endpoints_cache_value,
+    ):
         request = rf.get(reverse(view))
         assert (
             middleware.process_response(request, {}).get("Cache-Control", None)
-            == cacheable_endpoint_cache_value
+            == cacheable_endpoints_cache_value
         )

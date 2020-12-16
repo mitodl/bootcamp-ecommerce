@@ -135,6 +135,10 @@
       "description": "A list of cacheable endpoints.",
       "required": false
     },
+    "CACHEABLE_ENDPOINTS_CACHE_VALUE": {
+      "description": "Cache-Control value for cacheable endpoints.",
+      "required": false
+    },
     "CELERY_BROKER_URL": {
       "description": "Where celery should get tasks, default is Redis URL",
       "required": false
