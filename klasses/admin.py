@@ -90,8 +90,36 @@ class PersonalPriceAdmin(admin.ModelAdmin):
     )
 
 
+class BootcampRunCertificateAdmin(TimestampedModelAdmin):
+    """Admin for BootcampRunCertificate"""
+
+    model = models.BootcampRunCertificate
+    include_timestamps_in_list = True
+    list_display = ["uuid", "user", "bootcamp_run", "get_revoked_state"]
+    search_fields = [
+        "bootcamp_run__id",
+        "bootcamp_run__title",
+        "user__username",
+        "user__email",
+    ]
+    raw_id_fields = ("user",)
+
+    def get_revoked_state(self, obj):
+        """ return the revoked state"""
+        return obj.is_revoked is not True
+
+    get_revoked_state.short_description = "Active"
+    get_revoked_state.boolean = True
+
+    def get_queryset(self, request):
+        return self.model.all_objects.get_queryset().select_related(
+            "user", "bootcamp_run"
+        )
+
+
 admin.site.register(models.Bootcamp, BootcampAdmin)
 admin.site.register(models.BootcampRun, BootcampRunAdmin)
 admin.site.register(models.Installment, InstallmentAdmin)
 admin.site.register(models.PersonalPrice, PersonalPriceAdmin)
 admin.site.register(models.BootcampRunEnrollment, BootcampRunEnrollmentAdmin)
+admin.site.register(models.BootcampRunCertificate, BootcampRunCertificateAdmin)
