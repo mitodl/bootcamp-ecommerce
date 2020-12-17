@@ -3,7 +3,8 @@ import pathlib
 
 
 BOOTCAMP_INDEX_SLUG = "bootcamps"
-
+SIGNATORY_INDEX_SLUG = "signatories"
+CERTIFICATE_INDEX_SLUG = "certificate"
 
 RESOURCES_DIRECTORY = pathlib.Path(__file__).absolute().parent / "resources"
 ACCEPTANCE_DEFAULT_LETTER_TEXT = open(
