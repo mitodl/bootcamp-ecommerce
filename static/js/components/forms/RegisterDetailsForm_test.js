@@ -213,7 +213,7 @@ describe("RegisterDetailsForm", () => {
 
   // Tests name regex for first & last name
   const invalidNameMessage =
-    "Name cannot start with a special character, And it cannot contain any character from {/^$#*=[]`%_;<>{}}"
+    "Name cannot start with a special character, and it cannot contain any character from {/^$#*=[]`%_;<>{}}"
   ;["legal_address.first_name", "legal_address.last_name"].forEach(
     fieldName => {
       const wrapper = renderForm()

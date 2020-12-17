@@ -238,7 +238,7 @@ export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY]
 
 // Field Error messages
 export const NAME_REGEX_FAIL_MESSAGE =
-  "Name cannot start with a special character, And it cannot contain any character from {/^$#*=[]`%_;<>{}}"
+  "Name cannot start with a special character, and it cannot contain any character from {/^$#*=[]`%_;<>{}}"
 
 export const CS_101 = "CS_101"
 export const CS_102 = "CS_102"
