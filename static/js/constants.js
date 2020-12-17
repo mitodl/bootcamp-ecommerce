@@ -95,6 +95,8 @@ export const CA_ALPHA_2 = "CA"
 
 export const US_POSTAL_CODE_REGEX = /[0-9]{5}(-[0-9]{4}){0,1}/
 export const CA_POSTAL_CODE_REGEX = /[A-Z][0-9][A-Z] [0-9][A-Z][0-9]/
+export const NAME_REGEX = /^(?![~!@&)(+:'.?/,`-]+)([^/^$#*=[\]`%_;<>{}"|]+)$/
+
 export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
 export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
 
@@ -233,6 +235,10 @@ export const FACET_OPTION_LABEL_KEYS = {
 }
 
 export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY]
+
+// Field Error messages
+export const NAME_REGEX_FAIL_MESSAGE =
+  "Name cannot start with a special character, and it cannot contain any character from {/^$#*=[]`%_;<>{}}"
 
 export const CS_101 = "CS_101"
 export const CS_102 = "CS_102"
