@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static wagtailimages_tags image_version_url %}
+
+{% block title %}{{ site_name }} | Certificate for: {{ page.product_name }}{% endblock %}
+
+{% block seohead %}
+    {{ block.super }}
+    
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid certificate-page">
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
