@@ -853,17 +853,24 @@ class CertificatePage(BootcampRunChildPage):
     template = "certificate_page.html"
     parent_page_types = ["BootcampRunPage"]
 
-    sub_title = models.CharField(
+    bootcamp_run_name = models.CharField(
         max_length=250,
         null=False,
         blank=False,
-        help_text="Specify the bootcamp certificate sub title.",
+        help_text="Specify the bootcamp run name. e.g. 'MIT Innovation and Entrepreneurship Bootcamp' ",
+    )
+
+    certificate_name = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True,
+        help_text="Specify the bootcamp certificate name. e.g. 'Certificate in New Ventures Leadership'",
     )
 
     location = models.CharField(
         max_length=250,
         blank=True,
-        help_text="Optional text field for bootcamp location.",
+        help_text="Optional text field for bootcamp location. e.g. 'Brisbane, Australia'",
     )
 
     signatories = StreamField(
@@ -881,8 +888,8 @@ class CertificatePage(BootcampRunChildPage):
     )
 
     content_panels = [
-        FieldPanel("title"),
-        FieldPanel("sub_title"),
+        FieldPanel("bootcamp_run_name"),
+        FieldPanel("certificate_name"),
         FieldPanel("location"),
         StreamFieldPanel("signatories"),
     ]
