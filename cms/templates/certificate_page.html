@@ -5,11 +5,35 @@
 
 {% block seohead %}
     {{ block.super }}
-    
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid certificate-page">
+    site_name: {{ site_name }} <br>
+    learner_name: {{ learner_name }} <br>
+    bootcamp_run_name: {{ page.bootcamp_run_name }} <br>
+    certificate_name: {{ page.certificate_name }} <br>
+    location: {{ page.location }} <br>
+    start_date: {{ start_date }} <br>
+    end_date: {{ end_date }} <br>
+    signatories:
+    {% for signatory in page.signatory_pages %}
+        <div class="col-sm-4 col-24 certify-by">
+            <div class="signature-area">
+                <img src="{% image_version_url signatory.signature_image "max-150x50" %}" alt="{{ signatory.name }} signature" />
+            </div>
+            <span class="title">{{ signatory.name }}</span>
+            {% if signatory.title_1 %}
+                <p>{{ signatory.title_1 }}</p>
+            {% endif %}
+            {% if signatory.title_2 %}
+                <p>{{ signatory.title_2 }}</p>
+            {% endif %}
+            {% if signatory.organization %}
+                <p>{{ signatory.organization }}</p>
+            {% endif %}
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}
 
