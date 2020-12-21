@@ -63,6 +63,11 @@ class BootcampRun(models.Model):
     novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)
 
     @property
+    def page(self):
+        """Gets the associated BootcampRunPage"""
+        return getattr(self, "bootcamprunpage", None)
+
+    @property
     def price(self):
         """
         Get price, the sum of all installments
@@ -272,7 +277,9 @@ class BaseCertificate(models.Model):
     Common properties for certificate models
     """
 
-    user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE
+    )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     is_revoked = models.BooleanField(
         default=False,
