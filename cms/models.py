@@ -1,15 +1,20 @@
+# pylint: disable=too-many-lines
 """
 Page models for the CMS
 """
+from datetime import datetime
 import logging
+from urllib.parse import urljoin
 
 from django.conf import settings
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 from django.http.response import Http404
 from django.urls import reverse
 from django.utils.text import slugify
 from django.shortcuts import render
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, PageChooserPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.blocks import StreamBlock, PageChooserBlock
 from wagtail.core.fields import RichTextField, StreamField
@@ -32,11 +37,13 @@ from cms.blocks import (
 from cms.constants import (
     ACCEPTANCE_DEFAULT_LETTER_TEXT,
     BOOTCAMP_INDEX_SLUG,
+    CERTIFICATE_INDEX_SLUG,
     REJECTION_DEFAULT_LETTER_TEXT,
     SAMPLE_DECISION_TEMPLATE_CONTEXT,
     SIGNATORY_INDEX_SLUG,
 )
 from cms.forms import LetterTemplatePageForm
+from klasses.models import BootcampRunCertificate
 
 
 log = logging.getLogger(__name__)
@@ -159,6 +166,7 @@ class HomePage(Page, CommonProperties):
         "CatalogGridSection",
         "LetterTemplatePage",
         "SignatoryIndexPage",
+        "CertificateIndexPage",
     ]
 
 
@@ -219,6 +227,11 @@ class BootcampPage(Page, CommonProperties):
     def alumni(self):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(AlumniSection)
+
+    @property
+    def certificate_page(self):
+        """Gets the certificate child page"""
+        return self._get_child_page_of_type(CertificatePage)
 
     @property
     def admissions_section(self):
@@ -845,6 +858,60 @@ class SignatoryPage(Page):
         raise Http404
 
 
+class CertificateIndexPage(RoutablePageMixin, Page):
+    """
+    Certificate index page placeholder that handles routes for serving
+    certificates given by UUID
+    """
+
+    parent_page_types = ["HomePage"]
+    subpage_types = []
+
+    slug = CERTIFICATE_INDEX_SLUG
+
+    @classmethod
+    def can_create_at(cls, parent):
+        """
+        You can only create one of these pages under the home page.
+        The parent is limited via the `parent_page_type` list.
+        """
+        return (
+            super().can_create_at(parent)
+            and not parent.get_children().type(cls).exists()
+        )
+
+    @route(r"^([A-Fa-f0-9-]+)/?$")
+    def bootcamp_certificate(
+        self, request, uuid, *args, **kwargs
+    ):  # pylint: disable=unused-argument
+        """
+        Serve a bootcamp certificate by uuid
+        """
+        # Try to fetch a certificate by the uuid passed in the URL
+        try:
+            certificate = BootcampRunCertificate.objects.get(uuid=uuid)
+        except BootcampRunCertificate.DoesNotExist:
+            raise Http404()
+        # Get a CertificatePage to serve this request
+        certificate_page = (
+            certificate.bootcamp_run.page.certificate_page
+            if certificate.bootcamp_run.page
+            else None
+        )
+        if not certificate_page:
+            raise Http404()
+
+        certificate_page.certificate = certificate
+        return certificate_page.serve(request)
+
+    @route(r"^$")
+    def index_route(self, request, *args, **kwargs):
+        """
+        The index page is not meant to be served/viewed directly
+        """
+        raise Http404()
+
+
 class CertificatePage(BootcampRunChildPage):
     """
     CMS page representing a Certificate.
@@ -928,3 +995,44 @@ class CertificatePage(BootcampRunChildPage):
             if block.value:
                 pages.append(block.value.specific)
         return pages
+
+    def get_context(self, request, *args, **kwargs):
+        preview_context = {}
+        context = {}
+        parent = self.parent()
+        if request.is_preview:
+            preview_context = {
+                "learner_name": "Anthony M. Stark",
+                "start_date": parent.bootcamp_run.start_date
+                if parent.bootcamp_run
+                else datetime.now(),
+                "end_date": parent.bootcamp_run.end_date
+                if parent.bootcamp_run
+                else datetime.now(),
+            }
+        elif self.certificate:
+            # Verify that the certificate in fact is for this same course
+            if parent.bootcamp_run.id != self.certificate.bootcamp_run.id:
+                raise Http404()
+            start_date, end_date = self.certificate.start_end_dates
+            context = {
+                "uuid": self.certificate.uuid,
+                "certificate_user": self.certificate.user,
+                "learner_name": self.certificate.user.profile.name,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
+        else:
+            raise Http404()
+
+        # The share image url needs to be absolute
+        return {
+            "site_name": settings.SITE_NAME,
+            "share_image_url": urljoin(
+                request.build_absolute_uri("///"),
+                static("images/certificates/share-image.png"),
+            ),
+            **super().get_context(request, *args, **kwargs),
+            **preview_context,
+            **context,
+        }
