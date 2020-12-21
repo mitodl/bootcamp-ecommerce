@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.63.2 (Released December 21, 2020)
+--------------
+
+- Fixed buggy personal price adjustment behavior (#1094)
+
 Version 0.63.1 (Released December 07, 2020)
 --------------
 
