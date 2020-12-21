@@ -509,30 +509,47 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
               </div>
             </div>
             <div className="row mt-2">
-              <div className="col-7 text-left text-sm-right view-statement">
-                {application.has_payments && (
-                  <a
-                    className="btn-link"
-                    href={reverse(routes.applications.paymentHistory.self, {
-                      applicationId: application.id
-                    })}
-                  >
-                    <span className="material-icons">printer</span>
-                    View Statement
-                  </a>
-                )}
-              </div>
-              <div className="col-5 text-right collapse-link">
-                <ButtonWithLoader
-                  className="btn-text borderless expand-collapse"
-                  aria-expanded={isOpen ? "true" : "false"}
-                  onClick={R.partial(this.loadAndRevealAppDetail, [
-                    String(application.id)
-                  ])}
-                  loading={!!allApplicationDetailLoading[application.id]}
-                >
-                  {isOpen ? "Collapse −" : "Expand ＋"}
-                </ButtonWithLoader>
+              <div className="col-12">
+                <ul className="application-card-footer">
+                  <li>
+                    {application.certificate_link && (
+                      <a
+                        className="btn-link"
+                        href={application.certificate_link}
+                      >
+                        <button className="btn-view-certificate">
+                          <span className="material-icons">history_edu</span>
+                          View Certificate
+                        </button>
+                      </a>
+                    )}
+                  </li>
+                  <li className="view-statement">
+                    {application.has_payments && (
+                      <a
+                        className="btn-link"
+                        href={reverse(routes.applications.paymentHistory.self, {
+                          applicationId: application.id
+                        })}
+                      >
+                        <span className="material-icons">printer</span>
+                        View Statement
+                      </a>
+                    )}
+                  </li>
+                  <li className="collapse-link">
+                    <ButtonWithLoader
+                      className="btn-text borderless expand-collapse"
+                      aria-expanded={isOpen ? "true" : "false"}
+                      onClick={R.partial(this.loadAndRevealAppDetail, [
+                        String(application.id)
+                      ])}
+                      loading={!!allApplicationDetailLoading[application.id]}
+                    >
+                      {isOpen ? "Collapse −" : "Expand ＋"}
+                    </ButtonWithLoader>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

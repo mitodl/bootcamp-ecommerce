@@ -300,7 +300,9 @@ class BootcampRunCertificate(TimestampedModel, BaseCertificate):
     Model for storing bootcamp run certificates
     """
 
-    bootcamp_run = models.ForeignKey(BootcampRun, null=False, on_delete=models.CASCADE)
+    bootcamp_run = models.ForeignKey(
+        BootcampRun, null=False, on_delete=models.CASCADE, related_name="certificates"
+    )
 
     objects = ActiveCertificates()
     all_objects = models.Manager()
