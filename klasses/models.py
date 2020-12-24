@@ -290,6 +290,18 @@ class BaseCertificate(models.Model):
     class Meta:
         abstract = True
 
+    def revoke(self):
+        """Revokes certificate"""
+        self.is_revoked = True
+        self.save()
+        return self
+
+    def unrevoke(self):
+        """Unrevokes certificate"""
+        self.is_revoked = False
+        self.save()
+        return self
+
     def get_certified_object_id(self):
         """Gets the id of the certificate's bootcamp program/run"""
         raise NotImplementedError
