@@ -3,42 +3,55 @@
 
 {% block title %}{{ site_name }} | Certificate for: {{ page.product_name }}{% endblock %}
 
-{% block seohead %}
-    {{ block.super }}
-{% endblock %}
-
 {% block content %}
-<div class="container-fluid certificate-page">
-    site_name: {{ site_name }} <br>
-    learner_name: {{ learner_name }} <br>
-    bootcamp_run_name: {{ page.bootcamp_run_name }} <br>
-    certificate_name: {{ page.certificate_name }} <br>
-    location: {{ page.location }} <br>
-    start_date: {{ start_date }} <br>
-    end_date: {{ end_date }} <br>
-    signatories:
-    {% for signatory in page.signatory_pages %}
-        <div class="col-sm-4 col-24 certify-by">
-            <div class="signature-area">
-                <img src="{% image_version_url signatory.signature_image "max-150x50" %}" alt="{{ signatory.name }} signature" />
-            </div>
-            <span class="title">{{ signatory.name }}</span>
-            {% if signatory.title_1 %}
-                <p>{{ signatory.title_1 }}</p>
-            {% endif %}
-            {% if signatory.title_2 %}
-                <p>{{ signatory.title_2 }}</p>
-            {% endif %}
-            {% if signatory.organization %}
-                <p>{{ signatory.organization }}</p>
-            {% endif %}
+  <div class="certificate-wrapper">
+    <div class="certificate-head">
+      <div class="certificate-b-logo">
+        <img src="{% static 'images/certificates/certificate-bootcamps-logo.png' %}" alt="Certificate Bootcamp Logo">	
+      </div>
+      {% if page.secondary_image %}
+      <div class="certificate-c-logo">
+        <img class= "secondary-image" src="{% image_version_url page.secondary_image "max-600x110" %}" alt="Institution secondary image">	
+      </div>
+      {%endif%}
+    </div>
+    <span class="granting-institute-text">{{page.granting_institution}}</span>
+    <span class="bootcamp-runname-text">{{page.bootcamp_run_name}}</span>
+    <span class="completion-text">having completed the necessary course of study</span>
+    <span class="learner-name-text">{{learner_name}}</span>
+    <span class="awarded-text">is hereby awarded the</span>
+    {% if page.certificate_name %}
+      <span class="certificate-name-text">{{page.certificate_name}}</span>
+    {% else %}
+      <span class="general-text">Certificate of Completion</span>
+    {% endif %}
+    <span class="general-text">{{end_date|date}}</span>
+    {% if location %}
+      <span class="location-text">{{location}}</span>
+    {% endif %}
+    <div class="c-mit-logo">
+      <img src="{% static 'images/certificates/certificate-mit-logo.png' %}" alt="Certificate Bootcamp Logo">	
+    </div>
+    <ul class="signature-list">
+      {% for signatory in page.signatory_pages %}
+      <li>
+        <div class="img-holder">
+          <img src="{% image_version_url signatory.signature_image "max-150x50" %}" alt="{{ signatory.name }} signature" />
         </div>
-    {% endfor %}
-</div>
-{% endblock %}
-
-{% block scripts %}
-{% endblock %}
-
-{% block footer %}
-{% endblock %}
+        <span class="signature-text">{{ signatory.name }} </span>
+        {% if signatory.title_1 %}
+          <p>{{ signatory.title_1 }}</p>
+        {% endif %}
+        {% if signatory.title_2 %}
+            <p>{{ signatory.title_2 }}</p>
+        {% endif %}
+        {% if signatory.organization %}
+            <p>{{ signatory.organization }}</p>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endblock %}
+  {% block footer %}
+  {% endblock %}

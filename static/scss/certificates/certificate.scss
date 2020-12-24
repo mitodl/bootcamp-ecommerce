@@ -1,0 +1,380 @@
+@font-face {
+  font-family: 'canterburyregular';
+  src: url('../fonts/canterbury.regular-webfont.woff2') format('woff2'),
+  url('../fonts/canterbury.regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+.certificate-wrapper {
+  padding: 30px 15px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "canterburyregular", serif;
+  text-align: center;
+  color: black;
+  @media (min-width: 1400px) {
+    padding: 50px 15px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .certificate-head {
+    overflow: hidden;
+    max-width: 1100px;
+    margin: 0 auto 20px;
+
+    @media (min-width: 768px) {
+      margin: 0 auto 50px;
+    }
+
+    @media (min-width: 1400px) {
+      margin: 0 auto 70px;
+    }
+
+    .certificate-b-logo {
+      float: left;
+      width: 125px;
+
+      @media (min-width: 768px) {
+        width: 316px;
+      }
+
+      @media (min-width: 1400px) {
+        width: 465px;
+      }
+
+      &:only-child {
+        margin: 0 auto;
+        float: none;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    .certificate-c-logo {
+      float: right;
+      width: 105px;
+      text-align: right;
+
+      @media (min-width: 768px) {
+        width: 294px;
+      }
+
+      @media (min-width: 1400px) {
+        width: 440px;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+
+        &.secondary-image {
+          display: inline-block;
+          max-width: 100%;
+          max-height: 30px;
+          width: auto;
+          height: auto;
+
+          @media (min-width: 768px) {
+            max-height: 70px;
+          }
+
+          @media (min-width: 1400px) {
+            max-height: 105px;
+          }
+        }
+      }
+    }
+  }
+
+  .c-mit-logo {
+    margin: 0 auto;
+    width: 90px;
+    padding-top: 20px;
+
+    @media (min-width: 768px) {
+      padding-top: 30px;
+    }
+
+    @media (min-width: 1400px) {
+      padding-top: 60px;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .granting-institute-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 20px;
+
+    @media (min-width: 768px) {
+      font-size: 31px;
+    }
+
+    @media (min-width: 992px) {
+      font-size: 35px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 56px;
+    }
+  }
+
+  .bootcamp-runname-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 32px;
+
+    @media (min-width: 768px) {
+      font-size: 50px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 70px;
+    }
+  }
+
+  .completion-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 18px;
+    margin: 0 0 22px;
+
+    @media (min-width: 768px) {
+      font-size: 27px;
+      margin: 0 0 35px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 35px;
+      margin: 0 0 60px;
+    }
+  }
+
+  .learner-name-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 24px;
+    font-style: italic;
+    font-family: 'Times', Times New Roman, serif;
+    margin: 0 0 12px;
+
+    @media (min-width: 768px) {
+      font-size: 36px;
+      margin: 0 0 35px;
+    }
+
+    @media (min-width: 1400px) {
+      margin: 0 0 60px;
+      font-size: 48px;
+    }
+  }
+
+  .awarded-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 18px;
+
+    @media (min-width: 768px) {
+      font-size: 27px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 35px;
+    }
+  }
+
+  .certificate-name-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 28px;
+
+    @media (min-width: 768px) {
+      font-size: 42px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 55px;
+    }
+  }
+
+  .general-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 24px;
+
+    @media (min-width: 768px) {
+      font-size: 36px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 45px;
+    }
+  }
+
+  .location-text {
+    display: block;
+    line-height: 1.2;
+    font-size: 24px;
+
+    @media (min-width: 768px) {
+      font-size: 36px;
+    }
+
+    @media (min-width: 1400px) {
+      font-size: 45px;
+    }
+  }
+}
+
+.signature-list {
+  padding: 20px 0 0;
+  margin: 0 auto;
+  max-width: 1000px;
+  list-style: none;
+  letter-spacing: -.32em;
+  text-align: center;
+  font-family: 'Times', Times New Roman, serif;
+
+  @media (min-width: 768px) {
+    padding: 30px 0 0;
+  }
+
+  @media (min-width: 1400px) {
+    padding: 60px 0 0;
+  }
+
+  li {
+    letter-spacing: normal;
+    display: inline-block;
+    vertical-align: top;
+    padding: 0 15px;
+    width: 50%;
+
+    @media (min-width: 768px) {
+      width: 20%;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .img-holder {
+    border-bottom: 2px solid #333;
+    padding: 0 0 3px;
+    height: 53px;
+    margin: 0 0 10px;
+
+    img {
+      display: inline-block;
+      max-width: 85%;
+      height: 50px;
+      object-fit: contain;
+    }
+  }
+
+  .signature-text {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 22px;
+    color: #333;
+  }
+}
+
+@media print {
+
+  .c-mit-logo {
+
+    padding: 0;
+    overflow: hidden;
+    line-height: 0;
+    font-size: 0;
+  }
+
+  .certificate-wrapper {
+    padding: 0;
+
+    .certificate-head {
+      margin: 0 auto 30px;
+
+      .certificate-b-logo {
+        width: 316px;
+      }
+
+      .certificate-c-logo {
+        width: 294px;
+      }
+    }
+
+    .granting-institute-text {
+      font-size: 33px;
+      line-height: 1;
+    }
+
+    .bootcamp-runname-text {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .completion-text {
+      font-size: 25px;
+      margin: 0 0 10px;
+      line-height: 1;
+    }
+
+    .learner-name-text {
+      font-size: 34px;
+      margin: 0 0 10px;
+      line-height: 1;
+    }
+
+    .awarded-text {
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .certificate-name-text {
+      font-size: 40px;
+      line-height: 1;
+    }
+
+    .general-text {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .location-text {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+  }
+
+  .signature-list {
+    padding: 10px 0 0;
+
+    li {
+      width: 20%;
+
+      p {
+        font-size: 14px;
+        line-height: 18px;
+      }
+    }
+  }
+}
