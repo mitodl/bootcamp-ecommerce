@@ -338,6 +338,6 @@ class BootcampRunCertificate(TimestampedModel, BaseCertificate):
         return self.bootcamp_run.start_date, self.bootcamp_run.end_date
 
     def __str__(self):
-        return 'BootcampRunCertificate for user={user}, run={bootcamp_run} ({uuid})"'.format(
+        return "BootcampRunCertificate for user={user}, run={bootcamp_run} ({uuid})".format(
             user=self.user.username, bootcamp_run=self.bootcamp_run.id, uuid=self.uuid
         )
