@@ -14,12 +14,13 @@ import type { User } from "./authTypes"
 import type { HttpResponse } from "./httpTypes"
 
 export type Application = {
-  id:           number,
-  state:        string,
-  created_on:   any,
-  bootcamp_run: BootcampRun,
-  enrollment:   ?BootcampRunEnrollment,
-  has_payments: boolean,
+  id:               number,
+  state:            string,
+  created_on:       any,
+  bootcamp_run:     BootcampRun,
+  certificate_link: string,
+  enrollment:       ?BootcampRunEnrollment,
+  has_payments:     boolean,
 }
 
 export type ValidAppStepType = SUBMISSION_VIDEO | SUBMISSION_QUIZ

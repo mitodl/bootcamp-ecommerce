@@ -33,12 +33,13 @@ const stepIncr = incrementer()
 
 export const makeApplication = (): Application => ({
   // $FlowFixMe: Flow thinks incr.next().value may be undefined, but it won't ever be
-  id:           incr.next().value,
-  state:        casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
-  created_on:   moment().format(),
-  bootcamp_run: generateFakeRun(),
-  enrollment:   generateFakeEnrollment(),
-  has_payments: casual.boolean
+  id:               incr.next().value,
+  state:            casual.random_element(Object.keys(APP_STATE_TEXT_MAP)),
+  certificate_link: casual.url,
+  created_on:       moment().format(),
+  bootcamp_run:     generateFakeRun(),
+  enrollment:       generateFakeEnrollment(),
+  has_payments:     casual.boolean
 })
 
 export const makeApplicationRunStep = (

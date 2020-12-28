@@ -1,4 +1,5 @@
 """Serializers for bootcamp applications"""
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
@@ -13,6 +14,7 @@ from applications.exceptions import InvalidApplicationStateException
 from applications.models import VideoInterviewSubmission
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
+from klasses.models import BootcampRunCertificate
 from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
 from main.utils import now_in_utc, first_or_none
 from profiles.serializers import UserSerializer
@@ -155,6 +157,22 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
     bootcamp_run = BootcampRunSerializer()
     has_payments = serializers.SerializerMethodField()
     enrollment = serializers.SerializerMethodField()
+    certificate_link = serializers.SerializerMethodField()
+
+    def get_certificate_link(self, application):
+        """Returns certificate link if both certificate and certificate template are present and enabled"""
+        if settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):
+            user = application.user
+            try:
+                certificate = application.bootcamp_run.certificates.get(user=user)
+            except BootcampRunCertificate.DoesNotExist:
+                return None
+            if (
+                certificate
+                and certificate.bootcamp_run.page
+                and certificate.bootcamp_run.page.certificate_page
+            ):
+                return certificate.link
 
     def get_enrollment(self, application):
         """Returns a serialized BootcampRunEnrollment, or None if the user is not enrolled in the given run"""
@@ -190,6 +208,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
             "bootcamp_run",
             "enrollment",
             "has_payments",
+            "certificate_link",
         ]
 
 
