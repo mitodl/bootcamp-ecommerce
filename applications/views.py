@@ -61,7 +61,7 @@ class BootcampApplicationViewset(
                 )
                 .filter(user=self.request.user)
                 .select_related("bootcamp_run__bootcamprunpage", "user")
-                .prefetch_related("user__enrollments")
+                .prefetch_related("bootcamp_run__certificates", "user__enrollments")
                 .order_by("-created_on")
             )
 

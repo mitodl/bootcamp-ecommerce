@@ -183,3 +183,43 @@ $border-style: 1px solid $black;
     }
   }
 }
+
+.application-card-footer {
+  letter-spacing: 1.5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+
+  li {
+    display: inline-block;
+    margin-left: 30px;
+    vertical-align: top;
+  }
+
+  .collapse-link {
+    margin-left: 100px;
+  }
+
+  .view-statement {
+    color: $link-sky-blue;
+    font-weight: 300;
+  }
+
+  .btn-view-certificate {
+    background-color: $btn-blue;
+    border-radius: 5px;
+    border-style: none;
+    color: $btn-text-white;
+    font-weight: 300;
+    letter-spacing: 1.5px;
+    margin-top: -5px;
+    vertical-align: middle;
+
+    span {
+      display: inline-block;
+      padding-right: 8px;
+      vertical-align: top;
+    }
+ }
+}
