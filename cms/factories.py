@@ -289,3 +289,39 @@ class AdmissionSectionFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.AdmissionsSection
+
+
+class SignatoryPageFactory(wagtail_factories.PageFactory):
+    """SignatoryPage factory class"""
+
+    name = factory.fuzzy.FuzzyText(prefix="Name")
+    title_1 = factory.fuzzy.FuzzyText(prefix="Title_1")
+    title_2 = factory.fuzzy.FuzzyText(prefix="Title_2")
+    organization = factory.fuzzy.FuzzyText(prefix="Organization")
+    signature_image = factory.SubFactory(wagtail_factories.ImageFactory)
+
+    class Meta:
+        model = models.SignatoryPage
+
+
+class CertificateIndexPageFactory(wagtail_factories.PageFactory):
+    """CertificateIndexPage factory class"""
+
+    slug = factory.fuzzy.FuzzyText()
+
+    class Meta:
+        model = models.CertificateIndexPage
+
+
+class CertificatePageFactory(wagtail_factories.PageFactory):
+    """CertificatePage factory class"""
+
+    bootcamp_run_name = factory.fuzzy.FuzzyText(prefix="bootcamp_run_")
+    certificate_name = factory.fuzzy.FuzzyText()
+    location = factory.fuzzy.FuzzyText()
+    signatories = wagtail_factories.StreamFieldFactory(
+        {"signatory": SignatoryPageFactory}
+    )
+
+    class Meta:
+        model = models.CertificatePage

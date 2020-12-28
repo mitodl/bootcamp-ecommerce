@@ -4,10 +4,12 @@ from datetime import datetime, timedelta
 import pytest
 from pytz import UTC
 
+from ecommerce.test_utils import create_test_application
 from klasses.factories import (
     InstallmentFactory,
     BootcampRunFactory,
     PersonalPriceFactory,
+    BootcampRunCertificateFactory,
 )
 from main.utils import now_in_utc
 from profiles.factories import ProfileFactory
@@ -21,6 +23,26 @@ def test_data(db):
     installment = InstallmentFactory.create()
     bootcamp_run = installment.bootcamp_run
     return installment, bootcamp_run
+
+
+@pytest.fixture
+def application():
+    """An application for testing"""
+    yield create_test_application()
+
+
+@pytest.fixture
+def user(application):
+    """A user with social auth"""
+    yield application.user
+
+
+@pytest.fixture
+def bootcamp_run(application):
+    """
+    Creates a purchasable bootcamp run. Bootcamp run price is at least $200, in two installments
+    """
+    yield application.bootcamp_run
 
 
 def test_bootcamp_run_price(test_data):
@@ -171,3 +193,29 @@ def test_total_due_by_next_deadline():
         bootcamp_run.total_due_by_next_deadline
         == installment_past.amount + installment_next.amount
     )
+
+
+def test_bootcamp_run_certificate(bootcamp_run, user):
+    """
+    test bootcamp run certificates
+    """
+
+    certificate = BootcampRunCertificateFactory.create(
+        user=user, bootcamp_run=bootcamp_run
+    )
+
+    assert certificate.is_revoked is False
+    assert certificate.start_end_dates == (
+        bootcamp_run.start_date,
+        bootcamp_run.end_date,
+    )
+    assert certificate.link == "/certificate/{uuid}/".format(uuid=certificate.uuid)
+    assert str(
+        certificate
+    ) == "BootcampRunCertificate for user={user}, run={bootcamp_run} ({uuid})".format(
+        user=user.username, bootcamp_run=bootcamp_run.id, uuid=certificate.uuid
+    )
+    certificate.revoke()
+    assert certificate.is_revoked is True
+    certificate.unrevoke()
+    assert certificate.is_revoked is False
