@@ -7,6 +7,57 @@
 
 }
 
+.social-links {
+  margin: 10px 0 20px 30px;
+  list-style: none;
+  padding: 0;
+  float: right;
+
+  li {
+    @include media-breakpoint-down(xs) {
+      margin: 0 10px 15px;
+    }
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 0 0 15px;
+  }
+
+  img {
+    width: 25px;
+  }
+
+  @include media-breakpoint-down(xs) {
+    float: none;
+    margin: 0;
+    text-align: center;
+  }
+}
+
+.cer-user-info {
+  border: 1px solid #979797;
+  background-color: $navy-blue;
+  padding: 20px 0;
+  font: 14px/17px Helvetica;
+  color: white;
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: bold;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .user-info-holder {
+    margin: 0 auto;
+    max-width: 1000px;
+    padding: 0 15px;
+  }
+}
+
 .certificate-wrapper {
   padding: 30px 15px;
   max-width: 1400px;
@@ -297,6 +348,10 @@
 }
 
 @media print {
+
+  .no-print {
+    display: none;
+  }
 
   .c-mit-logo {
 

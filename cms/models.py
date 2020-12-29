@@ -887,9 +887,15 @@ class CertificateIndexPage(RoutablePageMixin, Page):
         """
         Serve a bootcamp certificate by uuid
         """
+        # Return 404 if certificates feature is disabled
+        if not settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):
+            raise Http404()
+
         # Try to fetch a certificate by the uuid passed in the URL
         try:
-            certificate = BootcampRunCertificate.objects.get(uuid=uuid)
+            certificate = BootcampRunCertificate.objects.get(
+                uuid=uuid, is_revoked=False
+            )
         except BootcampRunCertificate.DoesNotExist:
             raise Http404()
         # Get a CertificatePage to serve this request
