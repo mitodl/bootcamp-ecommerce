@@ -33,61 +33,81 @@
                         </li>
                     </ul>
                         <h2>Congratulations, {{ learner_name }}!</h2>
-                        <p>You have successfully completed {{ page.product_name }}. Share your accomplishment with your friends, family and colleagues. </p>
+                        <p>You have successfully completed {{ page.bootcamp_run_name }}. Share your accomplishment with your friends, family and colleagues. </p>
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
-
-  <div class="certificate-wrapper">
-<div class="certificate-head">
-  <div class="certificate-b-logo">
-    <img src="{% static 'images/certificates/certificate-bootcamps-logo.png' %}" alt="Certificate Bootcamp Logo">
-  </div>
-  {% if page.secondary_image %}
-  <div class="certificate-c-logo">
-    <img class= "secondary-image" src="{% image_version_url page.secondary_image "max-600x110" %}" alt="Institution secondary image">
-  </div>
-  {%endif%}
-</div>
-<span class="granting-institute-text">{{page.granting_institution}}</span>
-<span class="bootcamp-runname-text">{{page.bootcamp_run_name}}</span>
-<span class="completion-text">having completed the necessary course of study</span>
-<span class="learner-name-text">{{learner_name}}</span>
-<span class="awarded-text">is hereby awarded the</span>
-{% if page.certificate_name %}
-  <span class="certificate-name-text">{{page.certificate_name}}</span>
-{% else %}
-  <span class="general-text">Certificate of Completion</span>
-{% endif %}
-<span class="general-text">{{end_date|date}}</span>
-{% if location %}
-  <span class="location-text">{{location}}</span>
-{% endif %}
-<div class="c-mit-logo">
-  <img src="{% static 'images/certificates/certificate-mit-logo.png' %}" alt="Certificate Bootcamp Logo">
-</div>
-<ul class="signature-list">
-  {% for signatory in page.signatory_pages %}
-  <li>
-    <div class="img-holder">
-      <img src="{% image_version_url signatory.signature_image "max-150x50" %}" alt="{{ signatory.name }} signature" />
+    <div class="row">
+      <div class="col certificate-wrapper">
+          <div class="certificate">
+            <div class="certificate-head">
+              <div class="certificate-b-logo">
+                <img src="{% static 'images/certificates/certificate-bootcamps-logo.png' %}" alt="Certificate Bootcamp Logo">
+              </div>
+              {% if page.secondary_image %}
+              <div class="certificate-c-logo">
+                <img class= "secondary-image" src="{% image_version_url page.secondary_image "max-600x110" %}" alt="Institution secondary image">
+              </div>
+              {%endif%}
+            </div>
+            <span class="granting-institute-text">{{page.granting_institution}}</span>
+            <span class="bootcamp-runname-text">{{page.bootcamp_run_name}}</span>
+            <span class="completion-text">having completed the necessary course of study</span>
+            <span class="learner-name-text">{{learner_name}}</span>
+            <span class="awarded-text">is hereby awarded the</span>
+            {% if page.certificate_name %}
+              <span class="certificate-name-text">{{page.certificate_name}}</span>
+            {% else %}
+              <span class="general-text">Certificate of Completion</span>
+            {% endif %}
+            <span class="general-text">{{end_date|date}}</span>
+            {% if location %}
+              <span class="location-text">{{location}}</span>
+            {% endif %}
+            <div class="c-mit-logo">
+              <img src="{% static 'images/certificates/certificate-mit-logo.png' %}" alt="Certificate Bootcamp Logo">
+            </div>
+            <ul class="signature-list">
+              {% for signatory in page.signatory_pages %}
+              <li>
+                <div class="img-holder">
+                  <img src="{% image_version_url signatory.signature_image "max-150x50" %}" alt="{{ signatory.name }} signature" />
+                </div>
+                <span class="signature-text">{{ signatory.name }} </span>
+                {% if signatory.title_1 %}
+                  <p>{{ signatory.title_1 }}</p>
+                {% endif %}
+                {% if signatory.title_2 %}
+                    <p>{{ signatory.title_2 }}</p>
+                {% endif %}
+                {% if signatory.organization %}
+                    <p>{{ signatory.organization }}</p>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
     </div>
-    <span class="signature-text">{{ signatory.name }} </span>
-    {% if signatory.title_1 %}
-      <p>{{ signatory.title_1 }}</p>
-    {% endif %}
-    {% if signatory.title_2 %}
-        <p>{{ signatory.title_2 }}</p>
-    {% endif %}
-    {% if signatory.organization %}
-        <p>{{ signatory.organization }}</p>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
-</div>
+  <div class="row no-print">
+        <div class="col cer-footer">
+            <div class="certificate-logo">
+                <a href="https://web.mit.edu/" class="mit"></a>
+                <a href="/" class="bc"></a>
+                <img src="{% static 'images/certificates/certificate-bootcamps-logo.png' %}" alt="Bootcamps">
+            </div>
+            <div class="cer-footer-info">
+                <ul class="links">
+                    <li><a href="/terms-of-service/">Terms of Services</a></li>
+                    <li><a href="/privacy-policy/">Privacy Policy</a></li>
+                </ul>
+                <span class="copyright">&copy; <a href="/">MIT Office of Digital Learning</a> <br>All rights reserved except where noted.</span>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}
