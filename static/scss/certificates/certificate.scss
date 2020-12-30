@@ -7,55 +7,200 @@
 
 }
 
+.certificate-page {
+  background-color: $cert-page-bg;
+
+  .certificate-logo {
+    display: block;
+    max-width: 250px;
+    margin: 0 auto 15px;
+    position: relative;
+
+    img {
+      display: block;
+      width: 100%;
+    }
+
+    a {
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 103px;
+      height: 56px;
+
+      &.bc {
+        left: 149px;
+        top: 22px;
+        width: 98px;
+        height: 33px;
+      }
+    }
+  }
+}
+
+.cer-footer {
+  margin: 0 auto;
+  max-width: 1400px;
+  border-top: 4px solid $cert-footer-border;
+  padding: 60px 15px;
+  font: 12px/17px "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  &:after {
+    clear: both;
+    content: "";
+    display: block;
+  }
+
+  .certificate-logo {
+    float: right;
+    width: 74px;
+    margin: 30px 0 0 20px;
+    position: relative;
+
+    a {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 31px;
+      height: 18px;
+
+      &.bc {
+        left: 44px;
+        top: 6px;
+        width: 30px;
+        height: 11px;
+      }
+    }
+
+    @include media-breakpoint-down(xs) {
+      float: none;
+      margin: 0 0 20px;
+    }
+  }
+
+  .cer-footer-info {
+    overflow: hidden;
+  }
+
+  a {
+    color: $cert-anchor-color;
+  }
+
+  .copyright {
+    display: block;
+  }
+
+  .links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: inline-block;
+      margin: 0 15px 0 0;
+    }
+  }
+}
+
+.social-links {
+  margin: 10px 0 20px 30px;
+  list-style: none;
+  padding: 0;
+  float: right;
+
+  li {
+    @include media-breakpoint-down(xs) {
+      margin: 0 10px 15px;
+    }
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 0 0 15px;
+  }
+
+  img {
+    width: 25px;
+  }
+
+  @include media-breakpoint-down(xs) {
+    float: none;
+    margin: 0;
+    text-align: center;
+  }
+}
+
+.cer-user-info {
+  border: 1px solid $cert-share-ticker-border;
+  background-color: $navy-blue;
+  padding: 20px 0;
+  font: 14px/17px Helvetica;
+  color: white;
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: bold;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .user-info-holder {
+    margin: 0 auto;
+    max-width: 1400px;
+    padding: 0 15px;
+  }
+}
+
 .certificate-wrapper {
   padding: 30px 15px;
   max-width: 1400px;
   margin: 0 auto;
   font-family: "canterburyregular", serif;
-  text-align: center;
-  color: black;
-  @media (min-width: 1400px) {
-    padding: 50px 15px;
-  }
 
-  * {
-    box-sizing: border-box;
-  }
+  .certificate {
+    border: 2px solid $cert-gray-light;
+    background: white;
+    padding: 35px 15px 0;
+    text-align: center;
+    color: black;
 
-  .certificate-head {
-    overflow: hidden;
-    max-width: 1100px;
-    margin: 0 auto 20px;
-
-    @media (min-width: 768px) {
-      margin: 0 auto 50px;
-    }
-
-    @media (min-width: 1400px) {
-      margin: 0 auto 70px;
-    }
-
-    .certificate-b-logo {
-      float: left;
-      width: 125px;
+    .certificate-head {
+      overflow: hidden;
+      max-width: 960px;
+      margin: 0 auto 20px;
 
       @media (min-width: 768px) {
-        width: 316px;
+        margin: 0 auto 50px;
       }
 
       @media (min-width: 1400px) {
-        width: 465px;
+        margin: 0 auto 70px;
       }
 
-      &:only-child {
-        margin: 0 auto;
-        float: none;
-      }
+      .certificate-b-logo {
+        float: left;
+        width: 125px;
 
-      img {
-        display: block;
-        width: 100%;
-        height: auto;
+        @media (min-width: 768px) {
+          width: 316px;
+        }
+
+        @media (min-width: 1400px) {
+          width: 465px;
+        }
+
+        &:only-child {
+          margin: 0 auto;
+          float: none;
+        }
+
+        img {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
       }
     }
 
@@ -262,7 +407,7 @@
     letter-spacing: normal;
     display: inline-block;
     vertical-align: top;
-    padding: 0 15px;
+    padding: 0 15px 20px;
     width: 50%;
 
     @media (min-width: 768px) {
@@ -275,7 +420,7 @@
   }
 
   .img-holder {
-    border-bottom: 2px solid #333;
+    border-bottom: 2px solid $cert-img-holder-color;
     padding: 0 0 3px;
     height: 53px;
     margin: 0 0 10px;
@@ -292,11 +437,38 @@
     font-weight: bold;
     font-size: 16px;
     line-height: 22px;
-    color: #333;
+    color: $cert-img-holder-color;
   }
 }
 
 @media print {
+  a {
+    color: black !important;
+  }
+
+  #launcher {
+    display: none;
+  }
+
+  .notifications.site-wide {
+    display: none !important;
+  }
+
+  .full-width-print {
+    max-width: 100%;
+  }
+
+  .certify-by-row {
+    flex-wrap: nowrap;
+  }
+
+  .no-print {
+    display: none;
+  }
+
+  @page {
+    size: auto;
+  }
 
   .c-mit-logo {
 
@@ -306,63 +478,80 @@
     font-size: 0;
   }
 
-  .certificate-wrapper {
-    padding: 0;
+  .certificate-page {
 
-    .certificate-head {
-      margin: 0 auto 30px;
+    .certificate-logo {
+      max-width: 170px;
+      margin: 0 auto 10px;
+    }
 
-      .certificate-b-logo {
-        width: 316px;
+    .certificate-wrapper {
+      padding: 0;
+
+      .certificate {
+        border: 0;
+        padding-top: 0;
+
+        .institute-logo {
+          max-width: 140px;
+          margin-bottom: 10px;
+        }
       }
 
-      .certificate-c-logo {
-        width: 294px;
+      .certificate-head {
+        margin: 0 auto 30px;
+
+        .certificate-b-logo {
+          width: 316px;
+        }
+
+        .certificate-c-logo {
+          width: 294px;
+        }
+      }
+
+      .granting-institute-text {
+        font-size: 33px;
+        line-height: 1;
+      }
+
+      .bootcamp-runname-text {
+        font-size: 48px;
+        line-height: 1;
+      }
+
+      .completion-text {
+        font-size: 25px;
+        margin: 0 0 10px;
+        line-height: 1;
+      }
+
+      .learner-name-text {
+        font-size: 34px;
+        margin: 0 0 10px;
+        line-height: 1;
+      }
+
+      .awarded-text {
+        font-size: 25px;
+        line-height: 1;
+      }
+
+      .certificate-name-text {
+        font-size: 40px;
+        line-height: 1;
+      }
+
+      .general-text {
+        font-size: 34px;
+        line-height: 1;
+      }
+
+      .location-text {
+        font-size: 34px;
+        line-height: 1;
       }
     }
-
-    .granting-institute-text {
-      font-size: 33px;
-      line-height: 1;
-    }
-
-    .bootcamp-runname-text {
-      font-size: 48px;
-      line-height: 1;
-    }
-
-    .completion-text {
-      font-size: 25px;
-      margin: 0 0 10px;
-      line-height: 1;
-    }
-
-    .learner-name-text {
-      font-size: 34px;
-      margin: 0 0 10px;
-      line-height: 1;
-    }
-
-    .awarded-text {
-      font-size: 25px;
-      line-height: 1;
-    }
-
-    .certificate-name-text {
-      font-size: 40px;
-      line-height: 1;
-    }
-
-    .general-text {
-      font-size: 34px;
-      line-height: 1;
-    }
-
-    .location-text {
-      font-size: 34px;
-      line-height: 1;
-    }
-
   }
 
   .signature-list {
