@@ -4,6 +4,7 @@ import json
 import pytest
 
 from django.http.response import Http404
+from django.test import override_settings
 
 from cms.factories import (
     SiteNotificationFactory,
@@ -303,11 +304,11 @@ def test_certificate_for_bootcamp_run_page():
         assert signatory.value.signature_image.title == "Image"
 
 
+@override_settings(**{"FEATURES": {"ENABLE_CERTIFICATE_USER_VIEW": True}})
 def test_certificate_index_page(rf):
     """
     test for certificate index page
     """
-
     home_page = HomePageFactory()
     assert models.CertificateIndexPage.can_create_at(home_page)
 
@@ -325,9 +326,17 @@ def test_certificate_index_page(rf):
         ).status_code
         == 200
     )
+
     with pytest.raises(Http404):
         certifcate_index_page.bootcamp_certificate(
             request, "00000000-0000-0000-0000-000000000000"
         )
+
+    # Revoke the certificate and check index page returns 404
+    certificate.revoke()
+
+    with pytest.raises(Http404):
+        certifcate_index_page.bootcamp_certificate(request, certificate.uuid)
+
     with pytest.raises(Http404):
         certifcate_index_page.index_route(request)
