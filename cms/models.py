@@ -887,9 +887,15 @@ class CertificateIndexPage(RoutablePageMixin, Page):
         """
         Serve a bootcamp certificate by uuid
         """
+        # Return 404 if certificates feature is disabled
+        if not settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):
+            raise Http404()
+
         # Try to fetch a certificate by the uuid passed in the URL
         try:
-            certificate = BootcampRunCertificate.objects.get(uuid=uuid)
+            certificate = BootcampRunCertificate.objects.get(
+                uuid=uuid, is_revoked=False
+            )
         except BootcampRunCertificate.DoesNotExist:
             raise Http404()
         # Get a CertificatePage to serve this request
@@ -927,6 +933,14 @@ class CertificatePage(BootcampRunChildPage):
         help_text="Specify the bootcamp run name. e.g. 'MIT Innovation and Entrepreneurship Bootcamp' ",
     )
 
+    granting_institution = models.CharField(
+        max_length=250,
+        null=False,
+        blank=False,
+        default="Massachusetts Institute of Technology",
+        help_text="Specify the granting institution name. e.g. MIT Bootcamps & Harvard Medical School Center for Primary Care.",
+    )
+
     certificate_name = models.CharField(
         max_length=250,
         null=True,
@@ -938,6 +952,15 @@ class CertificatePage(BootcampRunChildPage):
         max_length=250,
         blank=True,
         help_text="Optional text field for bootcamp location. e.g. 'Brisbane, Australia'",
+    )
+
+    secondary_image = models.ForeignKey(
+        Image,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Representing the institution image, This image will be rendered over the certificate as secondary image.",
     )
 
     signatories = StreamField(
@@ -956,8 +979,10 @@ class CertificatePage(BootcampRunChildPage):
 
     content_panels = [
         FieldPanel("bootcamp_run_name"),
+        FieldPanel("granting_institution"),
         FieldPanel("certificate_name"),
         FieldPanel("location"),
+        ImageChooserPanel("secondary_image"),
         StreamFieldPanel("signatories"),
     ]
 
@@ -1009,6 +1034,7 @@ class CertificatePage(BootcampRunChildPage):
                 "end_date": parent.bootcamp_run.end_date
                 if parent.bootcamp_run
                 else datetime.now(),
+                "location": self.location if self.location else "Brisbane, Australia",
             }
         elif self.certificate:
             # Verify that the certificate in fact is for this same course
@@ -1021,6 +1047,7 @@ class CertificatePage(BootcampRunChildPage):
                 "learner_name": self.certificate.user.profile.name,
                 "start_date": start_date,
                 "end_date": end_date,
+                "location": self.location,
             }
         else:
             raise Http404()
