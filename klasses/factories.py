@@ -74,3 +74,13 @@ class PersonalPriceFactory(DjangoModelFactory):
 
     class Meta:
         model = models.PersonalPrice
+
+
+class BootcampRunCertificateFactory(DjangoModelFactory):
+    """Factory for BootcampRunCertificate"""
+
+    user = SubFactory(UserFactory)
+    bootcamp_run = SubFactory(BootcampRunFactory)
+
+    class Meta:
+        model = models.BootcampRunCertificate

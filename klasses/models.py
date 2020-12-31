@@ -1,5 +1,6 @@
 """Models for bootcamps"""
 import datetime
+import uuid
 from functools import partial
 
 import pytz
@@ -15,6 +16,19 @@ from klasses.constants import (
     ENROLL_CHANGE_STATUS_CHOICES,
     DATE_RANGE_MONTH_FMT,
 )
+
+
+class ActiveCertificates(models.Manager):
+    """
+    Return the active certificates only
+    """
+
+    def get_queryset(self):
+        """
+        Returns:
+            QuerySet: queryset for un-revoked certificates
+        """
+        return super().get_queryset().filter(is_revoked=False)
 
 
 class Bootcamp(models.Model):
@@ -47,6 +61,11 @@ class BootcampRun(models.Model):
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
     novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)
+
+    @property
+    def page(self):
+        """Gets the associated BootcampRunPage"""
+        return getattr(self, "bootcamprunpage", None)
 
     @property
     def price(self):
@@ -251,3 +270,76 @@ class BootcampRunEnrollment(TimestampedModel):
 
     def __str__(self):
         return f"Enrollment for {self.bootcamp_run}"
+
+
+class BaseCertificate(models.Model):
+    """
+    Common properties for certificate models
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE
+    )
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    is_revoked = models.BooleanField(
+        default=False,
+        help_text="Indicates whether or not the certificate is revoked",
+        verbose_name="revoked",
+    )
+
+    class Meta:
+        abstract = True
+
+    def revoke(self):
+        """Revokes certificate"""
+        self.is_revoked = True
+        self.save()
+        return self
+
+    def unrevoke(self):
+        """Unrevokes certificate"""
+        self.is_revoked = False
+        self.save()
+        return self
+
+    def get_certified_object_id(self):
+        """Gets the id of the certificate's bootcamp program/run"""
+        raise NotImplementedError
+
+
+class BootcampRunCertificate(TimestampedModel, BaseCertificate):
+    """
+    Model for storing bootcamp run certificates
+    """
+
+    bootcamp_run = models.ForeignKey(
+        BootcampRun, null=False, on_delete=models.CASCADE, related_name="certificates"
+    )
+
+    objects = ActiveCertificates()
+    all_objects = models.Manager()
+
+    class Meta:
+        unique_together = ("user", "bootcamp_run")
+
+    def get_certified_object_id(self):
+        return self.bootcamp_run_id
+
+    @property
+    def link(self):
+        """
+        Get the link at which this certificate will be served
+        Format: /certificate/<uuid>/
+        Example: /certificate/93ebd74e-5f88-4b47-bb09-30a6d575328f/
+        """
+        return "/certificate/{}/".format(str(self.uuid))
+
+    @property
+    def start_end_dates(self):
+        """Returns the start and end date for bootcamp object duration"""
+        return self.bootcamp_run.start_date, self.bootcamp_run.end_date
+
+    def __str__(self):
+        return "BootcampRunCertificate for user={user}, run={bootcamp_run} ({uuid})".format(
+            user=self.user.username, bootcamp_run=self.bootcamp_run.id, uuid=self.uuid
+        )

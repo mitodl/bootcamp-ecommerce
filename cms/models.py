@@ -1,17 +1,22 @@
+# pylint: disable=too-many-lines
 """
 Page models for the CMS
 """
+from datetime import datetime
 import logging
+from urllib.parse import urljoin
 
 from django.conf import settings
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 from django.http.response import Http404
 from django.urls import reverse
 from django.utils.text import slugify
 from django.shortcuts import render
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, PageChooserPanel
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.core.blocks import StreamBlock
+from wagtail.core.blocks import StreamBlock, PageChooserBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.core.utils import WAGTAIL_APPEND_SLASH
@@ -32,10 +37,13 @@ from cms.blocks import (
 from cms.constants import (
     ACCEPTANCE_DEFAULT_LETTER_TEXT,
     BOOTCAMP_INDEX_SLUG,
+    CERTIFICATE_INDEX_SLUG,
     REJECTION_DEFAULT_LETTER_TEXT,
     SAMPLE_DECISION_TEMPLATE_CONTEXT,
+    SIGNATORY_INDEX_SLUG,
 )
 from cms.forms import LetterTemplatePageForm
+from klasses.models import BootcampRunCertificate
 
 
 log = logging.getLogger(__name__)
@@ -157,6 +165,8 @@ class HomePage(Page, CommonProperties):
         "ResourcePage",
         "CatalogGridSection",
         "LetterTemplatePage",
+        "SignatoryIndexPage",
+        "CertificateIndexPage",
     ]
 
 
@@ -219,6 +229,11 @@ class BootcampPage(Page, CommonProperties):
         return self._get_child_page_of_type(AlumniSection)
 
     @property
+    def certificate_page(self):
+        """Gets the certificate child page"""
+        return self._get_child_page_of_type(CertificatePage)
+
+    @property
     def admissions_section(self):
         """Gets the admissions section child page"""
         return self._get_child_page_of_type(AdmissionsSection)
@@ -230,6 +245,7 @@ class BootcampPage(Page, CommonProperties):
         "AlumniSection",
         "LearningResourceSection",
         "AdmissionsSection",
+        "CertificatePage",
     ]
 
 
@@ -736,3 +752,314 @@ class ResourcePagesSettings(BaseSetting):
 
     class Meta:
         verbose_name = "Resource Pages"
+
+
+class SignatoryObjectIndexPage(Page):
+    """
+    A placeholder class to group signatory object pages as children.
+    This class logically acts as no more than a "folder" to organize
+    pages and add parent slug segment to the page url.
+    """
+
+    class Meta:
+        abstract = True
+
+    parent_page_types = ["HomePage"]
+    subpage_types = ["SignatoryPage"]
+
+    @classmethod
+    def can_create_at(cls, parent):
+        """
+        You can only create one of these pages under the home page.
+        The parent is limited via the `parent_page_type` list.
+        """
+        return (
+            super().can_create_at(parent)
+            and not parent.get_children().type(cls).exists()
+        )
+
+    def serve(self, request, *args, **kwargs):
+        """
+        For index pages we raise a 404 because these pages do not have a template
+        of their own and we do not expect a page to available at their slug.
+        """
+        raise Http404
+
+
+class SignatoryIndexPage(SignatoryObjectIndexPage):
+    """
+    A placeholder page to group all the signatories under it as well
+    as consequently add /signatories/ to the signatory page urls
+    """
+
+    slug = SIGNATORY_INDEX_SLUG
+
+
+class SignatoryPage(Page):
+    """ CMS page representing a Signatory. """
+
+    promote_panels = []
+    parent_page_types = [SignatoryIndexPage]
+    subpage_types = []
+
+    name = models.CharField(
+        max_length=250, null=False, blank=False, help_text="Name of the signatory."
+    )
+    title_1 = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Specify signatory first title in organization.",
+    )
+    title_2 = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Specify signatory second title in organization.",
+    )
+    organization = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True,
+        help_text="Specify the organization of signatory.",
+    )
+
+    signature_image = models.ForeignKey(
+        Image,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Signature image size must be at least 150x50 pixels.",
+    )
+
+    class Meta:
+        verbose_name = "Signatory"
+
+    content_panels = [
+        FieldPanel("name"),
+        FieldPanel("title_1"),
+        FieldPanel("title_2"),
+        FieldPanel("organization"),
+        ImageChooserPanel("signature_image"),
+    ]
+
+    def save(self, *args, **kwargs):  # pylint: disable=signature-differs
+        # auto generate a unique slug so we don't hit a ValidationError
+        if not self.title:
+            self.title = self.__class__._meta.verbose_name.title() + "-" + self.name
+
+        self.slug = slugify("{}-{}".format(self.title, self.id))
+        super().save(*args, **kwargs)
+
+    def serve(self, request, *args, **kwargs):
+        """
+        As the name suggests these pages are going to be children of some other page. They are not
+        designed to be viewed on their own so we raise a 404 if someone tries to access their slug.
+        """
+        raise Http404
+
+
+class CertificateIndexPage(RoutablePageMixin, Page):
+    """
+    Certificate index page placeholder that handles routes for serving
+    certificates given by UUID
+    """
+
+    parent_page_types = ["HomePage"]
+    subpage_types = []
+
+    slug = CERTIFICATE_INDEX_SLUG
+
+    @classmethod
+    def can_create_at(cls, parent):
+        """
+        You can only create one of these pages under the home page.
+        The parent is limited via the `parent_page_type` list.
+        """
+        return (
+            super().can_create_at(parent)
+            and not parent.get_children().type(cls).exists()
+        )
+
+    @route(r"^([A-Fa-f0-9-]+)/?$")
+    def bootcamp_certificate(
+        self, request, uuid, *args, **kwargs
+    ):  # pylint: disable=unused-argument
+        """
+        Serve a bootcamp certificate by uuid
+        """
+        # Return 404 if certificates feature is disabled
+        if not settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):
+            raise Http404()
+
+        # Try to fetch a certificate by the uuid passed in the URL
+        try:
+            certificate = BootcampRunCertificate.objects.get(
+                uuid=uuid, is_revoked=False
+            )
+        except BootcampRunCertificate.DoesNotExist:
+            raise Http404()
+        # Get a CertificatePage to serve this request
+        certificate_page = (
+            certificate.bootcamp_run.page.certificate_page
+            if certificate.bootcamp_run.page
+            else None
+        )
+        if not certificate_page:
+            raise Http404()
+
+        certificate_page.certificate = certificate
+        return certificate_page.serve(request)
+
+    @route(r"^$")
+    def index_route(self, request, *args, **kwargs):
+        """
+        The index page is not meant to be served/viewed directly
+        """
+        raise Http404()
+
+
+class CertificatePage(BootcampRunChildPage):
+    """
+    CMS page representing a Certificate.
+    """
+
+    template = "certificate_page.html"
+    parent_page_types = ["BootcampRunPage"]
+
+    bootcamp_run_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=False,
+        help_text="Specify the bootcamp run name. e.g. 'MIT Innovation and Entrepreneurship Bootcamp' ",
+    )
+
+    granting_institution = models.CharField(
+        max_length=250,
+        null=False,
+        blank=False,
+        default="Massachusetts Institute of Technology",
+        help_text="Specify the granting institution name. e.g. MIT Bootcamps & Harvard Medical School Center for Primary Care.",
+    )
+
+    certificate_name = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True,
+        help_text="Specify the bootcamp certificate name. e.g. 'Certificate in New Ventures Leadership'",
+    )
+
+    location = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Optional text field for bootcamp location. e.g. 'Brisbane, Australia'",
+    )
+
+    secondary_image = models.ForeignKey(
+        Image,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Representing the institution image, This image will be rendered over the certificate as secondary image.",
+    )
+
+    signatories = StreamField(
+        StreamBlock(
+            [
+                (
+                    "signatory",
+                    PageChooserBlock(required=True, target_model=["cms.SignatoryPage"]),
+                )
+            ],
+            min_num=1,
+            max_num=5,
+        ),
+        help_text="You can choose upto 5 signatories.",
+    )
+
+    content_panels = [
+        FieldPanel("bootcamp_run_name"),
+        FieldPanel("granting_institution"),
+        FieldPanel("certificate_name"),
+        FieldPanel("location"),
+        ImageChooserPanel("secondary_image"),
+        StreamFieldPanel("signatories"),
+    ]
+
+    class Meta:
+        verbose_name = "Certificate"
+
+    def __init__(self, *args, **kwargs):
+        self.certificate = None
+        super().__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # auto generate a unique slug so we don't hit a ValidationError
+        self.title = (
+            self.__class__._meta.verbose_name.title()
+            + " For "
+            + self.get_parent().title
+        )
+
+        self.slug = slugify("certificate-{}".format(self.get_parent().id))
+        Page.save(self, *args, **kwargs)
+
+    def serve(self, request, *args, **kwargs):
+        """
+        We need to serve the certificate template for preview.
+        """
+        return Page.serve(self, request, *args, **kwargs)
+
+    @property
+    def signatory_pages(self):
+        """
+        Extracts all the pages out of the `signatories` stream into a list
+        """
+        pages = []
+        for block in self.signatories:  # pylint: disable=not-an-iterable
+            if block.value:
+                pages.append(block.value.specific)
+        return pages
+
+    def get_context(self, request, *args, **kwargs):
+        preview_context = {}
+        context = {}
+        parent = self.parent()
+        if request.is_preview:
+            preview_context = {
+                "learner_name": "Anthony M. Stark",
+                "start_date": parent.bootcamp_run.start_date
+                if parent.bootcamp_run
+                else datetime.now(),
+                "end_date": parent.bootcamp_run.end_date
+                if parent.bootcamp_run
+                else datetime.now(),
+                "location": self.location if self.location else "Brisbane, Australia",
+            }
+        elif self.certificate:
+            # Verify that the certificate in fact is for this same course
+            if parent.bootcamp_run.id != self.certificate.bootcamp_run.id:
+                raise Http404()
+            start_date, end_date = self.certificate.start_end_dates
+            context = {
+                "uuid": self.certificate.uuid,
+                "certificate_user": self.certificate.user,
+                "learner_name": self.certificate.user.profile.name,
+                "start_date": start_date,
+                "end_date": end_date,
+                "location": self.location,
+            }
+        else:
+            raise Http404()
+
+        # The share image url needs to be absolute
+        return {
+            "site_name": settings.SITE_NAME,
+            "share_image_url": urljoin(
+                request.build_absolute_uri("///"),
+                static("images/certificates/share-image.png"),
+            ),
+            **super().get_context(request, *args, **kwargs),
+            **preview_context,
+            **context,
+        }

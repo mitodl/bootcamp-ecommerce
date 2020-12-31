@@ -3,6 +3,9 @@
 import json
 import pytest
 
+from django.http.response import Http404
+from django.test import override_settings
+
 from cms.factories import (
     SiteNotificationFactory,
     BootcampRunPageFactory,
@@ -15,8 +18,11 @@ from cms.factories import (
     ThreeColumnImageTextSectionFactory,
     InstructorSectionFactory,
     AdmissionSectionFactory,
+    CertificateIndexPageFactory,
+    CertificatePageFactory,
 )
 from cms import models
+from klasses.factories import BootcampRunCertificateFactory
 
 pytestmark = [pytest.mark.django_db]
 
@@ -265,3 +271,72 @@ def test_home_catalog():
     assert not home.catalog
     catalog = CatalogGridSectionFactory(parent=home)
     assert home.catalog == catalog
+
+
+def test_certificate_for_bootcamp_run_page():
+    """
+    The Certificate property should return expected values if associated with a CertificatePage
+    """
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    assert models.CertificatePage.can_create_at(bootcamp_run_page)
+    assert not models.SignatoryPage.can_create_at(bootcamp_run_page)
+
+    certificate_page = CertificatePageFactory.create(
+        parent=bootcamp_run_page,
+        bootcamp_run_name="bootcamp_run",
+        certificate_name="certificate_name",
+        location="location",
+        signatories__0__signatory__name="Name",
+        signatories__0__signatory__title_1="Title_1",
+        signatories__0__signatory__title_2="Title_2",
+        signatories__0__signatory__organization="Organization",
+        signatories__0__signatory__signature_image__title="Image",
+    )
+    assert certificate_page.get_parent() == bootcamp_run_page
+    assert certificate_page.bootcamp_run_name == "bootcamp_run"
+    assert certificate_page.certificate_name == "certificate_name"
+    assert certificate_page.location == "location"
+    for signatory in certificate_page.signatories:  # pylint: disable=not-an-iterable
+        assert signatory.value.name == "Name"
+        assert signatory.value.title_1 == "Title_1"
+        assert signatory.value.title_2 == "Title_2"
+        assert signatory.value.organization == "Organization"
+        assert signatory.value.signature_image.title == "Image"
+
+
+@override_settings(**{"FEATURES": {"ENABLE_CERTIFICATE_USER_VIEW": True}})
+def test_certificate_index_page(rf):
+    """
+    test for certificate index page
+    """
+    home_page = HomePageFactory()
+    assert models.CertificateIndexPage.can_create_at(home_page)
+
+    certifcate_index_page = CertificateIndexPageFactory.create(parent=home_page)
+    request = rf.get(certifcate_index_page.get_url())
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    certificate = BootcampRunCertificateFactory.create(
+        bootcamp_run=bootcamp_run_page.bootcamp_run
+    )
+    certificate_page = CertificatePageFactory.create(parent=bootcamp_run_page)
+    request = rf.get(certificate_page.get_url())
+    assert (
+        certifcate_index_page.bootcamp_certificate(
+            request, certificate.uuid
+        ).status_code
+        == 200
+    )
+
+    with pytest.raises(Http404):
+        certifcate_index_page.bootcamp_certificate(
+            request, "00000000-0000-0000-0000-000000000000"
+        )
+
+    # Revoke the certificate and check index page returns 404
+    certificate.revoke()
+
+    with pytest.raises(Http404):
+        certifcate_index_page.bootcamp_certificate(request, certificate.uuid)
+
+    with pytest.raises(Http404):
+        certifcate_index_page.index_route(request)
