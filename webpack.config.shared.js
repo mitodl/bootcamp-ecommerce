@@ -47,7 +47,8 @@ module.exports = {
       // and some of its dependencies to ES5.
       path.resolve(__dirname, "node_modules/query-string"),
       path.resolve(__dirname, "node_modules/strict-uri-encode"),
-      path.resolve(__dirname, "node_modules/split-on-first")
+      path.resolve(__dirname, "node_modules/split-on-first"),
+      path.resolve(__dirname, "node_modules/waait")
     ],
     loader:  "babel-loader",
     query:   {
