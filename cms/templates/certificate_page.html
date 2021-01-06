@@ -62,7 +62,7 @@
             {% else %}
               <span class="general-text">Certificate of Completion</span>
             {% endif %}
-            <span class="general-text">{{end_date|date}}</span>
+            <span class="general-text">{{end_date|date:"F j, Y"}}</span>
             {% if location %}
               <span class="location-text">{{location}}</span>
             {% endif %}
