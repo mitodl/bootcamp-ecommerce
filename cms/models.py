@@ -1035,6 +1035,7 @@ class CertificatePage(BootcampRunChildPage):
                 if parent.bootcamp_run
                 else datetime.now(),
                 "location": self.location if self.location else "Brisbane, Australia",
+                "certificate_user": None,
             }
         elif self.certificate:
             # Verify that the certificate in fact is for this same course
@@ -1058,6 +1059,9 @@ class CertificatePage(BootcampRunChildPage):
             "share_image_url": urljoin(
                 request.build_absolute_uri("///"),
                 static("images/certificates/share-image.png"),
+            ),
+            "share_text": "I just earned a certificate in {}".format(
+                self.bootcamp_run_name
             ),
             **super().get_context(request, *args, **kwargs),
             **preview_context,
