@@ -1,6 +1,23 @@
 Release Notes
 =============
 
+Version 0.64.0 (Released January 06, 2021)
+--------------
+
+- Bump urijs from 1.19.2 to 1.19.4
+- Certificate Page template Integration (#1116)
+- cetificate command tests (#1118)
+- certificates unittest for cms and klass models
+- add certificate link to user dashboard (#1114)
+- add certificate management commands (#1111)
+- adding certificate routing and basic context (#1110)
+- relabeling the fields and default values
+- Wagtail CMS changes for bootcamp certificate
+- Bootcamp run certificate models changes
+- Added field validation on first and last name (#1096)
+- add dynamic cache controlling via env variable (#1099)
+- Bump ini from 1.3.5 to 1.3.7 (#1098)
+
 Version 0.63.2 (Released December 21, 2020)
 --------------
 
