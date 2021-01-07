@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.64.1
+Version 0.64.1 (Released January 07, 2021)
 --------------
 
 - fixes in certificate template context (#1128)
