@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.64.1
+--------------
+
+- fixes in certificate template context (#1128)
+- Make sure waait is compiled to ES5 (#1124)
+- #1125 Certificates: don't abbreviate dates
+
 Version 0.64.0 (Released January 06, 2021)
 --------------
 
