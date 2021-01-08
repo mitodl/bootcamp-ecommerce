@@ -64,17 +64,15 @@ export class LoginPasswordPage extends React.Component<Props> {
       auth: { partial_token }
     } = this.props
 
-    if (!partial_token) {
-      throw Error("Invalid state: password page with no partialToken")
-    }
-
     try {
-      const { body } = await loginPassword(password, partial_token)
+      if (partial_token) {
+        const { body } = await loginPassword(password, partial_token)
 
-      handleAuthResponse(history, body, {
-        [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors)
-      })
+        handleAuthResponse(history, body, {
+          [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
+            setErrors(field_errors)
+        })
+      }
     } finally {
       setSubmitting(false)
     }

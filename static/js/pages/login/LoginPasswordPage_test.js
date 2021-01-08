@@ -105,4 +105,18 @@ describe("LoginPasswordPage", () => {
     sinon.assert.notCalled(setErrorsStub)
     sinon.assert.calledWith(setSubmittingStub, false)
   })
+
+  it("onSubmit will not do anything if partial_token is null", async () => {
+    const { inner } = await renderPage()
+
+    auth.partial_token = null
+    const onSubmit = inner.find("LoginPasswordForm").prop("onSubmit")
+
+    await onSubmit(
+      { password },
+      { setSubmitting: setSubmittingStub, setErrors: setErrorsStub }
+    )
+    sinon.assert.notCalled(helper.handleRequestStub)
+    sinon.assert.calledWith(setSubmittingStub, false)
+  })
 })
