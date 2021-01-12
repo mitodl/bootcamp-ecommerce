@@ -45,7 +45,7 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
 
     model = models.BootcampRunEnrollment
     include_created_on_in_list = True
-    list_display = ("id", "bootcamp_run", "user", "change_status", "active")
+    list_display = ("id", "get_user_email", "bootcamp_run", "change_status", "active")
     list_filter = ("change_status", "active", "bootcamp_run__bootcamp")
     raw_id_fields = ("bootcamp_run", "user")
     search_fields = (
@@ -63,6 +63,13 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
             .select_related("user", "bootcamp_run__bootcamp")
         )
 
+    def get_user_email(self, obj):
+        """Returns the user email"""
+        return obj.user.email
+
+    get_user_email.short_description = "User"
+    get_user_email.admin_order_field = "user__email"
+
 
 class InstallmentAdmin(admin.ModelAdmin):
     """Admin for Installment"""
@@ -76,8 +83,8 @@ class PersonalPriceAdmin(admin.ModelAdmin):
     """Admin for PersonalPrice"""
 
     model = models.PersonalPrice
-    list_display = ("id", "bootcamp_run", "user", "price")
-    list_filter = ("bootcamp_run__bootcamp", "bootcamp_run")
+    list_display = ("id", "get_user_email", "bootcamp_run", "price")
+    list_filter = ("bootcamp_run__bootcamp",)
     raw_id_fields = ("bootcamp_run", "user")
     search_fields = (
         "price",
@@ -89,13 +96,28 @@ class PersonalPriceAdmin(admin.ModelAdmin):
         "user__legal_address__last_name",
     )
 
+    def get_queryset(self, request):
+        """Overrides base queryset"""
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("user", "bootcamp_run__bootcamp")
+        )
+
+    def get_user_email(self, obj):
+        """Returns the user email"""
+        return obj.user.email
+
+    get_user_email.short_description = "User"
+    get_user_email.admin_order_field = "user__email"
+
 
 class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     """Admin for BootcampRunCertificate"""
 
     model = models.BootcampRunCertificate
     include_timestamps_in_list = True
-    list_display = ["uuid", "user", "bootcamp_run", "get_revoked_state"]
+    list_display = ["uuid", "get_user_email", "bootcamp_run", "get_revoked_state"]
     search_fields = [
         "bootcamp_run__id",
         "bootcamp_run__title",
@@ -104,6 +126,11 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     ]
     raw_id_fields = ("user",)
 
+    def get_queryset(self, request):
+        return self.model.all_objects.get_queryset().select_related(
+            "user", "bootcamp_run"
+        )
+
     def get_revoked_state(self, obj):
         """ return the revoked state"""
         return obj.is_revoked is not True
@@ -111,10 +138,12 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     get_revoked_state.short_description = "Active"
     get_revoked_state.boolean = True
 
-    def get_queryset(self, request):
-        return self.model.all_objects.get_queryset().select_related(
-            "user", "bootcamp_run"
-        )
+    def get_user_email(self, obj):
+        """Returns the user email"""
+        return obj.user.email
+
+    get_user_email.short_description = "User"
+    get_user_email.admin_order_field = "user__email"
 
 
 admin.site.register(models.Bootcamp, BootcampAdmin)

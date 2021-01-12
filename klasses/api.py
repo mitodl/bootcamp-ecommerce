@@ -77,7 +77,8 @@ def adjust_app_state_for_new_price(user, bootcamp_run, new_price=None):
         order__user=user, bootcamp_run=bootcamp_run
     ).aggregate(aggregate_total_paid=Sum("price"))
     total_paid = total_paid_qset["aggregate_total_paid"] or 0
-    needs_payment = total_paid < (new_price or bootcamp_run.price)
+    new_price = new_price if new_price is not None else bootcamp_run.price
+    needs_payment = total_paid < new_price
     application = user.bootcamp_applications.filter(
         bootcamp_run=bootcamp_run,
         # The state needs to change if (a) it's currently complete and now needs more payment, or (b) it's currently

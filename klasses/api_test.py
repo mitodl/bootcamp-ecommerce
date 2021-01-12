@@ -124,6 +124,21 @@ def test_adjust_app_state_for_new_price(personal_price_amt, init_state, expected
     assert app.state == expected_state
 
 
+@factory.django.mute_signals(signals.post_save)
+@pytest.mark.django_db
+def test_adjust_app_state_for_zero_price():
+    """
+    adjust_app_state_for_new_price should update a bootcamp application state to complete if the application was
+    awaiting payment and the personal price was set to zero
+    """
+    app = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    InstallmentFactory.create(bootcamp_run=app.bootcamp_run, amount=10)
+    returned_app = adjust_app_state_for_new_price(
+        user=app.user, bootcamp_run=app.bootcamp_run, new_price=0
+    )
+    assert returned_app.state == AppStates.COMPLETE.value
+
+
 @pytest.mark.django_db
 def test_fetch_bootcamp_run():
     """fetch_bootcamp_run should fetch a bootcamp run with a field value that matches the given property"""
