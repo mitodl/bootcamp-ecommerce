@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Version 0.65.0
+--------------
+
+- Ignore submit, do not throw error, if partial token is null (#1134)
+- Fixed application state for personal prices set to zero (#1133)
+- upgrade lxml to v4.6.2 (#1139)
+- quiet CSOURCE_PAYLOAD error (#1137)
+- make signatory_images mandatory (#1136)
+
 Version 0.64.1 (Released January 07, 2021)
 --------------
 
