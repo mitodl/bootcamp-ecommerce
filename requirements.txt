@@ -64,7 +64,7 @@ jedi==0.10.2              # via ipython
 jmespath==0.9.5           # via boto3, botocore
 kombu==4.6.7              # via celery, django-server-status
 l18n==2018.5              # via wagtail
-lxml==4.5.0               # via premailer, zeep
+lxml==4.6.2               # via premailer, zeep
 newrelic==2.86.3.70       # via -r requirements.in
 oauthlib==2.0.2           # via requests-oauthlib, social-auth-core
 pexpect==4.2.1            # via ipython
