@@ -1055,6 +1055,7 @@ class CertificatePage(BootcampRunChildPage):
 
         # The share image url needs to be absolute
         return {
+            "CSOURCE_PAYLOAD": None,
             "site_name": settings.SITE_NAME,
             "share_image_url": urljoin(
                 request.build_absolute_uri("///"),
