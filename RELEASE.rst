@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.65.0
+Version 0.65.0 (Released January 13, 2021)
 --------------
 
 - Ignore submit, do not throw error, if partial token is null (#1134)
