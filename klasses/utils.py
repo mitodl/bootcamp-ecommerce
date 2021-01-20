@@ -20,7 +20,10 @@ def generate_single_certificate(user, bootcamp_run):
                 bootcamp_run,
             )
         elif BootcampRunEnrollment.objects.filter(
-            user=user, bootcamp_run=bootcamp_run, active=True
+            user=user,
+            bootcamp_run=bootcamp_run,
+            active=True,
+            user_certificate_is_blocked=False,
         ).exists():
             certificate = BootcampRunCertificate.objects.create(
                 user=user, bootcamp_run=bootcamp_run
@@ -53,7 +56,9 @@ def generate_batch_certificates(bootcamp_run):
             [
                 BootcampRunCertificate(user=enrollment.user, bootcamp_run=bootcamp_run)
                 for enrollment in BootcampRunEnrollment.objects.filter(
-                    bootcamp_run=bootcamp_run, active=True
+                    bootcamp_run=bootcamp_run,
+                    active=True,
+                    user_certificate_is_blocked=False,
                 )
                 if not BootcampRunCertificate.all_objects.filter(
                     user=enrollment.user, bootcamp_run=bootcamp_run
@@ -149,4 +154,27 @@ def unrevoke_certificate(user, bootcamp_run):
     else:
         result["msg"] = "Valid user and bootcamp_run must be provided."
 
+    return result
+
+
+def manage_user_certificate_blocking(users, block_state):
+    """Block users for getting certificates in all bootcamp run enrollments"""
+    result = {"updated": False}
+    if users:
+        BootcampRunEnrollment.objects.filter(user__email__in=users, active=True).update(
+            user_certificate_is_blocked=block_state
+        )
+
+        state = "blocked"
+        if not block_state:
+            state = "unblocked"
+
+        result.update(
+            {
+                "updated": True,
+                "msg": "Users:{} are ".format(users)
+                + state
+                + " for getting certificate for any bootcamp enrollment.",
+            }
+        )
     return result
