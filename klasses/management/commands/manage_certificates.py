@@ -86,7 +86,8 @@ class Command(BaseCommand):
             user = fetch_user(options["user"]) if options["user"] else None
             generate_single = options.get("generate")
             generate_batch = options.get("generate_batch")
-            bootcamp_run = fetch_bootcamp_run(options.get("run"))
+            if options.get("run"):
+                bootcamp_run = fetch_bootcamp_run(str(options.get("run")))
             revoke = options.get("revoke")
             unrevoke = options.get("unrevoke")
             users_to_block = options.get("block")
