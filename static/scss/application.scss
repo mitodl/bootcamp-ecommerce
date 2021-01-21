@@ -22,11 +22,18 @@ $border-style: 1px solid $black;
   }
 
   h2 a {
-    display: inline-flex;
+    display: inline;
     align-items: center;
 
     i {
       padding-left: 3px;
+      vertical-align: top;
+    }
+
+    span {
+      // Wrapping the material icon in a span with this styling prevents it from being "orphaned" on the next line
+      // after the title text.
+      white-space: nowrap;
     }
 
     &:hover {
