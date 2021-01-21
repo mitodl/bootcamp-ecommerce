@@ -105,12 +105,20 @@ class Command(BaseCommand):
             raise CommandError(
                 "A valid 'user' and 'run' must be provided with 'revoke' or 'unrevoke'"
             )
+        if (users_to_block or users_to_unblock) and not options.get("run"):
+            raise CommandError(
+                "A valid 'run' must be provided along with 'block or unblock'."
+            )
 
         if users_to_block:
-            result = manage_user_certificate_blocking(users_to_block, True)
+            result = manage_user_certificate_blocking(
+                users_to_block, True, bootcamp_run
+            )
             self.show_message(**result)
         elif users_to_unblock:
-            result = manage_user_certificate_blocking(users_to_unblock, False)
+            result = manage_user_certificate_blocking(
+                users_to_unblock, False, bootcamp_run
+            )
             self.show_message(**result)
         elif revoke and user and bootcamp_run:
             result = revoke_certificate(user, bootcamp_run)

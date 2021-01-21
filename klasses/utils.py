@@ -157,13 +157,13 @@ def unrevoke_certificate(user, bootcamp_run):
     return result
 
 
-def manage_user_certificate_blocking(users, block_state):
+def manage_user_certificate_blocking(users, block_state, bootcamp_run):
     """Block users for getting certificates in all bootcamp run enrollments"""
     result = {"updated": False}
     if users:
-        BootcampRunEnrollment.objects.filter(user__email__in=users, active=True).update(
-            user_certificate_is_blocked=block_state
-        )
+        BootcampRunEnrollment.objects.filter(
+            user__email__in=users, active=True, bootcamp_run=bootcamp_run
+        ).update(user_certificate_is_blocked=block_state)
 
         state = "blocked"
         if not block_state:
