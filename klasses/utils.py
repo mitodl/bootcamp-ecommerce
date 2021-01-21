@@ -162,7 +162,7 @@ def manage_user_certificate_blocking(users, block_state, bootcamp_run):
     result = {"updated": False}
     if users:
         BootcampRunEnrollment.objects.filter(
-            user__email__in=users, active=True, bootcamp_run=bootcamp_run
+            user__email__in=users, bootcamp_run=bootcamp_run
         ).update(user_certificate_is_blocked=block_state)
 
         state = "blocked"
