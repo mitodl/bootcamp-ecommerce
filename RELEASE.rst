@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.66.0
+--------------
+
+- Fixed external bootcamp link icon positioning in dashboard (#1144)
+
 Version 0.65.0 (Released January 13, 2021)
 --------------
 
