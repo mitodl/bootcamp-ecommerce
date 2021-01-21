@@ -480,7 +480,10 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                       rel="noopener noreferrer"
                     >
                       {titleText}
-                      <i className="material-icons">open_in_new</i>
+                      <span>
+                        {/*&#65279; == zero-width non-breaking space. Necessary to prevent icon wrapping.*/}
+                        &#65279;<i className="material-icons">open_in_new</i>
+                      </span>
                     </a>
                   ) : (
                     titleText
