@@ -161,20 +161,31 @@ def manage_user_certificate_blocking(users, block_state, bootcamp_run):
     """Block users for getting certificates in all bootcamp run enrollments"""
     result = {"updated": False}
     if users:
-        BootcampRunEnrollment.objects.filter(
+        run_enrollments = BootcampRunEnrollment.objects.filter(
             user__email__in=users, bootcamp_run=bootcamp_run
-        ).update(user_certificate_is_blocked=block_state)
+        )
+
+        if not run_enrollments:
+            result[
+                "msg"
+            ] = "Matching query does not exist for users{} for run:{} ".format(
+                users, bootcamp_run
+            )
+            return result
+
+        run_enrollments.update(user_certificate_is_blocked=block_state)
 
         state = "blocked"
         if not block_state:
             state = "unblocked"
 
+        blocked_users_emails = [run.user.email for run in run_enrollments]
         result.update(
             {
                 "updated": True,
-                "msg": "Users:{} are ".format(users)
+                "msg": "User(s) with email in {} ".format(blocked_users_emails)
                 + state
-                + " for getting certificate for any bootcamp enrollment.",
+                + " for getting certificate for run '{}'.".format(bootcamp_run.title),
             }
         )
     return result
