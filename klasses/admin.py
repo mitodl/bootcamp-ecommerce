@@ -45,8 +45,20 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
 
     model = models.BootcampRunEnrollment
     include_created_on_in_list = True
-    list_display = ("id", "get_user_email", "bootcamp_run", "change_status", "active")
-    list_filter = ("change_status", "active", "bootcamp_run__bootcamp")
+    list_display = (
+        "id",
+        "get_user_email",
+        "bootcamp_run",
+        "change_status",
+        "active",
+        "user_certificate_is_blocked",
+    )
+    list_filter = (
+        "change_status",
+        "active",
+        "bootcamp_run__bootcamp",
+        "user_certificate_is_blocked",
+    )
     raw_id_fields = ("bootcamp_run", "user")
     search_fields = (
         "user__email",

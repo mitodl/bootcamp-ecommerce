@@ -264,6 +264,10 @@ class BootcampRunEnrollment(TimestampedModel):
         default=True,
         help_text="Indicates whether or not this enrollment should be considered active",
     )
+    user_certificate_is_blocked = models.BooleanField(
+        default=False,
+        help_text="Indicates whether or not this user enrollment will get certificate.",
+    )
 
     class Meta:
         unique_together = ("user", "bootcamp_run")

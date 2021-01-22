@@ -167,43 +167,46 @@ def fetch_bootcamp_run(run_property):
     Returns:
         BootcampRun: The bootcamp run matching the given property
     """
-    if run_property.isdigit():
-        return BootcampRun.objects.get(id=run_property)
-    run = BootcampRun.objects.filter(title=run_property).first()
-    if run is not None:
-        return run
-    # If run_property is a string and didn't match a title, it might be a 'display_title' property value.
-    # Attempt to parse that and match it to a run.
-    if run is None and "," not in run_property:
-        return BootcampRun.objects.get(bootcamp__title=run_property)
-    potential_bootcamp_title, potential_date_range = run_property.split(",", maxsplit=1)
-    potential_start_date, potential_end_date = _parse_formatted_date_range(
-        potential_date_range
-    )
-    run_filters = dict(bootcamp__title=potential_bootcamp_title)
-    if potential_start_date:
-        run_filters.update(
-            dict(
-                start_date__gte=potential_start_date,
-                start_date__lt=potential_start_date + timedelta(days=1),
-            )
+    if run_property:
+        if run_property.isdigit():
+            return BootcampRun.objects.get(id=run_property)
+        run = BootcampRun.objects.filter(title=run_property).first()
+        if run is not None:
+            return run
+        # If run_property is a string and didn't match a title, it might be a 'display_title' property value.
+        # Attempt to parse that and match it to a run.
+        if run is None and "," not in run_property:
+            return BootcampRun.objects.get(bootcamp__title=run_property)
+        potential_bootcamp_title, potential_date_range = run_property.split(
+            ",", maxsplit=1
         )
-    else:
-        run_filters["start_date"] = None
-    if potential_end_date:
-        run_filters.update(
-            dict(
-                end_date__gte=potential_end_date,
-                end_date__lt=potential_end_date + timedelta(days=1),
-            )
+        potential_start_date, potential_end_date = _parse_formatted_date_range(
+            potential_date_range
         )
-    else:
-        run_filters["end_date"] = None
-    try:
-        return BootcampRun.objects.get(**run_filters)
-    except BootcampRun.DoesNotExist as exc:
-        raise BootcampRun.DoesNotExist(
-            "Could not find BootcampRun with the following filters: {}".format(
-                run_filters
+        run_filters = dict(bootcamp__title=potential_bootcamp_title)
+        if potential_start_date:
+            run_filters.update(
+                dict(
+                    start_date__gte=potential_start_date,
+                    start_date__lt=potential_start_date + timedelta(days=1),
+                )
             )
-        ) from exc
+        else:
+            run_filters["start_date"] = None
+        if potential_end_date:
+            run_filters.update(
+                dict(
+                    end_date__gte=potential_end_date,
+                    end_date__lt=potential_end_date + timedelta(days=1),
+                )
+            )
+        else:
+            run_filters["end_date"] = None
+        try:
+            return BootcampRun.objects.get(**run_filters)
+        except BootcampRun.DoesNotExist as exc:
+            raise BootcampRun.DoesNotExist(
+                "Could not find BootcampRun with the following filters: {}".format(
+                    run_filters
+                )
+            ) from exc
