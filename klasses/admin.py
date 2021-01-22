@@ -57,6 +57,7 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
         "change_status",
         "active",
         "bootcamp_run__bootcamp",
+        "bootcamp_run",
         "user_certificate_is_blocked",
     )
     raw_id_fields = ("bootcamp_run", "user")
