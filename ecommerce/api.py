@@ -559,7 +559,7 @@ def import_wire_transfer(wire_transfer, header_row):
 
     with transaction.atomic():
         order = Order.objects.create(
-            status=Order.FULFILLED,
+            status=Order.CREATED,
             total_price_paid=wire_transfer.amount,
             application=application,
             user=user,
@@ -571,7 +571,6 @@ def import_wire_transfer(wire_transfer, header_row):
             description=f"Wire transfer payment for {bootcamp_run}",
             price=wire_transfer.amount,
         )
-        order.save_and_log(None)  # save record in audit table
 
         WireTransferReceipt.objects.create(
             wire_transfer_id=wire_transfer.id,
@@ -580,6 +579,8 @@ def import_wire_transfer(wire_transfer, header_row):
             },
             order=order,
         )
+        complete_successful_order(order, send_receipt=False)
+
     log.info("Wire transfer %d successfully imported", wire_transfer.id)
 
 
