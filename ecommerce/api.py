@@ -16,6 +16,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
+from django.utils.timezone import is_naive, make_aware
 from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
@@ -545,11 +546,14 @@ def import_wire_transfer(wire_transfer, header_row):
     otherwise it will be created
     """
     user = User.objects.get(email=wire_transfer.learner_email)
+    bootcamp_start_date = wire_transfer.bootcamp_start_date
+    if is_naive(bootcamp_start_date):
+        bootcamp_start_date = make_aware(bootcamp_start_date)
     bootcamp_run = BootcampRun.objects.get(
         Q(title__iexact=wire_transfer.bootcamp_name)
         | Q(bootcamp__title__iexact=wire_transfer.bootcamp_name),
-        start_date__gte=wire_transfer.bootcamp_start_date - timedelta(days=1),
-        start_date__lte=wire_transfer.bootcamp_start_date + timedelta(days=1),
+        start_date__gte=bootcamp_start_date - timedelta(days=1),
+        start_date__lte=bootcamp_start_date + timedelta(days=1),
     )
     application = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
 
