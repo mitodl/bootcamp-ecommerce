@@ -257,7 +257,6 @@ class BootcampApplication(TimestampedModel):
     )
     def complete(self):
         """Mark the application as completed"""
-        # import pdb; pdb.set_trace()
         BootcampRunEnrollment.objects.update_or_create(
             user=self.user,
             bootcamp_run=self.bootcamp_run,
