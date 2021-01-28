@@ -579,7 +579,7 @@ def import_wire_transfer(wire_transfer, header_row):
             },
             order=order,
         )
-        complete_successful_order(order, send_receipt=False)
+        complete_successful_order(order)
 
     log.info("Wire transfer %d successfully imported", wire_transfer.id)
 
