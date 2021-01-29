@@ -9,9 +9,11 @@ from decimal import Decimal
 import hashlib
 import hmac
 import logging
+import re
 import uuid
 
 from dateutil.parser import parse as parse_datetime
+from django.core.management.base import CommandError
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -21,6 +23,7 @@ from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
 
+from applications.constants import AppStates
 from applications.models import BootcampApplication
 from applications.serializers import BootcampApplicationDetailSerializer
 from ecommerce import tasks
@@ -540,7 +543,38 @@ def parse_wire_transfer_csv(csv_path):
     return wire_transfers, header_row
 
 
-def import_wire_transfer(wire_transfer, header_row):
+def update_application(application, order):
+    """
+    Update the application from complete to incomplete and vice versa
+    """
+    if application:
+        if (
+            not application.is_paid_in_full
+            and application.state != AppStates.AWAITING_PAYMENT.value
+        ):
+            application.await_further_payment()
+            application.save()
+        elif application.state != AppStates.COMPLETE.value and order:
+            complete_successful_order(order)
+
+
+def wire_transfer_difference(wire_transfer_data, raw_data):
+    """
+    keys value difference between two wire transfer data
+    """
+    keys_value_difference = {"order_fields": [], "receipt_fields": []}
+    for key in raw_data.keys():
+        if raw_data[key] != wire_transfer_data[key]:
+            # if paid amount or bootcamp or learner email changed
+            if re.compile("amount|bootcamp|email", re.IGNORECASE).search(key):
+                keys_value_difference["order_fields"].append(key)
+            else:
+                keys_value_difference["receipt_fields"].append(key)
+
+    return keys_value_difference
+
+
+def import_wire_transfer(wire_transfer, header_row, forced=False):
     """
     Import a wire transfer. If the WireTransferReceipt already exists, the information will be updated,
     otherwise it will be created
@@ -556,9 +590,57 @@ def import_wire_transfer(wire_transfer, header_row):
         start_date__lte=bootcamp_start_date + timedelta(days=1),
     )
     application = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
+    data = {header_row[col]: value for col, value in enumerate(wire_transfer.row)}
 
-    if WireTransferReceipt.objects.filter(wire_transfer_id=wire_transfer.id).exists():
-        log.info("Wire transfer %d already imported, skipping...", wire_transfer.id)
+    wire_transfer_receipt = WireTransferReceipt.objects.filter(
+        wire_transfer_id=wire_transfer.id
+    ).first()
+    if wire_transfer_receipt:
+        log.info(
+            "Wire transfer %d already imported, checking for the updates...",
+            wire_transfer.id,
+        )
+
+        difference = wire_transfer_difference(wire_transfer_receipt.data, data)
+
+        if difference["order_fields"] and forced:
+            order = wire_transfer_receipt.order
+            line = Line.objects.get(order=order)
+            line.bootcamp_run = bootcamp_run
+            line.description = f"Wire transfer payment for {bootcamp_run}"
+            line.price = wire_transfer.amount
+            line.save()
+
+            previous_application = None
+            if user != order.user or bootcamp_run != order.application.bootcamp_run:
+                previous_application = BootcampApplication.objects.get(
+                    user=order.user, bootcamp_run=order.application.bootcamp_run
+                )
+
+            order.total_price_paid = wire_transfer.amount
+            order.application = application
+            order.user = user
+            order.save()
+
+            update_application(application, order)
+            update_application(previous_application, None)
+            log.info("Order data is updated")
+
+            wire_transfer_receipt.data = data
+            wire_transfer_receipt.save()
+            log.info("Receipt data is updated")
+        elif difference["order_fields"] and not forced:
+            raise CommandError("Use --force flag to update the order.")
+        elif difference["receipt_fields"]:
+            wire_transfer_receipt.data = data
+            wire_transfer_receipt.save()
+            log.info(
+                "Receipt data is updated for User=%s Order=%d Receipt=%d",
+                user.username,
+                wire_transfer_receipt.order.id,
+                wire_transfer_receipt.id,
+            )
+
         return
 
     with transaction.atomic():
@@ -577,18 +659,14 @@ def import_wire_transfer(wire_transfer, header_row):
         )
 
         WireTransferReceipt.objects.create(
-            wire_transfer_id=wire_transfer.id,
-            data={
-                header_row[col]: value for col, value in enumerate(wire_transfer.row)
-            },
-            order=order,
+            wire_transfer_id=wire_transfer.id, data=data, order=order
         )
         complete_successful_order(order)
 
     log.info("Wire transfer %d successfully imported", wire_transfer.id)
 
 
-def import_wire_transfers(csv_path):
+def import_wire_transfers(csv_path, force_flag=False):
     """
     Import orders from a CSV file with file transfers
 
@@ -602,7 +680,7 @@ def import_wire_transfers(csv_path):
         # make sure not to write only half the wire transfers
         for wire_transfer in wire_transfers:
             try:
-                import_wire_transfer(wire_transfer, header_row)
+                import_wire_transfer(wire_transfer, header_row, force_flag)
             except:  # pylint: disable=bare-except
                 raise WireTransferImportException(
                     f"Error while importing row with Id column={wire_transfer.id}"

@@ -13,6 +13,14 @@ class Command(BaseCommand):
         """Handle arguments"""
         parser.add_argument("csv_path", type=str, help="Path to the CSV")
 
+        parser.add_argument(
+            "-f",
+            "--force",
+            action="store_true",
+            dest="force",
+            help="Migrate applications even if the 'from' run and 'to' run belong to different bootcamps.",
+        )
+
     def handle(self, *args, **options):
         """Import CSV of wire transfers"""
-        import_wire_transfers(options["csv_path"])
+        import_wire_transfers(options["csv_path"], options["force"])

@@ -1,6 +1,7 @@
 """
 Test for ecommerce functions
 """
+# pylint: disable=too-many-lines
 from base64 import b64encode
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -11,6 +12,7 @@ from types import SimpleNamespace
 
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
+from django.core.management.base import CommandError
 import pytest
 import pytz
 from rest_framework.exceptions import ValidationError
@@ -855,6 +857,146 @@ def test_import_wire_transfers_missing_application():
         import_wire_transfer(wire_transfer, [])
 
 
+def test_import_wire_transfers_update_receipt(mocker):
+    """ check for update receipt """
+    mocker.patch("ecommerce.api.tasks.send_receipt_email")
+    doof_email = "hdoof@odl.mit.edu"
+    user = User.objects.create(email=doof_email)
+    run = BootcampRunFactory.create(
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+    )
+    BootcampApplicationFactory.create(
+        bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
+    )
+
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+    import_wire_transfer(wire_transfers[0], header_row, False)
+    receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
+    assert receipt.data["SAP doc # - Cash Application"] == ""
+    wire_transfers[0].row[12] = "TBD"
+    import_wire_transfer(wire_transfers[0], header_row, False)
+    receipt.refresh_from_db()
+    assert receipt.data["SAP doc # - Cash Application"] == "TBD"
+
+
+def test_import_wire_transfers_update_existing_order_amount(mocker):
+    """ check for update order amount and receipt """
+    mocker.patch("ecommerce.api.tasks.send_receipt_email")
+    doof_email = "hdoof@odl.mit.edu"
+    user = User.objects.create(email=doof_email)
+    run = BootcampRunFactory.create(
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+    )
+    BootcampApplicationFactory.create(
+        bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
+    )
+
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+
+    import_wire_transfer(wire_transfers[0], header_row, False)
+    receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
+    assert receipt.data["Amount"] == "100"
+    assert receipt.order.total_price_paid == 100.00
+    wire_transfers[0].row[10] = "50"
+    wire_transfer = WireTransfer(
+        id=wire_transfers[0].id,
+        learner_email=wire_transfers[0].learner_email,
+        amount=Decimal(50),
+        bootcamp_start_date=wire_transfers[0].bootcamp_start_date,
+        bootcamp_name=wire_transfers[0].bootcamp_name,
+        row=wire_transfers[0].row,
+    )
+    with pytest.raises(CommandError):
+        import_wire_transfer(wire_transfer, header_row, False)
+    import_wire_transfer(wire_transfer, header_row, True)
+    receipt.refresh_from_db()
+    assert receipt.data["Amount"] == "50"
+    assert receipt.order.total_price_paid == 50.00
+
+
+def test_import_wire_transfers_update_existing_order_user(mocker):
+    """ check for update order user and receipt """
+    mocker.patch("ecommerce.api.tasks.send_receipt_email")
+    doof_email = "hdoof@odl.mit.edu"
+    pretty_platypus_email = "pplatypus@odl.mit.edu"
+    user = User.objects.create(email=doof_email)
+    pretty_platypus = User.objects.create(
+        email=pretty_platypus_email, username="pplatypus"
+    )
+    run = BootcampRunFactory.create(
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+    )
+    for _user in [user, pretty_platypus]:
+        BootcampApplicationFactory.create(
+            bootcamp_run=run, user=_user, state=AppStates.AWAITING_PAYMENT.value
+        )
+
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+
+    import_wire_transfer(wire_transfers[0], header_row, False)
+    receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
+    assert receipt.data["Learner Email"] == doof_email
+    assert receipt.order.user.email == doof_email
+    wire_transfers[0].row[2] = wire_transfers[0].row[6] = pretty_platypus_email
+    wire_transfer = WireTransfer(
+        id=wire_transfers[0].id,
+        learner_email=pretty_platypus_email,
+        amount=wire_transfers[0].amount,
+        bootcamp_start_date=wire_transfers[0].bootcamp_start_date,
+        bootcamp_name=wire_transfers[0].bootcamp_name,
+        row=wire_transfers[0].row,
+    )
+    with pytest.raises(CommandError):
+        import_wire_transfer(wire_transfer, header_row, False)
+    import_wire_transfer(wire_transfer, header_row, True)
+    receipt.refresh_from_db()
+    assert receipt.data["Learner Email"] == pretty_platypus_email
+    assert receipt.order.user.email == pretty_platypus_email
+
+
+def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
+    """ check for update order bootcamp and receipt """
+    mocker.patch("ecommerce.api.tasks.send_receipt_email")
+    doof_email = "hdoof@odl.mit.edu"
+    user = User.objects.create(email=doof_email)
+    run = BootcampRunFactory.create(
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+    )
+    bootcamp_run = BootcampRunFactory.create(
+        bootcamp__title="How to be Good", start_date=datetime(2019, 12, 21)
+    )
+    for _run in [run, bootcamp_run]:
+        BootcampApplicationFactory.create(
+            bootcamp_run=_run, user=user, state=AppStates.AWAITING_PAYMENT.value
+        )
+
+    csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
+    wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
+
+    import_wire_transfer(wire_transfers[0], header_row, False)
+    receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
+    assert receipt.data["Bootcamp Name"] == "How to be Evil"
+    assert receipt.order.application.bootcamp_run == run
+    wire_transfers[0].row[8] = "How to be Good"
+    wire_transfer = WireTransfer(
+        id=wire_transfers[0].id,
+        learner_email=wire_transfers[0].learner_email,
+        amount=Decimal(50),
+        bootcamp_start_date=wire_transfers[0].bootcamp_start_date,
+        bootcamp_name="How to be Good",
+        row=wire_transfers[0].row,
+    )
+    with pytest.raises(CommandError):
+        import_wire_transfer(wire_transfer, header_row, False)
+    import_wire_transfer(wire_transfer, header_row, True)
+    receipt.refresh_from_db()
+    assert receipt.data["Bootcamp Name"] == "How to be Good"
+    assert receipt.order.application.bootcamp_run == bootcamp_run
+
+
 def test_import_wire_transfers(mocker):
     """import_wire_transfers should iterate through the list of wire transfers, processing one at a time"""
     import_mock = mocker.patch("ecommerce.api.import_wire_transfer")
@@ -862,7 +1004,7 @@ def test_import_wire_transfers(mocker):
     import_wire_transfers(csv_path)
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
     for wire_transfer in wire_transfers:
-        import_mock.assert_any_call(wire_transfer, header_row)
+        import_mock.assert_any_call(wire_transfer, header_row, False)
 
 
 def test_import_wire_transfers_error(mocker):
