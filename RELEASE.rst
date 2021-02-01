@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.67.0
+--------------
+
+- Wiretransfer: after data is imported, update the application state (#1148)
+- 1019 Wiretransfer: Fix datetime timezone warnings during import_wire_transfers
+- Admin: Added Bootcamp run filter on BootcampRunEnrollment
+- Block/UnBlock list of users for getting certificates.  (#1142)
+
 Version 0.66.0 (Released January 21, 2021)
 --------------
 
