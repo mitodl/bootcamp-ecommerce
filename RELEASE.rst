@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.67.0
+Version 0.67.0 (Released February 04, 2021)
 --------------
 
 - Wiretransfer: after data is imported, update the application state (#1148)
