@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.68.0
+--------------
+
+- Wiretransfer: update data for existing orders
+
 Version 0.67.0 (Released February 04, 2021)
 --------------
 
