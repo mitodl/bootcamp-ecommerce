@@ -2,6 +2,7 @@
 Admin site bindings for compliance
 """
 
+import pycountry
 from django.conf import settings
 from django.contrib import admin
 
@@ -17,10 +18,19 @@ class ExportsInquiryLogAdmin(admin.ModelAdmin):
 
     model = ExportsInquiryLog
     search_fields = ["user__email", "computed_result", "info_code", "reason_code"]
-    list_filter = ["computed_result", "info_code", "reason_code"]
-    list_display = ["user", "computed_result", "info_code", "reason_code"]
+    list_filter = [
+        "computed_result",
+        "info_code",
+        "reason_code",
+        "user__legal_address__country",
+    ]
+    list_display = ["user", "computed_result", "info_code", "reason_code", "country"]
+    list_select_related = ["user__legal_address"]
     readonly_fields = [] if settings.DEBUG else get_field_names(ExportsInquiryLog)
     actions = ["manually_approve_inquiry"]
+
+    def country(self, instance):
+        return pycountry.countries.get(alpha_2=instance.user.legal_address.country).name
 
     def manually_approve_inquiry(self, request, queryset):
         """Admin action to manually approve export compliance inquiry records"""
