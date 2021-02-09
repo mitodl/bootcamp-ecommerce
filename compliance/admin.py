@@ -30,6 +30,7 @@ class ExportsInquiryLogAdmin(admin.ModelAdmin):
     actions = ["manually_approve_inquiry"]
 
     def country(self, instance):
+        """ generate country name from pycountry """
         return pycountry.countries.get(alpha_2=instance.user.legal_address.country).name
 
     def manually_approve_inquiry(self, request, queryset):
