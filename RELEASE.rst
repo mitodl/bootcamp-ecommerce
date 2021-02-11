@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.68.1
+Version 0.68.1 (Released February 11, 2021)
 --------------
 
 - Upgrade Deps, immer to 8.0.1 & pysaml2 to 6.5.1 (#1154)
