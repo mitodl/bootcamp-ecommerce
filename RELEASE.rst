@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.69.0
+--------------
+
+- #1155 display user's country in export compliance admin (#1156)
+- Upgraded cryptography to 3.4.4
+
 Version 0.68.1 (Released February 11, 2021)
 --------------
 
