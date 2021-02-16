@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.69.0
+Version 0.69.0 (Released February 16, 2021)
 --------------
 
 - #1155 display user's country in export compliance admin (#1156)
