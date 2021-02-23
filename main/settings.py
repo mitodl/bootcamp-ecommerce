@@ -527,7 +527,9 @@ BOOTCAMP_REPLY_TO_ADDRESS = get_string(
 
 # e-mail configurable admins
 ADMIN_EMAIL = get_string(
-    "BOOTCAMP_ADMIN_EMAIL", "", description="E-mail to send 500 reports to"
+    "BOOTCAMP_ADMIN_EMAIL",
+    "admin@example.com",
+    description="E-mail to send 500 reports to",
 )
 if ADMIN_EMAIL != "":
     ADMINS = (("Admins", ADMIN_EMAIL),)
