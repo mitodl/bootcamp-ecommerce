@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.70.0
+--------------
+
+- Send compliance emails to ADMIN_EMAIL instead of EMAIL_SUPPORT (#1162)
+
 Version 0.69.0 (Released February 16, 2021)
 --------------
 
