@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.71.0
+Version 0.71.0 (Released March 09, 2021)
 --------------
 
 - upgrade to 2.0.18
