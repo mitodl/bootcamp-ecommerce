@@ -56,6 +56,7 @@ class BootcampRunSerializer(serializers.ModelSerializer):
             "end_date",
             "is_payable",
             "installments",
+            "bootcamp_run_id",
         ]
 
 

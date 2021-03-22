@@ -25,7 +25,10 @@ pytestmark = [pytest.mark.django_db]
 def test_product_serializer():
     """Test that the HubspotProductSerializer correctly serializes a Bootcamp"""
     bootcamp_run = BootcampRunFactory.create(title="test bootcamp 123")
-    serialized_data = {"title": bootcamp_run.title}
+    serialized_data = {
+        "title": bootcamp_run.title,
+        "bootcamp_run_id": bootcamp_run.bootcamp_run_id,
+    }
     data = HubspotProductSerializer(instance=bootcamp_run).data
     assert data == serialized_data
 

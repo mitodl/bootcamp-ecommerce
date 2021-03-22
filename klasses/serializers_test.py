@@ -57,6 +57,7 @@ def test_bootcamp_run_serializer():
         "installments": [InstallmentSerializer(installment).data],
         "novoed_course_stub": run.novoed_course_stub,
         "is_payable": True,
+        "bootcamp_run_id": run.bootcamp_run_id,
     }
 
 

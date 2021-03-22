@@ -35,7 +35,13 @@ class BootcampRunAdmin(admin.ModelAdmin):
     """Admin for BootcampRun"""
 
     model = models.BootcampRun
-    list_display = ("display_title", "novoed_course_stub", "start_date", "end_date")
+    list_display = (
+        "display_title",
+        "bootcamp_run_id",
+        "novoed_course_stub",
+        "start_date",
+        "end_date",
+    )
     raw_id_fields = ("bootcamp",)
     inlines = [InstallmentInline]
 

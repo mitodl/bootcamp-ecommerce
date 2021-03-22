@@ -37,6 +37,11 @@ class BootcampRunFactory(DjangoModelFactory):
     novoed_course_stub = LazyAttribute(
         lambda bootcamp_run: "-".join(bootcamp_run.title.lower().split(" "))[0:20]
     )
+    bootcamp_run_id = LazyAttribute(
+        lambda bootcamp_run: "bootcamp-v1:TYPE+{topic}-format+{run}".format(
+            topic=bootcamp_run.title, run=bootcamp_run.run_key
+        )[0:255]
+    )
 
     class Meta:
         model = models.BootcampRun
