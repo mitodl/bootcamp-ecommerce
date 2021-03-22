@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.72.0
+--------------
+
+- Upgrade caniuse-lite to fix breaking JS tests (#1177)
+- import bootcamp alumni (#1171)
+- Bump django from 2.2.13 to 2.2.18 (#1174)
+
 Version 0.71.1 (Released March 12, 2021)
 --------------
 
