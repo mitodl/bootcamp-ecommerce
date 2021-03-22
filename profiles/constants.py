@@ -57,3 +57,16 @@ COUNTRIES_REQUIRING_POSTAL_CODE = (
     pycountry.countries.get(alpha_2="US"),
     pycountry.countries.get(alpha_2="CA"),
 )
+
+ALUM_LEARNER_EMAIL = "Learner Email"
+ALUM_BOOTCAMP_NAME = "Bootcamp Name"
+ALUM_BOOTCAMP_RUN_TITLE = "Bootcamp Run Title"
+ALUM_BOOTCAMP_START_DATE = "Bootcamp Start Date"
+ALUM_BOOTCAMP_END_DATE = "Bootcamp End Date"
+ALUM_HEADER_FIELDS = [
+    ALUM_LEARNER_EMAIL,
+    ALUM_BOOTCAMP_NAME,
+    ALUM_BOOTCAMP_RUN_TITLE,
+    ALUM_BOOTCAMP_START_DATE,
+    ALUM_BOOTCAMP_END_DATE,
+]

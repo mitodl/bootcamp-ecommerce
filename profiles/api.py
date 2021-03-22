@@ -1,19 +1,49 @@
 """Users api"""
-import re
+from collections import namedtuple
+import csv
+from datetime import datetime, timedelta
 from functools import reduce
+import logging
+import re
 import operator
+import pytz
 
+from django.db import transaction
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth import get_user_model
+from django.utils.timezone import make_aware
 
+from klasses.models import BootcampRun, BootcampRunEnrollment
 from main.utils import first_or_none, unique, unique_ignore_case, max_or_none
-from profiles.constants import USERNAME_MAX_LEN
+from profiles.constants import (
+    ALUM_BOOTCAMP_END_DATE,
+    ALUM_BOOTCAMP_NAME,
+    ALUM_BOOTCAMP_RUN_TITLE,
+    ALUM_BOOTCAMP_START_DATE,
+    ALUM_HEADER_FIELDS,
+    ALUM_LEARNER_EMAIL,
+    USERNAME_MAX_LEN,
+)
+from profiles.exceptions import AlumImportException
+from profiles.utils import usernameify
 
 User = get_user_model()
 
 CASE_INSENSITIVE_SEARCHABLE_FIELDS = {"email"}
+
+Alum = namedtuple(
+    "Alum",
+    [
+        "learner_email",
+        "bootcamp_name",
+        "bootcamp_run_title",
+        "bootcamp_start_date",
+        "bootcamp_end_date",
+    ],
+)
+log = logging.getLogger(__name__)
 
 
 def get_user_by_id(user_id):
@@ -256,3 +286,118 @@ def is_user_info_complete(user):
         and hasattr(user, "legal_address")
         and user.legal_address.is_complete
     )
+
+
+def import_alum(alum):
+    """
+    Import alum
+
+    Args:
+        alum (Alum namedtuple)
+    """
+    try:
+        user = User.objects.get(email=alum.learner_email)
+    except User.DoesNotExist:
+        user = User.objects.create(
+            email=alum.learner_email, username=alum.learner_email
+        )
+
+        from profiles.models import Profile, LegalAddress
+
+        LegalAddress.objects.create(user=user)
+        Profile.objects.create(user=user)
+        user.username = usernameify("", user.email)
+        user.save()
+
+        log.info(
+            "User does not exist against that email=%s but created without password and incomplete profile",
+            alum.learner_email,
+        )
+    bootcamp_start_date = datetime.strptime(alum.bootcamp_start_date, "%Y-%m-%d")
+    bootcamp_end_date = datetime.strptime(alum.bootcamp_end_date, "%Y-%m-%d")
+    bootcamp_start_date = make_aware(bootcamp_start_date, timezone=pytz.UTC)
+    bootcamp_end_date = make_aware(bootcamp_end_date, timezone=pytz.UTC)
+
+    bootcamp_run = BootcampRun.objects.get(
+        title=alum.bootcamp_run_title,
+        bootcamp__title=alum.bootcamp_name,
+        start_date__gte=bootcamp_start_date - timedelta(days=1),
+        start_date__lte=bootcamp_start_date + timedelta(days=1),
+        end_date__gte=bootcamp_end_date - timedelta(days=1),
+        end_date__lte=bootcamp_end_date + timedelta(days=1),
+    )
+
+    enrollment, created = BootcampRunEnrollment.objects.get_or_create(
+        user=user, bootcamp_run=bootcamp_run
+    )
+    if created:
+        enrollment.user_certificate_is_blocked = True
+        enrollment.save()
+        log.info(
+            "User=%s successfully enrolled in bootcamp run %s",
+            alum.learner_email,
+            alum.bootcamp_run_title,
+        )
+    else:
+        log.info(
+            "User=%s already exists in bootcamp run %s",
+            alum.learner_email,
+            alum.bootcamp_run_title,
+        )
+
+
+def parse_alumni_csv(csv_path):
+    """
+    Read CSV file and convert to Alumns object
+
+    Args:
+        csv_path(str o Path): Path to the CSV file
+
+    Returns:
+        list of Alumns, list:
+    """
+    with open(csv_path) as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        header_row = reader.fieldnames
+        if header_row and ALUM_LEARNER_EMAIL in header_row:
+            for field in ALUM_HEADER_FIELDS:
+                if field not in header_row:
+                    raise AlumImportException(f"Unable to find column header {field}")
+        else:
+            raise AlumImportException("Unable to find the header row")
+
+        alumni = [
+            Alum(
+                learner_email=row[ALUM_LEARNER_EMAIL],
+                bootcamp_name=row[ALUM_BOOTCAMP_NAME],
+                bootcamp_run_title=row[ALUM_BOOTCAMP_RUN_TITLE],
+                bootcamp_start_date=row[ALUM_BOOTCAMP_START_DATE],
+                bootcamp_end_date=row[ALUM_BOOTCAMP_END_DATE],
+            )
+            for row in reader
+        ]
+
+        return alumni
+
+
+def import_alumni(csv_path):
+    """
+    Import alum from the csv file
+
+    Args:
+        csv_path (str or Path): Path to a csv file
+    """
+    alumni = parse_alumni_csv(csv_path)
+
+    with transaction.atomic():
+        # transaction is here so, if there is a missing bootcamp and we error,
+        # make sure not to not create the user as well
+
+        for alum in alumni:
+            try:
+                import_alum(alum)
+            except:
+                raise AlumImportException(
+                    f"Error while importing row for user={alum.learner_email} bootcamp={alum.bootcamp_name} run={alum.bootcamp_run_title}"
+                )
