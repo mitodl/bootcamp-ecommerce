@@ -60,7 +60,9 @@ class BootcampRun(models.Model):
     run_key = models.IntegerField(unique=True, db_index=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
-    bootcamp_run_id = models.CharField(null=True, unique=True, max_length=255)
+    bootcamp_run_id = models.CharField(
+        null=True, unique=True, blank=True, max_length=255
+    )
     novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)
 
     @property
