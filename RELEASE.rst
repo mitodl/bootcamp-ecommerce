@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.72.0
+Version 0.72.0 (Released March 25, 2021)
 --------------
 
 - Upgrade caniuse-lite to fix breaking JS tests (#1177)
