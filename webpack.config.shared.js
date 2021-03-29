@@ -4,11 +4,11 @@ const webpack = require("webpack")
 module.exports = {
   config: {
     entry: {
-      root: ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/root"],
-      header: ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/header"],
+      root:          ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/root"],
+      header:        ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/header"],
       sentry_client: './static/js/entry/sentry_client.js',
-      style: "./static/js/entry/style",
-      third_party:  "./static/js/entry/third-party",
+      style:         "./static/js/entry/style",
+      third_party:   "./static/js/entry/third-party",
     },
     module: {
       rules: [
