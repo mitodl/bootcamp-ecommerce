@@ -8,7 +8,7 @@ const { config, babelSharedLoader } = require(path.resolve(
 
 const prodBabelConfig = Object.assign({}, babelSharedLoader)
 
-prodBabelConfig.query.plugins.push(
+prodBabelConfig.options.plugins.push(
   "@babel/plugin-transform-react-constant-elements",
   "@babel/plugin-transform-react-inline-elements"
 )
