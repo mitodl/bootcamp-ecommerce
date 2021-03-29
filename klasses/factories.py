@@ -1,6 +1,7 @@
 """
 Factories for bootcamp models
 """
+import random
 from factory import Faker, Sequence, SubFactory, LazyAttribute
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyDecimal, FuzzyText
@@ -36,6 +37,14 @@ class BootcampRunFactory(DjangoModelFactory):
     )
     novoed_course_stub = LazyAttribute(
         lambda bootcamp_run: "-".join(bootcamp_run.title.lower().split(" "))[0:20]
+    )
+    bootcamp_run_id = LazyAttribute(
+        lambda bootcamp_run: "bootcamp-v1:{type}+{topic}-{format}+R{run}".format(
+            type=random.choice(["public", "private"]),
+            topic="".join([word[0] for word in bootcamp_run.title.split()]).upper(),
+            format=random.choice(["ol", "f2f"]),
+            run=bootcamp_run.run_key,
+        )[0:255]
     )
 
     class Meta:

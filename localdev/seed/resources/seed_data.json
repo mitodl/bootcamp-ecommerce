@@ -5,6 +5,7 @@
       "[runs]": [
         {
           "title": "Single Variable Calculus Run 1",
+          "bootcamp_run_id": "bootcamp-v1:public+SVCR-ol+R1",
           "_dates": "current",
           "[installments]": [
             {
@@ -14,6 +15,7 @@
         },
         {
           "title": "Single Variable Calculus Run 2",
+          "bootcamp_run_id": "bootcamp-v1:public+SVCR-ol+R2",
           "_dates": "future",
           "[installments]": [
             {
@@ -33,6 +35,7 @@
       "[runs]": [
         {
           "title": "Multivariable Calculus Run 1",
+          "bootcamp_run_id": "bootcamp-v1:private+MCR-f2f+R1",
           "_dates": "current",
           "[installments]": [
             {
@@ -42,6 +45,7 @@
         },
         {
           "title": "Multivariable Calculus Run 2",
+          "bootcamp_run_id": "bootcamp-v1:private+MCR-f2f+R2",
           "_dates": "future",
           "[installments]": [
             {
@@ -51,6 +55,7 @@
         },
         {
           "title": "Multivariable Calculus Run 3",
+          "bootcamp_run_id": "bootcamp-v1:private+MCR-f2f+R3",
           "_dates": "future",
           "[installments]": [
             {
@@ -70,6 +75,7 @@
       "[runs]": [
         {
           "title": "Differential Equations Run 1",
+          "bootcamp_run_id": "bootcamp-v1:public+DER-f2f+R1",
           "_dates": "past",
           "[installments]": [
             {
@@ -85,6 +91,7 @@
         },
         {
           "title": "Differential Equations Run 2",
+          "bootcamp_run_id": "bootcamp-v1:public+DER-f2f+R2",
           "_dates": "future",
           "[installments]": [
             {

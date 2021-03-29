@@ -22,7 +22,7 @@ class HubspotProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BootcampRun
-        fields = ["title"]
+        fields = ["title", "bootcamp_run_id"]
 
 
 class HubspotDealSerializer(serializers.ModelSerializer):
