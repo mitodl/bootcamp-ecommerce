@@ -4,6 +4,7 @@
 .*.git/.*
 .*/staticfiles/.*
 .*/static/bundles/.*
+.*/node_modules/webpack-cli/.*
 
 [include]
 ./static/js
