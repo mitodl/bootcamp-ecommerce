@@ -51,7 +51,7 @@ module.exports = {
       path.resolve(__dirname, "node_modules/waait")
     ],
     loader:  "babel-loader",
-    query:   {
+    options:   {
       presets: [
         ["@babel/preset-env", { modules: false }],
         "@babel/preset-react",
