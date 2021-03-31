@@ -150,6 +150,25 @@ def test_get_or_create_bootcamp_application(mocker):
     assert created is False
 
 
+def test_get_or_create_bootcamp_application_for_alumni():
+    """
+    get or create bootcamp application for alumni
+    """
+    user = UserFactory.create()
+    user.profile.can_skip_application_steps = True
+    user.profile.save()
+    bootcamp_run = BootcampRunFactory.create()
+    bootcamp_run.allows_skipped_steps = True
+    bootcamp_run.save()
+    bootcamp_app, created = get_or_create_bootcamp_application(
+        bootcamp_run_id=bootcamp_run.id, user=user
+    )
+    assert bootcamp_app.bootcamp_run == bootcamp_run
+    assert bootcamp_app.user == user
+    assert bootcamp_app.state == AppStates.AWAITING_PAYMENT.value
+    assert created is True
+
+
 def test_get_required_submission_type(awaiting_submission_app):
     """ Test that get_required_submission_type returns the correct submission type"""
 

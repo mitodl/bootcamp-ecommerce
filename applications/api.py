@@ -43,7 +43,11 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
             bootcamp_app.save()
 
     if created:
-        tasks.populate_interviews_in_jobma.delay(bootcamp_app.id)
+        if bootcamp_app.is_eligible_to_skip_steps:
+            bootcamp_app.skip_application_steps()
+            bootcamp_app.save()
+        else:
+            tasks.populate_interviews_in_jobma.delay(bootcamp_app.id)
 
     return bootcamp_app, created
 

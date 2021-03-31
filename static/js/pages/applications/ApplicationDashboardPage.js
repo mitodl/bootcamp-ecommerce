@@ -1,6 +1,6 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
+import React, { Fragment } from "react"
 import { compose } from "redux"
 import { connect } from "react-redux"
 import { requestAsync } from "redux-query"
@@ -418,10 +418,20 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     if (!application.bootcamp_run.is_payable) {
       paymentReady = false
     } else {
-      // If there are no submissions required for this application, payment should be ready after the resume
-      // requirement is fulfilled. Otherwise, it should only be ready if the last submission was approved.
-      paymentReady =
-        submissionApproved === undefined ? resumeFulfilled : submissionApproved
+      if (
+        currentUser.profile &&
+        currentUser.profile.can_skip_application_steps === true &&
+        application.bootcamp_run.allows_skipped_steps === true
+      ) {
+        paymentReady = true
+      } else {
+        // If there are no submissions required for this application, payment should be ready after the resume
+        // requirement is fulfilled. Otherwise, it should only be ready if the last submission was approved.
+        paymentReady =
+          submissionApproved === undefined ?
+            resumeFulfilled :
+            submissionApproved
+      }
     }
 
     const paymentRow = (
@@ -445,9 +455,15 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
 
     return (
       <div className="p-3 mt-3 application-detail">
-        {profileRow}
-        {resumeRow}
-        {submissionStepRows}
+        {currentUser.profile &&
+        currentUser.profile.can_skip_application_steps === true &&
+        application.bootcamp_run.allows_skipped_steps === true ? null : (
+            <Fragment>
+              {profileRow}
+              {resumeRow}
+              {submissionStepRows}
+            </Fragment>
+          )}
         {paymentRow}
         {bootcampStartRow}
       </div>

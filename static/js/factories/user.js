@@ -25,18 +25,19 @@ export const makeUser = (username: ?string): LoggedInUser => ({
   created_on:       casual.moment.format(),
   updated_on:       casual.moment.format(),
   profile:          {
-    name:              casual.full_name,
-    gender:            "f",
-    birth_year:        1980,
-    company:           casual.company_name,
-    company_size:      99,
-    industry:          "Education",
-    job_title:         casual.word,
-    job_function:      "Administrative",
-    years_experience:  20,
-    highest_education: "Doctorate",
-    is_complete:       true,
-    updated_on:        casual.moment.format()
+    name:                       casual.full_name,
+    gender:                     "f",
+    birth_year:                 1980,
+    company:                    casual.company_name,
+    company_size:               99,
+    industry:                   "Education",
+    job_title:                  casual.word,
+    job_function:               "Administrative",
+    years_experience:           20,
+    highest_education:          "Doctorate",
+    is_complete:                true,
+    updated_on:                 casual.moment.format(),
+    can_skip_application_steps: casual.boolean
   },
   legal_address: {
     street_address:     [casual.street],
@@ -58,6 +59,23 @@ export const makeCompleteUser = (username: ?string): LoggedInUser => {
   fakeUser.profile.updated_on = moment().format()
   // $FlowFixMe: Profile can't be undefined
   fakeUser.profile.is_complete = true
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.can_skip_application_steps = true
+  // $FlowFixMe: LegalAddress can't be undefined
+  fakeUser.legal_address.is_complete = true
+  return fakeUser
+}
+
+export const makeCompleteAlumniUser = (username: ?string): LoggedInUser => {
+  const fakeUser = makeUser(username)
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.name = moment().format()
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.updated_on = moment().format()
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.is_complete = true
+  // $FlowFixMe: Profile can't be undefined
+  fakeUser.profile.can_skip_application_steps = true
   // $FlowFixMe: LegalAddress can't be undefined
   fakeUser.legal_address.is_complete = true
   return fakeUser

@@ -29,6 +29,7 @@ import {
 } from "../../factories/application"
 import {
   makeCompleteUser,
+  makeCompleteAlumniUser,
   makeIncompleteUser,
   makeUser,
   makeUserIncompleteAddress
@@ -195,6 +196,7 @@ describe("ApplicationDashboardPage", () => {
     beforeEach(() => {
       openDrawerStub = sinon.stub()
       application = makeApplication()
+      application.bootcamp_run.allows_skipped_steps = false
       applicationDetail = makeApplicationDetail()
       applicationDetail.id = application.id
       applicationDetail.run_application_steps = [
@@ -383,6 +385,50 @@ describe("ApplicationDashboardPage", () => {
           openDrawer:        openDrawerStub,
           applicationDetail: newApplicationDetail
         })
+      })
+    })
+    ;[
+      [false, "normal user"],
+      [true, "alumni user"]
+    ].forEach(([isAlumni, desc]) => {
+      it(`show application steps for the ${desc}`, async () => {
+        const newApplication = Object.assign({}, application)
+        newApplication.bootcamp_run.allows_skipped_steps = isAlumni ?
+          true :
+          false
+
+        let newApplicationDetail = Object.assign({}, applicationDetail)
+        newApplicationDetail = setToAwaitingPayment(newApplicationDetail)
+        newApplicationDetail.user.profile.can_skip_application_steps = isAlumni ?
+          true :
+          false
+        const props = {
+          ...defaultProps,
+          applications:         [newApplication],
+          allApplicationDetail: {
+            [application.id]: newApplicationDetail
+          },
+          currentUser: isAlumni ? makeCompleteAlumniUser() : makeCompleteUser()
+        }
+
+        const wrapper = await renderExpanded(props)
+        const profileDetail = wrapper.find("ProfileDetail")
+        const resumeDetail = wrapper.find("ResumeDetail")
+        const videoInterviewDetail = wrapper.find("VideoInterviewDetail")
+        const reviewDetail = wrapper.find("ReviewDetail")
+        if (isAlumni) {
+          assert.isFalse(profileDetail.exists())
+          assert.isFalse(resumeDetail.exists())
+          assert.isFalse(videoInterviewDetail.exists())
+          assert.isFalse(reviewDetail.exists())
+        } else {
+          assert.isTrue(profileDetail.exists())
+          assert.isTrue(resumeDetail.exists())
+          assert.isTrue(videoInterviewDetail.exists())
+          assert.isTrue(reviewDetail.exists())
+        }
+        const paymentDetail = wrapper.find("PaymentDetail")
+        assert.isTrue(paymentDetail.exists())
       })
     })
   })

@@ -65,7 +65,8 @@ export type Profile = {
   company_size: ?number,
   highest_education: ?string,
   is_complete: boolean,
-  updated_on: string
+  updated_on: string,
+  can_skip_application_steps: boolean,
 }
 
 export type User = {

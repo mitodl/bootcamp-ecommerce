@@ -27,7 +27,7 @@ from applications.constants import (
     VALID_LETTER_TYPE_CHOICES,
 )
 from applications.constants import INTEGRATION_PREFIX
-from applications.utils import validate_file_extension
+from applications.utils import validate_file_extension, check_eligibility_to_skip_steps
 from ecommerce.models import Order
 from jobma.models import Interview
 from klasses.api import deactivate_run_enrollment
@@ -298,6 +298,25 @@ class BootcampApplication(TimestampedModel):
             bootcamp_run=self.bootcamp_run,
             change_status=ENROLL_CHANGE_STATUS_REFUNDED,
         )
+
+    @property
+    def is_eligible_to_skip_steps(self):
+        """check if a user is alumni and eligible to skip"""
+        return check_eligibility_to_skip_steps(self)
+
+    @transition(
+        field=state,
+        source=[
+            AppStates.AWAITING_PROFILE_COMPLETION.value,
+            AppStates.AWAITING_RESUME.value,
+            AppStates.AWAITING_USER_SUBMISSIONS.value,
+            AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        ],
+        target=AppStates.AWAITING_PAYMENT.value,
+        conditions=[check_eligibility_to_skip_steps],
+    )
+    def skip_application_steps(self):
+        """ skip application steps for alumni """
 
     def all_application_steps_submitted(self):
         """

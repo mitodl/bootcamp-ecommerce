@@ -191,6 +191,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "job_function",
             "years_experience",
             "highest_education",
+            "can_skip_application_steps",
             "created_on",
             "updated_on",
         )
@@ -222,6 +223,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "job_function",
             "years_experience",
             "highest_education",
+            "can_skip_application_steps",
             "is_complete",
             "updated_on",
         )
