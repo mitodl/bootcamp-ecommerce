@@ -316,7 +316,8 @@ def test_import_alumni_with_enrollment(caplog):
     assert enrollment
     assert enrollment.user == user
     assert enrollment.bootcamp_run == run
-    assert enrollment.user_certificate_is_blocked
+    assert enrollment.user.profile.can_skip_application_steps
+    assert enrollment.user_certificate_is_blocked is False
 
     # check for alreading existing enrollments
     import_alum(alum)
