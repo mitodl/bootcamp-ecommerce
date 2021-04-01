@@ -207,6 +207,19 @@ CUSTOM_ECOMMERCE_PROPERTIES = {
             },
         ],
     },
+    "products": {
+        "groups": [],
+        "properties": [
+            {
+                "description": "Bootcamp Run ID",
+                "fieldType": "text",
+                "groupName": "productinformation",
+                "label": "Bootcamp Run ID",
+                "name": "bootcamp_run_id",
+                "type": "string",
+            }
+        ],
+    },
 }
 
 HUBSPOT_ECOMMERCE_SETTINGS = {
@@ -217,7 +230,12 @@ HUBSPOT_ECOMMERCE_SETTINGS = {
                 "propertyName": "title",
                 "targetHubspotProperty": "name",
                 "dataType": "STRING",
-            }
+            },
+            {
+                "propertyName": "bootcamp_run_id",
+                "targetHubspotProperty": "bootcamp_run_id",
+                "dataType": "STRING",
+            },
         ]
     },
     "dealSyncSettings": {
