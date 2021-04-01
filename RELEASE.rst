@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.73.0
+Version 0.73.0 (Released April 01, 2021)
 --------------
 
 - Add bootcamp_run_id to BootcampRun model (#1178)
