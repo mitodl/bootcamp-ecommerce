@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.73.1 (Released April 02, 2021)
+--------------
+
+- Adding bootcmp_run_id to products mapping and product information group in hubspot (#1189)
+- Bump y18n from 4.0.0 to 4.0.1 (#1186)
+
 Version 0.73.0 (Released April 01, 2021)
 --------------
 
