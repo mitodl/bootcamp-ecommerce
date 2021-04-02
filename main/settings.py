@@ -552,7 +552,7 @@ LOG_LEVEL = get_string(
     "BOOTCAMP_LOG_LEVEL", "INFO", description="The logging level for the application"
 )
 DJANGO_LOG_LEVEL = get_string(
-    "DJANGO_LOG_LEVEL", "DEBUG", description="The log level for Django"
+    "DJANGO_LOG_LEVEL", "INFO", description="The log level for Django"
 )
 ES_LOG_LEVEL = get_string(
     "ES_LOG_LEVEL", "INFO", description="The log level for elasticsearch"
