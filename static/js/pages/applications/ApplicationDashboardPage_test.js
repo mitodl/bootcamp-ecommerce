@@ -416,17 +416,10 @@ describe("ApplicationDashboardPage", () => {
         const resumeDetail = wrapper.find("ResumeDetail")
         const videoInterviewDetail = wrapper.find("VideoInterviewDetail")
         const reviewDetail = wrapper.find("ReviewDetail")
-        if (isAlumni) {
-          assert.isFalse(profileDetail.exists())
-          assert.isFalse(resumeDetail.exists())
-          assert.isFalse(videoInterviewDetail.exists())
-          assert.isFalse(reviewDetail.exists())
-        } else {
-          assert.isTrue(profileDetail.exists())
-          assert.isTrue(resumeDetail.exists())
-          assert.isTrue(videoInterviewDetail.exists())
-          assert.isTrue(reviewDetail.exists())
-        }
+        assert.equal(profileDetail.exists(), !isAlumni)
+        assert.equal(resumeDetail.exists(), !isAlumni)
+        assert.equal(videoInterviewDetail.exists(), !isAlumni)
+        assert.equal(reviewDetail.exists(), !isAlumni)
         const paymentDetail = wrapper.find("PaymentDetail")
         assert.isTrue(paymentDetail.exists())
       })

@@ -4,6 +4,7 @@ import * as R from "ramda"
 import { ORDER_STATUS_FAILED, ORDER_STATUS_FULFILLED } from "../constants"
 import { isErrorResponse } from "../util/util"
 
+import type { User } from "../flow/authTypes"
 import type { Application, ApplicationDetail } from "../flow/applicationTypes"
 import type { HttpResponse } from "../flow/httpTypes"
 import type { OrderResponse } from "../flow/ecommerceTypes"
@@ -51,3 +52,11 @@ export const isNovoEdEnrolled = (application: Application): boolean =>
   !!SETTINGS.novoed_login_url &&
   !!application.enrollment &&
   !!application.enrollment.novoed_sync_date
+
+export const isEligibleToSkipSteps = (
+  currentUser: User,
+  application: Application
+): boolean =>
+  currentUser.profile &&
+  currentUser.profile.can_skip_application_steps === true &&
+  application.bootcamp_run.allows_skipped_steps === true

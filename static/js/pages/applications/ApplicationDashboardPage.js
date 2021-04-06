@@ -32,7 +32,8 @@ import { openDrawer } from "../../reducers/drawer"
 import {
   findAppByRunTitle,
   isNovoEdEnrolled,
-  isStatusPollingFinished
+  isStatusPollingFinished,
+  isEligibleToSkipSteps
 } from "../../lib/applicationApi"
 import queries from "../../lib/queries"
 import { isQueryInErrorState } from "../../lib/redux_query"
@@ -418,11 +419,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     if (!application.bootcamp_run.is_payable) {
       paymentReady = false
     } else {
-      if (
-        currentUser.profile &&
-        currentUser.profile.can_skip_application_steps === true &&
-        application.bootcamp_run.allows_skipped_steps === true
-      ) {
+      if (isEligibleToSkipSteps(currentUser, application)) {
         paymentReady = true
       } else {
         // If there are no submissions required for this application, payment should be ready after the resume
@@ -455,15 +452,13 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
 
     return (
       <div className="p-3 mt-3 application-detail">
-        {currentUser.profile &&
-        currentUser.profile.can_skip_application_steps === true &&
-        application.bootcamp_run.allows_skipped_steps === true ? null : (
-            <Fragment>
-              {profileRow}
-              {resumeRow}
-              {submissionStepRows}
-            </Fragment>
-          )}
+        {!isEligibleToSkipSteps(currentUser, application) && (
+          <Fragment>
+            {profileRow}
+            {resumeRow}
+            {submissionStepRows}
+          </Fragment>
+        )}
         {paymentRow}
         {bootcampStartRow}
       </div>
