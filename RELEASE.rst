@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.74.0
+Version 0.74.0 (Released April 06, 2021)
 --------------
 
 - Move the django logging level from DEBUG to INFO (#1192)
