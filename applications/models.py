@@ -299,11 +299,6 @@ class BootcampApplication(TimestampedModel):
             change_status=ENROLL_CHANGE_STATUS_REFUNDED,
         )
 
-    @property
-    def is_eligible_to_skip_steps(self):
-        """check if a user is alumni and eligible to skip"""
-        return check_eligibility_to_skip_steps(self)
-
     @transition(
         field=state,
         source=[

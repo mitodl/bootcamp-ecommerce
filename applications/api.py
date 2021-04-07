@@ -14,6 +14,7 @@ from applications.models import (
     BootcampRunApplicationStep,
     VideoInterviewSubmission,
 )
+from applications.utils import check_eligibility_to_skip_steps
 from applications import tasks
 from jobma.api import create_interview_in_jobma
 from jobma.models import Interview, Job
@@ -43,7 +44,7 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
             bootcamp_app.save()
 
     if created:
-        if bootcamp_app.is_eligible_to_skip_steps:
+        if check_eligibility_to_skip_steps(bootcamp_app):
             bootcamp_app.skip_application_steps()
             bootcamp_app.save()
         else:
