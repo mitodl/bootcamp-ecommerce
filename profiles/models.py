@@ -183,6 +183,7 @@ class Profile(TimestampedModel):
     highest_education = models.CharField(
         max_length=60, blank=True, default="", choices=HIGHEST_EDUCATION_CHOICES
     )
+    can_skip_application_steps = models.BooleanField(default=False)
 
     @property
     def is_complete(self):

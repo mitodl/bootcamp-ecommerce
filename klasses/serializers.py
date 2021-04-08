@@ -57,6 +57,7 @@ class BootcampRunSerializer(serializers.ModelSerializer):
             "is_payable",
             "installments",
             "bootcamp_run_id",
+            "allows_skipped_steps",
         ]
 
 

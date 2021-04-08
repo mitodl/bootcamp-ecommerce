@@ -64,6 +64,7 @@ class BootcampRun(models.Model):
         null=True, unique=True, blank=True, max_length=255
     )
     novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)
+    allows_skipped_steps = models.BooleanField(default=False)
 
     @property
     def page(self):
