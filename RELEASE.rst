@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.75.0
+Version 0.75.0 (Released April 12, 2021)
 --------------
 
 - set can_skip_application_steps to True and unblock the certificate for the alumni (#1191)
