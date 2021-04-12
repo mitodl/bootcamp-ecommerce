@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.74.1
+Version 0.74.1 (Released April 12, 2021)
 --------------
 
 - Allow alumni to skip application steps (#1187)
