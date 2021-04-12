@@ -305,7 +305,7 @@ def import_alum(alum):
         from profiles.models import Profile, LegalAddress
 
         LegalAddress.objects.create(user=user)
-        Profile.objects.create(user=user)
+        Profile.objects.create(user=user, can_skip_application_steps=True)
         user.username = usernameify("", user.email)
         user.save()
 
@@ -327,12 +327,10 @@ def import_alum(alum):
         end_date__lte=bootcamp_end_date + timedelta(days=1),
     )
 
-    enrollment, created = BootcampRunEnrollment.objects.get_or_create(
+    _, created = BootcampRunEnrollment.objects.get_or_create(
         user=user, bootcamp_run=bootcamp_run
     )
     if created:
-        enrollment.user_certificate_is_blocked = True
-        enrollment.save()
         log.info(
             "User=%s successfully enrolled in bootcamp run %s",
             alum.learner_email,
