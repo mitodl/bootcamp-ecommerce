@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.75.1
+Version 0.75.1 (Released April 15, 2021)
 --------------
 
 - make import alumni case insensitive (#1202)
