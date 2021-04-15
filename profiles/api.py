@@ -296,7 +296,7 @@ def import_alum(alum):
         alum (Alum namedtuple)
     """
     try:
-        user = User.objects.get(email=alum.learner_email)
+        user = User.objects.get(email__iexact=alum.learner_email)
     except User.DoesNotExist:
         user = User.objects.create(
             email=alum.learner_email, username=alum.learner_email
