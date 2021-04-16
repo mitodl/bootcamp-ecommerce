@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.75.2
+--------------
+
+- Allow users who have paid for a bootcamp (in full) to skip application steps (#1206)
+
 Version 0.75.1 (Released April 15, 2021)
 --------------
 
