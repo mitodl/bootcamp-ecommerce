@@ -8,7 +8,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
-from klasses.factories import BootcampRunFactory
+from klasses.factories import BootcampRunFactory, BootcampRunEnrollmentFactory
 from klasses.serializers import BootcampRunSerializer
 from main.utils import now_in_utc
 
@@ -73,6 +73,9 @@ def test_bootcamp_runs(client, user, runs, is_alumni, user_has_bought_one_bootca
         application = runs.submitted_application_run.applications.first()
         application.state = AppStates.COMPLETE.value
         application.save()
+        BootcampRunEnrollmentFactory.create(
+            bootcamp_run=application.bootcamp_run, user=user
+        )
         all_runs.insert(1, runs.alumni_run)
         available_runs.insert(1, runs.alumni_run)
 
