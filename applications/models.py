@@ -262,6 +262,9 @@ class BootcampApplication(TimestampedModel):
             bootcamp_run=self.bootcamp_run,
             defaults={"active": True, "change_status": None},
         )
+        self.user.profile.can_skip_application_steps = True
+        self.user.profile.save()
+
         if (
             features.is_enabled(features.NOVOED_INTEGRATION)
             and self.bootcamp_run.novoed_course_stub

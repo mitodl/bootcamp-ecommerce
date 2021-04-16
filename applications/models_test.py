@@ -138,12 +138,14 @@ def test_bootcamp_application_complete(settings, patched_novoed_tasks):
         state=AppStates.AWAITING_PAYMENT.value,
         bootcamp_run__novoed_course_stub=novoed_course_stub,
     )
+    assert not bootcamp_application.user.profile.can_skip_application_steps
     bootcamp_application.complete()
     assert BootcampRunEnrollment.objects.filter(
         user=bootcamp_application.user,
         bootcamp_run=bootcamp_application.bootcamp_run,
         active=True,
     ).exists()
+    assert bootcamp_application.user.profile.can_skip_application_steps
     patched_novoed_tasks.enroll_users_in_novoed_course.delay.assert_called_once_with(
         user_ids=[bootcamp_application.user.id], novoed_course_stub=novoed_course_stub
     )
