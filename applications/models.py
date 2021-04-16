@@ -266,8 +266,6 @@ class BootcampApplication(TimestampedModel):
             self.user.profile.can_skip_application_steps = True
             self.user.profile.save()
         except ObjectDoesNotExist:
-            # TODO: it's a quick fix, need to fix that
-            #  profile does not exist against users in some tests
             pass
 
         if (
