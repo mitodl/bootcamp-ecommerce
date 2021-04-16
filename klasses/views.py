@@ -4,7 +4,6 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
-from applications.constants import AppStates
 from klasses.serializers import BootcampRunSerializer
 from klasses.models import BootcampRun, BootcampRunEnrollment
 
