@@ -4,7 +4,7 @@ from uuid import uuid4
 from functools import reduce
 from operator import or_
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -262,9 +262,13 @@ class BootcampApplication(TimestampedModel):
             bootcamp_run=self.bootcamp_run,
             defaults={"active": True, "change_status": None},
         )
-        if self.user.profile:
+        try:
             self.user.profile.can_skip_application_steps = True
             self.user.profile.save()
+        except ObjectDoesNotExist:
+            # TODO: it's a quick fix, need to fix that
+            #  profile does not exist against users in some tests
+            pass
 
         if (
             features.is_enabled(features.NOVOED_INTEGRATION)
