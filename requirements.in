@@ -42,3 +42,4 @@ uwsgi
 wagtail==2.9.3
 zeep==3.4.0
 Pillow==7.1.0
+user-util==0.1.5
