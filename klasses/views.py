@@ -17,7 +17,9 @@ class BootcampViewSet(ListModelMixin, GenericViewSet):
     def get_queryset(self):
         """Make a queryset which optionally shows what runs are available for enrollment"""
         user = self.request.user
-        has_enrollments = BootcampRunEnrollment.objects.filter(user=user).exists()
+        has_enrollments = BootcampRunEnrollment.objects.filter(
+            user=user, active=True
+        ).exists()
         queryset = BootcampRun.objects.select_related("bootcamp")
         if not user.profile.can_skip_application_steps and not has_enrollments:
             queryset = queryset.filter(allows_skipped_steps=False)
