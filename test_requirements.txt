@@ -10,7 +10,7 @@ factory_boy==2.12.0
 faker==4.1.0
 nplusone==1.0.0
 pdbpp==0.10.2
-pip-tools==5.1.2
+pip-tools==6.0.1
 pylint==2.5.3
 pylint-django==2.1.0
 pytest==4.6
