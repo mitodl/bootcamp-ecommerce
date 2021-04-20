@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.76.0
+Version 0.76.0 (Released April 20, 2021)
 --------------
 
 - Bump django-debug-toolbar from 1.11 to 1.11.1 (#1211)
