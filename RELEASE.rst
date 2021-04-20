@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.76.0
+--------------
+
+- Bump django-debug-toolbar from 1.11 to 1.11.1 (#1211)
+- Bump ssri from 6.0.1 to 6.0.2 (#1212)
+- Hide bootcamps with allow_skip_steps from users who are ineligible (#1196)
+- deps: Updrage pip-tools, lxml and pygments (#1200)
+
 Version 0.75.2 (Released April 16, 2021)
 --------------
 
