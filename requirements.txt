@@ -14,6 +14,8 @@ asgiref==3.3.4
     # via djoser
 attrs==19.3.0
     # via zeep
+backcall==0.2.0
+    # via ipython
 beautifulsoup4==4.8.2
     # via wagtail
 billiard==3.6.3.0
@@ -166,7 +168,7 @@ inflection==0.3.1
     # via dynamic-rest
 ipython-genutils==0.2.0
     # via traitlets
-ipython==6.1.0
+ipython==7.16.1
     # via -r requirements.in
 isodate==0.6.0
     # via zeep
@@ -192,7 +194,7 @@ lxml==4.6.3
     #   zeep
 markupsafe==1.1.1
     # via jinja2
-newrelic==2.86.3.70
+newrelic==6.2.0.156
     # via -r requirements.in
 oauthlib==2.0.2
     # via
@@ -208,9 +210,9 @@ pillow==7.1.0
     #   wagtail
 premailer==3.7.0
     # via -r requirements.in
-prompt-toolkit==1.0.14
+prompt-toolkit==3.0.18
     # via ipython
-psycopg2==2.7.3.2
+psycopg2==2.8.6
     # via
     #   -r requirements.in
     #   django-server-status
@@ -276,8 +278,6 @@ s3transfer==0.3.3
     # via boto3
 sentry-sdk==0.14.3
     # via -r requirements.in
-simplegeneric==0.8.1
-    # via ipython
 six==1.15.0
     # via
     #   django-anymail
@@ -287,7 +287,6 @@ six==1.15.0
     #   html5lib
     #   isodate
     #   l18n
-    #   prompt-toolkit
     #   pynacl
     #   pyopenssl
     #   pysaml2
