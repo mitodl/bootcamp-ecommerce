@@ -16,12 +16,12 @@ django-mathfilters==1.0.0
 django-redis==4.7.0
 django-server-status==0.5.0
 django-webpack-loader==0.5.0
-djangorestframework==3.9.2
+djangorestframework==3.11.2
 djangorestframework-serializer-extensions==2.0.0
 # Using specific Git commit for this lib until they release their support for TZ-aware dates
 git+git://github.com/OTA-Insight/djangosaml2idp.git@e12319949dc4911657d0fff91c93317fdef691d4#egg=djangosaml2idp
-djoser==1.7.0
-dynamic-rest==1.9.6
+djoser==2.1.0
+dynamic-rest==2.0.0
 html5lib==0.999999999
 django-storages==1.9.1
 ipython
@@ -35,7 +35,7 @@ pytz
 redis==3.2.0
 requests>=2.20
 sentry-sdk==0.14.3
-social-auth-app-django==2.1.0
+social-auth-app-django==4.0.0
 static3==0.5.1
 urllib3>=1.24.2
 uwsgi
