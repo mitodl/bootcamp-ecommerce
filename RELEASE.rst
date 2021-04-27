@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.77.0
+--------------
+
+- Upgrade djoser==2.1.0, djangoreseframework==3.11.2, social-auth-app-django==4.0.0 and dynamic-rest==2.0.0 (#1216)
+
 Version 0.76.0 (Released April 20, 2021)
 --------------
 
