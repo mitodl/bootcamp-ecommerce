@@ -2,7 +2,6 @@
 from urllib.parse import urlencode
 
 from django.db import transaction
-from rest_framework.request import Request
 from social_django.strategy import DjangoStrategy
 
 from main import features
@@ -53,14 +52,6 @@ class DjangoRestFrameworkStrategy(BootcampDjangoStrategy):
     def is_api_request(self):
         """Returns True if the request is being executed in an API context"""
         return True
-
-    def clean_authenticate_args(self, *args, **kwargs):
-        """Cleanup request argument if present, which is passed to authenticate as for Django 1.11"""
-        # this is similar to what DjangoStrategy does, but is specific to DRF's Request type
-        if len(args) > 0 and isinstance(args[0], Request):
-            kwargs["request"], args = args[0], args[1:]
-
-        return super().clean_authenticate_args(*args, **kwargs)
 
     def request_data(self, merge=True):
         """Returns the request data"""
