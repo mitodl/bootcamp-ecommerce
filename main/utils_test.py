@@ -20,6 +20,7 @@ from main.utils import (
     first_matching_item,
     is_near_now,
     get_error_response_summary,
+    has_equal_properties,
     unique,
     unique_ignore_case,
     max_or_none,
@@ -329,3 +330,15 @@ def test_format_month_day():
     assert format_month_day(dt) == "Jan 1"
     assert format_month_day(dt, month_fmt="%b") == "Jan 1"
     assert format_month_day(dt, month_fmt="%B") == "January 1"
+
+
+def test_has_equal_properties():
+    """
+    Assert that has_equal_properties returns True if an object has equivalent properties to a given dict
+    """
+    obj = SimpleNamespace(a=1, b=2, c=3)
+    assert has_equal_properties(obj, {}) is True
+    assert has_equal_properties(obj, dict(a=1, b=2)) is True
+    assert has_equal_properties(obj, dict(a=1, b=2, c=3)) is True
+    assert has_equal_properties(obj, dict(a=2)) is False
+    assert has_equal_properties(obj, dict(d=4)) is False

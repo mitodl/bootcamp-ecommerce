@@ -8,8 +8,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
-from main.models import TimestampedModel
-from main.utils import now_in_utc, format_month_day
+from main.models import TimestampedModel, AuditModel, AuditableModel
+from main.utils import now_in_utc, format_month_day, serialize_model_object
 from klasses.constants import (
     ApplicationSource,
     INTEGRATION_PREFIX_PRODUCT,
@@ -211,6 +211,18 @@ class BootcampRun(models.Model):
     def __str__(self):
         return self.display_title
 
+    @property
+    def is_not_beyond_enrollment(self):
+        """
+        Checks if the course is not beyond its enrollment period
+
+
+        Returns:
+            boolean: True if enrollment period has begun but not ended
+        """
+        now = now_in_utc()
+        return self.end_date is None or self.end_date > now
+
 
 class Installment(models.Model):
     """
@@ -253,7 +265,7 @@ class PersonalPrice(models.Model):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', price={self.price}"
 
 
-class BootcampRunEnrollment(TimestampedModel):
+class BootcampRunEnrollment(TimestampedModel, AuditableModel):
     """An enrollment in a bootcamp run by a user"""
 
     user = models.ForeignKey(
@@ -280,6 +292,42 @@ class BootcampRunEnrollment(TimestampedModel):
 
     def __str__(self):
         return f"Enrollment for {self.bootcamp_run}"
+
+    def to_dict(self):
+        return {
+            **serialize_model_object(self),
+            "username": self.user.username,
+            "full_name": self.user.profile.name.strip(),
+            "email": self.user.email,
+        }
+
+    @classmethod
+    def get_audit_class(cls):
+        return BootcampRunEnrollmentAudit
+
+    def deactivate_and_save(self, change_status, no_user=False):
+        """Sets an enrollment to inactive, sets the status, and saves"""
+        self.active = False
+        self.change_status = change_status
+        return self.save_and_log(None if no_user else self.user)
+
+    def reactivate_and_save(self, no_user=False):
+        """Sets an enrollment to be active again and saves"""
+        self.active = True
+        self.change_status = None
+        return self.save_and_log(None if no_user else self.user)
+
+
+class BootcampRunEnrollmentAudit(AuditModel):
+    """Audit table for BootcampRunEnrollmentAudit"""
+
+    enrollment = models.ForeignKey(
+        BootcampRunEnrollment, null=True, on_delete=models.PROTECT
+    )
+
+    @classmethod
+    def get_related_field_name(cls):
+        return "enrollment"
 
 
 class BaseCertificate(models.Model):

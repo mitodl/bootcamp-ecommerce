@@ -32,6 +32,20 @@ def is_near_now(time):
     return now - five_seconds < time < now + five_seconds
 
 
+def has_equal_properties(obj, property_dict):
+    """
+    Returns True if the given object has the properties indicated by the keys of the given dict, and the values
+    of those properties match the values of the dict
+    """
+    for field, value in property_dict.items():
+        try:
+            if getattr(obj, field) != value:
+                return False
+        except AttributeError:
+            return False
+    return True
+
+
 def first_or_none(iterable):
     """
     Returns the first item in an iterable, or None if the iterable is empty

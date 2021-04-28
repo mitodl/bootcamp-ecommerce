@@ -5,13 +5,16 @@ import pytest
 from pytz import UTC
 
 from ecommerce.test_utils import create_test_application
+from klasses.constants import ENROLL_CHANGE_STATUS_DEFERRED
 from klasses.factories import (
     InstallmentFactory,
     BootcampRunFactory,
+    BootcampRunEnrollmentFactory,
     PersonalPriceFactory,
     BootcampRunCertificateFactory,
 )
 from main.utils import now_in_utc
+from main.test_utils import format_as_iso8601
 from profiles.factories import ProfileFactory
 
 pytestmark = pytest.mark.django_db
@@ -219,3 +222,100 @@ def test_bootcamp_run_certificate(bootcamp_run, user):
     assert certificate.is_revoked is True
     certificate.unrevoke()
     assert certificate.is_revoked is False
+
+
+@pytest.mark.parametrize("end_days, expected", [[None, True], [1, True], [-1, False]])
+def test_course_run_not_beyond_enrollment(end_days, expected):
+    """
+    Test that CourseRun.is_beyond_enrollment returns the expected boolean value
+    """
+    now = now_in_utc()
+    end_date = None if end_days is None else now + timedelta(days=end_days)
+
+    assert (
+        BootcampRunFactory.create(end_date=end_date).is_not_beyond_enrollment
+        is expected
+    )
+
+
+def test_audit(user):
+    """Test audit table serialization"""
+
+    enrollment = BootcampRunEnrollmentFactory.create()
+    enrollment.save_and_log(user)
+
+    expected = {
+        "active": enrollment.active,
+        "change_status": enrollment.change_status,
+        "created_on": format_as_iso8601(enrollment.created_on),
+        "email": enrollment.user.email,
+        "full_name": enrollment.user.profile.name,
+        "id": enrollment.id,
+        "updated_on": format_as_iso8601(enrollment.updated_on),
+        "user": enrollment.user.id,
+        "username": enrollment.user.username,
+        "bootcamp_run": enrollment.bootcamp_run.id,
+        "novoed_sync_date": enrollment.novoed_sync_date,
+        "user_certificate_is_blocked": enrollment.user_certificate_is_blocked,
+    }
+
+    assert (
+        enrollment.get_audit_class().objects.get(enrollment=enrollment).data_after
+        == expected
+    )
+
+
+def test_get_related_field_name():
+    """Test audit table related_field_name"""
+    assert (
+        BootcampRunEnrollmentFactory._meta.model.get_audit_class().get_related_field_name()
+        == "enrollment"
+    )
+
+
+def test_bootcamp_run_enrollment_to_dict():
+    """Test to_dict method for bootcamp run enrollment"""
+    enrollment = BootcampRunEnrollmentFactory.create()
+
+    expected = {
+        "active": enrollment.active,
+        "change_status": enrollment.change_status,
+        "created_on": format_as_iso8601(enrollment.created_on),
+        "email": enrollment.user.email,
+        "full_name": enrollment.user.profile.name,
+        "id": enrollment.id,
+        "updated_on": format_as_iso8601(enrollment.updated_on),
+        "user": enrollment.user.id,
+        "username": enrollment.user.username,
+        "bootcamp_run": enrollment.bootcamp_run.id,
+        "novoed_sync_date": enrollment.novoed_sync_date,
+        "user_certificate_is_blocked": enrollment.user_certificate_is_blocked,
+    }
+
+    assert enrollment.to_dict() == expected
+
+
+def test_deactivate_and_save():
+    """Test deactivate_and_save method for bootcamp run enrollment"""
+    enrollment = BootcampRunEnrollmentFactory.create()
+
+    assert enrollment.active
+    assert enrollment.change_status is None
+
+    enrollment.deactivate_and_save(ENROLL_CHANGE_STATUS_DEFERRED)
+
+    assert not enrollment.active
+    assert enrollment.change_status == ENROLL_CHANGE_STATUS_DEFERRED
+
+
+def test_reactivate_and_save():
+    """Test reactivate_and_save method for bootcamp run enrollment"""
+    enrollment = BootcampRunEnrollmentFactory.create(active=False, change_status=None)
+
+    assert not enrollment.active
+    assert enrollment.change_status is None
+
+    enrollment.reactivate_and_save()
+
+    assert enrollment.active
+    assert enrollment.change_status is None
