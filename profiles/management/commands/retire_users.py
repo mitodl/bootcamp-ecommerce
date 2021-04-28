@@ -10,6 +10,7 @@ from django.core.management import BaseCommand, CommandError
 from social_django.models import UserSocialAuth
 
 from user_util import user_util
+from jobma.contants import EXPIRED
 from jobma.models import Interview
 from profiles.api import fetch_users
 
@@ -122,7 +123,7 @@ For multiple users, add arg `--user` for each user i.e:\n
                 log_messages,
             )
 
-            Interview.objects.filter(applicant=user).update(status="expired")
+            Interview.objects.filter(applicant=user).update(status=EXPIRED)
             self.display_messages(
                 f"For user {user}: Interview statuses are expired now.", log_messages
             )
