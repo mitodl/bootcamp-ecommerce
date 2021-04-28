@@ -24,7 +24,7 @@ djoser==2.1.0
 dynamic-rest==2.0.0
 html5lib==0.999999999
 django-storages==1.9.1
-ipython==7.16.1
+ipython==7.22.0
 newrelic==6.2.0.156
 premailer==3.7.0
 psycopg2==2.8.6
