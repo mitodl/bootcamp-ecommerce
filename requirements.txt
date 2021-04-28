@@ -128,7 +128,7 @@ django==2.2.18
     #   wagtail
 djangorestframework-serializer-extensions==2.0.0
     # via -r requirements.in
-djangorestframework-simplejwt==4.4.0
+djangorestframework-simplejwt==4.6.0
     # via djoser
 djangorestframework==3.11.2
     # via
@@ -158,10 +158,6 @@ html5lib==0.999999999
     #   wagtail
 idna==2.7
     # via requests
-importlib-metadata==1.6.0
-    # via
-    #   djoser
-    #   kombu
 importlib-resources==5.1.0
     # via pysaml2
 inflection==0.3.1
@@ -310,8 +306,6 @@ static3==0.5.1
     #   dj-static
 traitlets==4.3.2
     # via ipython
-typing-extensions==3.7.4.3
-    # via asgiref
 unidecode==1.1.1
     # via wagtail
 uritemplate==3.0.1
@@ -343,10 +337,6 @@ xmlschema==1.4.2
     # via pysaml2
 zeep==3.4.0
     # via -r requirements.in
-zipp==3.1.0
-    # via
-    #   importlib-metadata
-    #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
