@@ -3,15 +3,18 @@ API functionality for bootcamps
 """
 import logging
 from datetime import datetime, timedelta
+from traceback import format_exc
 
 import pytz
+from django.core.exceptions import ValidationError
 from django.db.models import Sum
 
 from applications.constants import AppStates
 from ecommerce.models import Line
-from klasses.constants import DATE_RANGE_MONTH_FMT
+from klasses.constants import DATE_RANGE_MONTH_FMT, ENROLL_CHANGE_STATUS_DEFERRED
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
+from main.utils import first_or_none
 from novoed import tasks as novoed_tasks
 
 
@@ -210,3 +213,111 @@ def fetch_bootcamp_run(run_property):
                     run_filters
                 )
             ) from exc
+
+
+def create_run_enrollments(
+    user, runs, order=None
+):
+    """
+    Creates local records of a user's enrollment in bootcamp runs, and attempts to enroll them
+    in edX via API
+
+    Args:
+        user (User): The user to enroll
+        runs (iterable of BootcampRun): The bootcamp runs to enroll in
+        order (ecommerce.models.Order or None): The order associated with these enrollments
+
+    Returns:
+        (list of BootcampRunEnrollment): A list of enrollment objects that were successfully
+            created
+    """
+    successful_enrollments = []
+
+    for run in runs:
+        try:
+            enrollment, created = BootcampRunEnrollment.objects.get_or_create(
+                user=user,
+                run=run,
+                order=order,
+            )
+            if not created and not enrollment.active:
+                enrollment.reactivate_and_save()
+
+            if (
+                features.is_enabled(features.NOVOED_INTEGRATION)
+                and enrollment.bootcamp_run.novoed_course_stub
+            ):
+                novoed_tasks.enroll_users_in_novoed_course.delay(
+                    user_id=enrollment.user.id,
+                    novoed_course_stub=enrollment.bootcamp_run.novoed_course_stub,
+                )
+        except:  # pylint: disable=bare-except
+            log.exception(
+                "Failed to create/update enrollment record (user: %s, run: %s, order: %s)",
+                user,
+                run.bootcamp_run_id,
+                order.id if order else None,
+            )
+        else:
+            successful_enrollments.append(enrollment)
+    return successful_enrollments
+
+
+def defer_enrollment(
+    user,
+    from_bootcamp_run_id,
+    to_bootcamp_run_id,
+    force=False,
+):
+    """
+    Deactivates a user's existing enrollment in one bootcamp run and enrolls the user in another.
+
+    Args:
+        user (User): The enrolled user
+        from_bootcamp_run_id (str): The bootcamp_run_id value of the currently enrolled BootcampRun
+        to_bootcamp_run_id (str): The bootcamp_run_id value of the desired BootcampRun
+        force (bool): If True, the deferral will be completed even if the current enrollment is inactive
+            or the desired enrollment is in a different bootcamp
+
+    Returns:
+        (BootcampRunEnrollment, BootcampRunEnrollment): The deactivated enrollment paired with the
+            new enrollment that was the target of the deferral
+    """
+    from_enrollment = BootcampRunEnrollment.objects.get(
+        user=user, bootcamp_run__bootcamp_run_id=from_bootcamp_run_id
+    )
+    if not force and not from_enrollment.active:
+        raise ValidationError(
+            "Cannot defer from inactive enrollment (id: {}, run: {}, user: {}). "
+            "Set force=True to defer anyway.".format(
+                from_enrollment.id, from_enrollment.bootcamp_run.bootcamp_run_id, user.email
+            )
+        )
+    to_run = BootcampRun.objects.get(bootcamp_run_id=to_bootcamp_run_id)
+    if from_enrollment.bootcamp_run == to_run:
+        raise ValidationError(
+            "Cannot defer to the same bootcamp run (run: {})".format(to_run.bootcamp_run_id)
+        )
+    if not to_run.is_not_beyond_enrollment:
+        raise ValidationError(
+            "Cannot defer to a bootcamp run that is outside of its enrollment period (run: {}).".format(
+                to_run.bootcamp_run_id
+            )
+        )
+    if not force and from_enrollment.bootcamp_run.bootcamp != to_run.bootcamp:
+        raise ValidationError(
+            "Cannot defer to a bootcamp run of a different bootcamp ('{}' -> '{}'). "
+            "Set force=True to defer anyway.".format(
+                from_enrollment.bootcamp_run.bootcamp.title, to_run.bootcamp.title
+            )
+        )
+    to_enrollments = create_run_enrollments(
+        user,
+        [to_run],
+        order=from_enrollment.order,
+    )
+    from_enrollment = deactivate_run_enrollment(
+        run_enrollment=from_enrollment,
+        change_status=ENROLL_CHANGE_STATUS_DEFERRED,
+    )
+    return from_enrollment, first_or_none(to_enrollments)

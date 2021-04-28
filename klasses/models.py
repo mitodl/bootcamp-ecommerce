@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
-from main.models import TimestampedModel
+from main.models import TimestampedModel, AuditModel
 from main.utils import now_in_utc, format_month_day
 from klasses.constants import (
     ApplicationSource,
@@ -278,6 +278,30 @@ class BootcampRunEnrollment(TimestampedModel):
 
     def __str__(self):
         return f"Enrollment for {self.bootcamp_run}"
+
+    def deactivate_and_save(self, change_status, no_user=False):
+        """Sets an enrollment to inactive, sets the status, and saves"""
+        self.active = False
+        self.change_status = change_status
+        return self.save_and_log(None if no_user else self.user)
+
+    def reactivate_and_save(self, no_user=False):
+        """Sets an enrollment to be active again and saves"""
+        self.active = True
+        self.change_status = None
+        return self.save_and_log(None if no_user else self.user)
+
+
+class BootcampRunEnrollmentAudit(AuditModel):
+    """Audit table for BootcampRunEnrollmentAudit"""
+
+    enrollment = models.ForeignKey(
+        BootcampRunEnrollment, null=True, on_delete=models.PROTECT
+    )
+
+    @classmethod
+    def get_related_field_name(cls):
+        return "enrollment"
 
 
 class BaseCertificate(models.Model):
