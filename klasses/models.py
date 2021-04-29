@@ -295,7 +295,7 @@ class BootcampRunEnrollment(TimestampedModel, AuditableModel):
         return {
             **serialize_model_object(self),
             "username": self.user.username,
-            "full_name": self.user.name,
+            "full_name": self.user.profile.name.strip(),
             "email": self.user.email,
         }
 
