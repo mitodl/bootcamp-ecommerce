@@ -8,8 +8,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
-from main.models import TimestampedModel, AuditModel
-from main.utils import now_in_utc, format_month_day
+from main.models import TimestampedModel, AuditModel, AuditableModel
+from main.utils import now_in_utc, format_month_day, serialize_model_object
 from klasses.constants import (
     ApplicationSource,
     INTEGRATION_PREFIX_PRODUCT,
@@ -251,7 +251,7 @@ class PersonalPrice(models.Model):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', price={self.price}"
 
 
-class BootcampRunEnrollment(TimestampedModel):
+class BootcampRunEnrollment(TimestampedModel, AuditableModel):
     """An enrollment in a bootcamp run by a user"""
 
     user = models.ForeignKey(
@@ -278,6 +278,18 @@ class BootcampRunEnrollment(TimestampedModel):
 
     def __str__(self):
         return f"Enrollment for {self.bootcamp_run}"
+
+    def to_dict(self):
+        return {
+        **serialize_model_object(self),
+        "username": self.user.username,
+        "full_name": self.user.name,
+        "email": self.user.email,
+    }
+
+    @classmethod
+    def get_audit_class(cls):
+        return BootcampRunEnrollmentAudit
 
     def deactivate_and_save(self, change_status, no_user=False):
         """Sets an enrollment to inactive, sets the status, and saves"""

@@ -3,7 +3,6 @@ API functionality for bootcamps
 """
 import logging
 from datetime import datetime, timedelta
-from traceback import format_exc
 
 import pytz
 from django.core.exceptions import ValidationError
@@ -220,7 +219,7 @@ def create_run_enrollments(
 ):
     """
     Creates local records of a user's enrollment in bootcamp runs, and attempts to enroll them
-    in edX via API
+    in novoed via API
 
     Args:
         user (User): The user to enroll
