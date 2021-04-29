@@ -10,7 +10,7 @@ from django.core.management import BaseCommand, CommandError
 from social_django.models import UserSocialAuth
 
 from user_util import user_util
-from jobma.contants import EXPIRED
+from jobma.constants import EXPIRED
 from jobma.models import Interview
 from profiles.api import fetch_users
 
