@@ -1,6 +1,6 @@
 """Management command to change enrollment status"""
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.contrib.auth import get_user_model
 
 from klasses.api import defer_enrollment

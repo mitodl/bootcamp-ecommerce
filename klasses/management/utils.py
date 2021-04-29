@@ -1,5 +1,5 @@
 """Utility functions/classes for bootcamp management commands"""
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from main.utils import has_equal_properties
 
