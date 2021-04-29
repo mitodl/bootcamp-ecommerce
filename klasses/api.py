@@ -313,9 +313,18 @@ def defer_enrollment(
             )
         )
     try:
-        order = Order.objects.get(id=order_id)
+        defaults = {
+            "id": order_id,
+            "application__user": user,
+            "application__bootcamp_run": from_enrollment.bootcamp_run,
+        }
+        order = Order.objects.get(**defaults)
     except ObjectDoesNotExist:
-        raise ValidationError("Order (order: {}) does not exist".format(order_id))
+        raise ValidationError(
+            "Order (order: {}) does not exist for user (User: {}) against bootcamp run = (run: {})".format(
+                order_id, user, from_bootcamp_run_id
+            )
+        )
     to_enrollments = create_run_enrollments(user, [to_run], order=order)
     from_enrollment = deactivate_run_enrollment(
         run_enrollment=from_enrollment, change_status=ENROLL_CHANGE_STATUS_DEFERRED

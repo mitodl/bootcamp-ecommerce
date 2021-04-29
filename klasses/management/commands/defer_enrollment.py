@@ -49,10 +49,11 @@ class Command(EnrollmentChangeCommand):
         from_bootcamp_run_id = options["from_run"]
         to_bootcamp_run_id = options["to_run"]
         order = options["order"]
+        force = options["force"]
 
         try:
             from_enrollment, to_enrollment = defer_enrollment(
-                user, from_bootcamp_run_id, to_bootcamp_run_id, order
+                user, from_bootcamp_run_id, to_bootcamp_run_id, order, force
             )
         except ObjectDoesNotExist as exc:
             if isinstance(exc, BootcampRunEnrollment.DoesNotExist):
