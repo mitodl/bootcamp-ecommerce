@@ -5,11 +5,11 @@ import logging
 from datetime import datetime, timedelta
 
 import pytz
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db.models import Sum
 
 from applications.constants import AppStates
-from ecommerce.models import Line
+from ecommerce.models import Line, Order
 from klasses.constants import DATE_RANGE_MONTH_FMT, ENROLL_CHANGE_STATUS_DEFERRED
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
@@ -214,9 +214,7 @@ def fetch_bootcamp_run(run_property):
             ) from exc
 
 
-def create_run_enrollments(
-    user, runs, order=None
-):
+def create_run_enrollments(user, runs, order=None):
     """
     Creates local records of a user's enrollment in bootcamp runs, and attempts to enroll them
     in novoed via API
@@ -235,12 +233,14 @@ def create_run_enrollments(
     for run in runs:
         try:
             enrollment, created = BootcampRunEnrollment.objects.get_or_create(
-                user=user,
-                run=run,
-                order=order,
+                user=user, bootcamp_run=run
             )
             if not created and not enrollment.active:
                 enrollment.reactivate_and_save()
+            elif order:  # enrollment created and order is available
+                application = order.application
+                application.bootcamp_run = run
+                application.save()
 
             if (
                 features.is_enabled(features.NOVOED_INTEGRATION)
@@ -263,10 +263,7 @@ def create_run_enrollments(
 
 
 def defer_enrollment(
-    user,
-    from_bootcamp_run_id,
-    to_bootcamp_run_id,
-    force=False,
+    user, from_bootcamp_run_id, to_bootcamp_run_id, order_id, force=False
 ):
     """
     Deactivates a user's existing enrollment in one bootcamp run and enrolls the user in another.
@@ -275,6 +272,7 @@ def defer_enrollment(
         user (User): The enrolled user
         from_bootcamp_run_id (str): The bootcamp_run_id value of the currently enrolled BootcampRun
         to_bootcamp_run_id (str): The bootcamp_run_id value of the desired BootcampRun
+        order_id (int): The order_id value for an user's order ID
         force (bool): If True, the deferral will be completed even if the current enrollment is inactive
             or the desired enrollment is in a different bootcamp
 
@@ -289,13 +287,17 @@ def defer_enrollment(
         raise ValidationError(
             "Cannot defer from inactive enrollment (id: {}, run: {}, user: {}). "
             "Set force=True to defer anyway.".format(
-                from_enrollment.id, from_enrollment.bootcamp_run.bootcamp_run_id, user.email
+                from_enrollment.id,
+                from_enrollment.bootcamp_run.bootcamp_run_id,
+                user.email,
             )
         )
     to_run = BootcampRun.objects.get(bootcamp_run_id=to_bootcamp_run_id)
     if from_enrollment.bootcamp_run == to_run:
         raise ValidationError(
-            "Cannot defer to the same bootcamp run (run: {})".format(to_run.bootcamp_run_id)
+            "Cannot defer to the same bootcamp run (run: {})".format(
+                to_run.bootcamp_run_id
+            )
         )
     if not to_run.is_not_beyond_enrollment:
         raise ValidationError(
@@ -310,13 +312,12 @@ def defer_enrollment(
                 from_enrollment.bootcamp_run.bootcamp.title, to_run.bootcamp.title
             )
         )
-    to_enrollments = create_run_enrollments(
-        user,
-        [to_run],
-        order=from_enrollment.order,
-    )
+    try:
+        order = Order.objects.get(id=order_id)
+    except ObjectDoesNotExist:
+        raise ValidationError("Order (order: {}) does not exist".format(order_id))
+    to_enrollments = create_run_enrollments(user, [to_run], order=order)
     from_enrollment = deactivate_run_enrollment(
-        run_enrollment=from_enrollment,
-        change_status=ENROLL_CHANGE_STATUS_DEFERRED,
+        run_enrollment=from_enrollment, change_status=ENROLL_CHANGE_STATUS_DEFERRED
     )
     return from_enrollment, first_or_none(to_enrollments)

@@ -35,6 +35,12 @@ class Command(EnrollmentChangeCommand):
             help="The 'bootcamp_run_id' value for the BootcampRun that you are deferring to",
             required=True,
         )
+        parser.add_argument(
+            "--order",
+            type=int,
+            help="The 'order_id' value for an user's order ID",
+            required=True,
+        )
         super().add_arguments(parser)
 
     def handle(self, *args, **options):
@@ -42,12 +48,11 @@ class Command(EnrollmentChangeCommand):
         user = fetch_user(options["user"])
         from_bootcamp_run_id = options["from_run"]
         to_bootcamp_run_id = options["to_run"]
+        order = options["order"]
 
         try:
             from_enrollment, to_enrollment = defer_enrollment(
-                user,
-                from_bootcamp_run_id,
-                to_bootcamp_run_id,
+                user, from_bootcamp_run_id, to_bootcamp_run_id, order
             )
         except ObjectDoesNotExist as exc:
             if isinstance(exc, BootcampRunEnrollment.DoesNotExist):

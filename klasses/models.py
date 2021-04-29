@@ -211,6 +211,18 @@ class BootcampRun(models.Model):
     def __str__(self):
         return self.display_title
 
+    @property
+    def is_not_beyond_enrollment(self):
+        """
+        Checks if the course is not beyond its enrollment period
+
+
+        Returns:
+            boolean: True if enrollment period has begun but not ended
+        """
+        now = now_in_utc()
+        return self.end_date is None or self.end_date > now
+
 
 class Installment(models.Model):
     """
@@ -281,11 +293,11 @@ class BootcampRunEnrollment(TimestampedModel, AuditableModel):
 
     def to_dict(self):
         return {
-        **serialize_model_object(self),
-        "username": self.user.username,
-        "full_name": self.user.name,
-        "email": self.user.email,
-    }
+            **serialize_model_object(self),
+            "username": self.user.username,
+            "full_name": self.user.name,
+            "email": self.user.email,
+        }
 
     @classmethod
     def get_audit_class(cls):
