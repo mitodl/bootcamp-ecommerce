@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.77.1
+--------------
+
+- Management command to retire users (#1205)
+
 Version 0.77.0 (Released April 28, 2021)
 --------------
 
