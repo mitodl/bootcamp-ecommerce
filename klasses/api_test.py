@@ -11,11 +11,12 @@ from django.db.models import signals
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from applications.models import BootcampApplication
-from ecommerce.factories import LineFactory
+from ecommerce.factories import LineFactory, OrderFactory
 from klasses.api import (
     deactivate_run_enrollment,
     fetch_bootcamp_run,
     adjust_app_state_for_new_price,
+    create_run_enrollments,
 )
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.factories import (
@@ -24,8 +25,8 @@ from klasses.factories import (
     PersonalPriceFactory,
     InstallmentFactory,
 )
-from klasses.models import BootcampRun
-from main.features import NOVOED_INTEGRATION
+from klasses.models import BootcampRun, BootcampRunEnrollment
+from main import features
 
 RUN_PRICE = 1000
 
@@ -35,7 +36,7 @@ def default_settings(settings):
     """
     Default settings fixture for API tests
     """
-    settings.FEATURES[NOVOED_INTEGRATION] = False
+    settings.FEATURES[features.NOVOED_INTEGRATION] = False
 
 
 @pytest.mark.django_db
@@ -63,7 +64,7 @@ def test_deactivate_run_enrollment():
 @pytest.mark.django_db
 def test_deactivate_run_enrollment_novoed(mocker, settings):
     """deactivate_run_enrollment should run a task to unenroll users in NovoEd if the bootcamp run is NovoEd-enabled"""
-    settings.FEATURES[NOVOED_INTEGRATION] = True
+    settings.FEATURES[features.NOVOED_INTEGRATION] = True
     patched_novoed_tasks = mocker.patch("klasses.api.novoed_tasks")
     novoed_stub = "novoed-course"
     enrollment = BootcampRunEnrollmentFactory.create(
@@ -177,3 +178,36 @@ def test_fetch_bootcamp_run_dates(end_date_params):
     assert fetch_bootcamp_run(run.display_title) == run
     with pytest.raises(BootcampRun.DoesNotExist):
         fetch_bootcamp_run("invalid")
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("novoed_integration", [True, False])
+def test_create_run_enrollments(mocker, user, settings, novoed_integration):
+    """
+    create_run_enrollments should call the novoed API to create enrollments, create or reactivate local
+    enrollment records
+    """
+    settings.FEATURES[features.NOVOED_INTEGRATION] = novoed_integration
+
+    num_runs = 3
+    order = OrderFactory.create()
+    runs = BootcampRunFactory.create_batch(num_runs)
+    BootcampRunEnrollmentFactory.create(
+        user=user,
+        bootcamp_run=runs[0],
+        change_status=ENROLL_CHANGE_STATUS_REFUNDED,
+        active=False,
+    )
+    patched_novoed_enroll = mocker.patch(
+        "klasses.api.novoed_tasks.enroll_users_in_novoed_course.delay"
+    )
+
+    successful_enrollments = create_run_enrollments(user, runs, order=order)
+    if novoed_integration:
+        assert patched_novoed_enroll.call_count == 3
+    assert len(successful_enrollments) == num_runs
+    enrollments = BootcampRunEnrollment.objects.order_by("bootcamp_run__id").all()
+    for (run, enrollment) in zip(runs, enrollments):
+        assert enrollment.change_status is None
+        assert enrollment.active is True
+        assert enrollment.bootcamp_run == run
