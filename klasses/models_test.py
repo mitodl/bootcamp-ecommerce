@@ -219,3 +219,17 @@ def test_bootcamp_run_certificate(bootcamp_run, user):
     assert certificate.is_revoked is True
     certificate.unrevoke()
     assert certificate.is_revoked is False
+
+
+@pytest.mark.parametrize("end_days, expected", [[None, True], [1, True], [-1, False]])
+def test_course_run_not_beyond_enrollment(end_days, expected):
+    """
+    Test that CourseRun.is_beyond_enrollment returns the expected boolean value
+    """
+    now = now_in_utc()
+    end_date = None if end_days is None else now + timedelta(days=end_days)
+
+    assert (
+        BootcampRunFactory.create(end_date=end_date).is_not_beyond_enrollment
+        is expected
+    )
