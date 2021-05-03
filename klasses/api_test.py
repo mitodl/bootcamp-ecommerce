@@ -2,10 +2,12 @@
 klasses API tests
 """
 import datetime
+from datetime import timedelta
 
 import factory
 import pytest
 import pytz
+from django.core.exceptions import ValidationError
 from django.db.models import signals
 
 from applications.constants import AppStates
@@ -32,6 +34,7 @@ from klasses.factories import (
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
+from main.utils import now_in_utc
 
 
 RUN_PRICE = 1000
@@ -294,3 +297,86 @@ def test_defer_enrollment(mocker, user, force):
     assert patched_deactivate_enrollments.call_args == mocker.call(
         change_status=ENROLL_CHANGE_STATUS_DEFERRED, run_enrollment=existing_enrollment
     )
+
+
+@pytest.mark.django_db
+def test_defer_enrollment_validation(mocker, user):
+    """
+    defer_enrollment should raise an exception if the 'from' or 'to' course runs are invalid
+    """
+    bootcamps = BootcampFactory.create_batch(2)
+    enrollments = BootcampRunEnrollmentFactory.create_batch(
+        3,
+        user=user,
+        active=factory.Iterator([False, True, True]),
+        bootcamp_run__bootcamp=factory.Iterator(
+            [bootcamps[0], bootcamps[0], bootcamps[1]]
+        ),
+    )
+    unenrollable_run = BootcampRunFactory.create(
+        end_date=now_in_utc() - timedelta(days=1)
+    )
+    patched_create_enrollments = mocker.patch(
+        "klasses.api.create_run_enrollments", return_value=([], False)
+    )
+    mocker.patch("klasses.api.deactivate_run_enrollment", return_value=[])
+
+    order = OrderFactory.create(user=user)
+
+    with pytest.raises(ValidationError):
+        # Deferring to the same course run should raise a validation error
+        defer_enrollment(
+            user,
+            enrollments[0].bootcamp_run.bootcamp_run_id,
+            enrollments[0].bootcamp_run.bootcamp_run_id,
+            order.id,
+        )
+    patched_create_enrollments.assert_not_called()
+
+    with pytest.raises(ValidationError):
+        # Deferring to a course run that is outside of its enrollment period should raise a validation error
+        defer_enrollment(
+            user,
+            enrollments[0].bootcamp_run.bootcamp_run_id,
+            unenrollable_run.bootcamp_run_id,
+            order.id,
+        )
+    patched_create_enrollments.assert_not_called()
+
+    with pytest.raises(ValidationError):
+        # Deferring from an inactive enrollment should raise a validation error
+        defer_enrollment(
+            user,
+            enrollments[0].bootcamp_run.bootcamp_run_id,
+            enrollments[1].bootcamp_run.bootcamp_run_id,
+            order.id,
+        )
+    patched_create_enrollments.assert_not_called()
+
+    with pytest.raises(ValidationError):
+        # Deferring to a course run in a different course should raise a validation error
+        defer_enrollment(
+            user,
+            enrollments[1].bootcamp_run.bootcamp_run_id,
+            enrollments[2].bootcamp_run.bootcamp_run_id,
+            order.id,
+        )
+    patched_create_enrollments.assert_not_called()
+
+    # The last two cases should not raise an exception if the 'force' flag is set to True
+    defer_enrollment(
+        user,
+        enrollments[0].bootcamp_run.bootcamp_run_id,
+        enrollments[1].bootcamp_run.bootcamp_run_id,
+        order.id,
+        force=True,
+    )
+    assert patched_create_enrollments.call_count == 1
+    defer_enrollment(
+        user,
+        enrollments[1].bootcamp_run.bootcamp_run_id,
+        enrollments[2].bootcamp_run.bootcamp_run_id,
+        order.id,
+        force=True,
+    )
+    assert patched_create_enrollments.call_count == 2
