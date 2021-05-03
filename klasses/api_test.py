@@ -220,3 +220,28 @@ def test_create_run_enrollments(mocker, user, settings, novoed_integration):
         assert enrollment.change_status is None
         assert enrollment.active is True
         assert enrollment.bootcamp_run == run
+
+
+@pytest.mark.django_db
+def test_create_run_enrollments_creation_fail(caplog, mocker, user):
+    """
+    create_run_enrollments should log a message and send an admin email if there's an error during the
+    creation of local enrollment records
+    """
+    run = BootcampRunFactory()
+    mocker.patch(
+        "klasses.api.BootcampRunEnrollment.objects.get_or_create",
+        side_effect=[Exception()],
+    )
+    patched_novoed_enroll = mocker.patch(
+        "klasses.api.novoed_tasks.enroll_users_in_novoed_course.delay"
+    )
+
+    with pytest.raises(Exception):
+        successful_enrollments = create_run_enrollments(user, [run], order=None)
+        patched_novoed_enroll.assert_not_called()
+        assert successful_enrollments == []
+        assert (
+            f"Failed to create/update enrollment record (user: user_{user.id}, run: {run.bootcamp_run_id}, order: {None})"
+            in caplog.text
+        )
