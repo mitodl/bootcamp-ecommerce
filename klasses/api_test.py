@@ -260,7 +260,7 @@ def test_create_run_enrollments_creation_fail(caplog, mocker, user):
 def test_defer_enrollment(mocker, user, force):
     """
     defer_enrollment should deactivate a user's existing enrollment and create an enrollment in another
-    course run
+    bootcamp run
     """
     bootcamp = BootcampFactory.create()
     bootcamp_runs = BootcampRunFactory.create_batch(3, bootcamp=bootcamp)
@@ -302,7 +302,7 @@ def test_defer_enrollment(mocker, user, force):
 @pytest.mark.django_db
 def test_defer_enrollment_validation(mocker, user):
     """
-    defer_enrollment should raise an exception if the 'from' or 'to' course runs are invalid
+    defer_enrollment should raise an exception if the 'from' or 'to' bootcamp runs are invalid
     """
     bootcamps = BootcampFactory.create_batch(2)
     enrollments = BootcampRunEnrollmentFactory.create_batch(
@@ -324,7 +324,7 @@ def test_defer_enrollment_validation(mocker, user):
     order = OrderFactory.create(user=user)
 
     with pytest.raises(ValidationError):
-        # Deferring to the same course run should raise a validation error
+        # Deferring to the same bootcamp run should raise a validation error
         defer_enrollment(
             user,
             enrollments[0].bootcamp_run.bootcamp_run_id,
@@ -334,7 +334,7 @@ def test_defer_enrollment_validation(mocker, user):
     patched_create_enrollments.assert_not_called()
 
     with pytest.raises(ValidationError):
-        # Deferring to a course run that is outside of its enrollment period should raise a validation error
+        # Deferring to a bootcamp run that is outside of its enrollment period should raise a validation error
         defer_enrollment(
             user,
             enrollments[0].bootcamp_run.bootcamp_run_id,
@@ -354,7 +354,7 @@ def test_defer_enrollment_validation(mocker, user):
     patched_create_enrollments.assert_not_called()
 
     with pytest.raises(ValidationError):
-        # Deferring to a course run in a different course should raise a validation error
+        # Deferring to a bootcamp run in a different bootcamp should raise a validation error
         defer_enrollment(
             user,
             enrollments[1].bootcamp_run.bootcamp_run_id,
