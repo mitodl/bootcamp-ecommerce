@@ -27,7 +27,6 @@ from klasses.factories import (
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
-# from mock import call
 
 
 RUN_PRICE = 1000
