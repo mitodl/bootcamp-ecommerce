@@ -315,7 +315,7 @@ def defer_enrollment(
     try:
         defaults = {
             "id": order_id,
-            "application__user": user,
+            "user": user,
             "application__bootcamp_run": from_enrollment.bootcamp_run,
         }
         order = Order.objects.get(**defaults)

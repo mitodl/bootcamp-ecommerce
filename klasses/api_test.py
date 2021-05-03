@@ -17,9 +17,14 @@ from klasses.api import (
     fetch_bootcamp_run,
     adjust_app_state_for_new_price,
     create_run_enrollments,
+    defer_enrollment,
 )
-from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
+from klasses.constants import (
+    ENROLL_CHANGE_STATUS_REFUNDED,
+    ENROLL_CHANGE_STATUS_DEFERRED,
+)
 from klasses.factories import (
+    BootcampFactory,
     BootcampRunFactory,
     BootcampRunEnrollmentFactory,
     PersonalPriceFactory,
@@ -245,3 +250,47 @@ def test_create_run_enrollments_creation_fail(caplog, mocker, user):
             f"Failed to create/update enrollment record (user: user_{user.id}, run: {run.bootcamp_run_id}, order: {None})"
             in caplog.text
         )
+
+
+@pytest.mark.parametrize("force", [True, False])
+@pytest.mark.django_db
+def test_defer_enrollment(mocker, user, force):
+    """
+    defer_enrollment should deactivate a user's existing enrollment and create an enrollment in another
+    course run
+    """
+    bootcamp = BootcampFactory.create()
+    bootcamp_runs = BootcampRunFactory.create_batch(3, bootcamp=bootcamp)
+    order = OrderFactory.create(user=user, application__bootcamp_run=bootcamp_runs[0])
+    existing_enrollment = BootcampRunEnrollmentFactory.create(
+        bootcamp_run=bootcamp_runs[0], user=user
+    )
+    target_run = bootcamp_runs[1]
+    mock_new_enrollment = mocker.Mock()
+    patched_create_enrollments = mocker.patch(
+        "klasses.api.create_run_enrollments",
+        autospec=True,
+        return_value=([mock_new_enrollment if force else None], True),
+    )
+    patched_deactivate_enrollments = mocker.patch(
+        "klasses.api.deactivate_run_enrollment",
+        autospec=True,
+        return_value=existing_enrollment if force else None,
+    )
+
+    returned_from_enrollment, returned_to_enrollment = defer_enrollment(
+        existing_enrollment.user,
+        existing_enrollment.bootcamp_run.bootcamp_run_id,
+        bootcamp_runs[1].bootcamp_run_id,
+        order.id,
+        force=force,
+    )
+    assert returned_from_enrollment == patched_deactivate_enrollments.return_value
+    assert returned_to_enrollment == patched_create_enrollments.return_value[0]
+    patched_create_enrollments.assert_called_once_with(
+        existing_enrollment.user, [target_run], order=order
+    )
+    assert patched_deactivate_enrollments.call_count == 1
+    assert patched_deactivate_enrollments.call_args == mocker.call(
+        change_status=ENROLL_CHANGE_STATUS_DEFERRED, run_enrollment=existing_enrollment
+    )
