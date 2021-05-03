@@ -363,6 +363,26 @@ def test_defer_enrollment_validation(mocker, user):
         )
     patched_create_enrollments.assert_not_called()
 
+    with pytest.raises(ValidationError):
+        # Deferring to a bootcamp run in a different bootcamp should raise a validation error for invalid order
+        defer_enrollment(
+            user,
+            enrollments[1].bootcamp_run.bootcamp_run_id,
+            enrollments[2].bootcamp_run.bootcamp_run_id,
+            100,
+        )
+    patched_create_enrollments.assert_not_called()
+
+    with pytest.raises(ValidationError):
+        # Deferring to a bootcamp run in a same bootcamp run should raise a validation error
+        defer_enrollment(
+            user,
+            enrollments[1].bootcamp_run.bootcamp_run_id,
+            enrollments[1].bootcamp_run.bootcamp_run_id,
+            order.id,
+        )
+    patched_create_enrollments.assert_not_called()
+
     # The last two cases should not raise an exception if the 'force' flag is set to True
     defer_enrollment(
         user,
