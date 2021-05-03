@@ -27,6 +27,8 @@ from klasses.factories import (
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
+# from mock import call
+
 
 RUN_PRICE = 1000
 
@@ -205,6 +207,14 @@ def test_create_run_enrollments(mocker, user, settings, novoed_integration):
     successful_enrollments = create_run_enrollments(user, runs, order=order)
     if novoed_integration:
         assert patched_novoed_enroll.call_count == 3
+
+        expected_calls = []
+        for run in runs:
+            expected_calls.append(
+                mocker.call(novoed_course_stub=run.novoed_course_stub, user_id=user.id)
+            )
+        patched_novoed_enroll.assert_has_calls(expected_calls)
+
     assert len(successful_enrollments) == num_runs
     enrollments = BootcampRunEnrollment.objects.order_by("bootcamp_run__id").all()
     for (run, enrollment) in zip(runs, enrollments):
