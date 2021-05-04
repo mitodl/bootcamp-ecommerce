@@ -88,7 +88,10 @@ def migrate_application(from_run_application, to_run):
         )
 
     with transaction.atomic():
-        to_run_application, _ = BootcampApplication.objects.select_for_update().get_or_create(
+        (
+            to_run_application,
+            _,
+        ) = BootcampApplication.objects.select_for_update().get_or_create(
             bootcamp_run=to_run, user=from_run_application.user
         )
 

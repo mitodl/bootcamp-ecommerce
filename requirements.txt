@@ -14,6 +14,8 @@ asgiref==3.3.4
     # via djoser
 attrs==19.3.0
     # via zeep
+backcall==0.2.0
+    # via ipython
 beautifulsoup4==4.8.2
     # via wagtail
 billiard==3.6.3.0
@@ -128,7 +130,7 @@ django==2.2.18
     #   wagtail
 djangorestframework-serializer-extensions==2.0.0
     # via -r requirements.in
-djangorestframework-simplejwt==4.4.0
+djangorestframework-simplejwt==4.6.0
     # via djoser
 djangorestframework==3.11.2
     # via
@@ -158,23 +160,19 @@ html5lib==0.999999999
     #   wagtail
 idna==2.7
     # via requests
-importlib-metadata==1.6.0
-    # via
-    #   djoser
-    #   kombu
 importlib-resources==5.1.0
     # via pysaml2
 inflection==0.3.1
     # via dynamic-rest
 ipython-genutils==0.2.0
     # via traitlets
-ipython==6.1.0
+ipython==7.22.0
     # via -r requirements.in
 isodate==0.6.0
     # via zeep
 itypes==1.2.0
     # via coreapi
-jedi==0.10.2
+jedi==0.18.0
     # via ipython
 jinja2==2.11.3
     # via coreschema
@@ -194,13 +192,15 @@ lxml==4.6.3
     #   zeep
 markupsafe==1.1.1
     # via jinja2
-newrelic==2.86.3.70
+newrelic==6.2.0.156
     # via -r requirements.in
 oauthlib==2.0.2
     # via
     #   requests-oauthlib
     #   social-auth-core
-pexpect==4.2.1
+parso==0.8.2
+    # via jedi
+pexpect==4.8.0
     # via ipython
 pickleshare==0.7.4
     # via ipython
@@ -210,9 +210,9 @@ pillow==7.1.0
     #   wagtail
 premailer==3.7.0
     # via -r requirements.in
-prompt-toolkit==1.0.14
+prompt-toolkit==3.0.18
     # via ipython
-psycopg2==2.7.3.2
+psycopg2==2.8.6
     # via
     #   -r requirements.in
     #   django-server-status
@@ -278,8 +278,6 @@ s3transfer==0.3.3
     # via boto3
 sentry-sdk==0.14.3
     # via -r requirements.in
-simplegeneric==0.8.1
-    # via ipython
 six==1.15.0
     # via
     #   django-anymail
@@ -289,7 +287,6 @@ six==1.15.0
     #   html5lib
     #   isodate
     #   l18n
-    #   prompt-toolkit
     #   pynacl
     #   pyopenssl
     #   pysaml2
@@ -313,8 +310,6 @@ static3==0.5.1
     #   dj-static
 traitlets==4.3.2
     # via ipython
-typing-extensions==3.7.4.3
-    # via asgiref
 unidecode==1.1.1
     # via wagtail
 uritemplate==3.0.1
@@ -348,10 +343,6 @@ xmlschema==1.4.2
     # via pysaml2
 zeep==3.4.0
     # via -r requirements.in
-zipp==3.1.0
-    # via
-    #   importlib-metadata
-    #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

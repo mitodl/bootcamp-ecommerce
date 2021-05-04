@@ -182,7 +182,10 @@ def get_sync_errors(limit=200, offset=0):
     while len(errors) > 0:
         yield from errors
         offset += limit
-        errors = paged_sync_errors(limit, offset)
+        try:
+            errors = paged_sync_errors(limit, offset)
+        except StopIteration:
+            break
 
 
 def get_sync_status(object_type, object_id):

@@ -227,10 +227,12 @@ class Installment(models.Model):
         ordering = ["bootcamp_run", "deadline"]
 
     def __str__(self):
-        return "Installment for '{bootcamp_run}'; ${amount}; deadline {deadline}".format(
-            bootcamp_run=self.bootcamp_run.title,
-            amount=self.amount,
-            deadline=self.deadline.strftime("%b %d %Y"),
+        return (
+            "Installment for '{bootcamp_run}'; ${amount}; deadline {deadline}".format(
+                bootcamp_run=self.bootcamp_run.title,
+                amount=self.amount,
+                deadline=self.deadline.strftime("%b %d %Y"),
+            )
         )
 
 

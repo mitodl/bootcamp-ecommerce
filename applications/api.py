@@ -35,7 +35,10 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
             or not a new application was created
     """
     with transaction.atomic():
-        bootcamp_app, created = BootcampApplication.objects.select_for_update().get_or_create(
+        (
+            bootcamp_app,
+            created,
+        ) = BootcampApplication.objects.select_for_update().get_or_create(
             user=user, bootcamp_run_id=bootcamp_run_id
         )
         if created:
@@ -54,7 +57,7 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
 
 
 def derive_application_state(
-    bootcamp_application
+    bootcamp_application,
 ):  # pylint: disable=too-many-return-statements
     """
     Returns the correct state that an application should be in based on the application object itself and related data
