@@ -1,4 +1,4 @@
-"""Setup all CMS related stuff (home page, catalog etc.)"""
+"""Setup all CMS related stuff (home page, catalog etc.) WAGTAIL 2.9"""
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
