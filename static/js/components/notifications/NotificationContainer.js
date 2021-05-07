@@ -8,7 +8,11 @@ import wait from "waait"
 
 import { notificationConfigMap } from "."
 import { removeUserNotification } from "../../actions"
-import { newSetWith, newSetWithout } from "../../util/util"
+import {
+  isLocalStorageSupported,
+  newSetWith,
+  newSetWithout
+} from "../../util/util"
 import {
   ALERT_TYPES,
   CMS_NOTIFICATION_LCL_STORAGE_ID,
@@ -45,7 +49,7 @@ export class NotificationContainer extends React.Component<Props, State> {
       const { userNotifications } = this.props
       const notification = userNotifications[notificationKey]
       const notificationId = notification.props.persistedId
-      if (notificationId) {
+      if (notificationId && isLocalStorageSupported()) {
         window.localStorage.setItem(
           CMS_NOTIFICATION_LCL_STORAGE_ID,
           notificationId

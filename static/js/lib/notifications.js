@@ -8,6 +8,7 @@ import {
   CMS_NOTIFICATION_SELECTOR,
   CMS_SITE_WIDE_NOTIFICATION
 } from "../constants"
+import { isLocalStorageSupported } from "../util/util"
 
 export const handleCmsNotifications = (addUserNotification: Function) => {
   const cmsNotification = document.querySelector(CMS_NOTIFICATION_SELECTOR)
@@ -17,8 +18,9 @@ export const handleCmsNotifications = (addUserNotification: Function) => {
     )
     const notificationHtml = cmsNotification.innerHTML
     if (
+      isLocalStorageSupported() &&
       window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID) !==
-      notificationId
+        notificationId
     ) {
       addUserNotification({
         [CMS_SITE_WIDE_NOTIFICATION]: {
