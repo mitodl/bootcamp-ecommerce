@@ -71,7 +71,6 @@
     "postcss-loader": "^3.0.0",
     "prettier-eslint": "^9.0.1",
     "prettier-eslint-cli": "^5.0.0",
-    "property-expr": "^2.0.3",
     "query-string": "^6.4.0",
     "raf": "^3.4.1",
     "ramda": "^0.27.0",
@@ -117,7 +116,7 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",
-    "yup": "^0.27.0"
+    "yup": "^0.30.0"
   },
   "engines": {
     "node": "13.13.0",
