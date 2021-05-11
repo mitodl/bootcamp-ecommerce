@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.78.1
+--------------
+
+- Bump hosted-git-info from 2.8.8 to 2.8.9 (#1230)
+- Bump lodash from 4.17.19 to 4.17.21 (#1228)
+- Bump ua-parser-js from 0.7.22 to 0.7.28 (#1223)
+
 Version 0.78.0 (Released May 11, 2021)
 --------------
 
