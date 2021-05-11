@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.78.0 (Released May 11, 2021)
+--------------
+
+- Upgrade to Python 3.9 (#1215)
+
 Version 0.77.1 (Released May 03, 2021)
 --------------
 
