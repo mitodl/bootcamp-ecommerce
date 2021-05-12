@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.78.1
+Version 0.78.1 (Released May 12, 2021)
 --------------
 
 - Bump hosted-git-info from 2.8.8 to 2.8.9 (#1230)
