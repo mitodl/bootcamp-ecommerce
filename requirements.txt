@@ -44,12 +44,12 @@ cffi==1.14.0
     #   pynacl
 chardet==3.0.4
     # via requests
+click==7.1.2
+    # via user-util
 coreapi==2.3.3
     # via djoser
 coreschema==0.0.4
     # via coreapi
-click==7.1.2
-    # via user-util
 cryptography==3.4.4
     # via
     #   pyopenssl
@@ -63,7 +63,7 @@ decorator==4.0.11
     # via
     #   ipython
     #   traitlets
-defusedxml==0.5.0
+defusedxml==0.7.1
     # via
     #   pysaml2
     #   python3-openid
