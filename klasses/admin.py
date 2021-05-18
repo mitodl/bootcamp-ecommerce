@@ -28,6 +28,7 @@ class BootcampAdmin(admin.ModelAdmin):
 
     model = models.Bootcamp
     list_display = ("title",)
+    search_fields = ("title",)
     inlines = [BootcampRunInline]
 
 
@@ -43,6 +44,12 @@ class BootcampRunAdmin(admin.ModelAdmin):
         "end_date",
     )
     raw_id_fields = ("bootcamp",)
+    search_fields = (
+        "title",
+        "novoed_course_stub",
+        "bootcamp_run_id",
+        "bootcamp__title",
+    )
     inlines = [InstallmentInline]
 
 
@@ -96,6 +103,10 @@ class InstallmentAdmin(admin.ModelAdmin):
     model = models.Installment
     list_display = ("id", "bootcamp_run", "deadline", "amount")
     raw_id_fields = ("bootcamp_run",)
+    search_fields = (
+        "bootcamp_run__title",
+        "bootcamp_run__bootcamp__title",
+    )
 
 
 class PersonalPriceAdmin(admin.ModelAdmin):

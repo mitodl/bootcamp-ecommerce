@@ -27,6 +27,19 @@ class LineAdmin(TimestampedModelAdmin):
         return False
 
 
+class LineInline(admin.StackedInline):
+    """Admin Inline for Line objects"""
+
+    model = Line
+    extra = 0
+    show_change_link = True
+    can_delete = False
+    readonly_fields = get_field_names(Line)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 class OrderAdmin(TimestampedModelAdmin):
     """Admin for Order"""
 
@@ -46,6 +59,7 @@ class OrderAdmin(TimestampedModelAdmin):
     list_filter = ("status", "payment_type")
     search_fields = ("user__email", "user__username")
     raw_id_fields = ("user", "application")
+    inlines = [LineInline]
 
     def has_add_permission(self, request):
         return False
