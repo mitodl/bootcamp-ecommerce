@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.78.2
+Version 0.78.2 (Released May 18, 2021)
 --------------
 
 - upgrade defusedxml version (#1235)
