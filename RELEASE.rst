@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.78.3
+--------------
+
+- Updated bootcamp and order admin classes (#1234)
+
 Version 0.78.2 (Released May 18, 2021)
 --------------
 
