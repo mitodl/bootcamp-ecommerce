@@ -188,7 +188,7 @@ describe("RegisterDetailsForm", () => {
     wrapper.update()
     assert.deepEqual(
       findFormikErrorByName(wrapper, "legal_address.street_address").text(),
-      "Street address is a required field"
+      "Street address field must have at least 1 items"
     )
   })
 
