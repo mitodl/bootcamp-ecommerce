@@ -61,7 +61,7 @@ describe("EditProfileForm", () => {
     wrapper.update()
     assert.deepEqual(
       findFormikErrorByName(wrapper, "legal_address.street_address").text(),
-      "Street address field must have at least 1 items"
+      "Street address is a required field"
     )
   })
 
