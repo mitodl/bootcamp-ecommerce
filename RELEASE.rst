@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.78.4
+Version 0.78.4 (Released May 20, 2021)
 --------------
 
 - asadiqbal08/Update the merge package (#1224)
