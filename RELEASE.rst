@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.78.4
+--------------
+
+- asadiqbal08/Update the merge package (#1224)
+
 Version 0.78.3 (Released May 19, 2021)
 --------------
 
