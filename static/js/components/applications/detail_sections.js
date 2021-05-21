@@ -15,7 +15,7 @@ import {
   AWAITING_RESUME,
   AWAITING_USER_SUBMISSIONS,
   AWAITING_SUBMISSION_REVIEW,
-  REVIEW_STATUS_WAITLISTED,
+  REVIEW_STATUS_WAITLISTED
 } from "../../constants"
 
 import type { DrawerChangePayload } from "../../reducers/drawer"
@@ -191,7 +191,10 @@ export const ReviewDetail = (
 
   let status
   if (submission) {
-    if (!submission.review_status_date || submission.review_status === REVIEW_STATUS_WAITLISTED) {
+    if (
+      !submission.review_status_date ||
+      submission.review_status === REVIEW_STATUS_WAITLISTED
+    ) {
       status = "Pending"
     } else if (submission.review_status === REVIEW_STATUS_REJECTED) {
       status = "Rejected"
