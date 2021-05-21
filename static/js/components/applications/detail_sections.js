@@ -191,7 +191,7 @@ export const ReviewDetail = (
 
   let status
   if (submission) {
-    if (!submission.review_status_date || submission.review_status == REVIEW_STATUS_WAITLISTED) {
+    if (!submission.review_status_date || submission.review_status === REVIEW_STATUS_WAITLISTED) {
       status = "Pending"
     } else if (submission.review_status === REVIEW_STATUS_REJECTED) {
       status = "Rejected"
