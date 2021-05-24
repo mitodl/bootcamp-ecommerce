@@ -23,6 +23,7 @@ import {
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED,
+  REVIEW_STATUS_WAITLISTED,
   SUBMISSION_VIDEO
 } from "../../constants"
 import * as utils from "../../util/util"
@@ -198,6 +199,7 @@ describe("application detail section component", () => {
     //
     ;[
       [REVIEW_STATUS_PENDING, null, "Pending"],
+      [REVIEW_STATUS_WAITLISTED, null, "Pending"],
       [REVIEW_STATUS_REJECTED, isoDate, "Rejected"],
       [REVIEW_STATUS_APPROVED, isoDate, "Approved"]
     ].forEach(([reviewStatus, reviewDate, expLinkText]) => {
