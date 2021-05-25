@@ -47,7 +47,7 @@ def ecommerce_settings(settings):
 @pytest.fixture(autouse=True)
 def patched_novoed_tasks(mocker):
     """Fixture to patch novoed tasks"""
-    mocker.patch("applications.models.novoed_tasks")
+    mocker.patch("klasses.api.novoed_tasks")
 
 
 @pytest.fixture

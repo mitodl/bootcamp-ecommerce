@@ -574,7 +574,7 @@ def test_complete_successful_order_novoed(
     """
     complete_successful_order should call a task that enrolls the given user in a NovoEd course
     """
-    patched_novoed_tasks = mocker.patch("applications.models.novoed_tasks")
+    patched_novoed_tasks = mocker.patch("klasses.api.novoed_tasks")
     settings.FEATURES["NOVOED_INTEGRATION"] = feature_flag
     if not has_stub:
         paid_order_elements.run.novoed_course_stub = None
