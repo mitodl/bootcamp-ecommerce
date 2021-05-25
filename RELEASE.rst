@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.78.5
+Version 0.78.5 (Released May 25, 2021)
 --------------
 
 - Set Application Review => Status to 'Pending' when waitlisting an application (#1241)
