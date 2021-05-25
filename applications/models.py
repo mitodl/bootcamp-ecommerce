@@ -4,7 +4,7 @@ from uuid import uuid4
 from functools import reduce
 from operator import or_
 
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -32,11 +32,8 @@ from ecommerce.models import Order
 from jobma.models import Interview
 from klasses.api import deactivate_run_enrollment, create_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
-from klasses.models import BootcampRunEnrollment
-from main import features
 from main.models import TimestampedModel, ValidateOnSaveMixin
 from main.utils import now_in_utc
-from novoed import tasks as novoed_tasks
 
 
 class ApplicationStep(models.Model):
