@@ -30,7 +30,7 @@ from applications.constants import INTEGRATION_PREFIX
 from applications.utils import validate_file_extension, check_eligibility_to_skip_steps
 from ecommerce.models import Order
 from jobma.models import Interview
-from klasses.api import deactivate_run_enrollment
+from klasses.api import deactivate_run_enrollment, create_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.models import BootcampRunEnrollment
 from main import features
@@ -257,25 +257,7 @@ class BootcampApplication(TimestampedModel):
     )
     def complete(self):
         """Mark the application as completed"""
-        BootcampRunEnrollment.objects.update_or_create(
-            user=self.user,
-            bootcamp_run=self.bootcamp_run,
-            defaults={"active": True, "change_status": None},
-        )
-        try:
-            self.user.profile.can_skip_application_steps = True
-            self.user.profile.save()
-        except ObjectDoesNotExist:
-            pass
-
-        if (
-            features.is_enabled(features.NOVOED_INTEGRATION)
-            and self.bootcamp_run.novoed_course_stub
-        ):
-            novoed_tasks.enroll_users_in_novoed_course.delay(
-                user_ids=[self.user.id],
-                novoed_course_stub=self.bootcamp_run.novoed_course_stub,
-            )
+        create_run_enrollment(self.user, self.bootcamp_run)
 
     @transition(
         field=state,

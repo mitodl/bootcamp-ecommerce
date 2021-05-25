@@ -214,6 +214,48 @@ def fetch_bootcamp_run(run_property):
             ) from exc
 
 
+def create_run_enrollment(user, run, order=None):
+    """
+    Creates local records of a user's enrollment in bootcamp runs, and attempts to enroll them
+    in novoed via API
+
+    Args:
+        user (User): The user to enroll
+        run (BootcampRun): The bootcamp run to enroll in
+        order (ecommerce.models.Order or None): The order associated with these enrollments
+
+    Returns:
+        (BootcampRunEnrollment): enrollment object that were successfully created
+
+    """
+    enrollment, _ = BootcampRunEnrollment.objects.update_or_create(
+        user=user,
+        bootcamp_run=run,
+        defaults={"active": True, "change_status": None},
+    )
+
+    try:
+        enrollment.user.profile.can_skip_application_steps = True
+        enrollment.user.profile.save()
+    except ObjectDoesNotExist:
+        pass
+
+    if order:  # enrollment created and order is available
+        application = order.application
+        application.bootcamp_run = run
+        application.save()
+
+    if (
+        features.is_enabled(features.NOVOED_INTEGRATION)
+        and enrollment.bootcamp_run.novoed_course_stub
+    ):
+        novoed_tasks.enroll_users_in_novoed_course.delay(
+            user_ids=[enrollment.user.id],
+            novoed_course_stub=enrollment.bootcamp_run.novoed_course_stub,
+        )
+    return enrollment
+
+
 def create_run_enrollments(user, runs, order=None):
     """
     Creates local records of a user's enrollment in bootcamp runs, and attempts to enroll them
@@ -232,24 +274,7 @@ def create_run_enrollments(user, runs, order=None):
 
     for run in runs:
         try:
-            enrollment, created = BootcampRunEnrollment.objects.get_or_create(
-                user=user, bootcamp_run=run
-            )
-            if not created and not enrollment.active:
-                enrollment.reactivate_and_save()
-            elif order:  # enrollment created and order is available
-                application = order.application
-                application.bootcamp_run = run
-                application.save()
-
-            if (
-                features.is_enabled(features.NOVOED_INTEGRATION)
-                and enrollment.bootcamp_run.novoed_course_stub
-            ):
-                novoed_tasks.enroll_users_in_novoed_course.delay(
-                    user_id=enrollment.user.id,
-                    novoed_course_stub=enrollment.bootcamp_run.novoed_course_stub,
-                )
+            successful_enrollments.append(create_run_enrollment(user, run, order))
         except:  # pylint: disable=bare-except
             log.exception(
                 "Failed to create/update enrollment record (user: %s, run: %s, order: %s)",
@@ -257,8 +282,6 @@ def create_run_enrollments(user, runs, order=None):
                 run.bootcamp_run_id,
                 order.id if order else None,
             )
-        else:
-            successful_enrollments.append(enrollment)
     return successful_enrollments
 
 
