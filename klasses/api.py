@@ -235,8 +235,8 @@ def create_run_enrollment(user, run, order=None):
     )
 
     try:
-        enrollment.user.profile.can_skip_application_steps = True
-        enrollment.user.profile.save()
+        user.profile.can_skip_application_steps = True
+        user.profile.save()
     except ObjectDoesNotExist:
         pass
 
@@ -348,8 +348,8 @@ def defer_enrollment(
                 order_id, user, from_bootcamp_run_id
             )
         )
-    to_enrollments = create_run_enrollments(user, [to_run], order=order)
+    to_enrollment = create_run_enrollment(user, to_run, order=order)
     from_enrollment = deactivate_run_enrollment(
         run_enrollment=from_enrollment, change_status=ENROLL_CHANGE_STATUS_DEFERRED
     )
-    return from_enrollment, first_or_none(to_enrollments)
+    return from_enrollment, to_enrollment
