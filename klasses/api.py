@@ -13,7 +13,6 @@ from ecommerce.models import Line, Order
 from klasses.constants import DATE_RANGE_MONTH_FMT, ENROLL_CHANGE_STATUS_DEFERRED
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
-from main.utils import first_or_none
 from novoed import tasks as novoed_tasks
 
 
