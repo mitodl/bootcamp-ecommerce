@@ -116,7 +116,7 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",
-    "yup": "^0.27.0"
+    "yup": "^0.31.0"
   },
   "resolutions": {
     "merge": "^2.1.1"
