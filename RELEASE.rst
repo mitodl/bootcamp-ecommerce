@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.78.6
+--------------
+
+- asadiqbal08/version bump property expr (#1225)
+
 Version 0.78.5 (Released May 25, 2021)
 --------------
 
