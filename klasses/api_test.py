@@ -51,6 +51,42 @@ def default_settings(settings):
     settings.FEATURES[features.NOVOED_INTEGRATION] = False
 
 
+@pytest.fixture()
+def patched_create_run_enrollment(mocker):
+    """patched create_run_enrollment"""
+    return mocker.patch("klasses.api.create_run_enrollment", return_value=None)
+
+
+@pytest.fixture()
+def patched_deactivate_run_enrollment(mocker):
+    """patched deactivate_run_enrollment"""
+    return mocker.patch("klasses.api.deactivate_run_enrollment", return_value=[])
+
+
+@pytest.fixture()
+def enrollment_data(user):
+    """enrollment data for testing"""
+    bootcamps = BootcampFactory.create_batch(2)
+    enrollments = BootcampRunEnrollmentFactory.create_batch(
+        3,
+        user=user,
+        active=factory.Iterator([False, True, True]),
+        bootcamp_run__bootcamp=factory.Iterator(
+            [bootcamps[0], bootcamps[0], bootcamps[1]]
+        ),
+    )
+    unenrollable_run = BootcampRunFactory.create(
+        end_date=now_in_utc() - timedelta(days=1)
+    )
+    order = OrderFactory.create(user=user)
+    return SimpleNamespace(
+        bootcamps=bootcamps,
+        enrollments=enrollments,
+        unenrollable_run=unenrollable_run,
+        order=order,
+    )
+
+
 @pytest.mark.django_db
 def test_deactivate_run_enrollment():
     """deactivate_run_enrollment should update enrollment fields correctly"""
@@ -192,18 +228,6 @@ def test_fetch_bootcamp_run_dates(end_date_params):
         fetch_bootcamp_run("invalid")
 
 
-@pytest.fixture()
-def patched_create_run_enrollment(mocker):
-    """patched create_run_enrollment"""
-    return mocker.patch("klasses.api.create_run_enrollment", return_value=None)
-
-
-@pytest.fixture()
-def patched_deactivate_run_enrollment(mocker):
-    """patched deactivate_run_enrollment"""
-    return mocker.patch("klasses.api.deactivate_run_enrollment", return_value=[])
-
-
 def test_create_run_enrollments(mocker, patched_create_run_enrollment, user):
     """test create_run_enrollments"""
     bootcamp = BootcampFactory.create()
@@ -238,6 +262,7 @@ def test_create_run_enrollment(mocker, user, settings, novoed_integration):
         "klasses.api.novoed_tasks.enroll_users_in_novoed_course.delay"
     )
 
+    assert user.profile.can_skip_application_steps is False
     successful_enrollments = []
     for run in runs:
         successful_enrollments.append(create_run_enrollment(user, run, order=order))
@@ -254,6 +279,7 @@ def test_create_run_enrollment(mocker, user, settings, novoed_integration):
         patched_novoed_enroll.assert_has_calls(expected_calls)
 
     assert len(successful_enrollments) == num_runs
+    assert user.profile.can_skip_application_steps is True
     enrollments = BootcampRunEnrollment.objects.order_by("bootcamp_run__id").all()
     for (run, enrollment) in zip(runs, enrollments):
         assert enrollment.change_status is None
@@ -327,30 +353,6 @@ def test_defer_enrollment(mocker, user, force):
     assert patched_deactivate_enrollments.call_count == 1
     assert patched_deactivate_enrollments.call_args == mocker.call(
         change_status=ENROLL_CHANGE_STATUS_DEFERRED, run_enrollment=existing_enrollment
-    )
-
-
-@pytest.fixture()
-def enrollment_data(user):
-    """enrollment data for testing"""
-    bootcamps = BootcampFactory.create_batch(2)
-    enrollments = BootcampRunEnrollmentFactory.create_batch(
-        3,
-        user=user,
-        active=factory.Iterator([False, True, True]),
-        bootcamp_run__bootcamp=factory.Iterator(
-            [bootcamps[0], bootcamps[0], bootcamps[1]]
-        ),
-    )
-    unenrollable_run = BootcampRunFactory.create(
-        end_date=now_in_utc() - timedelta(days=1)
-    )
-    order = OrderFactory.create(user=user)
-    return SimpleNamespace(
-        bootcamps=bootcamps,
-        enrollments=enrollments,
-        unenrollable_run=unenrollable_run,
-        order=order,
     )
 
 
