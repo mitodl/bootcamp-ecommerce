@@ -13,6 +13,48 @@ import {
 } from "../../constants"
 import IntegrationTestHelper from "../../util/integration_test_helper"
 import { shouldIf } from "../../lib/test_utils"
+import * as util from "../../util/util"
+
+describe("NotificationContainer component without localStorage", () => {
+  let helper, render
+  beforeEach(() => {
+    helper = new IntegrationTestHelper()
+    helper.sandbox.stub(util, "isLocalStorageSupported").callsFake(() => {
+      return false
+    })
+    render = helper.configureHOCRenderer(
+      NotificationContainer,
+      InnerNotificationContainer,
+      {
+        ui: {
+          userNotifications: {}
+        }
+      },
+      {}
+    )
+  })
+
+  afterEach(() => {
+    helper.cleanup()
+  })
+
+  it("skips attempted setting of localStorage item if it is unavailable", async () => {
+    const { inner } = await render({
+      ui: {
+        userNotifications: {
+          [CMS_SITE_WIDE_NOTIFICATION]: {
+            type:  ALERT_TYPE_TEXT,
+            props: { text: "Cms Notification", persistedId: 1 }
+          }
+        }
+      }
+    })
+
+    const alert = inner.find("Alert").at(0)
+    alert.prop("toggle")()
+    assert.isNull(window.localStorage.getItem(CMS_NOTIFICATION_LCL_STORAGE_ID))
+  })
+})
 
 describe("NotificationContainer component", () => {
   const messages = {

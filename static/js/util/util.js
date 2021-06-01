@@ -225,3 +225,14 @@ export const recoverableErrorCode = (error: string) =>
 
 export const transformError = (error: string) =>
   CS_ERROR_MESSAGES[recoverableErrorCode(error) || CS_DEFAULT]
+
+export const isLocalStorageSupported = () => {
+  try {
+    const key = "__local_storage_access_key__"
+    window.localStorage.setItem(key, key)
+    window.localStorage.getItem(key)
+    return true
+  } catch (e) {
+    return false
+  }
+}
