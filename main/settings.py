@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     # wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.legacy.richtext",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
