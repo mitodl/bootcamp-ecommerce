@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.79.0
+Version 0.79.0 (Released June 02, 2021)
 --------------
 
 - Try to avoid localStorage error on mobile phones (#1227)
