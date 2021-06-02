@@ -1,31 +1,44 @@
 """
 klasses API tests
 """
+# pylint: disable=redefined-outer-name
 import datetime
+from datetime import timedelta
+from types import SimpleNamespace
 
 import factory
 import pytest
 import pytz
+from django.core.exceptions import ValidationError
 from django.db.models import signals
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from applications.models import BootcampApplication
-from ecommerce.factories import LineFactory
+from ecommerce.factories import LineFactory, OrderFactory
 from klasses.api import (
     deactivate_run_enrollment,
     fetch_bootcamp_run,
     adjust_app_state_for_new_price,
+    create_run_enrollment,
+    create_run_enrollments,
+    defer_enrollment,
 )
-from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
+from klasses.constants import (
+    ENROLL_CHANGE_STATUS_REFUNDED,
+    ENROLL_CHANGE_STATUS_DEFERRED,
+)
 from klasses.factories import (
+    BootcampFactory,
     BootcampRunFactory,
     BootcampRunEnrollmentFactory,
     PersonalPriceFactory,
     InstallmentFactory,
 )
-from klasses.models import BootcampRun
-from main.features import NOVOED_INTEGRATION
+from klasses.models import BootcampRun, BootcampRunEnrollment
+from main import features
+from main.utils import now_in_utc
+
 
 RUN_PRICE = 1000
 
@@ -35,7 +48,43 @@ def default_settings(settings):
     """
     Default settings fixture for API tests
     """
-    settings.FEATURES[NOVOED_INTEGRATION] = False
+    settings.FEATURES[features.NOVOED_INTEGRATION] = False
+
+
+@pytest.fixture()
+def patched_create_run_enrollment(mocker):
+    """patched create_run_enrollment"""
+    return mocker.patch("klasses.api.create_run_enrollment", return_value=None)
+
+
+@pytest.fixture()
+def patched_deactivate_run_enrollment(mocker):
+    """patched deactivate_run_enrollment"""
+    return mocker.patch("klasses.api.deactivate_run_enrollment", return_value=[])
+
+
+@pytest.fixture()
+def enrollment_data(user):
+    """enrollment data for testing"""
+    bootcamps = BootcampFactory.create_batch(2)
+    enrollments = BootcampRunEnrollmentFactory.create_batch(
+        3,
+        user=user,
+        active=factory.Iterator([False, True, True]),
+        bootcamp_run__bootcamp=factory.Iterator(
+            [bootcamps[0], bootcamps[0], bootcamps[1]]
+        ),
+    )
+    unenrollable_run = BootcampRunFactory.create(
+        end_date=now_in_utc() - timedelta(days=1)
+    )
+    order = OrderFactory.create(user=user)
+    return SimpleNamespace(
+        bootcamps=bootcamps,
+        enrollments=enrollments,
+        unenrollable_run=unenrollable_run,
+        order=order,
+    )
 
 
 @pytest.mark.django_db
@@ -63,7 +112,7 @@ def test_deactivate_run_enrollment():
 @pytest.mark.django_db
 def test_deactivate_run_enrollment_novoed(mocker, settings):
     """deactivate_run_enrollment should run a task to unenroll users in NovoEd if the bootcamp run is NovoEd-enabled"""
-    settings.FEATURES[NOVOED_INTEGRATION] = True
+    settings.FEATURES[features.NOVOED_INTEGRATION] = True
     patched_novoed_tasks = mocker.patch("klasses.api.novoed_tasks")
     novoed_stub = "novoed-course"
     enrollment = BootcampRunEnrollmentFactory.create(
@@ -177,3 +226,244 @@ def test_fetch_bootcamp_run_dates(end_date_params):
     assert fetch_bootcamp_run(run.display_title) == run
     with pytest.raises(BootcampRun.DoesNotExist):
         fetch_bootcamp_run("invalid")
+
+
+def test_create_run_enrollments(mocker, patched_create_run_enrollment, user):
+    """test create_run_enrollments"""
+    bootcamp = BootcampFactory.create()
+    bootcamp_runs = BootcampRunFactory.create_batch(3, bootcamp=bootcamp)
+    create_run_enrollments(user, bootcamp_runs)
+    assert patched_create_run_enrollment.call_count == 3
+    expected_calls = []
+    for run in bootcamp_runs:
+        expected_calls.append(mocker.call(user, run, None))
+    patched_create_run_enrollment.assert_has_calls(expected_calls)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("novoed_integration", [True, False])
+def test_create_run_enrollment(mocker, user, settings, novoed_integration):
+    """
+    create_run_enrollment should call the novoed API to create enrollments, create or reactivate local
+    enrollment records
+    """
+    settings.FEATURES[features.NOVOED_INTEGRATION] = novoed_integration
+
+    num_runs = 3
+    order = OrderFactory.create()
+    runs = BootcampRunFactory.create_batch(num_runs)
+    BootcampRunEnrollmentFactory.create(
+        user=user,
+        bootcamp_run=runs[0],
+        change_status=ENROLL_CHANGE_STATUS_REFUNDED,
+        active=False,
+    )
+    patched_novoed_enroll = mocker.patch(
+        "klasses.api.novoed_tasks.enroll_users_in_novoed_course.delay"
+    )
+
+    assert user.profile.can_skip_application_steps is False
+    successful_enrollments = []
+    for run in runs:
+        successful_enrollments.append(create_run_enrollment(user, run, order=order))
+    if novoed_integration:
+        assert patched_novoed_enroll.call_count == 3
+
+        expected_calls = []
+        for run in runs:
+            expected_calls.append(
+                mocker.call(
+                    novoed_course_stub=run.novoed_course_stub, user_ids=[user.id]
+                )
+            )
+        patched_novoed_enroll.assert_has_calls(expected_calls)
+
+    assert len(successful_enrollments) == num_runs
+    assert user.profile.can_skip_application_steps is True
+    enrollments = BootcampRunEnrollment.objects.order_by("bootcamp_run__id").all()
+    for (run, enrollment) in zip(runs, enrollments):
+        assert enrollment.change_status is None
+        assert enrollment.active is True
+        assert enrollment.bootcamp_run == run
+
+
+@pytest.mark.django_db
+def test_create_run_enrollments_creation_fail(caplog, mocker, user):
+    """
+    create_run_enrollments should log a message and send an admin email if there's an error during the
+    creation of local enrollment records
+    """
+    run = BootcampRunFactory()
+    mocker.patch(
+        "klasses.api.BootcampRunEnrollment.objects.get_or_create",
+        side_effect=[Exception()],
+    )
+    patched_novoed_enroll = mocker.patch(
+        "klasses.api.novoed_tasks.enroll_users_in_novoed_course.delay"
+    )
+
+    with pytest.raises(Exception):
+        successful_enrollments = create_run_enrollments(user, [run], order=None)
+        patched_novoed_enroll.assert_not_called()
+        assert successful_enrollments == []
+        assert (
+            f"Failed to create/update enrollment record (user: user_{user.id}, run: {run.bootcamp_run_id}, order: {None})"
+            in caplog.text
+        )
+
+
+@pytest.mark.parametrize("force", [True, False])
+@pytest.mark.django_db
+def test_defer_enrollment(mocker, user, force):
+    """
+    defer_enrollment should deactivate a user's existing enrollment and create an enrollment in another
+    bootcamp run
+    """
+    bootcamp = BootcampFactory.create()
+    bootcamp_runs = BootcampRunFactory.create_batch(3, bootcamp=bootcamp)
+    order = OrderFactory.create(user=user, application__bootcamp_run=bootcamp_runs[0])
+    existing_enrollment = BootcampRunEnrollmentFactory.create(
+        bootcamp_run=bootcamp_runs[0], user=user
+    )
+    target_run = bootcamp_runs[1]
+    mock_new_enrollment = mocker.Mock()
+    patched_create_enrollment = mocker.patch(
+        "klasses.api.create_run_enrollment",
+        autospec=True,
+        return_value=mock_new_enrollment if force else None,
+    )
+    patched_deactivate_enrollments = mocker.patch(
+        "klasses.api.deactivate_run_enrollment",
+        autospec=True,
+        return_value=existing_enrollment if force else None,
+    )
+
+    returned_from_enrollment, returned_to_enrollment = defer_enrollment(
+        existing_enrollment.user,
+        existing_enrollment.bootcamp_run.bootcamp_run_id,
+        bootcamp_runs[1].bootcamp_run_id,
+        order.id,
+        force=force,
+    )
+    assert returned_from_enrollment == patched_deactivate_enrollments.return_value
+    assert returned_to_enrollment == patched_create_enrollment.return_value
+    patched_create_enrollment.assert_called_once_with(
+        existing_enrollment.user, target_run, order=order
+    )
+    assert patched_deactivate_enrollments.call_count == 1
+    assert patched_deactivate_enrollments.call_args == mocker.call(
+        change_status=ENROLL_CHANGE_STATUS_DEFERRED, run_enrollment=existing_enrollment
+    )
+
+
+@pytest.mark.django_db
+def test_defer_enrollment_expired_enrollment_period_validation(
+    enrollment_data,
+    patched_create_run_enrollment,
+    patched_deactivate_run_enrollment,
+    user,
+):
+    """
+    defer_enrollment should raise an exception if to bootcamp_run that is outside of its enrollment period
+    """
+    with pytest.raises(ValidationError):
+        # Deferring to a bootcamp run that is outside of its enrollment period should raise a validation error
+        defer_enrollment(
+            user,
+            enrollment_data.enrollments[0].bootcamp_run.bootcamp_run_id,
+            enrollment_data.unenrollable_run.bootcamp_run_id,
+            enrollment_data.order.id,
+        )
+    patched_create_run_enrollment.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_defer_enrollment_different_bootcamp_validation(
+    enrollment_data,
+    patched_create_run_enrollment,
+    patched_deactivate_run_enrollment,
+    user,
+):
+    """
+    defer_enrollment should raise an exception if to belongs to a different bootcamp
+    """
+    with pytest.raises(ValidationError):
+        # Deferring to a bootcamp run in a different bootcamp should raise a validation error
+        defer_enrollment(
+            user,
+            enrollment_data.enrollments[1].bootcamp_run.bootcamp_run_id,
+            enrollment_data.enrollments[2].bootcamp_run.bootcamp_run_id,
+            enrollment_data.order.id,
+        )
+    patched_create_run_enrollment.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_defer_enrollment_inactive_enrollment_validation(
+    enrollment_data,
+    patched_create_run_enrollment,
+    patched_deactivate_run_enrollment,
+    user,
+):
+    """
+    defer_enrollment from an inactive enrollment
+    """
+    with pytest.raises(ValidationError):
+        # Deferring from an inactive enrollment should raise a validation error
+        defer_enrollment(
+            user,
+            enrollment_data.enrollments[0].bootcamp_run.bootcamp_run_id,
+            enrollment_data.enrollments[1].bootcamp_run.bootcamp_run_id,
+            enrollment_data.order.id,
+        )
+    patched_create_run_enrollment.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_defer_enrollment_invalid_order_validation(
+    enrollment_data,
+    patched_create_run_enrollment,
+    patched_deactivate_run_enrollment,
+    user,
+):
+    """
+    defer_enrollment from an invalid order
+    """
+    with pytest.raises(ValidationError):
+        # Deferring to a bootcamp run in a different bootcamp should raise a validation error for invalid order
+        defer_enrollment(
+            user,
+            enrollment_data.enrollments[1].bootcamp_run.bootcamp_run_id,
+            enrollment_data.enrollments[2].bootcamp_run.bootcamp_run_id,
+            100,
+        )
+    patched_create_run_enrollment.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_defer_enrollment_forced_validation(
+    enrollment_data,
+    patched_create_run_enrollment,
+    patched_deactivate_run_enrollment,
+    user,
+):
+    """
+    defer_enrollment should not raise an exception if used force
+    """
+    # The last two cases should not raise an exception if the 'force' flag is set to True
+    defer_enrollment(
+        user,
+        enrollment_data.enrollments[0].bootcamp_run.bootcamp_run_id,
+        enrollment_data.enrollments[1].bootcamp_run.bootcamp_run_id,
+        enrollment_data.order.id,
+        force=True,
+    )
+    assert patched_create_run_enrollment.call_count == 1
+    defer_enrollment(
+        user,
+        enrollment_data.enrollments[1].bootcamp_run.bootcamp_run_id,
+        enrollment_data.enrollments[2].bootcamp_run.bootcamp_run_id,
+        enrollment_data.order.id,
+        force=True,
+    )
+    assert patched_create_run_enrollment.call_count == 2

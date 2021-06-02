@@ -61,7 +61,7 @@ def bootcamp_run(application):
 @pytest.fixture()
 def patched_novoed_tasks(mocker):
     """Patched novoed-related tasks"""
-    return mocker.patch("applications.models.novoed_tasks")
+    return mocker.patch("klasses.api.novoed_tasks")
 
 
 PAYMENT = 123
