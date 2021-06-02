@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.79.1
+--------------
+
+- defer enrollment (#1218)
+
 Version 0.79.0 (Released June 02, 2021)
 --------------
 
