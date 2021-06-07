@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.80.0
+--------------
+
+- Bump Pillow to 8.2.0 & Wagtail to 2.12.4 (#1175)
+
 Version 0.79.1 (Released June 03, 2021)
 --------------
 
