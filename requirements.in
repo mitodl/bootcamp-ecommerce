@@ -39,7 +39,7 @@ social-auth-app-django==4.0.0
 static3==0.5.1
 urllib3>=1.24.2
 uwsgi
-wagtail==2.9.3
+wagtail==2.12.4
 zeep==3.4.0
-Pillow==7.1.0
+Pillow==8.2.0
 user-util==0.1.5

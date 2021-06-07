@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     # wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.legacy.richtext",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -168,7 +169,7 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
-    "wagtail.core.middleware.SiteMiddleware",
+    "wagtail.contrib.legacy.sitemiddleware.SiteMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "main.middleware.CachelessAPIMiddleware",
 )
