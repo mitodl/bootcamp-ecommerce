@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.80.0
+Version 0.80.0 (Released June 09, 2021)
 --------------
 
 - upgrade django to 2.2.21 (#1251)
