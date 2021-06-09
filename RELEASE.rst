@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.80.1
+--------------
+
+- Bump browserslist from 4.11.1 to 4.16.6 (#1243)
+- Bump ws from 7.2.3 to 7.4.6 (#1245)
+- Don't fail CI if codecov upload fails
+
 Version 0.80.0 (Released June 09, 2021)
 --------------
 
