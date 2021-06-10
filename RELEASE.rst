@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.80.1
+Version 0.80.1 (Released June 10, 2021)
 --------------
 
 - Bump browserslist from 4.11.1 to 4.16.6 (#1243)
