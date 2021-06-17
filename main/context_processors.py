@@ -42,7 +42,7 @@ def js_settings(request):
                 "upload_max_size": settings.MAX_FILE_UPLOAD_MB * 1_000_000,
                 "support_url": settings.SUPPORT_URL,
                 "terms_url": get_resource_page_urls(request.site)["terms_of_service"],
-                "novoed_login_url": settings.NOVOED_SAML_LOGIN_URL,
+                "novoed_base_url": settings.NOVOED_BASE_URL,
             }
         )
     }

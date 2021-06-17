@@ -474,7 +474,13 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       application.bootcamp_run.page.thumbnail_image_src :
       null
     const titleText = application.bootcamp_run.bootcamp.title
-
+    let novoedUrl = null
+    if (
+      SETTINGS.novoed_base_url &&
+      application.bootcamp_run.novoed_course_stub
+    ) {
+      novoedUrl = `${SETTINGS.novoed_base_url}/#!/courses/${application.bootcamp_run.novoed_course_stub}/home`
+    }
     return (
       <div className="application-card" key={application.id}>
         <div className="p-3 d-flex flex-wrap flex-sm-nowrap">
@@ -486,7 +492,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 <h2>
                   {isNovoEdEnrolled(application) ? (
                     <a
-                      href={SETTINGS.novoed_login_url}
+                      href={novoedUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

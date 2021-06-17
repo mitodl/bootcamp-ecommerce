@@ -259,6 +259,13 @@ export const BootcampStartDetail = (
   props: BootcampStartProps
 ): React$Element<*> => {
   const { ready, fulfilled, applicationDetail } = props
+  let novoedUrl = null
+  if (
+    SETTINGS.novoed_base_url &&
+    applicationDetail.bootcamp_run.novoed_course_stub
+  ) {
+    novoedUrl = `${SETTINGS.novoed_base_url}/#!/courses/${applicationDetail.bootcamp_run.novoed_course_stub}/home`
+  }
 
   return (
     <ProgressDetailRow className="bootcampStart" fulfilled={fulfilled}>
@@ -271,11 +278,7 @@ export const BootcampStartDetail = (
       )}
       {ready && fulfilled ? (
         <div className="col-12 col-sm-5 text-sm-right">
-          <a
-            href={SETTINGS.novoed_login_url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={novoedUrl} target="_blank" rel="noopener noreferrer">
             Start Bootcamp
           </a>
         </div>

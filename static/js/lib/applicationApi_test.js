@@ -77,12 +77,12 @@ describe("applications API", () => {
   })
 
   it("isNovoEdEnrolled should return true if certain settings are present and an enrollment has been synced", () => {
-    SETTINGS.novoed_login_url = null
+    SETTINGS.novoed_base_url = null
     const application = makeApplication()
     application.bootcamp_run.novoed_course_stub = null
     application.enrollment = null
     assert.isFalse(api.isNovoEdEnrolled(application))
-    SETTINGS.novoed_login_url = "http://novoed.com"
+    SETTINGS.novoed_base_url = "http://novoed.com"
     application.bootcamp_run.novoed_course_stub = "some-bootcamp"
     application.enrollment = generateFakeEnrollment()
     application.enrollment.novoed_sync_date = null

@@ -287,7 +287,14 @@ describe("application detail section component", () => {
       it(`should show correct link if ready === ${String(
         ready
       )}, fulfilled === ${String(fulfilled)}`, () => {
-        SETTINGS.novoed_login_url = "https://novoed.com"
+        SETTINGS.novoed_base_url = "https://novoed.com"
+        let novoedUrl = null
+        if (
+          SETTINGS.novoed_base_url &&
+          applicationDetail.bootcamp_run.novoed_course_stub
+        ) {
+          novoedUrl = `${SETTINGS.novoed_base_url}/#!/courses/${applicationDetail.bootcamp_run.novoed_course_stub}/home`
+        }
         const wrapper = shallow(
           <BootcampStartDetail
             {...defaultProps}
@@ -300,7 +307,7 @@ describe("application detail section component", () => {
         assert.equal(link.exists(), expLinkText !== undefined)
         if (expLinkText !== undefined) {
           assert.equal(link.prop("children"), expLinkText)
-          assert.equal(link.prop("href"), SETTINGS.novoed_login_url)
+          assert.equal(link.prop("href"), novoedUrl)
         }
       })
     })
