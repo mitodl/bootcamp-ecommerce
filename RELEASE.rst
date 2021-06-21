@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.81.0
+--------------
+
+- Bump postcss from 7.0.27 to 7.0.36 (#1261)
+- bump urllib3=1.26.5 through boto3 and requests (#1260)
+
 Version 0.80.2 (Released June 14, 2021)
 --------------
 
