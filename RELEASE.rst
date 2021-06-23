@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.81.0
+Version 0.81.0 (Released June 23, 2021)
 --------------
 
 - Bump postcss from 7.0.27 to 7.0.36 (#1261)
