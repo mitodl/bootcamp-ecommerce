@@ -119,7 +119,8 @@
     "yup": "^0.31.0"
   },
   "resolutions": {
-    "merge": "^2.1.1"
+    "merge": "^2.1.1",
+    "node-sass/**/trim-newlines": "^3.0.1"
   },
   "engines": {
     "node": "13.13.0",
