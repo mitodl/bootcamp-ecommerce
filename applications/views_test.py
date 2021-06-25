@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
+from mitol.common.utils import now_in_utc
 
 from applications.constants import (
     AppStates,
@@ -36,7 +37,7 @@ from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.factories import BootcampRunFactory
 from main.test_utils import assert_drf_json_equal
-from main.utils import serializer_date_format, now_in_utc
+from main.utils import serializer_date_format
 from profiles.factories import UserFactory
 
 

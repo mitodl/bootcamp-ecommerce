@@ -1,56 +1,20 @@
 """Testing utils"""
 import sys
-import abc
 import json
-from contextlib import contextmanager
-import traceback
 from unittest.mock import Mock
 import csv
 import tempfile
 from importlib import reload, import_module
 
-import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls.base import clear_url_caches
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework import status
 from requests.exceptions import HTTPError
+from mitol.common.pytest_utils import MockResponse as CommonMockResponse
 
 from main import features
-
-
-def any_instance_of(*cls):
-    """
-    Returns a type that evaluates __eq__ in isinstance terms
-
-    Args:
-        cls (list of types): variable list of types to ensure equality against
-
-    Returns:
-        AnyInstanceOf: dynamic class type with the desired equality
-    """
-
-    class AnyInstanceOf(metaclass=abc.ABCMeta):
-        """Dynamic class type for __eq__ in terms of isinstance"""
-
-        def __eq__(self, other):
-            return isinstance(other, cls)
-
-    for c in cls:
-        AnyInstanceOf.register(c)
-    return AnyInstanceOf()
-
-
-@contextmanager
-def assert_not_raises():
-    """Used to assert that the context does not raise an exception"""
-    try:
-        yield
-    except AssertionError:
-        raise
-    except Exception:  # pylint: disable=broad-except
-        pytest.fail(f"An exception was not raised: {traceback.format_exc()}")
 
 
 def assert_drf_json_equal(obj1, obj2):
@@ -68,31 +32,14 @@ def assert_drf_json_equal(obj1, obj2):
     assert converted1 == converted2
 
 
-class MockResponse:
+class MockResponse(CommonMockResponse):
     """
     Mock requests.Response
     """
 
-    def __init__(
-        self, content, status_code=200, content_type="application/json", url=None
-    ):
-        if isinstance(content, (dict, list)):
-            self.content = json.dumps(content)
-        else:
-            self.content = str(content)
-        self.text = self.content
-        self.status_code = status_code
-        self.headers = {"Content-Type": content_type}
-        if url:
-            self.url = url
-
     @property
     def ok(self):  # pylint: disable=missing-docstring
         return status.HTTP_200_OK <= self.status_code < status.HTTP_400_BAD_REQUEST
-
-    def json(self):
-        """Return json content"""
-        return json.loads(self.content)
 
     def raise_for_status(self):
         """Raises an exception"""

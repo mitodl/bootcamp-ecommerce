@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 from django.contrib.auth import get_user_model
 from social_django.models import UserSocialAuth
+from mitol.common.utils import now_in_utc
 
 from applications.factories import BootcampApplicationFactory
 
@@ -12,7 +13,6 @@ from profiles.factories import UserFactory, UserSocialAuthFactory
 from profiles.management.commands import retire_users
 
 from klasses.factories import BootcampRunFactory
-from main.utils import now_in_utc
 
 User = get_user_model()
 

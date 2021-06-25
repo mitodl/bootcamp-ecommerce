@@ -12,9 +12,11 @@ from cms.factories import HomePageFactory
 @pytest.mark.django_db
 def test_index_anonymous(settings, mocker, client):
     """Verify the index view is as expected when user is anonymous"""
-    settings.USE_WEBPACK_DEV_SERVER = False
+    settings.WEBPACK_USE_DEV_SERVER = False
 
-    patched_get_bundle = mocker.patch("main.templatetags.render_bundle._get_bundle")
+    patched_get_bundle = mocker.patch(
+        "mitol.common.templatetags.render_bundle._get_bundle"
+    )
     root_page = HomePageFactory.create(parent=None)
     resp = client.get("/")
     assert resp.status_code == 200

@@ -2,9 +2,9 @@
 Admin views for bootcamps
 """
 from django.contrib import admin
+from mitol.common.admin import TimestampedModelAdmin
 
 from klasses import models
-from main.admin import TimestampedModelAdmin
 
 
 class BootcampRunInline(admin.StackedInline):

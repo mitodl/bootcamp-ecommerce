@@ -12,6 +12,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django_fsm import FSMField, transition, RETURN_VALUE
 from wagtail.core.fields import RichTextField
+from mitol.common.utils import now_in_utc
+from mitol.common.models import TimestampedModel
 
 from applications.constants import (
     VALID_SUBMISSION_TYPE_CHOICES,
@@ -32,8 +34,7 @@ from ecommerce.models import Order
 from jobma.models import Interview
 from klasses.api import deactivate_run_enrollment, create_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
-from main.models import TimestampedModel, ValidateOnSaveMixin
-from main.utils import now_in_utc
+from main.models import ValidateOnSaveMixin
 
 
 class ApplicationStep(models.Model):

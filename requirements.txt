@@ -15,7 +15,9 @@ arrow==0.16.0
 asgiref==3.3.4
     # via djoser
 attrs==19.3.0
-    # via zeep
+    # via
+    #   pytest
+    #   zeep
 backcall==0.2.0
     # via ipython
 beautifulsoup4==4.8.2
@@ -116,8 +118,10 @@ django-templated-mail==1.1.1
     # via djoser
 django-treebeard==4.3.1
     # via wagtail
-django-webpack-loader==0.5.0
-    # via -r requirements.in
+django-webpack-loader==0.7.0
+    # via
+    #   -r requirements.in
+    #   mitol-django-common
 django==2.2.24
     # via
     #   -r requirements.in
@@ -131,6 +135,7 @@ django==2.2.24
     #   djangorestframework-simplejwt
     #   djangosaml2idp
     #   dynamic-rest
+    #   mitol-django-common
     #   wagtail
 djangorestframework-serializer-extensions==2.0.0
     # via -r requirements.in
@@ -156,6 +161,10 @@ elementpath==2.1.3
     # via xmlschema
 et-xmlfile==1.1.0
     # via openpyxl
+factory-boy==3.2.0
+    # via mitol-django-common
+faker==8.8.2
+    # via factory-boy
 hashids==1.2.0
     # via djangorestframework-serializer-extensions
 html5lib==0.999999999
@@ -168,6 +177,8 @@ importlib-resources==5.1.0
     # via pysaml2
 inflection==0.3.1
     # via dynamic-rest
+iniconfig==1.1.1
+    # via pytest
 ipython-genutils==0.2.0
     # via traitlets
 ipython==7.22.0
@@ -196,6 +207,8 @@ lxml==4.6.3
     #   zeep
 markupsafe==1.1.1
     # via jinja2
+mitol-django-common==1.2.0
+    # via -r requirements.in
 newrelic==6.2.0.156
     # via -r requirements.in
 oauthlib==2.0.2
@@ -204,6 +217,8 @@ oauthlib==2.0.2
     #   social-auth-core
 openpyxl==3.0.7
     # via tablib
+packaging==20.9
+    # via pytest
 parso==0.8.2
     # via jedi
 pexpect==4.8.0
@@ -214,6 +229,8 @@ pillow==8.2.0
     # via
     #   -r requirements.in
     #   wagtail
+pluggy==0.13.1
+    # via pytest
 premailer==3.7.0
     # via -r requirements.in
 prompt-toolkit==3.0.18
@@ -224,6 +241,8 @@ psycopg2==2.8.6
     #   django-server-status
 ptyprocess==0.5.1
     # via pexpect
+py==1.10.0
+    # via pytest
 pycountry==19.8.18
     # via -r requirements.in
 pycparser==2.20
@@ -238,17 +257,22 @@ pynacl==1.3.0
     # via -r requirements.in
 pyopenssl==19.1.0
     # via pysaml2
+pyparsing==2.4.7
+    # via packaging
 pysaml2==6.5.1
     # via djangosaml2idp
+pytest==6.1.2
+    # via mitol-django-common
 python-dateutil==2.8.1
     # via
     #   -r requirements.in
     #   arrow
     #   botocore
+    #   faker
     #   pysaml2
 python3-openid==3.1.0
     # via social-auth-core
-pytz==2019.3
+pytz==2021.1
     # via
     #   -r requirements.in
     #   celery
@@ -256,6 +280,7 @@ pytz==2019.3
     #   django-modelcluster
     #   djangosaml2idp
     #   l18n
+    #   mitol-django-common
     #   pysaml2
     #   zeep
 redis==3.2.0
@@ -273,6 +298,7 @@ requests==2.25.1
     #   coreapi
     #   django-anymail
     #   dynamic-rest
+    #   mitol-django-common
     #   premailer
     #   pysaml2
     #   requests-oauthlib
@@ -316,6 +342,10 @@ static3==0.5.1
     #   dj-static
 tablib[xls,xlsx]==3.0.0
     # via wagtail
+text-unidecode==1.3
+    # via faker
+toml==0.10.2
+    # via pytest
 traitlets==4.3.2
     # via ipython
 uritemplate==3.0.1

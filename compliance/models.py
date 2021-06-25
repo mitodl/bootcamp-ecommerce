@@ -1,6 +1,7 @@
 """Compliance app models"""
 from django.conf import settings
 from django.db import models
+from mitol.common.models import TimestampedModel
 
 from compliance.constants import (
     RESULT_CHOICES,
@@ -9,7 +10,6 @@ from compliance.constants import (
     RESULT_UNKNOWN,
     RESULT_MANUALLY_APPROVED,
 )
-from main.models import TimestampedModel
 
 
 class ExportsInquiryLog(TimestampedModel):

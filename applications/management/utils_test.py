@@ -6,6 +6,7 @@ import factory
 from django.core.exceptions import ValidationError
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from mitol.common.utils import now_in_utc
 
 from applications.api import derive_application_state
 from applications.constants import (
@@ -29,7 +30,6 @@ from applications.management.utils import (
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from klasses.factories import BootcampFactory, BootcampRunFactory, InstallmentFactory
-from main.utils import now_in_utc
 from profiles.factories import UserFactory
 
 FAKE_FILE_NAME = "file.txt"

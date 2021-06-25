@@ -8,8 +8,8 @@ import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import status
+from mitol.common.utils import chunks
 
-from main.utils import chunks
 from mail.exceptions import SendBatchException
 
 

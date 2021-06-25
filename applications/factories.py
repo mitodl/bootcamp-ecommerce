@@ -6,6 +6,7 @@ from factory import Faker, LazyAttribute, Sequence, SubFactory, fuzzy, Trait
 from factory.django import DjangoModelFactory
 import faker
 import pytz
+from mitol.common.utils import now_in_utc
 
 from applications import models
 from applications.constants import (
@@ -22,7 +23,6 @@ from applications.constants import (
 )
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory
-from main.utils import now_in_utc
 from profiles.factories import UserFactory
 
 FAKE = faker.Factory.create()

@@ -5,11 +5,11 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from mitol.common.utils import now_in_utc
 
 from mail.v2 import api
 from mail.v2.constants import EMAIL_RECEIPT, EMAIL_PW_RESET, EMAIL_VERIFICATION
 from mail.forms import EmailDebuggerForm
-from main.utils import now_in_utc
 
 
 def drf_datetime(dt):

@@ -16,6 +16,7 @@ from django.core.management.base import CommandError
 import pytest
 import pytz
 from rest_framework.exceptions import ValidationError
+from mitol.common.pytest_utils import any_instance_of
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
@@ -54,7 +55,6 @@ from klasses.factories import (
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
-from main.test_utils import any_instance_of
 from profiles.factories import ProfileFactory
 
 

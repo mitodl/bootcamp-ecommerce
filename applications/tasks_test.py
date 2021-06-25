@@ -2,6 +2,7 @@
 from datetime import timedelta
 
 import pytest
+from mitol.common.utils import now_in_utc
 
 from applications.constants import (
     AppStates,
@@ -24,7 +25,6 @@ from ecommerce.test_utils import create_test_application
 from jobma.factories import InterviewFactory, JobFactory
 from jobma.models import Interview, Job
 from klasses.factories import BootcampRunFactory
-from main.utils import now_in_utc
 
 pytestmark = pytest.mark.django_db
 

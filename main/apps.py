@@ -1,16 +1,16 @@
 """
 Django App
 """
-from django.apps import AppConfig
+from mitol.common import envs
+from mitol.common.apps import BaseApp
 
 
-class MainAppConfig(AppConfig):
+class MainAppConfig(BaseApp):
     """AppConfig for main app"""
 
     name = "main"
 
     def ready(self):
         # check for missing configurations
-        from main import envs
 
         envs.validate()

@@ -4,6 +4,7 @@ Tests for bootcamp serializers
 from datetime import timedelta
 
 import pytest
+from mitol.common.utils import now_in_utc
 
 from cms.factories import BootcampRunPageFactory
 from cms.serializers import BootcampRunPageSerializer
@@ -13,7 +14,7 @@ from klasses.serializers import (
     BootcampRunSerializer,
     InstallmentSerializer,
 )
-from main.utils import serializer_date_format, now_in_utc
+from main.utils import serializer_date_format
 
 # pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 

@@ -26,6 +26,7 @@ import pytest
 import responses
 from rest_framework import status
 from social_core.backends.email import EmailAuth
+from mitol.common.pytest_utils import any_instance_of
 
 from authentication.serializers import PARTIAL_PIPELINE_TOKEN_KEY
 from authentication.utils import SocialAuthState
@@ -39,7 +40,7 @@ from compliance.test_utils import (
 from profiles.factories import UserFactory, UserSocialAuthFactory
 from profiles.serializers import UserSerializer
 from main import features
-from main.test_utils import any_instance_of, MockResponse
+from main.test_utils import MockResponse
 
 pytestmark = [pytest.mark.django_db]
 

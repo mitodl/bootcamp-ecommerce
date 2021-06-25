@@ -55,7 +55,7 @@ def test_configuration_context(
 
 def test_get_context_js_settings(mocker, settings, patched_get_resource_page_urls):
     """Verify the specific JS settings in the base context dictionary"""
-    settings.USE_WEBPACK_DEV_SERVER = False
+    settings.WEBPACK_USE_DEV_SERVER = False
     settings.ENVIRONMENT = "TEST"
     settings.VERSION = "9.9.9"
     settings.RECAPTCHA_SITE_KEY = "SITE_KEY"

@@ -15,7 +15,7 @@ django-ipware==3.0.0
 django-mathfilters==1.0.0
 django-redis==4.7.0
 django-server-status==0.5.0
-django-webpack-loader==0.5.0
+django-webpack-loader==0.7.0
 djangorestframework==3.11.2
 djangorestframework-serializer-extensions==2.0.0
 # Using specific Git commit for this lib until they release their support for TZ-aware dates
@@ -25,6 +25,7 @@ dynamic-rest==2.0.0
 html5lib==0.999999999
 django-storages==1.9.1
 ipython==7.22.0
+mitol-django-common==1.2.0
 newrelic==6.2.0.156
 premailer==3.7.0
 psycopg2==2.8.6

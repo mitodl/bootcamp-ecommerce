@@ -4,9 +4,9 @@ context processors for bootcamp
 import json
 
 from django.conf import settings
+from mitol.common.utils import webpack_public_path
 
 from cms.utils import get_resource_page_urls
-from main.templatetags.render_bundle import public_path
 
 
 def api_keys(request):  # pylint: disable=unused-argument
@@ -31,7 +31,7 @@ def js_settings(request):
                 "release_version": settings.VERSION,
                 "environment": settings.ENVIRONMENT,
                 "sentry_dsn": settings.SENTRY_DSN,
-                "public_path": public_path(request),
+                "public_path": webpack_public_path(request),
                 "zendesk_config": {
                     "help_widget_enabled": settings.ZENDESK_CONFIG.get(
                         "HELP_WIDGET_ENABLED"

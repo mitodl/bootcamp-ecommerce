@@ -7,10 +7,10 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from mitol.common.admin import TimestampedModelAdmin
 
 from applications import models
 from ecommerce.models import Order
-from main.admin import TimestampedModelAdmin
 from main.utils import get_field_names
 
 
