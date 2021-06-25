@@ -23,6 +23,7 @@ from applications.factories import (
     ApplicantLetterFactory,
     QuizSubmissionFactory,
     VideoInterviewSubmissionFactory,
+    ApplicationStepFactory,
 )
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
@@ -426,6 +427,14 @@ def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_statu
     bootcamp_application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_RESUME.value
     )
+    application_step = ApplicationStepFactory(
+        bootcamp=bootcamp_application.bootcamp_run.bootcamp
+    )
+    BootcampRunApplicationStepFactory(
+        bootcamp_run=bootcamp_application.bootcamp_run,
+        application_step=application_step,
+    )
+
     client.force_login(bootcamp_application.user)
 
     url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})

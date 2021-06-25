@@ -20,6 +20,7 @@ from applications.factories import (
     BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     BootcampApplicationFactory,
+    ApplicationStepFactory,
 )
 from applications.constants import AppStates
 from ecommerce.test_utils import create_test_application, create_test_order
@@ -93,6 +94,18 @@ def test_submission_types():
     )  # pylint: disable=protected-access
 
 
+def test_bootcamp_application_with_no_steps_file_submission():
+    """
+    A bootcamp application with no steps
+    """
+    bootcamp_application = BootcampApplicationFactory(
+        state=AppStates.AWAITING_RESUME.value
+    )
+    resume_file = SimpleUploadedFile("resume.pdf", b"file_content")
+    bootcamp_application.add_resume(resume_file=resume_file)
+    assert bootcamp_application.state == AppStates.AWAITING_PAYMENT.value
+
+
 @pytest.mark.parametrize(
     "file_name,state,expected",
     [
@@ -112,6 +125,14 @@ def test_bootcamp_application_resume_file_validation(file_name, state, expected)
     """
     bootcamp_application = BootcampApplicationFactory(state=state)
     resume_file = SimpleUploadedFile(file_name, b"file_content")
+
+    application_step = ApplicationStepFactory(
+        bootcamp=bootcamp_application.bootcamp_run.bootcamp
+    )
+    BootcampRunApplicationStepFactory(
+        bootcamp_run=bootcamp_application.bootcamp_run,
+        application_step=application_step,
+    )
 
     if expected:
         new_state = (
