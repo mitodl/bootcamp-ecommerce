@@ -409,15 +409,18 @@ def test_review_submission_list_query_review_status_in(
 
 
 @pytest.mark.parametrize(
-    "has_resume,has_linkedin,resp_status",
+    "has_resume,has_linkedin,resp_status,has_application_steps",
     [
-        [True, True, status.HTTP_200_OK],
-        [False, True, status.HTTP_200_OK],
-        [True, False, status.HTTP_200_OK],
-        [False, False, status.HTTP_400_BAD_REQUEST],
+        [True, True, status.HTTP_200_OK, True],
+        [False, True, status.HTTP_200_OK, True],
+        [True, False, status.HTTP_200_OK, True],
+        [False, False, status.HTTP_400_BAD_REQUEST, True],
+        [True, True, status.HTTP_200_OK, False],
     ],
 )
-def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_status):
+def test_upload_resume_view(
+    client, mocker, has_resume, has_linkedin, resp_status, has_application_steps
+):
     """
     Upload resume view should return successful response, and update application state
     """
@@ -427,13 +430,14 @@ def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_statu
     bootcamp_application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_RESUME.value
     )
-    application_step = ApplicationStepFactory(
-        bootcamp=bootcamp_application.bootcamp_run.bootcamp
-    )
-    BootcampRunApplicationStepFactory(
-        bootcamp_run=bootcamp_application.bootcamp_run,
-        application_step=application_step,
-    )
+    if has_application_steps:
+        application_step = ApplicationStepFactory(
+            bootcamp=bootcamp_application.bootcamp_run.bootcamp
+        )
+        BootcampRunApplicationStepFactory(
+            bootcamp_run=bootcamp_application.bootcamp_run,
+            application_step=application_step,
+        )
 
     client.force_login(bootcamp_application.user)
 
@@ -449,7 +453,12 @@ def test_upload_resume_view(client, mocker, has_resume, has_linkedin, resp_statu
     assert resp.status_code == resp_status
     bootcamp_application.refresh_from_db()
     if has_resume or has_linkedin:
-        assert bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS.value
+        if has_application_steps:
+            assert (
+                bootcamp_application.state == AppStates.AWAITING_USER_SUBMISSIONS.value
+            )
+        else:
+            assert bootcamp_application.state == AppStates.AWAITING_PAYMENT.value
     else:
         assert bootcamp_application.state == AppStates.AWAITING_RESUME.value
 

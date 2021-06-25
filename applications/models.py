@@ -193,10 +193,10 @@ class BootcampApplication(TimestampedModel):
         self.save()
 
         if self.state == AppStates.AWAITING_RESUME.value:
-            bootcamp_run_steps = BootcampRunApplicationStep.objects.filter(
+            application_steps = BootcampRunApplicationStep.objects.filter(
                 bootcamp_run=self.bootcamp_run
             )
-            if bootcamp_run_steps.exists():
+            if application_steps.exists():
                 return AppStates.AWAITING_USER_SUBMISSIONS.value
             else:
                 return AppStates.AWAITING_PAYMENT.value
