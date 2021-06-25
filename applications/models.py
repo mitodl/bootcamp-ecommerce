@@ -179,6 +179,7 @@ class BootcampApplication(TimestampedModel):
         target=RETURN_VALUE(
             AppStates.AWAITING_USER_SUBMISSIONS.value,
             AppStates.AWAITING_SUBMISSION_REVIEW.value,
+            AppStates.AWAITING_PAYMENT.value,
         ),
     )
     def add_resume(self, *, resume_file=None, linkedin_url=None):
@@ -192,7 +193,13 @@ class BootcampApplication(TimestampedModel):
         self.save()
 
         if self.state == AppStates.AWAITING_RESUME.value:
-            return AppStates.AWAITING_USER_SUBMISSIONS.value
+            application_steps = BootcampRunApplicationStep.objects.filter(
+                bootcamp_run=self.bootcamp_run
+            )
+            if application_steps.exists():
+                return AppStates.AWAITING_USER_SUBMISSIONS.value
+            else:
+                return AppStates.AWAITING_PAYMENT.value
         return self.state
 
     @transition(
