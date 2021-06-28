@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.81.1
+Version 0.81.1 (Released June 28, 2021)
 --------------
 
 - alert: upgrade mini-css-extract-plugin to resolve normalize-url alert (#1264)
