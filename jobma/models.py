@@ -15,7 +15,7 @@ class Job(AuditableModel):
     job_code = models.TextField()
     job_title = models.TextField()
     interview_template_id = models.IntegerField()
-    run = models.ForeignKey(BootcampRun, on_delete=models.CASCADE, unique=True)
+    run = models.ForeignKey(BootcampRun, on_delete=models.CASCADE)
 
     @classmethod
     def get_audit_class(cls):
