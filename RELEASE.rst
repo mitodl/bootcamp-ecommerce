@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.81.2
+Version 0.81.2 (Released June 29, 2021)
 --------------
 
 - make a payment for (and therefore enroll in) a bootcamp with no application steps (#1272)
