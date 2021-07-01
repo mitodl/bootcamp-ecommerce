@@ -230,7 +230,7 @@ class UploadResumeView(GenericAPIView):
         """
         if len(linkedin_url) > 200:
             raise ValidationError(
-                {"errors": "The URL should be of 200 characters at max"}
+                {"errors": "The URL should be less than 200 characters."}
             )
 
         regex = re.compile("^https://[a-z]{2,3}[.]linkedin[.]com/.*$", re.I)
