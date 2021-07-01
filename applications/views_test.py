@@ -444,7 +444,7 @@ def test_upload_resume_view(
     url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})
     data = {}
     if has_linkedin:
-        data["linkedin_url"] = "some_url"
+        data["linkedin_url"] = "https://www.linkedin.com/in/User-Name-7472b48/"
     if has_resume:
         resume_file = SimpleUploadedFile("resume.pdf", b"file_content")
         data["file"] = resume_file
@@ -464,6 +464,33 @@ def test_upload_resume_view(
 
     if has_resume:
         assert resume_file.name in bootcamp_application.resume_file.name
+
+
+@pytest.mark.parametrize(
+    "linkedin_url",
+    [
+        "some-url",
+        "https://www.some-valid-url.com",
+        "https://www.linkedin.com",
+    ],
+)
+def test_linkedin_url_validation(client, mocker, linkedin_url):
+    """
+    Upload resume view should return 400 if linkedin url validation fails
+    """
+    mocker.patch(
+        "applications.views.UserIsOwnerPermission.has_permission", return_value=True
+    )
+    bootcamp_application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_RESUME.value
+    )
+    client.force_login(bootcamp_application.user)
+
+    url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})
+    data = {"linkedin_url": linkedin_url}
+    resp = client.post(url, data)
+
+    assert resp.status_code == 400
 
 
 def test_application_detail_queryset_orders(client):
