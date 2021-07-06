@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.82.0
+--------------
+
+- bump wagtail from 2.12.4 to 2.12.5 (#1278)
+
 Version 0.81.2 (Released June 29, 2021)
 --------------
 
