@@ -467,14 +467,24 @@ def test_upload_resume_view(
 
 
 @pytest.mark.parametrize(
-    "linkedin_url",
+    "linkedin_url, status_code",
     [
-        "some-url",
-        "https://www.some-valid-url.com",
-        "https://www.linkedin.com",
+        ["some-url", status.HTTP_400_BAD_REQUEST],
+        ["https://www.some-valid-url.com", status.HTTP_400_BAD_REQUEST],
+        ["https://www.linkedin.com", status.HTTP_400_BAD_REQUEST],
+        ["https://www.linkedin.com/in", status.HTTP_400_BAD_REQUEST],
+        ["https://www.linkedin.com/in/some-user-name_1", status.HTTP_200_OK],
+        ["https://linkedin.com/in/some-user-name_1", status.HTTP_200_OK],
+        ["httpS://www.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["http://www.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["Http://www.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["https://us.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["https://www.linkedin.us/in/some-user-name", status.HTTP_200_OK],
+        ["https://us.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["https://www.linkedin.com/some-org/in/some-user-name", status.HTTP_200_OK],
     ],
 )
-def test_linkedin_url_validation(client, mocker, linkedin_url):
+def test_linkedin_url_validation(client, mocker, linkedin_url, status_code):
     """
     Upload resume view should return 400 if linkedin url validation fails
     """
@@ -490,7 +500,7 @@ def test_linkedin_url_validation(client, mocker, linkedin_url):
     data = {"linkedin_url": linkedin_url}
     resp = client.post(url, data)
 
-    assert resp.status_code == 400
+    assert resp.status_code == status_code
 
 
 def test_application_detail_queryset_orders(client):

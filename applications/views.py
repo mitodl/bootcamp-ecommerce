@@ -233,7 +233,15 @@ class UploadResumeView(GenericAPIView):
                 {"errors": "The URL should be less than 200 characters."}
             )
 
-        regex = re.compile("^https://[a-z]{2,3}[.]linkedin[.]com/.*$", re.I)
+        regex = re.compile(
+            "^(http|https)://"  # Support for both http and https
+            "([a-zA-Z]{2,3}[.]|)"  # Support for global or localized prefix
+            "linkedin[.]"  # Contains the linkedin domain
+            "([a-zA-Z]{2,3})/"  # Support for .com or localized postfix
+            "+([a-zA-Z0-9-_])"  # Support for /<in or org>
+            "+/+([a-zA-Z0-9-_])+.*$",  # Any type of username
+            re.I,
+        )
         if not regex.match(str(linkedin_url)):
             raise ValidationError({"errors": "Please enter a valid LinkedIn URL"})
 
