@@ -64,7 +64,6 @@
     "moment": "^2.24.0",
     "mutationobserver-shim": "^0.3.5",
     "named-urls": "^2.0.0",
-    "node-sass": "^4.14.1",
     "nyc": "^15.1.0",
     "object.entries": "^1.1.1",
     "popper.js": "^1.16.1",
@@ -98,8 +97,9 @@
     "reselect": "^4.0.0",
     "rmwc": "^5.7.1",
     "sanctuary": "^0.13.2",
+    "sass": "1.32.13",
     "sass-lint": "^1.13.1",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "10",
     "serialize-javascript": "^3.1.0",
     "sinon": "^9.0.2",
     "slick-carousel": "1.8.1",
@@ -120,7 +120,6 @@
   },
   "resolutions": {
     "merge": "^2.1.1",
-    "node-sass/**/trim-newlines": "^3.0.1",
     "webpack/watchpack/watchpack-chokidar2/**/chokidar": "^3.4.3"
   },
   "engines": {
