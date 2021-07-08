@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.82.1
+Version 0.82.1 (Released July 08, 2021)
 --------------
 
 - bump glob-parent to use 5.1.2 or above (#1281)
