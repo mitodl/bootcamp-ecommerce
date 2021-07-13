@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.82.2
+Version 0.82.2 (Released July 13, 2021)
 --------------
 
 - migrate from node-sass to sass (#1279)
