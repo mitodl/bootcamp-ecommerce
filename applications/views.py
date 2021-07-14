@@ -1,6 +1,7 @@
 """Views for bootcamp applications"""
 from collections import OrderedDict
 
+import re
 from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch, Q
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -200,6 +201,8 @@ class UploadResumeView(GenericAPIView):
         resume_file = request.FILES.get("file")
         if linkedin_url is None and resume_file is None and not application.resume_file:
             raise ValidationError("At least one form of resume is required.")
+        if linkedin_url:
+            self.validate_linkedin_url(linkedin_url)
 
         application.add_resume(resume_file=resume_file, linkedin_url=linkedin_url)
         # when state transition happens need to save manually
@@ -217,6 +220,30 @@ class UploadResumeView(GenericAPIView):
             },
             status=status.HTTP_200_OK,
         )
+
+    def validate_linkedin_url(self, linkedin_url):
+        """
+        Validate that a LinkedIn URL has the right format and length
+
+        Args:
+            linkedin_url (string): LinkedIn URL of a user
+        """
+        if len(linkedin_url) > 200:
+            raise ValidationError(
+                {"errors": "The URL should be less than 200 characters."}
+            )
+
+        regex = re.compile(
+            "^(http|https)://"  # Support for both http and https
+            "([a-zA-Z]{2,3}[.]|)"  # Support for global or localized prefix
+            "linkedin[.]"  # Contains the linkedin domain
+            "([a-zA-Z]{2,3})/"  # Support for .com or localized postfix
+            "+([a-zA-Z0-9-_])"  # Support for /<in or org>
+            "+/+([a-zA-Z0-9-_])+.*$",  # Any type of username
+            re.I,
+        )
+        if not regex.match(str(linkedin_url)):
+            raise ValidationError({"errors": "Please enter a valid LinkedIn URL"})
 
 
 class LettersView(TemplateView):

@@ -444,7 +444,7 @@ def test_upload_resume_view(
     url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})
     data = {}
     if has_linkedin:
-        data["linkedin_url"] = "some_url"
+        data["linkedin_url"] = "https://www.linkedin.com/in/User-Name-7472b48/"
     if has_resume:
         resume_file = SimpleUploadedFile("resume.pdf", b"file_content")
         data["file"] = resume_file
@@ -464,6 +464,43 @@ def test_upload_resume_view(
 
     if has_resume:
         assert resume_file.name in bootcamp_application.resume_file.name
+
+
+@pytest.mark.parametrize(
+    "linkedin_url, status_code",
+    [
+        ["some-url", status.HTTP_400_BAD_REQUEST],
+        ["https://www.some-valid-url.com", status.HTTP_400_BAD_REQUEST],
+        ["https://www.linkedin.com", status.HTTP_400_BAD_REQUEST],
+        ["https://www.linkedin.com/in", status.HTTP_400_BAD_REQUEST],
+        ["https://www.linkedin.com/in/some-user-name_1", status.HTTP_200_OK],
+        ["https://linkedin.com/in/some-user-name_1", status.HTTP_200_OK],
+        ["httpS://www.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["http://www.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["Http://www.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["https://us.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["https://www.linkedin.us/in/some-user-name", status.HTTP_200_OK],
+        ["https://us.linkedin.com/in/some-user-name", status.HTTP_200_OK],
+        ["https://www.linkedin.com/some-org/in/some-user-name", status.HTTP_200_OK],
+    ],
+)
+def test_linkedin_url_validation(client, mocker, linkedin_url, status_code):
+    """
+    Upload resume view should return 400 if linkedin url validation fails
+    """
+    mocker.patch(
+        "applications.views.UserIsOwnerPermission.has_permission", return_value=True
+    )
+    bootcamp_application = BootcampApplicationFactory.create(
+        state=AppStates.AWAITING_RESUME.value
+    )
+    client.force_login(bootcamp_application.user)
+
+    url = reverse("upload-resume", kwargs={"pk": bootcamp_application.id})
+    data = {"linkedin_url": linkedin_url}
+    resp = client.post(url, data)
+
+    assert resp.status_code == status_code
 
 
 def test_application_detail_queryset_orders(client):

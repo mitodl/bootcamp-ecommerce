@@ -233,6 +233,12 @@ export const resumeLinkedInValidation = yup.object().shape({
     .label("LinkedIn URL")
     .trim()
     .url()
+    .max(200, "The URL should be less than 200 characters.")
+    .lowercase()
+    .matches(
+      "^(http|https)://([a-zA-Z]{2,3}[.]|)linkedin[.]([a-zA-Z]{2,3})/+([a-zA-Z0-9-_])+/+([a-zA-Z0-9-_])+.*$",
+      "Please enter a valid LinkedIn URL"
+    )
     .when("resumeFilename", (resumeFilename, schema) => {
       if (isNilOrBlank(resumeFilename)) {
         return schema.required("A resume or a LinkedIn URL must be provided.")
