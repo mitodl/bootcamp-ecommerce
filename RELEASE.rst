@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.83.0
+Version 0.83.0 (Released July 19, 2021)
 --------------
 
 - add validation and proper error messages for LinkedIn URL (#1276)
