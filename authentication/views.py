@@ -28,8 +28,9 @@ from authentication.serializers import (
     RegisterExtraDetailsSerializer,
     RegisterComplianceSerializer,
 )
-from authentication.utils import load_drf_strategy
+from authentication.utils import load_drf_strategy, SocialAuthState
 from mail.v2.api import render_email_templates, send_messages
+from mail.utils import validate_email_address_through_mailgun
 
 User = get_user_model()
 
@@ -90,6 +91,16 @@ class RegisterEmailView(SocialAuthAPIView):
         """ Verify recaptcha response before proceeding """
         if request.session.get("is_hijacked_user", False):
             return Response(status=status.HTTP_403_FORBIDDEN)
+        if settings.ENABLE_MAILGUN_EMAIL_VALIDATION:
+            valid = validate_email_address_through_mailgun(request.data.get("email"))
+            if not valid:
+                resp = Response(status=status.HTTP_200_OK)
+                resp.data = {
+                    "state": SocialAuthState.STATE_INVALID_EMAIL,
+                    "errors": ["Email is invalid"],
+                    "field_errors": {},
+                }
+                return resp
         if settings.RECAPTCHA_SITE_KEY:
             r = requests.post(
                 "https://www.google.com/recaptcha/api/siteverify?secret={key}&response={captcha}".format(

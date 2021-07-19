@@ -14,7 +14,8 @@ import {
   STATE_ERROR,
   STATE_REGISTER_CONFIRM_SENT,
   STATE_LOGIN_PASSWORD,
-  handleAuthResponse
+  handleAuthResponse,
+  STATE_INVALID_EMAIL
 } from "../../lib/auth"
 import { qsNextSelector } from "../../lib/selectors"
 import { ALERT_TYPE_TEXT, REGISTER_EMAIL_PAGE_TITLE } from "../../constants"
@@ -42,6 +43,9 @@ type Props = {
 
 const accountExistsNotificationText = (email: string): string =>
   `You already have an account with ${email}. Enter password to sign in.`
+
+const invalidAccountNotificationText = (email: string): string =>
+  `The provided email address (${email}) is not valid.`
 export class RegisterEmailPage extends React.Component<Props> {
   async onSubmit(
     { email, recaptcha }: RegisterEmailFormValues,
@@ -72,6 +76,17 @@ export class RegisterEmailPage extends React.Component<Props> {
               color: "danger",
               props: {
                 text: accountExistsNotificationText(email)
+              }
+            }
+          })
+        },
+        [STATE_INVALID_EMAIL]: () => {
+          addUserNotification({
+            "invalid-email": {
+              type:  ALERT_TYPE_TEXT,
+              color: "danger",
+              props: {
+                text: invalidAccountNotificationText(email)
               }
             }
           })

@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 Django settings for ui pp. This is just a harness type
 project for testing and interacting with the app.
@@ -493,6 +494,18 @@ MAILGUN_KEY = get_string(
     None,
     description="The token for authenticating against the Mailgun API",
     required=True,
+)
+MAILGUN_API_PUBLIC_KEY = get_string(
+    "MAILGUN_API_PUBLIC_KEY",
+    None,
+    description="The public api key for authenticating against the Mailgun email validation API",
+    required=False,
+)
+ENABLE_MAILGUN_EMAIL_VALIDATION = get_bool(
+    "ENABLE_MAILGUN_EMAIL_VALIDATION",
+    False,
+    description="The flag to enable email verification while registration Mailgun API",
+    required=False,
 )
 MAILGUN_BATCH_CHUNK_SIZE = get_int(
     "MAILGUN_BATCH_CHUNK_SIZE",
