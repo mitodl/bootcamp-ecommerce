@@ -988,7 +988,7 @@ NOVOED_API_BASE_URL = get_string(
     description="The base URL of the NovoEd API",
 )
 NOVOED_BASE_URL = get_string(
-    "NOVOED_BASE_URL", None, description="The base URL of the NovoEd"
+    name="NOVOED_BASE_URL", default=None, description="The base URL of the NovoEd"
 )
 
 
