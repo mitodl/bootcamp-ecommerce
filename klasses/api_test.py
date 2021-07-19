@@ -11,6 +11,7 @@ import pytest
 import pytz
 from django.core.exceptions import ValidationError
 from django.db.models import signals
+from mitol.common.utils import now_in_utc
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
@@ -37,7 +38,6 @@ from klasses.factories import (
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
-from main.utils import now_in_utc
 
 
 RUN_PRICE = 1000

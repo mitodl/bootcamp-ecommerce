@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from pytz import UTC
+from mitol.common.utils import now_in_utc
 
 from ecommerce.test_utils import create_test_application
 from klasses.constants import ENROLL_CHANGE_STATUS_DEFERRED
@@ -13,7 +14,6 @@ from klasses.factories import (
     PersonalPriceFactory,
     BootcampRunCertificateFactory,
 )
-from main.utils import now_in_utc
 from main.test_utils import format_as_iso8601
 from profiles.factories import ProfileFactory
 

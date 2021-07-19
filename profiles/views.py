@@ -4,9 +4,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from mitol.common.utils import now_in_utc
 
 from main.permissions import UserIsOwnerPermission
-from main.utils import now_in_utc
 from profiles.models import ChangeEmailRequest
 from profiles.serializers import (
     UserSerializer,

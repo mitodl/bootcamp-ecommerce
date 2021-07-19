@@ -5,12 +5,12 @@ from datetime import timedelta
 from django.urls import reverse
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
+from mitol.common.utils import now_in_utc
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from klasses.factories import BootcampRunFactory, BootcampRunEnrollmentFactory
 from klasses.serializers import BootcampRunSerializer
-from main.utils import now_in_utc
 
 
 pytestmark = pytest.mark.django_db

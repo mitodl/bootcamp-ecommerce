@@ -14,9 +14,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth import get_user_model
 from django.utils.timezone import make_aware
+from mitol.common.utils import first_or_none, max_or_none, unique, unique_ignore_case
 
 from klasses.models import BootcampRun, BootcampRunEnrollment
-from main.utils import first_or_none, unique, unique_ignore_case, max_or_none
 from profiles.constants import (
     ALUM_BOOTCAMP_END_DATE,
     ALUM_BOOTCAMP_NAME,

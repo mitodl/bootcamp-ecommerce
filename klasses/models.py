@@ -7,9 +7,11 @@ import pytz
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from mitol.common.models import TimestampedModel
+from mitol.common.utils import now_in_utc
 
-from main.models import TimestampedModel, AuditModel, AuditableModel
-from main.utils import now_in_utc, format_month_day, serialize_model_object
+from main.models import AuditModel, AuditableModel
+from main.utils import format_month_day, serialize_model_object
 from klasses.constants import (
     ApplicationSource,
     INTEGRATION_PREFIX_PRODUCT,

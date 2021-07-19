@@ -1,6 +1,7 @@
 """API tests"""
 from email.utils import formataddr
 import pytest
+from mitol.common.pytest_utils import any_instance_of
 
 from mail.v2.api import (
     context_for_user,
@@ -14,7 +15,6 @@ from mail.v2.api import (
     UserMessageProps,
     EmailMetadata,
 )
-from main.test_utils import any_instance_of
 from profiles.factories import UserFactory
 
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("email_settings")]

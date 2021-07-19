@@ -8,34 +8,36 @@ from types import SimpleNamespace
 
 import pytest
 import pytz
+from mitol.common.utils import (
+    is_near_now,
+    has_equal_properties,
+    first_or_none,
+    first_matching_item,
+    max_or_none,
+    partition_to_lists,
+    unique,
+    unique_ignore_case,
+    item_at_index_or_none,
+    all_equal,
+    all_unique,
+    has_all_keys,
+    group_into_dict,
+    now_in_utc,
+    filter_dict_by_key_set,
+    chunks,
+    get_error_response_summary,
+)
 
 from ecommerce.factories import Order, ReceiptFactory
 from main.utils import (
     get_field_names,
     is_empty_file,
     serialize_model_object,
-    chunks,
-    now_in_utc,
-    first_or_none,
-    first_matching_item,
-    is_near_now,
-    get_error_response_summary,
-    has_equal_properties,
-    unique,
-    unique_ignore_case,
-    max_or_none,
-    item_at_index_or_none,
-    all_unique,
-    all_equal,
-    has_all_keys,
     is_blank,
-    group_into_dict,
-    filter_dict_by_key_set,
     partition_around_index,
-    partition_to_lists,
     format_month_day,
 )
-from main.test_utils import MockResponse, format_as_iso8601
+from main.test_utils import format_as_iso8601, MockResponse
 
 
 def test_now_in_utc():

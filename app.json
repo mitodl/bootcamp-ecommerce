@@ -403,11 +403,11 @@
       "required": false
     },
     "ZENDESK_HELP_WIDGET_ENABLED": {
-      "description": null,
+      "description": "Enable Zendesk help widget",
       "required": false
     },
     "ZENDESK_HELP_WIDGET_KEY": {
-      "description": null,
+      "description": "Help Widget Key",
       "required": false
     }
   }

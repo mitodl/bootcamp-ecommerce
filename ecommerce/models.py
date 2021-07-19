@@ -12,9 +12,10 @@ from django.db.models import (
     TextField,
     Sum,
 )
+from mitol.common.models import TimestampedModel
 
 from ecommerce.constants import CARD_TYPES
-from main.models import AuditableModel, AuditModel, TimestampedModel
+from main.models import AuditableModel, AuditModel
 from main.utils import serialize_model_object
 from klasses.models import BootcampRun
 

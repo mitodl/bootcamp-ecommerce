@@ -6,9 +6,9 @@ from django.core.mail import EmailMessage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.shortcuts import reverse
 from django.test.client import RequestFactory
+from mitol.common.pytest_utils import any_instance_of
 
 from mail.v2 import verification_api
-from main.test_utils import any_instance_of
 from profiles.models import ChangeEmailRequest
 
 pytestmark = [pytest.mark.django_db]

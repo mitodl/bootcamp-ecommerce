@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
+from mitol.common.utils import first_or_none, now_in_utc
 
 from applications import models
 from applications.constants import (
@@ -16,7 +17,6 @@ from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.models import BootcampRunCertificate
 from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
-from main.utils import now_in_utc, first_or_none
 from profiles.serializers import UserSerializer
 
 

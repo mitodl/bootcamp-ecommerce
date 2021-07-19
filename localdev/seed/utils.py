@@ -3,13 +3,14 @@ import json
 import re
 from datetime import timedelta
 
+from mitol.common.utils import now_in_utc
+
 from localdev.seed.config import (
     SEED_DATA_FILE_PATH,
     SEED_DATA_PREFIX,
     SEED_DATA_KEY_FIELDS,
     DateRangeOption,
 )
-from main.utils import now_in_utc
 
 
 DEFAULT_RANGE_DAYS = 90

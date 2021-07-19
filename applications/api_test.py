@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
+from mitol.common.utils import now_in_utc
 
 from applications.api import (
     get_or_create_bootcamp_application,
@@ -30,7 +31,6 @@ from klasses.factories import BootcampRunFactory, InstallmentFactory
 from jobma.factories import InterviewFactory, JobFactory
 from jobma.models import Interview
 from profiles.factories import ProfileFactory, UserFactory, LegalAddressFactory
-from main.utils import now_in_utc
 
 
 pytestmark = pytest.mark.django_db

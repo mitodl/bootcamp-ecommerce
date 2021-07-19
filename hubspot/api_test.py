@@ -2,7 +2,6 @@
 Hubspot API tests
 """
 # pylint: disable=redefined-outer-name
-import abc
 from unittest.mock import Mock
 from urllib.parse import urlencode
 
@@ -11,6 +10,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from faker import Faker
 from requests import HTTPError
+from mitol.common.pytest_utils import any_instance_of
 
 from ecommerce.factories import OrderFactory
 from hubspot import api
@@ -23,29 +23,6 @@ from profiles.serializers import UserSerializer
 fake = Faker()
 
 test_object_type = "deals"
-
-
-# Taken from mitxpro
-def any_instance_of(*cls):
-    """
-    Returns a type that evaluates __eq__ in isinstance terms
-
-    Args:
-        cls (list of types): variable list of types to ensure equality against
-
-    Returns:
-        AnyInstanceOf: dynamic class type with the desired equality
-    """
-
-    class AnyInstanceOf(metaclass=abc.ABCMeta):
-        """Dynamic class type for __eq__ in terms of isinstance"""
-
-        def __eq__(self, other):
-            return isinstance(other, cls)
-
-    for c in cls:
-        AnyInstanceOf.register(c)
-    return AnyInstanceOf()
 
 
 @pytest.fixture

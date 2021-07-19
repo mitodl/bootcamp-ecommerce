@@ -5,9 +5,9 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from social_django.models import UserSocialAuth
+from mitol.common.pytest_utils import any_instance_of
+from mitol.common.utils import now_in_utc
 
-from main.test_utils import any_instance_of
-from main.utils import now_in_utc
 from profiles.factories import UserFactory
 from profiles.models import ChangeEmailRequest
 

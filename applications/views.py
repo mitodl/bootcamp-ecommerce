@@ -15,6 +15,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_serializer_extensions.views import SerializerExtensionsAPIViewMixin
+from mitol.common.utils import now_in_utc
 
 from applications.constants import SUBMISSION_STATUS_SUBMITTED, REVIEWABLE_APP_STATES
 from applications.serializers import (
@@ -33,7 +34,7 @@ from cms.models import LetterTemplatePage
 from ecommerce.models import Order
 from klasses.models import BootcampRun
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
-from main.utils import serializer_date_format, now_in_utc
+from main.utils import serializer_date_format
 
 
 class BootcampApplicationViewset(

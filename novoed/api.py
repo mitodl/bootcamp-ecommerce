@@ -7,9 +7,9 @@ import requests
 from django.conf import settings
 from djangosaml2idp.processors import BaseProcessor
 from rest_framework import status
+from mitol.common.utils import now_in_utc
 
 from klasses.models import BootcampRunEnrollment
-from main.utils import now_in_utc
 from novoed.constants import (
     REGISTER_USER_URL_STUB,
     UNENROLL_USER_URL_STUB,

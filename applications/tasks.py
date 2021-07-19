@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db.models import Q
+from mitol.common.utils import now_in_utc
 
 from applications.constants import (
     SUBMISSION_STATUS_PENDING,
@@ -12,7 +13,6 @@ from applications.constants import (
 from applications.models import BootcampApplication, ApplicationStepSubmission
 from applications import api
 from main.celery import app
-from main.utils import now_in_utc
 
 log = logging.getLogger()
 

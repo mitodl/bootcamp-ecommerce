@@ -5,8 +5,8 @@ Admin views for ecommerce models
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from mitol.common.admin import TimestampedModelAdmin
 
-from main.admin import TimestampedModelAdmin
 from main.utils import get_field_names
 from ecommerce.models import Line, Order, OrderAudit, Receipt, WireTransferReceipt
 from applications import models as application_models

@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
-from main.utils import has_all_keys
+from mitol.common.utils import has_all_keys
 
 
 def is_cybersource_request(request):

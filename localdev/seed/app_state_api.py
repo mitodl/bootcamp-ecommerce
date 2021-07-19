@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db.models import Max
+from mitol.common.utils import now_in_utc
 
 from applications.models import (
     VideoInterviewSubmission,
@@ -31,7 +32,7 @@ from ecommerce.models import Order, Line
 from ecommerce.api import complete_successful_order
 from profiles.models import Profile, LegalAddress
 from profiles.api import is_user_info_complete
-from main.utils import now_in_utc, get_filename_from_path, partition_around_index
+from main.utils import get_filename_from_path, partition_around_index
 
 User = get_user_model()
 

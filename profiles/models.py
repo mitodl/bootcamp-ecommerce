@@ -10,9 +10,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 import pycountry
+from mitol.common.utils import now_in_utc
+from mitol.common.models import TimestampedModel
 
-from main.models import TimestampedModel
-from main.utils import now_in_utc, is_blank
+from main.utils import is_blank
 
 from profiles.constants import (
     GENDER_CHOICES,

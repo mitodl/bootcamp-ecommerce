@@ -4,13 +4,13 @@ import pytest
 
 from rest_framework import status
 from requests.exceptions import HTTPError
+from mitol.common.utils import now_in_utc
 
 from klasses.factories import BootcampRunEnrollmentFactory
-from main.test_utils import MockResponse
-from main.utils import now_in_utc
 from profiles.factories import UserFactory
 from novoed.api import enroll_in_novoed_course, unenroll_from_novoed_course
 from novoed.constants import REGISTER_USER_URL_STUB, UNENROLL_USER_URL_STUB
+from main.test_utils import MockResponse
 
 
 FAKE_API_KEY = "apikey"

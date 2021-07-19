@@ -3,12 +3,14 @@ import pickle
 
 import pytest
 
-from main.test_utils import (
+from mitol.common.pytest_utils import (
     any_instance_of,
     assert_not_raises,
-    MockResponse,
+)
+from main.test_utils import (
     PickleableMock,
     assert_drf_json_equal,
+    MockResponse,
 )
 
 
