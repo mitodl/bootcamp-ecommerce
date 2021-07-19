@@ -280,11 +280,18 @@ describe("application detail section component", () => {
     })
     //
     ;[
-      [false, false, "", false, "not ready"],
-      [true, false, "", false, "not fulfilled"],
-      [true, true, "", false, "course stub is null"],
-      [true, true, "some-stub", true, "fulfilled with a valid course stub"]
-    ].forEach(([ready, fulfilled, novoEdStub, expLink, desc]) => {
+      [false, false, "", false, "not ready", undefined],
+      [true, false, "", false, "not fulfilled", undefined],
+      [true, true, "", false, "course stub is null", undefined],
+      [
+        true,
+        true,
+        "some-stub",
+        true,
+        "fulfilled with a valid course stub",
+        "Start Bootcamp"
+      ]
+    ].forEach(([ready, fulfilled, novoEdStub, expLink, desc, expLinkText]) => {
       it(`${shouldIf(expLink)} show correct link if ${desc}`, () => {
         SETTINGS.novoed_base_url = "https://novoed.com"
         applicationDetail.bootcamp_run.novoed_course_stub = novoEdStub
@@ -297,9 +304,9 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-        const expLinkText = "Start Bootcamp"
         if (expLink) {
           const link = wrapper.find("ProgressDetailRow a")
+          assert.equal(link.exists(), expLinkText !== undefined)
           assert.equal(link.prop("children"), expLinkText)
           assert.equal(
             link.prop("href"),
