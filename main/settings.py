@@ -991,7 +991,6 @@ NOVOED_BASE_URL = get_string(
     name="NOVOED_BASE_URL", default=None, description="The base URL of the NovoEd"
 )
 
-
 # Relative URL to be used by Djoser for the link in the password reset email
 # (see: http://djoser.readthedocs.io/en/stable/settings.html#password-reset-confirm-url)
 PASSWORD_RESET_CONFIRM_URL = "password_reset/confirm/{uid}/{token}/"
