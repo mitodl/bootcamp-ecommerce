@@ -475,7 +475,16 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       application.bootcamp_run.page.thumbnail_image_src :
       null
     const titleText = application.bootcamp_run.bootcamp.title
-    const novoedUrl = createNovoEdLinkUrl(SETTINGS.novoed_base_url, applicationDetail.bootcamp_run.novoed_course_stub)
+    let novoedUrl = null
+    if (
+      SETTINGS.novoed_base_url &&
+      application.bootcamp_run.novoed_course_stub
+    ) {
+      novoedUrl = createNovoEdLinkUrl(
+        SETTINGS.novoed_base_url,
+        application.bootcamp_run.novoed_course_stub
+      )
+    }
 
     return (
       <div className="application-card" key={application.id}>

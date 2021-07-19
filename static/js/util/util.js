@@ -238,8 +238,5 @@ export const isLocalStorageSupported = () => {
 }
 
 export const createNovoEdLinkUrl = (baseUrl: string, stub: string): string => {
-  if(baseUrl && stub) {
-    return `${baseUrl}/#!/courses/${stub}/home`
-  }
-  return null
+  return `${baseUrl}/#!/courses/${stub}/home`
 }

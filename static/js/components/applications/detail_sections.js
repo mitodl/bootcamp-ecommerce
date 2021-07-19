@@ -25,7 +25,7 @@ import type {
   ApplicationSubmission
 } from "../../flow/applicationTypes"
 import type { User } from "../../flow/authTypes"
-import {createNovoEdLinkUrl} from "../../util/util"
+import { createNovoEdLinkUrl } from "../../util/util"
 
 type DetailSectionProps = {
   ready: boolean,
@@ -260,8 +260,17 @@ export const BootcampStartDetail = (
   props: BootcampStartProps
 ): React$Element<*> => {
   const { ready, fulfilled, applicationDetail } = props
-  const novoedUrl = createNovoEdLinkUrl(SETTINGS.novoed_base_url, applicationDetail.bootcamp_run.novoed_course_stub)
-  
+  let novoedUrl = null
+  if (
+    SETTINGS.novoed_base_url &&
+    applicationDetail.bootcamp_run.novoed_course_stub
+  ) {
+    novoedUrl = createNovoEdLinkUrl(
+      SETTINGS.novoed_base_url,
+      applicationDetail.bootcamp_run.novoed_course_stub
+    )
+  }
+
   return (
     <ProgressDetailRow className="bootcampStart" fulfilled={fulfilled}>
       <h3>Bootcamp Starts</h3>

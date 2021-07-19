@@ -283,9 +283,10 @@ describe("application detail section component", () => {
       [false, false, "", false, "not ready"],
       [true, false, "", false, "not fulfilled"],
       [true, true, "", false, "course stub is null"],
-      [true, true, "some-stub", true, "fulfilled with a valid course stub"],
+      [true, true, "some-stub", true, "fulfilled with a valid course stub"]
     ].forEach(([ready, fulfilled, novoEdStub, expLink, desc]) => {
       it(`${shouldIf(expLink)} show correct link if ${desc}`, () => {
+        SETTINGS.novoed_base_url = "https://novoed.com"
         applicationDetail.bootcamp_run.novoed_course_stub = novoEdStub
 
         const wrapper = shallow(
@@ -296,12 +297,14 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-
-        const link = wrapper.find("ProgressDetailRow a")
-        assert.equal(link.exists(), expLinkText !== undefined)
+        const expLinkText = "Start Bootcamp"
         if (expLink) {
+          const link = wrapper.find("ProgressDetailRow a")
           assert.equal(link.prop("children"), expLinkText)
-          assert.equal(link.prop("href"), `${SETTINGS.novoed_base_url}/#!/courses/${novoEdStub}/home`)
+          assert.equal(
+            link.prop("href"),
+            `${SETTINGS.novoed_base_url}/#!/courses/${novoEdStub}/home`
+          )
         }
       })
     })
