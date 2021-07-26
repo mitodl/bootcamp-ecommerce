@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.83.1
+Version 0.83.1 (Released July 26, 2021)
 --------------
 
 - Update to use the common libraries from mitol-django (#1271)
