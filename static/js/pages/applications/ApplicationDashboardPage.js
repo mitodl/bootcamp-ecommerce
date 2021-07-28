@@ -50,7 +50,8 @@ import {
   formatStartEndDateStrings,
   formatTitle,
   isErrorResponse,
-  isNilOrBlank
+  isNilOrBlank,
+  createNovoEdLinkUrl
 } from "../../util/util"
 import {
   APP_STATE_TEXT_MAP,
@@ -474,6 +475,16 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
       application.bootcamp_run.page.thumbnail_image_src :
       null
     const titleText = application.bootcamp_run.bootcamp.title
+    let novoedUrl = null
+    if (
+      SETTINGS.novoed_base_url &&
+      application.bootcamp_run.novoed_course_stub
+    ) {
+      novoedUrl = createNovoEdLinkUrl(
+        SETTINGS.novoed_base_url,
+        application.bootcamp_run.novoed_course_stub
+      )
+    }
 
     return (
       <div className="application-card" key={application.id}>
@@ -484,9 +495,9 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
             <div className="row">
               <div className={`col-12 col-md-6 mr-auto no-padding`}>
                 <h2>
-                  {isNovoEdEnrolled(application) ? (
+                  {isNovoEdEnrolled(application) && novoedUrl ? (
                     <a
-                      href={SETTINGS.novoed_login_url}
+                      href={novoedUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

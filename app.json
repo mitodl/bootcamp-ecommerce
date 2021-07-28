@@ -331,6 +331,10 @@
       "description": "The NovoEd API secret",
       "required": false
     },
+    "NOVOED_BASE_URL": {
+      "description": "The base URL of the NovoEd",
+      "required": false
+    },
     "NOVOED_SAML_CERT": {
       "description": "Contents of the SAML certificate for NovoEd ('\n' line separators)",
       "required": false
@@ -345,10 +349,6 @@
     },
     "NOVOED_SAML_KEY": {
       "description": "Contents of the SAML key for NovoEd ('\n' line separators)",
-      "required": false
-    },
-    "NOVOED_SAML_LOGIN_URL": {
-      "description": "The SP-initiated SAML login URL for NovoEd",
       "required": false
     },
     "PGBOUNCER_DEFAULT_POOL_SIZE": {

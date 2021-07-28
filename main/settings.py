@@ -987,10 +987,8 @@ NOVOED_API_BASE_URL = get_string(
     default=None,
     description="The base URL of the NovoEd API",
 )
-NOVOED_SAML_LOGIN_URL = get_string(
-    name="NOVOED_SAML_LOGIN_URL",
-    default=None,
-    description="The SP-initiated SAML login URL for NovoEd",
+NOVOED_BASE_URL = get_string(
+    name="NOVOED_BASE_URL", default=None, description="The base URL of the NovoEd"
 )
 
 # Relative URL to be used by Djoser for the link in the password reset email

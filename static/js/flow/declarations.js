@@ -6,7 +6,7 @@ declare var SETTINGS: {
   upload_max_size:  number,
   support_url:      string,
   terms_url:        string,
-  novoed_login_url: ?string,
+  novoed_base_url: string,
   zendesk_config:  {
     help_widget_enabled: boolean,
     help_widget_key: ?string

@@ -34,7 +34,7 @@ import {
   makeApplicationRunStep,
   makeApplicationSubmission
 } from "../../factories/application"
-import { isIf } from "../../lib/test_utils"
+import { isIf, shouldIf } from "../../lib/test_utils"
 
 describe("application detail section component", () => {
   const fakeFormattedDate = "Jan 1st, 2020"
@@ -280,14 +280,22 @@ describe("application detail section component", () => {
     })
     //
     ;[
-      [false, false, undefined],
-      [true, false, undefined],
-      [true, true, "Start Bootcamp"]
-    ].forEach(([ready, fulfilled, expLinkText]) => {
-      it(`should show correct link if ready === ${String(
-        ready
-      )}, fulfilled === ${String(fulfilled)}`, () => {
-        SETTINGS.novoed_login_url = "https://novoed.com"
+      [false, false, "", false, "not ready", undefined],
+      [true, false, "", false, "not fulfilled", undefined],
+      [true, true, "", false, "course stub is null", undefined],
+      [
+        true,
+        true,
+        "some-stub",
+        true,
+        "fulfilled with a valid course stub",
+        "Start Bootcamp"
+      ]
+    ].forEach(([ready, fulfilled, novoEdStub, expLink, desc, expLinkText]) => {
+      it(`${shouldIf(expLink)} show correct link if ${desc}`, () => {
+        SETTINGS.novoed_base_url = "https://novoed.com"
+        applicationDetail.bootcamp_run.novoed_course_stub = novoEdStub
+
         const wrapper = shallow(
           <BootcampStartDetail
             {...defaultProps}
@@ -296,11 +304,14 @@ describe("application detail section component", () => {
             applicationDetail={applicationDetail}
           />
         )
-        const link = wrapper.find("ProgressDetailRow a")
-        assert.equal(link.exists(), expLinkText !== undefined)
-        if (expLinkText !== undefined) {
+        if (expLink) {
+          const link = wrapper.find("ProgressDetailRow a")
+          assert.equal(link.exists(), expLinkText !== undefined)
           assert.equal(link.prop("children"), expLinkText)
-          assert.equal(link.prop("href"), SETTINGS.novoed_login_url)
+          assert.equal(
+            link.prop("href"),
+            `${SETTINGS.novoed_base_url}/#!/courses/${novoEdStub}/home`
+          )
         }
       })
     })

@@ -49,7 +49,7 @@ export const findAppByRunTitle = (
 
 export const isNovoEdEnrolled = (application: Application): boolean =>
   !!application.bootcamp_run.novoed_course_stub &&
-  !!SETTINGS.novoed_login_url &&
+  !!SETTINGS.novoed_base_url &&
   !!application.enrollment &&
   !!application.enrollment.novoed_sync_date
 
