@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.84.0
+Version 0.84.0 (Released July 29, 2021)
 --------------
 
 - Change NovoEd links to point directly to the desired course (#1263)
