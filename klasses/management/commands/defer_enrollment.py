@@ -58,7 +58,7 @@ class Command(EnrollmentChangeCommand):
         except ObjectDoesNotExist as exc:
             if isinstance(exc, BootcampRunEnrollment.DoesNotExist):
                 message = "'from' bootcamp run enrollment does not exist ({})".format(
-                    to_bootcamp_run_id
+                    from_bootcamp_run_id
                 )
             elif isinstance(exc, BootcampRun.DoesNotExist):
                 message = "'to' bootcamp does not exist ({})".format(to_bootcamp_run_id)
