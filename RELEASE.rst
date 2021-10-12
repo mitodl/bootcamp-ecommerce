@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.85.0
+--------------
+
+- Fix error message in defer_enrollment for missing enrollment (#1297)
+
 Version 0.84.0 (Released July 29, 2021)
 --------------
 
