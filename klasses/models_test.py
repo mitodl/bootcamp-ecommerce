@@ -133,15 +133,19 @@ def test_bootcamp_run_display_title():
     "future_start_date,expected_result", [[True, True], [False, False], [None, False]]
 )
 def test_bootcamp_run_is_payable(future_start_date, expected_result):
-    """is_payable should return True if the start date is set and is in the future"""
+    """is_payable should return True if the payment deadline is set and is in the future"""
+    bootcamp_run = None
     if future_start_date is None:
         start_date = None
+        bootcamp_run = BootcampRunFactory.build(start_date=start_date)
     elif future_start_date:
         start_date = now_in_utc() + timedelta(days=10)
     else:
         start_date = now_in_utc() - timedelta(days=10)
-    run = BootcampRunFactory.build(start_date=start_date)
-    assert run.is_payable is expected_result
+    if not bootcamp_run:
+        installment = InstallmentFactory.create(deadline=start_date)
+        bootcamp_run = installment.bootcamp_run
+    assert bootcamp_run.is_payable is expected_result
 
 
 def test_next_installment():
