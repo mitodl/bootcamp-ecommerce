@@ -35,7 +35,7 @@ from mitol.common.settings.webpack import *  # pylint: disable=wildcard-import,u
 from main.sentry import init_sentry
 
 
-VERSION = "0.85.0"
+VERSION = "0.86.0"
 
 ENVIRONMENT = get_string(
     name="BOOTCAMP_ENVIRONMENT",
