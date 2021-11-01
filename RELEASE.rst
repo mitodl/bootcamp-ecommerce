@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.86.0
+Version 0.86.0 (Released November 01, 2021)
 --------------
 
 - Make a payment link for a bootcamp tied to the installment deadline (#1300)
