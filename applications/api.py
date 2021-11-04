@@ -70,6 +70,8 @@ def derive_application_state(
     """
     if not is_user_info_complete(bootcamp_application.user):
         return AppStates.AWAITING_PROFILE_COMPLETION.value
+    if bootcamp_application.bootcamp_run.application_steps.count() == 0:
+        return AppStates.AWAITING_PAYMENT.value
     if not bootcamp_application.resume_file and not bootcamp_application.linkedin_url:
         return AppStates.AWAITING_RESUME.value
     submissions = list(bootcamp_application.submissions.all())

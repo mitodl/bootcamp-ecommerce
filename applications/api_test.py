@@ -160,6 +160,27 @@ def test_get_or_create_bootcamp_application_for_alumni():
     bootcamp_run = BootcampRunFactory.create()
     bootcamp_run.allows_skipped_steps = True
     bootcamp_run.save()
+
+    run_step = BootcampRunApplicationStepFactory.create(bootcamp_run=bootcamp_run)
+    bootcamp_app, created = get_or_create_bootcamp_application(
+        bootcamp_run_id=bootcamp_run.id, user=user
+    )
+    assert bootcamp_app.bootcamp_run == bootcamp_run
+    assert bootcamp_app.user == user
+    assert bootcamp_app.state == AppStates.AWAITING_PAYMENT.value
+    assert created is True
+    assert bootcamp_app.bootcamp_run.application_steps.count() == 1
+    assert bootcamp_app.bootcamp_run.application_steps.first() == run_step
+    assert bootcamp_app.state == AppStates.AWAITING_PAYMENT.value
+
+
+def test_get_or_create_no_step_bootcamp_application():
+    """
+    get or create stepless bootcamp application that directly set to AWAITING PAYMENT
+    """
+    user = UserFactory.create()
+    bootcamp_run = BootcampRunFactory.create()
+    bootcamp_run.save()
     bootcamp_app, created = get_or_create_bootcamp_application(
         bootcamp_run_id=bootcamp_run.id, user=user
     )

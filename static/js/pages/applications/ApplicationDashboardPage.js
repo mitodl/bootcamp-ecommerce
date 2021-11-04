@@ -420,7 +420,10 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     if (!application.bootcamp_run.is_payable) {
       paymentReady = false
     } else {
-      if (isEligibleToSkipSteps(currentUser, application)) {
+      if (
+        isEligibleToSkipSteps(currentUser, application) ||
+        applicationDetail.run_application_steps.length === 0
+      ) {
         paymentReady = true
       } else {
         // If there are no submissions required for this application, payment should be ready after the resume
@@ -456,7 +459,9 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
         {!isEligibleToSkipSteps(currentUser, application) && (
           <Fragment>
             {profileRow}
-            {resumeRow}
+            {applicationDetail.run_application_steps.length === 0 ?
+              null :
+              resumeRow}
             {submissionStepRows}
           </Fragment>
         )}
