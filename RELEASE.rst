@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.87.0
+--------------
+
+- fix css issue of program description section steps rich text links (#1305)
+
 Version 0.86.0 (Released November 01, 2021)
 --------------
 
