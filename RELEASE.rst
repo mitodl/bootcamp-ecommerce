@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.88.0
+Version 0.88.0 (Released November 08, 2021)
 --------------
 
 - Remove Resume / LinkedIn URL step for webinar-style (no application steps) Bootcamps (#1301)
