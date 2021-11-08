@@ -457,6 +457,15 @@ class AdmissionsSection(BootcampRunChildPage):
         related_name="+",
         help_text="Image to show at the top of this section, size must be at least 1900x650 pixels.",
     )
+    how_to_title = models.CharField(
+        max_length=255, default="How to Apply", help_text="How to title"
+    )
+    how_to_link = models.CharField(
+        max_length=255, default="Admissions", help_text="How to title"
+    )
+    apply_now = models.CharField(
+        max_length=255, default="Apply Now", help_text="Apply now button text"
+    )
     notes = models.CharField(
         max_length=255, help_text="Any notes to display, e.g. application deadline etc."
     )
@@ -483,6 +492,9 @@ class AdmissionsSection(BootcampRunChildPage):
 
     content_panels = [
         ImageChooserPanel("admissions_image"),
+        FieldPanel("how_to_title"),
+        FieldPanel("how_to_link"),
+        FieldPanel("apply_now"),
         FieldPanel("notes"),
         FieldPanel("details"),
         FieldPanel("bootcamp_format"),
