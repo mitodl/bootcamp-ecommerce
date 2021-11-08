@@ -460,10 +460,10 @@ class AdmissionsSection(BootcampRunChildPage):
     how_to_title = models.CharField(
         max_length=255, default="How to Apply", help_text="How to title"
     )
-    how_to_link = models.CharField(
-        max_length=255, default="Admissions", help_text="How to title"
+    how_to_link_text = models.CharField(
+        max_length=255, default="Admissions", help_text="How to title link text"
     )
-    apply_now = models.CharField(
+    apply_now_btn_text = models.CharField(
         max_length=255, default="Apply Now", help_text="Apply now button text"
     )
     notes = models.CharField(
@@ -493,8 +493,8 @@ class AdmissionsSection(BootcampRunChildPage):
     content_panels = [
         ImageChooserPanel("admissions_image"),
         FieldPanel("how_to_title"),
-        FieldPanel("how_to_link"),
-        FieldPanel("apply_now"),
+        FieldPanel("how_to_link_text"),
+        FieldPanel("apply_now_btn_text"),
         FieldPanel("notes"),
         FieldPanel("details"),
         FieldPanel("bootcamp_format"),
