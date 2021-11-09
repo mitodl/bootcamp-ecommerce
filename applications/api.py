@@ -48,8 +48,10 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
 
     if created:
         if check_eligibility_to_skip_steps(bootcamp_app):
-            bootcamp_app.skip_application_steps()
-            bootcamp_app.save()
+            # for bootcamp with no application steps already in AWAITING_PAYMENT state
+            if bootcamp_app.state != AppStates.AWAITING_PAYMENT.value:
+                bootcamp_app.skip_application_steps()
+                bootcamp_app.save()
         else:
             tasks.populate_interviews_in_jobma.delay(bootcamp_app.id)
 
