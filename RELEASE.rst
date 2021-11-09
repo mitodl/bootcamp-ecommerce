@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.88.1
+--------------
+
+- Change references to Apply/Admissions to text entry fields in the CMS (#1308)
+- fix error message when enrolling in 'Allows skipped steps' bootcamp that has no steps (#1310)
+
 Version 0.88.0 (Released November 08, 2021)
 --------------
 
