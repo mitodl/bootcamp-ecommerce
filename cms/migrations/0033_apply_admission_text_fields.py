@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="admissionssection",
-            name="apply_now_btn_text",
+            name="apply_now_button_text",
             field=models.CharField(
                 default="Apply Now", help_text="Apply now button text", max_length=255
             ),
