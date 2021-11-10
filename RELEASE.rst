@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.88.1
+Version 0.88.1 (Released November 10, 2021)
 --------------
 
 - Change references to Apply/Admissions to text entry fields in the CMS (#1308)
