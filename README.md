@@ -1,5 +1,5 @@
 # bootcamp-ecommerce
-An app that allows users to apply for MIT Bootcamps, and admins to review those applications. 
+An app that allows users to apply for MIT Bootcamps, and admins to review those applications.
 
 **SECTIONS**
 1. [Initial Setup](#initial-setup)
@@ -24,6 +24,8 @@ MAILGUN_FROM_EMAIL=your-email@example.com
 MAILGUN_RECIPIENT_OVERRIDE=your-email@example.com
 # Ask a fellow developer for the values below, or pull them from one of our Heroku apps
 MAILGUN_KEY=
+MAILGUN_API_PUBLIC_KEY=
+ENABLE_MAILGUN_EMAIL_VALIDATION=
 MAILGUN_SENDER_DOMAIN=
 ```
 
@@ -37,7 +39,7 @@ MAILGUN_SENDER_DOMAIN=
 1. Create the required CMS resource pages
     - Go to Settings > Resource Pages in the CMS
     - For each of the options, create a resource page and save these updated settings
-    
+
 ### Run the app and create a user
 
 1. Run the containers (`docker-compose up`)
@@ -51,7 +53,7 @@ USER_EMAIL="your_user@example.com"
 from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.filter(email=USER_EMAIL).update(is_superuser=True, is_staff=True)
-```  
+```
 
 # Optional Setup
 
@@ -70,7 +72,7 @@ CYBERSOURCE_PROFILE_ID=
 CYBERSOURCE_REFERENCE_PREFIX=
 ```
 
-In order to get video interviews working from your local app, ask a fellow developer 
+In order to get video interviews working from your local app, ask a fellow developer
 for these values or pull them from one of the non-production Bootcamp Heroku apps:
 
 ```dotenv
@@ -81,7 +83,7 @@ JOBMA_BASE_URL=
 
 ### Seed data
 
-Seed data can be generated via management command. It's designed to be idempotent, so running it multiple times 
+Seed data can be generated via management command. It's designed to be idempotent, so running it multiple times
 should not create multiple sets of data.
 
 ```
@@ -90,8 +92,8 @@ docker-compose run --rm web ./manage.py seed_data
 docker-compose run --rm web ./manage.py delete_seed_data
 ```
 
-The logic for determining the state of a user's application and advancing them through each step is complicated enough 
-that it's sometimes very annoying to test certain features. To help with this, there is a management command that 
+The logic for determining the state of a user's application and advancing them through each step is complicated enough
+that it's sometimes very annoying to test certain features. To help with this, there is a management command that
 you can use to force a user's application into a certain state:
 
 ```

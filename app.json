@@ -291,6 +291,14 @@
       "description": "The token for authenticating against the Mailgun API",
       "required": true
     },
+    "MAILGUN_API_PUBLIC_KEY": {
+      "description": "The public api key for authenticating against the Mailgun email validation API",
+      "required": false
+    },
+    "ENABLE_MAILGUN_EMAIL_VALIDATION": {
+      "description": "The flag to enable email verification while registration Mailgun API",
+      "required": false
+    },
     "MAILGUN_SENDER_DOMAIN": {
       "description": "The domain to send mailgun email through",
       "required": true
