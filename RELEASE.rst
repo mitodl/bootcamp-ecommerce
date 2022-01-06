@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.89.0
+--------------
+
+- Bump path-parse from 1.0.6 to 1.0.7 (#1294)
+- chore: update browserslist version (#1314)
+
 Version 0.88.1 (Released November 10, 2021)
 --------------
 
