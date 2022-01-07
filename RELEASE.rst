@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.89.0
+Version 0.89.0 (Released January 07, 2022)
 --------------
 
 - Bump path-parse from 1.0.6 to 1.0.7 (#1294)
