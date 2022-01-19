@@ -12,7 +12,6 @@ from authentication.views import (
     RegisterComplianceView,
     RegisterExtraDetailsView,
     get_social_auth_types,
-    CustomDjoserAPIView,
 )
 
 
@@ -52,21 +51,7 @@ urlpatterns = [
             ]
         ),
     ),
-    path(
-        "api/password_reset/",
-        CustomDjoserAPIView.as_view({"post": "reset_password"}),
-        name="password-reset-api",
-    ),
-    path(
-        "api/password_reset/confirm/",
-        CustomDjoserAPIView.as_view({"post": "reset_password_confirm"}),
-        name="password-reset-confirm-api",
-    ),
-    path(
-        "api/set_password/",
-        CustomDjoserAPIView.as_view({"post": "set_password"}),
-        name="set-password-api",
-    ),
+    path("api/", include("mitol.authentication.urls.djoser_urls")),
     path("api/auths/", get_social_auth_types, name="get-auth-types-api"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 ]
