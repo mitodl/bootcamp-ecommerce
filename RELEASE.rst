@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.90.0
+--------------
+
+- chore: bump pillow to 8.3.2 (#1312)
+
 Version 0.89.0 (Released January 07, 2022)
 --------------
 
