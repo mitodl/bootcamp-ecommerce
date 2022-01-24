@@ -28,6 +28,7 @@ from mitol.common.envs import (
     get_features,
     get_int,
     get_string,
+    import_settings_modules,
     get_list_literal,
 )
 from mitol.common.settings.webpack import *  # pylint: disable=wildcard-import,unused-wildcard-import
@@ -169,6 +170,8 @@ INSTALLED_APPS = (
     "novoed",
     # common apps
     "mitol.common.apps.CommonApp",
+    # "mitol.mail.apps.MailApp",
+    "mitol.authentication.apps.TransitionalAuthenticationApp",
 )
 
 DISABLE_WEBPACK_LOADER_STATS = get_bool(
@@ -995,17 +998,8 @@ NOVOED_BASE_URL = get_string(
 # (see: http://djoser.readthedocs.io/en/stable/settings.html#password-reset-confirm-url)
 PASSWORD_RESET_CONFIRM_URL = "password_reset/confirm/{uid}/{token}/"
 
-# Djoser library settings (see: http://djoser.readthedocs.io/en/stable/settings.html)
-DJOSER = {
-    "PASSWORD_RESET_CONFIRM_URL": PASSWORD_RESET_CONFIRM_URL,
-    "SET_PASSWORD_RETYPE": False,
-    "LOGOUT_ON_PASSWORD_CHANGE": False,
-    "PASSWORD_RESET_CONFIRM_RETYPE": True,
-    "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": True,
-    "EMAIL": {"password_reset": "authentication.views.CustomPasswordResetEmail"},
-}
-
 # ol-django configuration
+import_settings_modules(globals(), "mitol.authentication.settings.djoser_settings")
 
 # mitol-django-common
 MITOL_COMMON_USER_FACTORY = "profiles.factories.UserFactory"
@@ -1094,3 +1088,11 @@ if _novoed_saml_key and _novoed_saml_cert:
         "additional_cert_files": [],
         "valid_for": NOVOED_SAML_CONFIG_TTL_HOURS,
     }
+
+
+# mitol-django-mail
+MITOL_MAIL_FROM_EMAIL = MAILGUN_FROM_EMAIL
+MITOL_MAIL_REPLY_TO_ADDRESS = BOOTCAMP_REPLY_TO_ADDRESS
+
+MITOL_AUTHENTICATION_FROM_EMAIL = MAILGUN_FROM_EMAIL
+MITOL_AUTHENTICATION_REPLY_TO_EMAIL = BOOTCAMP_REPLY_TO_ADDRESS
