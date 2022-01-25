@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.90.1
+--------------
+
+- Using djoser common functionality for password case insenitivity issue (#1317)
+
 Version 0.90.0 (Released January 25, 2022)
 --------------
 
