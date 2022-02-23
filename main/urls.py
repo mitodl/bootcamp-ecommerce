@@ -40,8 +40,8 @@ urlpatterns = (
         path("signin/", react, name="login"),
         path("signin/password/", react, name="login-password"),
         re_path(r"^signin/forgot-password/$", react, name="password-reset"),
-        re_path(
-            r"^signin/forgot-password/confirm/(?P<uid>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
+        path(
+            "signin/forgot-password/confirm/<slug:uid>/<slug:token>/",
             react,
             name="password-reset-confirm",
         ),

@@ -7,7 +7,7 @@ import logging
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.db import models
 from django.http.response import Http404
 from django.urls import reverse

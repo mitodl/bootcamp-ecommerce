@@ -1,8 +1,14 @@
 """Abstract models for use in other applications"""
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
 from django.db import transaction
-from django.db.models import DateTimeField, ForeignKey, Manager, Model, SET_NULL
+from django.db.models import (
+    DateTimeField,
+    ForeignKey,
+    Manager,
+    Model,
+    SET_NULL,
+    JSONField,
+)
 from mitol.common.models import TimestampedModel
 
 

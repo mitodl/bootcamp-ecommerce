@@ -206,6 +206,8 @@ if DEBUG:
     INSTALLED_APPS += ("nplusone.ext.django",)
     MIDDLEWARE += ("nplusone.ext.django.NPlusOneMiddleware",)
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 AUTHENTICATION_BACKENDS = (
     "backends.edxorg.EdxOrgOAuth2",
     "social_core.backends.email.EmailAuth",

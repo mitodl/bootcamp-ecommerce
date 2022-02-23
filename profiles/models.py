@@ -5,7 +5,6 @@ from datetime import timedelta
 import uuid
 
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -163,8 +162,8 @@ class Profile(TimestampedModel):
     fluidreview_id = models.IntegerField(null=True, blank=True)
     smapply_id = models.IntegerField(null=True, blank=True)
 
-    smapply_user_data = JSONField(blank=True, null=True)
-    smapply_demographic_data = JSONField(blank=True, null=True)
+    smapply_user_data = models.JSONField(blank=True, null=True)
+    smapply_demographic_data = models.JSONField(blank=True, null=True)
 
     gender = models.CharField(
         max_length=10, blank=True, choices=GENDER_CHOICES, default=""
