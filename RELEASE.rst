@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.91.0
+Version 0.91.0 (Released March 14, 2022)
 --------------
 
 - Bump pathval from 1.1.0 to 1.1.1 (#1320)
