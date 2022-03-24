@@ -59,7 +59,7 @@
     "keycode": "^2.2.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.1.2",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "mocha": "^7.1.1",
     "moment": "^2.24.0",
     "mutationobserver-shim": "^0.3.5",
