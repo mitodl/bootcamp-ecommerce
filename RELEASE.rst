@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.91.1
+Version 0.91.1 (Released March 29, 2022)
 --------------
 
 - chore: update git based package protocol (#1330)
