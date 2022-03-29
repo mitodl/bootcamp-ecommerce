@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.92.0
+--------------
+
+- Bump lodash-es from 4.17.15 to 4.17.21 (#1328)
+- Bump urijs from 1.19.6 to 1.19.10 (#1327)
+- Bump minimist from 1.2.5 to 1.2.6 (#1331)
+
 Version 0.91.1 (Released March 29, 2022)
 --------------
 
