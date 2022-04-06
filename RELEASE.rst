@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.92.0
+Version 0.92.0 (Released April 06, 2022)
 --------------
 
 - Bump lodash-es from 4.17.15 to 4.17.21 (#1328)
