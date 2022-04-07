@@ -1,6 +1,5 @@
 """Models for ecommerce"""
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db.models import (
     CharField,
     CASCADE,
@@ -11,6 +10,7 @@ from django.db.models import (
     PROTECT,
     TextField,
     Sum,
+    JSONField,
 )
 from mitol.common.models import TimestampedModel
 
