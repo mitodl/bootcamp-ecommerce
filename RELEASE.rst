@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.92.1
+Version 0.92.1 (Released April 11, 2022)
 --------------
 
 - upgrade pillow to 9.0.1 (#1322)
