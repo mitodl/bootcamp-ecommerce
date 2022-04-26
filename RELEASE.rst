@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.93.0
+--------------
+
+- Bump urijs from 1.19.10 to 1.19.11 (#1338)
+
 Version 0.92.1 (Released April 11, 2022)
 --------------
 
