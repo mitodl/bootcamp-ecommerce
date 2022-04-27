@@ -71,7 +71,7 @@ describe("PaymentDisplay", () => {
     const { inner } = await renderPage()
     assert.equal(
       inner.find(".payment-deadline").text(),
-      "Full payment must be complete by febr. 21, 2020"
+      "Full payment must be complete by feb. 21, 2020"
     )
   })
 
