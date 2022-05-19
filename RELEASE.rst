@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.94.0 (Released May 19, 2022)
+--------------
+
+- Bump django from 3.2.12 to 3.2.13 (#1339)
+- asadiqbal08/Fix for Django model warning messages. (#1274)
+- Bump moment from 2.24.0 to 2.29.2 (#1337)
+- Bump ipython from 7.22.0 to 7.31.1 (#1335)
+
 Version 0.93.0 (Released May 09, 2022)
 --------------
 
