@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.94.1
+Version 0.94.1 (Released May 19, 2022)
 --------------
 
 - Added heroku deployment workflows
