@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.95.0
+Version 0.95.0 (Released July 11, 2022)
 --------------
 
 - Bump django from 3.2.13 to 3.2.14 & update caniuse (#1350)
