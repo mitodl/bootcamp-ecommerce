@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.96.0
+--------------
+
+- Set python to 3.9.13 (#1359)
+- Heroku-22 upgrade (#1357)
+
 Version 0.95.0 (Released July 11, 2022)
 --------------
 
