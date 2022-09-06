@@ -5,6 +5,7 @@ libpq-dev
 libjpeg-dev
 zlib1g-dev
 net-tools
+libffi-dev
 xmlsec1
 
 # developer requirements
