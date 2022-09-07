@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.96.0
+Version 0.96.0 (Released September 07, 2022)
 --------------
 
 - Set python to 3.9.13 (#1359)
