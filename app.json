@@ -369,6 +369,10 @@
       "description": "RedisCloud connection url",
       "required": false
     },
+    "SAML_IDP_FALLBACK_EXPIRATION_DAYS": {
+      "description": "The number of days to extend the SP metadata if validUntil does not exist or is in the past",
+      "required": false
+    },
     "SECRET_KEY": {
       "description": "Django secret key.",
       "generator": "secret",
