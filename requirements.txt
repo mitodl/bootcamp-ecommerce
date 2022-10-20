@@ -156,7 +156,7 @@ djangorestframework-serializer-extensions==2.0.0
     # via -r requirements.in
 djangorestframework-simplejwt==4.6.0
     # via djoser
-djangosaml2idp @ git+https://github.com/OTA-Insight/djangosaml2idp.git@e12319949dc4911657d0fff91c93317fdef691d4
+djangosaml2idp @ git+https://github.com/OTA-Insight/djangosaml2idp.git@0b4325782a6fd2c034677b5923041b5df10087ec
     # via -r requirements.in
 djoser==2.1.0
     # via

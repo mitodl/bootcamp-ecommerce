@@ -1040,6 +1040,12 @@ NOVOED_SAML_CONFIG_TTL_HOURS = get_int(
     description="The number of hours that the SAML config is expected to be accurate",
 )
 
+SAML_IDP_FALLBACK_EXPIRATION_DAYS = get_int(
+    name="SAML_IDP_FALLBACK_EXPIRATION_DAYS",
+    default=30,
+    description="The number of days to extend the SP metadata if validUntil does not exist or is in the past",
+)
+
 if _novoed_saml_key and _novoed_saml_cert:
     with NamedTemporaryFile(prefix="saml_", suffix=".key", delete=False) as f:
         lines = _novoed_saml_key.split("\\n")
