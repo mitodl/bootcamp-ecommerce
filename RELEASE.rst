@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.97.0
+--------------
+
+- Update app.json
+- Fix
+
 Version 0.96.0 (Released September 07, 2022)
 --------------
 
