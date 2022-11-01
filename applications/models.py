@@ -304,7 +304,7 @@ class BootcampApplication(TimestampedModel):
         conditions=[check_eligibility_to_skip_steps],
     )
     def skip_application_steps(self):
-        """ skip application steps for alumni """
+        """skip application steps for alumni"""
 
     def all_application_steps_submitted(self):
         """

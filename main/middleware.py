@@ -4,10 +4,10 @@ from django.utils.deprecation import MiddlewareMixin
 
 
 class CachelessAPIMiddleware(MiddlewareMixin):
-    """ Add Cache-Control header to API responses"""
+    """Add Cache-Control header to API responses"""
 
     def process_response(self, request, response):
-        """ Add a Cache-Control header to an API response """
+        """Add a Cache-Control header to an API response"""
         if request.path.startswith(settings.CACHEABLE_ENDPOINTS):
             response["Cache-Control"] = settings.CACHEABLE_ENDPOINTS_CACHE_VALUE
         elif request.path.startswith("/api/"):

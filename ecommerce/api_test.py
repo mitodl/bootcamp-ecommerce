@@ -229,7 +229,7 @@ def test_signed_payload(mocker, application, bootcamp_run, user_ip):
 
 @pytest.mark.parametrize("invalid_title", ["", "<h1></h1>"])
 def test_with_empty_or_html_run_title(application, bootcamp_run, invalid_title):
-    """ Verify that Validation error raises if title of bootcamp run has only HTML or empty."""
+    """Verify that Validation error raises if title of bootcamp run has only HTML or empty."""
     bootcamp_run.title = invalid_title
     bootcamp_run.save()
     order = create_test_order(application, "123.45", fulfilled=False)
@@ -245,7 +245,7 @@ def test_with_empty_or_html_run_title(application, bootcamp_run, invalid_title):
 
 @pytest.mark.parametrize("invalid_title", ["", "<h1></h1>"])
 def test_with_empty_or_html_bootcamp_title(application, bootcamp_run, invalid_title):
-    """ Verify that Validation error raises if title of bootcamp has only HTML or empty."""
+    """Verify that Validation error raises if title of bootcamp has only HTML or empty."""
     bootcamp_run.bootcamp.title = invalid_title
     bootcamp_run.bootcamp.save()
     order = create_test_order(application, "123.45", fulfilled=False)
@@ -531,7 +531,7 @@ def test_refund_exceeds_payment(has_application, user):
 
 @pytest.mark.parametrize("amount", [-5, 0])
 def test_bad_refund_amount(amount):
-    """ Test that an invalid refund amount raises an exception"""
+    """Test that an invalid refund amount raises an exception"""
     enrollment = BootcampRunEnrollmentFactory.create()
     with pytest.raises(EcommerceException) as exc:
         create_refund_order(
@@ -858,7 +858,7 @@ def test_import_wire_transfers_missing_application():
 
 
 def test_import_wire_transfers_update_receipt(mocker):
-    """ check for update receipt """
+    """check for update receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
@@ -881,7 +881,7 @@ def test_import_wire_transfers_update_receipt(mocker):
 
 
 def test_import_wire_transfers_update_existing_order_amount(mocker):
-    """ check for update order amount and receipt """
+    """check for update order amount and receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
@@ -917,7 +917,7 @@ def test_import_wire_transfers_update_existing_order_amount(mocker):
 
 
 def test_import_wire_transfers_update_existing_order_user(mocker):
-    """ check for update order user and receipt """
+    """check for update order user and receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     pretty_platypus_email = "pplatypus@odl.mit.edu"
@@ -958,7 +958,7 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
 
 
 def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
-    """ check for update order bootcamp and receipt """
+    """check for update order bootcamp and receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)

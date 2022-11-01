@@ -63,7 +63,7 @@ For multiple users, add arg `--user` for each user i.e:\n
         )
 
     def get_retired_email(self, email):
-        """ Convert user email to retired email format. """
+        """Convert user email to retired email format."""
         return user_util.get_retired_email(email, RETIRED_USER_SALTS, RETIRED_EMAIL_FMT)
 
     def display_messages(self, message, log_messages, is_error=False):

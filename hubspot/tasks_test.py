@@ -177,7 +177,7 @@ def test_retry_invalid_line_associations(mocker, deal_exists, line_exists):
 
 
 def test_skip_error_checks(settings, mock_hubspot_errors):
-    """Test that no requests to Hubspot are made if the HUBSPOT_API_KEY is not set """
+    """Test that no requests to Hubspot are made if the HUBSPOT_API_KEY is not set"""
     settings.HUBSPOT_API_KEY = None
     check_hubspot_api_errors()
     assert mock_hubspot_errors.call_count == 0

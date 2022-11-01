@@ -191,7 +191,7 @@ def test_get_or_create_no_step_bootcamp_application():
 
 
 def test_get_required_submission_type(awaiting_submission_app):
-    """ Test that get_required_submission_type returns the correct submission type"""
+    """Test that get_required_submission_type returns the correct submission type"""
 
     # New application for a bootcamp with no steps at all
     stepless_app = BootcampApplicationFactory.create()

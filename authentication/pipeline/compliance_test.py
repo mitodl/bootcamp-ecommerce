@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture(autouse=True)
 def social_auth_settings(settings):
-    """ Enable social auth API by default """
+    """Enable social auth API by default"""
     settings.FEATURES["SOCIAL_AUTH_API"] = True
 
 

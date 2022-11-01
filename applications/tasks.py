@@ -35,7 +35,7 @@ def populate_interviews_in_jobma(application_id):
 
 @app.task
 def refresh_pending_interview_links():
-    """ Recreate old pending interviews """
+    """Recreate old pending interviews"""
     now = now_in_utc()
     cutoff_date = now - timedelta(days=settings.JOBMA_LINK_EXPIRATION_DAYS)
     for submission in (

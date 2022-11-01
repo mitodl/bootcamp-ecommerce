@@ -815,7 +815,7 @@ def test_login_email_error(client, mocker):
 
 
 def test_login_email_hijacked(client, user, admin_user):
-    """ Test that a 403 response is returned for email login view if user is hijacked"""
+    """Test that a 403 response is returned for email login view if user is hijacked"""
     client.force_login(admin_user)
     client.post("/hijack/{}/".format(user.id))
     response = client.post(
@@ -826,7 +826,7 @@ def test_login_email_hijacked(client, user, admin_user):
 
 
 def test_register_email_hijacked(client, user, admin_user):
-    """ Test that a 403 response is returned for email register view if user is hijacked"""
+    """Test that a 403 response is returned for email register view if user is hijacked"""
     client.force_login(admin_user)
     client.post("/hijack/{}/".format(user.id))
     response = client.post(

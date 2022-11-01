@@ -27,7 +27,7 @@ test_object_type = "deals"
 
 @pytest.fixture
 def property_group():
-    """ Return sample group JSON """
+    """Return sample group JSON"""
     return {"name": "group_name", "label": "Group Label"}
 
 
@@ -246,7 +246,7 @@ def test_property_group_exists(mocker, group_status, exists):
 
 
 def test_get_property_group(mock_hubspot_api_request, property_group):
-    """ get_property_group should call send_hubspot_request with the correct arguments"""
+    """get_property_group should call send_hubspot_request with the correct arguments"""
     group_name = property_group["name"]
     api.get_property_group(test_object_type, group_name)
     assert mock_hubspot_api_request.called_with(
@@ -255,7 +255,7 @@ def test_get_property_group(mock_hubspot_api_request, property_group):
 
 
 def test_get_object_property(mock_hubspot_api_request):
-    """ get_object_property should call send_hubspot_request with the correct arguments"""
+    """get_object_property should call send_hubspot_request with the correct arguments"""
     property_name = "y"
     api.get_object_property(test_object_type, property_name)
     assert mock_hubspot_api_request.called_with(
@@ -324,7 +324,7 @@ def test_sync_property_group(
 
 
 def test_delete_property_group(mock_hubspot_api_request, property_group):
-    """ delete_property_group should call send_hubspot_request with the correct arguments"""
+    """delete_property_group should call send_hubspot_request with the correct arguments"""
     api.delete_object_property(test_object_type, property_group["name"])
     assert mock_hubspot_api_request.called_with(
         f"named/{property_group['name']}",
@@ -334,7 +334,7 @@ def test_delete_property_group(mock_hubspot_api_request, property_group):
 
 
 def test_delete_object_property(mock_hubspot_api_request, property_group):
-    """ delete_object_property should call send_hubspot_request with the correct arguments"""
+    """delete_object_property should call send_hubspot_request with the correct arguments"""
     api.delete_object_property(test_object_type, property_group["name"])
     assert mock_hubspot_api_request.called_with(
         f"named/{ property_group['name']}",

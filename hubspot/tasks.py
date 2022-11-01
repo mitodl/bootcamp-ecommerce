@@ -55,7 +55,7 @@ def sync_product_with_hubspot(bootcamp_run_id):
     autoretry_for=(ObjectDoesNotExist,), retry_kwargs={"max_retries": 3, "countdown": 5}
 )
 def sync_application_with_hubspot(application_id):
-    """ Sync the application to a hubspot deal and line"""
+    """Sync the application to a hubspot deal and line"""
     tasks = [
         sync_deal_with_hubspot.si(application_id),
         sync_line_with_hubspot.si(application_id),

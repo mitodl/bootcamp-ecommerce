@@ -63,7 +63,7 @@ def parse_hubspot_deal_id(hubspot_id):
         int: The object ID or None
     """
     match = re.compile(
-        fr"{settings.HUBSPOT_ID_PREFIX}-{INTEGRATION_PREFIX}(\d+)"
+        rf"{settings.HUBSPOT_ID_PREFIX}-{INTEGRATION_PREFIX}(\d+)"
     ).match(hubspot_id)
     return int(match.group(1)) if match else None
 

@@ -26,7 +26,7 @@ def mock_hubspot(mocker):
 
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_application(settings, mock_hubspot, hubspot_key):
-    """ sync_hubspot_application task helper should call tasks if an API key is present """
+    """sync_hubspot_application task helper should call tasks if an API key is present"""
     settings.HUBSPOT_API_KEY = hubspot_key
     application = BootcampApplication()
     sync_hubspot_application(application)
@@ -40,7 +40,7 @@ def test_sync_hubspot_application(settings, mock_hubspot, hubspot_key):
 
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_application_from_order(settings, mock_hubspot, hubspot_key):
-    """ sync_hubspot_application_from_order task helper should call tasks if an API key is present """
+    """sync_hubspot_application_from_order task helper should call tasks if an API key is present"""
     settings.HUBSPOT_API_KEY = hubspot_key
     order = Order(application=BootcampApplication())
     sync_hubspot_application_from_order(order)
@@ -53,7 +53,7 @@ def test_sync_hubspot_application_from_order(settings, mock_hubspot, hubspot_key
 
 
 def test_sync_hubspot_application_from_order_no_application(settings, mocker):
-    """ sync_hubspot_application_from_order should log an error if no application exists for the order """
+    """sync_hubspot_application_from_order should log an error if no application exists for the order"""
     settings.HUBSPOT_API_KEY = "abc"
     mock_log = mocker.patch("hubspot.task_helpers.log.error")
     order = Order(application=None, id=2)
@@ -65,7 +65,7 @@ def test_sync_hubspot_application_from_order_no_application(settings, mocker):
 
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_user(settings, mock_hubspot, hubspot_key, user):
-    """ sync_hubspot_user helper should call task if an API key is present """
+    """sync_hubspot_user helper should call task if an API key is present"""
     settings.HUBSPOT_API_KEY = hubspot_key
     sync_hubspot_user(user)
     if hubspot_key is not None:
@@ -76,7 +76,7 @@ def test_sync_hubspot_user(settings, mock_hubspot, hubspot_key, user):
 
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_product(settings, mock_hubspot, hubspot_key):
-    """ sync_hubspot_product helper should call task if an API key is present """
+    """sync_hubspot_product helper should call task if an API key is present"""
     bootcamp_run = BootcampRunFactory.create()
     settings.HUBSPOT_API_KEY = hubspot_key
     sync_hubspot_product(bootcamp_run)

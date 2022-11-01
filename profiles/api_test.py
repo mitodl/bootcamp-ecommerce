@@ -260,7 +260,7 @@ def test_parse_alumni_csv_missing_header(tmp_path):
 
 @pytest.mark.django_db
 def test_import_alumni_missing_bootcamp():
-    """ test the failure becuase of missing bootcamp """
+    """test the failure becuase of missing bootcamp"""
     alum = Alum(
         learner_email="hdoof@odl.mit.edu",
         bootcamp_name="How to be Evil",
@@ -274,7 +274,7 @@ def test_import_alumni_missing_bootcamp():
 
 @pytest.mark.django_db
 def test_import_alumni_with_enrollment(caplog):
-    """ check the enrollment created for the user """
+    """check the enrollment created for the user"""
     caplog.set_level(logging.INFO)
     run = BootcampRunFactory.create(
         title="How to be Evil Run 1",
