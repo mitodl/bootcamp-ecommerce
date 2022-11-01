@@ -1,5 +1,5 @@
 Django==3.2.14
-celery==4.3.0
+celery==5.2.2
 boto3==1.16.63
 dj-database-url==0.3.0
 django-anymail[mailgun]==8.4
