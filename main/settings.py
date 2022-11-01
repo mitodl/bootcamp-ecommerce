@@ -784,7 +784,7 @@ CELERY_BROKER_URL = get_string(
     default=REDISCLOUD_URL,
     description="Where celery should get tasks, default is Redis URL",
 )
-CELERY_TASK_ALWAYS_EAGER = get_string(
+CELERY_TASK_ALWAYS_EAGER = get_bool(
     name="CELERY_TASK_ALWAYS_EAGER",
     default=False,
     dev_only=True,
