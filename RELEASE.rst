@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.98.0
+Version 0.98.0 (Released November 02, 2022)
 --------------
 
 - Bump pyjwt from 2.0.1 to 2.4.0 (#1348)
