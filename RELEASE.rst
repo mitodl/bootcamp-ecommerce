@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.98.1
+Version 0.98.1 (Released November 03, 2022)
 --------------
 
 - Upgrade celery, redis (#1370)
