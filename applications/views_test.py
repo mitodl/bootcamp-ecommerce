@@ -46,7 +46,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def bootcamp_run_submissions():
-    """ Generate bootcamp runs and submissions """
+    """Generate bootcamp runs and submissions"""
     bootcamp_runs = BootcampRunFactory.create_batch(3)
     submissions = []
     for bootcamp_run in bootcamp_runs:

@@ -132,7 +132,7 @@ def mocked_celery(mocker):
 
 @pytest.fixture
 def mock_logger(mocker):
-    """ Mock the logger """
+    """Mock the logger"""
     yield mocker.patch("hubspot.tasks.log.error")
 
 

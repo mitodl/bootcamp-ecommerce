@@ -81,7 +81,7 @@ class RegisterEmailView(SocialAuthAPIView):
         return RegisterEmailSerializer
 
     def post(self, request, backend_name=EmailAuth.name):
-        """ Verify recaptcha response before proceeding """
+        """Verify recaptcha response before proceeding"""
         if request.session.get("is_hijacked_user", False):
             return Response(status=status.HTTP_403_FORBIDDEN)
         if settings.RECAPTCHA_SITE_KEY:

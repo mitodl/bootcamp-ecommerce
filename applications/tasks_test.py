@@ -111,7 +111,7 @@ def test_create_and_send_applicant_letter(
 def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments,redefined-outer-name
     mocker, settings, state, status, old_link, old_run, recreated, mock_jobma_client
 ):
-    """ Test that refresh_pending_interview_links updates links only when appropriate """
+    """Test that refresh_pending_interview_links updates links only when appropriate"""
     now = now_in_utc()
     settings.JOBMA_LINK_EXPIRATION_DAYS = 0 if old_link else 30
     mock_log = mocker.patch("applications.tasks.log.debug")
@@ -159,7 +159,7 @@ def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments,r
 def test_refresh_pending_interview_links_bad_interviews(  # pylint:disable=too-many-arguments,redefined-outer-name
     mocker, mock_jobma_client
 ):
-    """ Test that refresh_pending_interview_links handles missing submissions & empty urls """
+    """Test that refresh_pending_interview_links handles missing submissions & empty urls"""
     mock_log = mocker.patch("applications.tasks.log.error")
     applications = BootcampApplicationFactory.create_batch(2)
 

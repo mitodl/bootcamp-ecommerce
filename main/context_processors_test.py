@@ -11,7 +11,7 @@ from profiles.factories import UserFactory
 # pylint: disable=redefined-outer-name
 @pytest.fixture
 def patched_get_resource_page_urls(mocker):
-    """ Return a mock of main.context_processors.get_resource_page_urls """
+    """Return a mock of main.context_processors.get_resource_page_urls"""
     yield mocker.patch(
         "main.context_processors.get_resource_page_urls",
         return_value={"terms_of_service": "/terms-of-service"},

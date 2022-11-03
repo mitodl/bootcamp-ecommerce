@@ -489,7 +489,7 @@ def test_activate_user(
 
 
 def test_activate_user_social_auth_disabled(mocker, user, mock_create_user_strategy):
-    """ Test that activate_user returns {} without checking compliance if social_auth is disabled"""
+    """Test that activate_user returns {} without checking compliance if social_auth is disabled"""
     mock_compliance_api = mocker.patch(
         "authentication.pipeline.user.compliance_api.is_exports_verification_enabled"
     )
