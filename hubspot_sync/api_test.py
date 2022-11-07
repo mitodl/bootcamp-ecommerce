@@ -53,7 +53,7 @@ def test_make_deal_sync_message(hubspot_application):
         "application_stage": serialized_application["application_stage"],
         "bootcamp_name": serialized_application["bootcamp_name"],
         "amount": serialized_application["amount"],
-        "pipeline": serialized_application["pipeline"],
+        "pipeline": serialized_application["pipeline"] or "",
         "unique_app_id": serialized_application["unique_app_id"],
     }
 
