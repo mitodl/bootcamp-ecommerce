@@ -38,7 +38,7 @@ from ecommerce.serializers import (
     PaymentSerializer,
     OrderSerializer,
 )
-from hubspot.task_helpers import sync_hubspot_application_from_order
+from hubspot_sync.task_helpers import sync_hubspot_deal_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
 from main.permissions import UserIsOwnerOrAdminPermission
@@ -82,8 +82,8 @@ class PaymentView(CreateAPIView):
             application=application, payment_amount=payment_amount
         )
 
-        # Sync order data with hubspot
-        sync_hubspot_application_from_order(order)
+        # Sync order data with hubspot_sync
+        sync_hubspot_deal_from_order(order)
 
         redirect_url = self.request.build_absolute_uri(reverse("applications"))
         user_ip, _ = get_client_ip(request)
@@ -136,8 +136,8 @@ class OrderFulfillmentView(APIView):
             # import pdb; pdb.set_trace()
             complete_successful_order(order)
 
-        # Sync order data with hubspot
-        sync_hubspot_application_from_order(order)
+        # Sync order data with hubspot_sync
+        sync_hubspot_deal_from_order(order)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)

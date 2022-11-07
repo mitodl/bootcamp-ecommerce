@@ -23,7 +23,7 @@ from authentication.utils import SocialAuthState
 from authentication.api import create_user_with_generated_username
 
 from compliance import api as compliance_api
-from hubspot.task_helpers import sync_hubspot_user
+from hubspot_sync.task_helpers import sync_hubspot_user
 from profiles.serializers import UserSerializer, ProfileSerializer
 from profiles.utils import usernameify
 
@@ -254,7 +254,7 @@ def activate_user(
 
 def send_user_to_hubspot(request, **kwargs):
     """
-    Create a hubspot contact using the hubspot Forms API
+    Create a hubspot_sync contact using the hubspot_sync Forms API
     Submit the user's email and optionally a hubspotutk cookie
     """
     portal_id = settings.HUBSPOT_CONFIG.get("HUBSPOT_PORTAL_ID")

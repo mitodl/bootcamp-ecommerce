@@ -11,6 +11,7 @@ RUN apt-get install -y $(grep -vE "^\s*#" apt.txt  | tr "\n" " ")
 
 # pip
 RUN curl --silent --location https://bootstrap.pypa.io/get-pip.py | python3 -
+RUN pip install -U pip-tools
 
 # Add, and run as, non-root user.
 RUN mkdir /src

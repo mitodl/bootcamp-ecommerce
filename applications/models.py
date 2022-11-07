@@ -327,7 +327,7 @@ class BootcampApplication(TimestampedModel):
         """
         Return an integration id to be used by Hubspot as the unique deal id.
         This is necessary because the integration id used to be based on PersonalPrice.id,
-        and going forward, not all applicants will have a PersonalPrice.  So hubspot deals
+        and going forward, not all applicants will have a PersonalPrice.  So hubspot_sync deals
         will be based on BootcampApplication instead and this requires that there be no
         overlap in integration ids between new and old deals.
 
@@ -338,6 +338,18 @@ class BootcampApplication(TimestampedModel):
 
     def __str__(self):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"
+
+
+class BootcampApplicationLine(TimestampedModel):
+    """Dummy class for maintaining hubspot ids for deal (aka BootcampApplication) line_items"""
+
+    application = models.OneToOneField(
+        BootcampApplication,
+        unique=True,
+        null=True,
+        related_name="line",
+        on_delete=models.CASCADE,
+    )
 
 
 class SubmissionTypeModel(TimestampedModel):

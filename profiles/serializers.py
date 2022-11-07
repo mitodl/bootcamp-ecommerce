@@ -12,7 +12,7 @@ from social_django.models import UserSocialAuth
 from mail.v2 import verification_api
 from main.serializers import WriteableSerializerMethodField
 from profiles.models import LegalAddress, Profile, ChangeEmailRequest
-from hubspot.task_helpers import sync_hubspot_user
+from hubspot_sync.task_helpers import sync_hubspot_user
 
 log = logging.getLogger()
 

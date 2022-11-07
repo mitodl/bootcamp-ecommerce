@@ -3,7 +3,7 @@ from django.db.transaction import on_commit
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from hubspot.task_helpers import sync_hubspot_product
+from hubspot_sync.task_helpers import sync_hubspot_product
 from klasses.api import adjust_app_state_for_new_price
 from klasses.models import BootcampRun, PersonalPrice
 
@@ -12,8 +12,9 @@ from klasses.models import BootcampRun, PersonalPrice
 def sync_bootcamp_run(
     sender, instance, created, **kwargs
 ):  # pylint:disable=unused-argument
-    """Sync bootcamp run to hubspot"""
-    on_commit(lambda: sync_hubspot_product(instance))
+    """Sync bootcamp run to hubspot_sync"""
+    if created:
+        on_commit(lambda: sync_hubspot_product(instance))
 
 
 @receiver(post_save, sender=PersonalPrice, dispatch_uid="personal_price_post_save")

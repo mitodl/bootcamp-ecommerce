@@ -231,10 +231,6 @@
       "description": "Google Tag Manager tracking ID",
       "required": false
     },
-    "HUBSPOT_API_KEY": {
-      "description": "API key for Hubspot",
-      "required": false
-    },
     "HUBSPOT_CREATE_USER_FORM_ID": {
       "description": "Form ID for Hubspot Forms API",
       "required": false
@@ -243,16 +239,12 @@
       "description": "Form guid over hub spot for footer block.",
       "required": false
     },
-    "HUBSPOT_ID_PREFIX": {
-      "description": "Hub spot id prefix.",
-      "required": false
-    },
-    "HUBSPOT_LINE_RESYNC_FREQUENCY": {
-      "description": "How often in seconds to check for hubspot errors",
-      "required": false
-    },
     "HUBSPOT_NEW_COURSES_FORM_GUID": {
       "description": "Form guid over hub spot for new courses email subscription form.",
+      "required": false
+    },
+    "HUBSPOT_PIPELINE_ID": {
+      "description": "Hubspot ecommerce pipeline id",
       "required": false
     },
     "HUBSPOT_PORTAL_ID": {
@@ -313,6 +305,18 @@
     },
     "MIDDLEWARE_FEATURE_FLAG_COOKIE_NAME": {
       "description": "Feature flag cookiename",
+      "required": false
+    },
+    "MITOL_HUBSPOT_API_ID_PREFIX": {
+      "description": "Hub spot id prefix.",
+      "required": false
+    },
+    "MITOL_HUBSPOT_API_PRIVATE_TOKEN": {
+      "description": "API key for Hubspot",
+      "required": false
+    },
+    "MITOL_HUBSPOT_API_RETRIES": {
+      "description": "# times to retry a failed Hubspot API request",
       "required": false
     },
     "NEW_RELIC_APP_NAME": {

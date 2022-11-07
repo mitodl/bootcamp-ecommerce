@@ -14,13 +14,13 @@ from profiles.serializers import LegalAddressSerializer, UserSerializer
 
 @pytest.fixture()
 def mock_user_sync(mocker):
-    """Yield a mock hubspot update task for contacts"""
-    yield mocker.patch("hubspot.tasks.sync_contact_with_hubspot.delay")
+    """ Yield a mock hubspot_sync update task for contacts """
+    yield mocker.patch("hubspot_sync.tasks.sync_contact_with_hubspot.delay")
 
 
 @pytest.fixture()
 def sample_address():
-    """Return a legal address"""
+    """ Return a legal address"""
     return {
         "first_name": "Test",
         "last_name": "User",
@@ -45,7 +45,7 @@ def test_complete_address(is_complete):
 
 
 def test_validate_legal_address(sample_address):
-    """Test that correct address data validates"""
+    """ Test that correct address data validates"""
     serializer = LegalAddressSerializer(data=sample_address)
     assert serializer.is_valid() is True
 
@@ -84,7 +84,7 @@ def test_validate_legal_address(sample_address):
     ],
 )
 def test_validate_required_fields_US_CA(sample_address, field, value, error):
-    """Test that missing required fields causes a validation error"""
+    """ Test that missing required fields causes a validation error"""
     sample_address[field] = value
     serializer = LegalAddressSerializer(data=sample_address)
     assert serializer.is_valid() is False
@@ -147,12 +147,12 @@ def test_validate_optional_country_data(sample_address):
     assert LegalAddressSerializer(data=sample_address).is_valid()
 
 
-@pytest.mark.parametrize("hubspot_api_key", [None, "fake-key"])
+@pytest.mark.parametrize("MITOL_HUBSPOT_API_PRIVATE_TOKEN", [None, "fake-key"])
 def test_update_user_serializer(
-    mock_user_sync, settings, user, sample_address, hubspot_api_key
+    mock_user_sync, settings, user, sample_address, MITOL_HUBSPOT_API_PRIVATE_TOKEN
 ):
-    """Test that a UserSerializer can be updated properly and hubspot sync called if appropriate"""
-    settings.HUBSPOT_API_KEY = hubspot_api_key
+    """ Test that a UserSerializer can be updated properly and hubspot_sync sync called if appropriate """
+    settings.MITOL_HUBSPOT_API_PRIVATE_TOKEN = MITOL_HUBSPOT_API_PRIVATE_TOKEN
     serializer = UserSerializer(
         instance=user,
         data={"password": "AgJw0123", "legal_address": sample_address},
@@ -161,19 +161,19 @@ def test_update_user_serializer(
     assert serializer.is_valid()
     serializer.save()
     assert user.legal_address.street_address_1 == sample_address.get("street_address_1")
-    if hubspot_api_key is not None:
+    if MITOL_HUBSPOT_API_PRIVATE_TOKEN is not None:
         mock_user_sync.assert_called_with(user.id)
     else:
         mock_user_sync.assert_not_called()
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("hubspot_api_key", [None, "fake-key"])
+@pytest.mark.parametrize("MITOL_HUBSPOT_API_PRIVATE_TOKEN", [None, "fake-key"])
 def test_create_user_serializer(
-    mock_user_sync, settings, sample_address, hubspot_api_key
+    mock_user_sync, settings, sample_address, MITOL_HUBSPOT_API_PRIVATE_TOKEN
 ):
-    """Test that a UserSerializer can be created properly and hubspot sync called if appropriate"""
-    settings.HUBSPOT_API_KEY = hubspot_api_key
+    """ Test that a UserSerializer can be created properly and hubspot_sync sync called if appropriate """
+    settings.MITOL_HUBSPOT_API_PRIVATE_TOKEN = MITOL_HUBSPOT_API_PRIVATE_TOKEN
     serializer = UserSerializer(
         data={
             "username": "fakename",
@@ -186,7 +186,7 @@ def test_create_user_serializer(
     assert serializer.is_valid()
     user = serializer.save()
     assert user.is_active is False
-    if hubspot_api_key is not None:
+    if MITOL_HUBSPOT_API_PRIVATE_TOKEN is not None:
         mock_user_sync.assert_called_with(user.id)
     else:
         mock_user_sync.assert_not_called()
@@ -230,7 +230,7 @@ def test_update_user_email(user):
 
 
 def test_legal_address_serializer_invalid_name(sample_address):
-    """Test that LegalAddressSerializer raises an exception if first/last name is not valid"""
+    """ Test that LegalAddressSerializer raises an exception if first/last name is not valid """
 
     # To make sure that this test isn't flaky, Checking all the character and sequences that should match our name regex
 

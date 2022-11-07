@@ -1,14 +1,15 @@
-"""Test for hubspot serializers"""
+"""Test for hubspot_sync serializers"""
 from decimal import Decimal
 
 import pytest
+from django.contrib.contenttypes.models import ContentType
+from mitol.hubspot_api.models import HubspotObject
 
 from applications.constants import AppStates, SUBMISSION_TYPE_STATE
 from applications.factories import BootcampApplicationFactory
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
-from hubspot.api import format_hubspot_id
-from hubspot.serializers import (
+from hubspot_sync.serializers import (
     HubspotProductSerializer,
     HubspotDealSerializer,
     HubspotLineSerializer,
@@ -18,32 +19,36 @@ from klasses.factories import (
     InstallmentFactory,
     BootcampRunFactory,
 )
+from klasses.models import BootcampRun
 
 pytestmark = [pytest.mark.django_db]
 
 
-def test_product_serializer():
+def test_product_serializer(settings):
     """Test that the HubspotProductSerializer correctly serializes a Bootcamp"""
+    settings.MITOL_HUBSPOT_API_ID_PREFIX = "test-bc"
     bootcamp_run = BootcampRunFactory.create(title="test bootcamp 123")
     serialized_data = {
-        "title": bootcamp_run.title,
+        "name": bootcamp_run.title,
         "bootcamp_run_id": bootcamp_run.bootcamp_run_id,
+        "unique_app_id": f"test-bc-{bootcamp_run.id}",
     }
     data = HubspotProductSerializer(instance=bootcamp_run).data
     assert data == serialized_data
 
 
 @pytest.mark.parametrize(
-    "pay_amount,status",
+    "pay_amount,status, prefix",
     [
-        ["0.00", "checkout_completed"],
-        ["50.00", "shipped"],
-        ["1.00", "processed"],
-        [None, "checkout_pending"],
+        ["0.00", "checkout_completed", "abc123"],
+        ["50.00", "shipped", "prefix"],
+        ["1.00", "processed", "zde-123"],
+        [None, "checkout_pending", ""],
     ],
 )
-def test_deal_serializer_with_personal_price(pay_amount, status):
+def test_deal_serializer_with_personal_price(settings, pay_amount, status, prefix):
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/personal price"""
+    settings.MITOL_HUBSPOT_API_ID_PREFIX = prefix
     application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_PAYMENT.value
     )
@@ -55,10 +60,11 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
     serialized_data = {
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.title,
-        "price": personal_price.price.to_eng_string(),
-        "purchaser": format_hubspot_id(application.user.profile.id),
-        "name": f"Bootcamp-application-order-{application.id}",
-        "status": status,
+        "amount": personal_price.price.to_eng_string(),
+        "dealname": f"Bootcamp-application-order-{application.id}",
+        "dealstage": status,
+        "pipeline": settings.HUBSPOT_PIPELINE_ID,
+        "unique_app_id": f"{prefix}-{application.id}",
     }
     if pay_amount is not None:
         order = OrderFactory.create(
@@ -74,8 +80,9 @@ def test_deal_serializer_with_personal_price(pay_amount, status):
     assert data == serialized_data
 
 
-def test_deal_serializer_with_installment_price():
+def test_deal_serializer_with_installment_price(settings):
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/installment price"""
+    settings.MITOL_HUBSPOT_API_ID_PREFIX = "bc"
     application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_RESUME.value
     )
@@ -84,17 +91,19 @@ def test_deal_serializer_with_installment_price():
     serialized_data = {
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.title,
-        "price": installment.amount.to_eng_string(),
-        "purchaser": format_hubspot_id(application.user.profile.id),
-        "name": f"Bootcamp-application-order-{application.id}",
-        "status": "checkout_pending",
+        "amount": installment.amount.to_eng_string(),
+        "dealname": f"Bootcamp-application-order-{application.id}",
+        "dealstage": "checkout_pending",
+        "pipeline": settings.HUBSPOT_PIPELINE_ID,
+        "unique_app_id": f"bc-{application.id}",
     }
     data = HubspotDealSerializer(instance=application).data
     assert data == serialized_data
 
 
-def test_deal_serializer_with_no_price():
+def test_deal_serializer_with_no_price(settings):
     """Test that the HubspotDealSerializer correctly serializes a BootcampApplication w/no price"""
+    settings.MITOL_HUBSPOT_API_ID_PREFIX = "bootcamp"
     application = BootcampApplicationFactory.create(
         state=AppStates.AWAITING_RESUME.value
     )
@@ -102,39 +111,45 @@ def test_deal_serializer_with_no_price():
     serialized_data = {
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.title,
-        "price": "0.00",
-        "purchaser": format_hubspot_id(application.user.profile.id),
-        "name": f"Bootcamp-application-order-{application.id}",
-        "status": "checkout_pending",
+        "amount": "0.00",
+        "dealname": f"Bootcamp-application-order-{application.id}",
+        "dealstage": "checkout_pending",
+        "pipeline": settings.HUBSPOT_PIPELINE_ID,
+        "unique_app_id": f"bootcamp-{application.id}",
     }
     data = HubspotDealSerializer(instance=application).data
     assert data == serialized_data
 
 
-def test_deal_serializer_awaiting_submissions(awaiting_submission_app):
+def test_deal_serializer_awaiting_submissions(settings, awaiting_submission_app):
     """Test that the HubspotDealSerializer correctly returns the correct application stage"""
+    settings.MITOL_HUBSPOT_API_ID_PREFIX = "bootcamps"
     serialized_data = {
         "application_stage": SUBMISSION_TYPE_STATE.get(
             awaiting_submission_app.run_steps[1].application_step.submission_type
         ),
         "bootcamp_name": awaiting_submission_app.application.bootcamp_run.title,
-        "price": awaiting_submission_app.installment.amount.to_eng_string(),
-        "purchaser": format_hubspot_id(
-            awaiting_submission_app.application.user.profile.id
-        ),
-        "name": f"Bootcamp-application-order-{awaiting_submission_app.application.id}",
-        "status": "checkout_pending",
+        "amount": awaiting_submission_app.installment.amount.to_eng_string(),
+        "dealname": f"Bootcamp-application-order-{awaiting_submission_app.application.id}",
+        "dealstage": "checkout_pending",
+        "pipeline": settings.HUBSPOT_PIPELINE_ID,
+        "unique_app_id": f"bootcamps-{awaiting_submission_app.application.id}",
     }
     data = HubspotDealSerializer(instance=awaiting_submission_app.application).data
     assert data == serialized_data
 
 
-def test_line_serializer():
-    """Test that the HubspotLineSerializer correctly serializes a PersonalPrice"""
-    application = BootcampApplicationFactory.create()
-    serialized_data = {
-        "order": format_hubspot_id(application.integration_id),
-        "product": format_hubspot_id(application.bootcamp_run.integration_id),
+def test_line_serializer(settings, hubspot_application):
+    """Test that the HubspotLineSerializer correctly serializes a """
+    settings.MITOL_HUBSPOT_API_ID_PREFIX = "boot"
+    line = hubspot_application.line
+    serialized_data = HubspotLineSerializer(instance=line).data
+    assert serialized_data == {
+        "hs_product_id": HubspotObject.objects.get(
+            content_type=ContentType.objects.get_for_model(BootcampRun),
+            object_id=line.application.bootcamp_run.id,
+        ).hubspot_id,
+        "quantity": "1",
+        "name": line.application.bootcamp_run.title,
+        "unique_app_id": f"boot-{line.id}",
     }
-    data = HubspotLineSerializer(instance=application).data
-    assert data == serialized_data

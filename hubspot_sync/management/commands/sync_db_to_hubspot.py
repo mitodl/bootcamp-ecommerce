@@ -6,13 +6,13 @@ from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 
 from applications.models import BootcampApplication
-from hubspot.api import (
+from hubspot_sync.api import (
     make_contact_sync_message,
     make_product_sync_message,
     make_deal_sync_message,
     make_line_sync_message,
 )
-from hubspot.tasks import sync_bulk_with_hubspot
+#from hubspot_sync.tasks import sync_bulk_with_hubspot
 from klasses.models import BootcampRun
 
 
@@ -29,26 +29,26 @@ class Command(BaseCommand):
     @staticmethod
     def bulk_sync_model(objects, make_object_sync_message, object_type, **kwargs):
         """
-        Sync all database objects of a certain type with hubspot
+        Sync all database objects of a certain type with hubspot_sync
         Args:
             objects (iterable) objects to sync
             make_object_sync_message (function) function that takes an objectID and
                 returns a sync message for that model
             object_type (str) one of "CONTACT", "DEAL", "PRODUCT", "LINE_ITEM"
         """
-        sync_bulk_with_hubspot(
-            objects,
-            make_object_sync_message,
-            object_type,
-            print_to_console=True,
-            **kwargs,
-        )
+        # sync_bulk_with_hubspot(
+        #     objects,
+        #     make_object_sync_message,
+        #     object_type,
+        #     print_to_console=True,
+        #     **kwargs,
+        # )
 
     def sync_contacts(self):
         """
-        Sync all profiles with contacts in hubspot
+        Sync all profiles with contacts in hubspot_sync
         """
-        print("  Syncing users with hubspot contacts...")
+        print("  Syncing users with hubspot_sync contacts...")
         self.bulk_sync_model(
             User.objects.filter(profile__isnull=False),
             make_contact_sync_message,
@@ -58,9 +58,9 @@ class Command(BaseCommand):
 
     def sync_products(self):
         """
-        Sync all Bootcamps with products in hubspot
+        Sync all Bootcamps with products in hubspot_sync
         """
-        print("  Syncing products with hubspot products...")
+        print("  Syncing products with hubspot_sync products...")
         self.bulk_sync_model(
             BootcampRun.objects.all(), make_product_sync_message, "PRODUCT"
         )
@@ -68,10 +68,10 @@ class Command(BaseCommand):
 
     def sync_deals(self):
         """
-        Sync all deals with deals in hubspot. Hubspot deal information is stored in both PersonalPrice
+        Sync all deals with deals in hubspot_sync. Hubspot deal information is stored in both PersonalPrice
         and the ecommerce Order
         """
-        print("  Syncing orders with hubspot deals...")
+        print("  Syncing orders with hubspot_sync deals...")
         self.bulk_sync_model(
             BootcampApplication.objects.all(), make_deal_sync_message, "DEAL"
         )
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        print("Syncing with hubspot...")
+        print("Syncing with hubspot_sync...")
         if not (
             options["sync_contacts"]
             or options["sync_products"]
