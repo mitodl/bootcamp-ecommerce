@@ -2,6 +2,7 @@
 from builtins import hasattr
 import logging
 import re
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -19,6 +20,9 @@ from mitol.hubspot_api.api import (
     associate_objects_request,
     HubspotAssociationType,
     find_line_item,
+    get_all_objects,
+    HubspotApi,
+    get_line_items_for_deal,
 )
 from mitol.hubspot_api.models import HubspotObject
 
@@ -44,7 +48,7 @@ def parse_hubspot_deal_id(hubspot_id):
         int: The object ID or None
     """
     match = re.compile(
-        fr"{settings.MITOL_HUBSPOT_API_ID_PREFIX}-{INTEGRATION_PREFIX}(\d+)"
+        rf"{settings.MITOL_HUBSPOT_API_ID_PREFIX}-{INTEGRATION_PREFIX}(\d+)"
     ).match(hubspot_id)
     return int(match.group(1)) if match else None
 
@@ -310,3 +314,169 @@ def sync_deal_with_hubspot(application_id: int):
 
     sync_line_item_with_hubspot(application.line.id)
     return result
+
+
+def sync_contact_hubspot_ids_to_db():
+    """
+    Create HubspotObjects for all contacts in Hubspot
+
+    Returns:
+        bool: True if hubspot id matches found for all Users
+    """
+    contacts = get_all_objects(
+        HubspotObjectType.CONTACTS.value, properties=["email", "hs_additional_emails"]
+    )
+    content_type = ContentType.objects.get_for_model(User)
+    for contact in contacts:
+        user = User.objects.filter(email=contact.properties["email"]).first()
+        if not user and contact.properties["hs_additional_emails"]:
+            user = User.objects.filter(
+                email__in=contact.properties["hs_additional_emails"].split(";")
+            ).first()
+        if user:
+            HubspotObject.objects.update_or_create(
+                content_type=content_type,
+                object_id=user.id,
+                defaults={"hubspot_id": contact.id},
+            )
+    return (
+        User.objects.count()
+        == HubspotObject.objects.filter(content_type=content_type).count()
+    )
+
+
+def sync_product_hubspot_ids_to_db() -> bool:
+    """
+    Create HubspotObjects for BootcampRuns, return True if all BootcampRuns have hubspot ids
+
+    Returns:
+        bool: True if hubspot id matches found for all BootcampRuns
+    """
+    content_type = ContentType.objects.get_for_model(BootcampRun)
+    product_mapping = {}
+    for bootcamp_run in BootcampRun.objects.all():
+        product_mapping.setdefault(bootcamp_run.title, []).append(bootcamp_run.id)
+    products = get_all_objects(HubspotObjectType.PRODUCTS.value)
+    for product in products:
+        matching_runs = product_mapping.get(product.properties["name"])
+        if not matching_runs:
+            continue
+        if len(matching_runs) > 1:
+            # Narrow down by price
+            for obj_id in matching_runs:
+                if BootcampRun.objects.get(id=obj_id).price == Decimal(
+                    product.properties["amount"]
+                ):
+                    matching_run = obj_id
+        else:
+            matching_run = matching_runs[0]
+        HubspotObject.objects.update_or_create(
+            content_type=content_type,
+            object_id=matching_run,
+            defaults={"hubspot_id": product.id},
+        )
+    return (
+        BootcampRun.objects.count()
+        == HubspotObject.objects.filter(content_type=content_type).count()
+    )
+
+
+def sync_deal_line_hubspot_ids_to_db(application, hubspot_application_id) -> bool:
+    """
+    Create HubspotObjects for all of a deal's line items, return True if matches found for all lines
+
+    Args:
+        application(Order or B2BOrder): The order to sync Hubspot line items for
+        hubspot_application_id(str): The Hubspot deal id
+
+    Returns:
+        bool: True if matches found for all the order lines
+
+    """
+    client = HubspotApi()
+    line_items = get_line_items_for_deal(hubspot_application_id)
+    application_line = application.line
+
+    matches = 0
+    if line_items and len(line_items) == 1:
+        HubspotObject.objects.update_or_create(
+            content_type=ContentType.objects.get_for_model(application_line),
+            object_id=application_line.id,
+            defaults={"hubspot_id": line_items[0].id},
+        )
+        matches += 1
+    else:  # Multiple lines, need to match by product (BootcampRun)
+        for line in line_items:
+            details = client.crm.line_items.basic_api.get_by_id(line.id)
+            hs_product = HubspotObject.objects.filter(
+                hubspot_id=details.properties["hs_product_id"],
+                content_type=ContentType.objects.get_for_model(BootcampRun),
+            ).first()
+            if hs_product:
+                product_id = hs_product.object_id
+                matching_line = BootcampApplicationLine.objects.filter(
+                    application=application,
+                    application__bootcamp_run__id=product_id,
+                ).first()
+                if matching_line:
+                    HubspotObject.objects.update_or_create(
+                        content_type=ContentType.objects.get_for_model(
+                            BootcampApplicationLine
+                        ),
+                        object_id=matching_line.id,
+                        defaults={"hubspot_id": line.id},
+                    )
+                    matches += 1
+    return matches == 1
+
+
+def sync_deal_hubspot_ids_to_db() -> bool:
+    """
+    Create Hubspot objects for bootcamp applications, return True if all applications
+    (and optionally lines) have hubspot ids
+
+    Returns:
+        bool: True if matches found for all Orders and B2BOrders (and optionally their lines)
+    """
+    content_type = ContentType.objects.get_for_model(BootcampApplication)
+    deals = get_all_objects(
+        HubspotObjectType.DEALS.value, properties=["dealname", "amount"]
+    )
+    lines_synced = True
+    for deal in deals:
+        deal_name = deal.properties["dealname"]
+        deal_price = Decimal(deal.properties["amount"] or "0.00")
+        try:
+            object_id = int(deal_name.split("-")[-1])
+        except ValueError:
+            # this isn't a deal that can be synced, ie "AMx Run 3 - SPIN MASTER"
+            continue
+        applications = list(BootcampApplication.objects.filter(id=object_id))
+        if len(applications) > 1:
+            applications = [
+                application
+                for application in applications
+                if application.price == deal_price
+            ]
+        if applications:
+            application = applications[0]
+            HubspotObject.objects.update_or_create(
+                content_type=content_type,
+                object_id=application.id,
+                defaults={"hubspot_id": deal.id},
+            )
+            if not sync_deal_line_hubspot_ids_to_db(application, deal.id):
+                lines_synced = False
+    return (
+        BootcampApplication.objects.count()
+        == HubspotObject.objects.filter(content_type=content_type).count()
+        and lines_synced
+    )
+
+
+MODEL_FUNCTION_MAPPING = {
+    "user": make_contact_sync_message,
+    "bootcampapplication": make_deal_sync_message,
+    "bootcampapplicationline": make_line_sync_message,
+    "bootcamprun": make_product_sync_message,
+}

@@ -956,12 +956,21 @@ HUBSPOT_CONFIG = {
         description="Form ID for Hubspot Forms API",
     ),
 }
+HUBSPOT_MAX_CONCURRENT_TASKS = get_int(
+    name="HUBSPOT_MAX_CONCURRENT_TASKS",
+    default=5,
+    description="Max number of concurrent Hubspot tasks to run",
+)
 HUBSPOT_PIPELINE_ID = get_string(
     name="HUBSPOT_PIPELINE_ID",
     default=None,
     description="Hubspot ecommerce pipeline id",
 )
-
+HUBSPOT_TASK_DELAY = get_int(
+    name="HUBSPOT_TASK_DELAY",
+    default=1000,
+    description="Number of milliseconds to wait between consecutive Hubspot calls",
+)
 RECAPTCHA_SITE_KEY = get_string(
     name="RECAPTCHA_SITE_KEY", default="", description="The ReCaptcha site key"
 )

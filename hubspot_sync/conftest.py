@@ -53,7 +53,7 @@ def mocked_celery(mocker):
 
 @pytest.fixture
 def mock_logger(mocker):
-    """ Mock the logger """
+    """Mock the logger"""
     yield mocker.patch("hubspot_sync.tasks.log.error")
 
 
@@ -71,7 +71,7 @@ def mock_hubspot_api_request(mocker):
 
 @pytest.fixture
 def hubspot_application():
-    """ Return an order for testing with hubspot"""
+    """Return an order for testing with hubspot"""
     application = OrderFactory.create().application
     InstallmentFactory.create(bootcamp_run=application.bootcamp_run)
 

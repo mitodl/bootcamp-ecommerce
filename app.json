@@ -239,6 +239,10 @@
       "description": "Form guid over hub spot for footer block.",
       "required": false
     },
+    "HUBSPOT_MAX_CONCURRENT_TASKS": {
+      "description": "Max number of concurrent Hubspot tasks to run",
+      "required": false
+    },
     "HUBSPOT_NEW_COURSES_FORM_GUID": {
       "description": "Form guid over hub spot for new courses email subscription form.",
       "required": false
@@ -249,6 +253,10 @@
     },
     "HUBSPOT_PORTAL_ID": {
       "description": "Hub spot portal id.",
+      "required": false
+    },
+    "HUBSPOT_TASK_DELAY": {
+      "description": "Number of milliseconds to wait between consecutive Hubspot calls",
       "required": false
     },
     "JOBMA_ACCESS_TOKEN": {

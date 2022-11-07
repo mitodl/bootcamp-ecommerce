@@ -9,6 +9,7 @@ from applications.constants import AppStates, SUBMISSION_TYPE_STATE
 from applications.factories import BootcampApplicationFactory
 from ecommerce.factories import OrderFactory, LineFactory
 from ecommerce.models import Order
+from hubspot_sync.constants import HUBSPOT_DEAL_PREFIX
 from hubspot_sync.serializers import (
     HubspotProductSerializer,
     HubspotDealSerializer,
@@ -61,7 +62,7 @@ def test_deal_serializer_with_personal_price(settings, pay_amount, status, prefi
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.title,
         "amount": personal_price.price.to_eng_string(),
-        "dealname": f"Bootcamp-application-order-{application.id}",
+        "dealname": f"{HUBSPOT_DEAL_PREFIX}-{application.id}",
         "dealstage": status,
         "pipeline": settings.HUBSPOT_PIPELINE_ID,
         "unique_app_id": f"{prefix}-{application.id}",
@@ -92,7 +93,7 @@ def test_deal_serializer_with_installment_price(settings):
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.title,
         "amount": installment.amount.to_eng_string(),
-        "dealname": f"Bootcamp-application-order-{application.id}",
+        "dealname": f"{HUBSPOT_DEAL_PREFIX}-{application.id}",
         "dealstage": "checkout_pending",
         "pipeline": settings.HUBSPOT_PIPELINE_ID,
         "unique_app_id": f"bc-{application.id}",
@@ -112,7 +113,7 @@ def test_deal_serializer_with_no_price(settings):
         "application_stage": application.state,
         "bootcamp_name": application.bootcamp_run.title,
         "amount": "0.00",
-        "dealname": f"Bootcamp-application-order-{application.id}",
+        "dealname": f"{HUBSPOT_DEAL_PREFIX}-{application.id}",
         "dealstage": "checkout_pending",
         "pipeline": settings.HUBSPOT_PIPELINE_ID,
         "unique_app_id": f"bootcamp-{application.id}",
@@ -130,7 +131,7 @@ def test_deal_serializer_awaiting_submissions(settings, awaiting_submission_app)
         ),
         "bootcamp_name": awaiting_submission_app.application.bootcamp_run.title,
         "amount": awaiting_submission_app.installment.amount.to_eng_string(),
-        "dealname": f"Bootcamp-application-order-{awaiting_submission_app.application.id}",
+        "dealname": f"{HUBSPOT_DEAL_PREFIX}-{awaiting_submission_app.application.id}",
         "dealstage": "checkout_pending",
         "pipeline": settings.HUBSPOT_PIPELINE_ID,
         "unique_app_id": f"bootcamps-{awaiting_submission_app.application.id}",
@@ -140,7 +141,7 @@ def test_deal_serializer_awaiting_submissions(settings, awaiting_submission_app)
 
 
 def test_line_serializer(settings, hubspot_application):
-    """Test that the HubspotLineSerializer correctly serializes a """
+    """Test that the HubspotLineSerializer correctly serializes a"""
     settings.MITOL_HUBSPOT_API_ID_PREFIX = "boot"
     line = hubspot_application.line
     serialized_data = HubspotLineSerializer(instance=line).data

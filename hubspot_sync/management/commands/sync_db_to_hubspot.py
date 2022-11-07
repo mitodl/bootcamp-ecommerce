@@ -1,88 +1,86 @@
 """
-Management command to sync all Users, Orders, Products, and Lines with Hubspot
-and Line Items
+Management command to sync all Users, BootcampRuns (deals) and Orders (BootcampApplications) with Hubspot
 """
-from django.contrib.auth.models import User
-from django.core.management import BaseCommand
+import sys
 
-from applications.models import BootcampApplication
-from hubspot_sync.api import (
-    make_contact_sync_message,
-    make_product_sync_message,
-    make_deal_sync_message,
-    make_line_sync_message,
-)
-#from hubspot_sync.tasks import sync_bulk_with_hubspot
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.core.management import BaseCommand
+from mitol.common.utils import now_in_utc
+from mitol.hubspot_api.api import HubspotObjectType
+
+from hubspot_sync.tasks import batch_upsert_hubspot_deals, batch_upsert_hubspot_objects
 from klasses.models import BootcampRun
 
 
 class Command(BaseCommand):
     """
-    Command to sync Contact, Product, and Deal information with Hubspot
+    Sync all Users, BootcampRuns (deals) and Orders (BootcampApplications) with Hubspot
     """
 
+    create = None
     help = (
-        "Sync all Contacts, Deals, and Products with Hubspot. Hubspot API key must be set and Hubspot settings"
+        "Sync all Users, Deals, Products, and Lines with Hubspot. Hubspot API key must be set and Hubspot settings"
         "must be configured with configure_hubspot_settings"
     )
 
-    @staticmethod
-    def bulk_sync_model(objects, make_object_sync_message, object_type, **kwargs):
-        """
-        Sync all database objects of a certain type with hubspot_sync
-        Args:
-            objects (iterable) objects to sync
-            make_object_sync_message (function) function that takes an objectID and
-                returns a sync message for that model
-            object_type (str) one of "CONTACT", "DEAL", "PRODUCT", "LINE_ITEM"
-        """
-        # sync_bulk_with_hubspot(
-        #     objects,
-        #     make_object_sync_message,
-        #     object_type,
-        #     print_to_console=True,
-        #     **kwargs,
-        # )
-
     def sync_contacts(self):
         """
-        Sync all profiles with contacts in hubspot_sync
+        Sync all users with contacts in hubspot
         """
-        print("  Syncing users with hubspot_sync contacts...")
-        self.bulk_sync_model(
-            User.objects.filter(profile__isnull=False),
-            make_contact_sync_message,
-            "CONTACT",
+        sys.stdout.write("Syncing users with hubspot contacts...\n")
+        task = batch_upsert_hubspot_objects.delay(
+            HubspotObjectType.CONTACTS.value,
+            ContentType.objects.get_for_model(User).model,
+            self.create,
         )
-        print("  Finished")
+        start = now_in_utc()
+        task.get()
+        total_seconds = (now_in_utc() - start).total_seconds()
+        self.stdout.write(
+            "Syncing of users to hubspot contacts finished, took {} seconds\n".format(
+                total_seconds
+            )
+        )
 
     def sync_products(self):
         """
-        Sync all Bootcamps with products in hubspot_sync
+        Sync all products with products in hubspot
         """
-        print("  Syncing products with hubspot_sync products...")
-        self.bulk_sync_model(
-            BootcampRun.objects.all(), make_product_sync_message, "PRODUCT"
+        sys.stdout.write("  Syncing products with hubspot products...\n")
+        task = batch_upsert_hubspot_objects.delay(
+            HubspotObjectType.PRODUCTS.value,
+            ContentType.objects.get_for_model(BootcampRun).model,
+            self.create,
         )
-        print("  Finished")
+        start = now_in_utc()
+        task.get()
+        total_seconds = (now_in_utc() - start).total_seconds()
+        self.stdout.write(
+            "Syncing of products to hubspot finished, took {} seconds\n".format(
+                total_seconds
+            )
+        )
 
     def sync_deals(self):
         """
-        Sync all deals with deals in hubspot_sync. Hubspot deal information is stored in both PersonalPrice
-        and the ecommerce Order
+        Sync all applications with deals in hubspot
         """
-        print("  Syncing orders with hubspot_sync deals...")
-        self.bulk_sync_model(
-            BootcampApplication.objects.all(), make_deal_sync_message, "DEAL"
+        sys.stdout.write("  Syncing orders with hubspot deals...\n")
+        task = batch_upsert_hubspot_deals.delay(self.create)
+        start = now_in_utc()
+        task.get()
+        total_seconds = (now_in_utc() - start).total_seconds()
+        self.stdout.write(
+            "Syncing of orders/lines to hubspot finished, took {} seconds\n".format(
+                total_seconds
+            )
         )
-        self.bulk_sync_model(
-            BootcampApplication.objects.all(), make_line_sync_message, "LINE_ITEM"
-        )
-        print("  Finished")
 
     def sync_all(self):
         """
-        Sync all Users, Orders, Products, and Lines with Hubspot.
+        Sync all Users, BootcampRuns, BootcampApplications with Hubspot.
+        All products and contacts should be synced before syncing deals/line items.
         """
         self.sync_contacts()
         self.sync_products()
@@ -112,9 +110,20 @@ class Command(BaseCommand):
             action="store_true",
             help="Sync all orders",
         )
+        parser.add_argument(
+            "mode",
+            type=str,
+            nargs="?",
+            choices=["create", "update"],
+            help="create or update",
+        )
 
     def handle(self, *args, **options):
-        print("Syncing with hubspot_sync...")
+        if not options["mode"]:
+            sys.stderr.write("You must specify mode ('create' or 'update')\n")
+            sys.exit(1)
+        self.create = options["mode"].lower() == "create"
+        sys.stdout.write("Syncing with hubspot...\n")
         if not (
             options["sync_contacts"]
             or options["sync_products"]
@@ -130,5 +139,4 @@ class Command(BaseCommand):
                 self.sync_products()
             if options["sync_deals"]:
                 self.sync_deals()
-
-        print("Hubspot sync complete")
+        sys.stdout.write("Hubspot sync complete\n")

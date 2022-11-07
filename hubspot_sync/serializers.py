@@ -12,6 +12,7 @@ from applications.api import get_required_submission_type
 from applications.constants import AppStates, SUBMISSION_TYPE_STATE
 from applications.models import BootcampApplication, BootcampApplicationLine
 from ecommerce.models import Order
+from hubspot_sync.constants import HUBSPOT_DEAL_PREFIX
 from klasses.models import BootcampRun
 from main import settings
 
@@ -53,7 +54,7 @@ class HubspotDealSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
 
     def get_dealname(self, instance):
         """Get a formatted name for the deal"""
-        return f"Bootcamp-application-order-{instance.id}"
+        return f"{HUBSPOT_DEAL_PREFIX}-{instance.id}"
 
     def get_amount(self, instance):
         """Get a string of the price"""
@@ -128,7 +129,7 @@ class HubspotLineSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
         return instance.application.bootcamp_run.title
 
     def get_hs_product_id(self, instance):
-        """ Return the hubspot id for the product"""
+        """Return the hubspot id for the product"""
         from hubspot_sync.api import get_hubspot_id_for_object
 
         return get_hubspot_id_for_object(instance.application.bootcamp_run)
