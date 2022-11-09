@@ -470,11 +470,13 @@ class AdmissionsSection(BootcampRunChildPage):
         max_length=255, help_text="Any notes to display, e.g. application deadline etc."
     )
     details = RichTextField(help_text="Admission details that need to be displayed.")
-    bootcamp_format = models.CharField(
-        max_length=255, help_text="Format of the bootcamp, e.g. Online Bootcamp"
+    bootcamp_location = models.CharField(
+        max_length=255,
+        default="Online",
+        help_text="Location of the bootcamp, e.g. Online Bootcamp",
     )
-    bootcamp_format_details = RichTextField(
-        blank=True, help_text="Details of the format"
+    bootcamp_location_details = RichTextField(
+        blank=True, help_text="Details of the location"
     )
     dates = models.CharField(
         max_length=255,
@@ -497,8 +499,8 @@ class AdmissionsSection(BootcampRunChildPage):
         FieldPanel("apply_now_button_text"),
         FieldPanel("notes"),
         FieldPanel("details"),
-        FieldPanel("bootcamp_format"),
-        FieldPanel("bootcamp_format_details"),
+        FieldPanel("bootcamp_location"),
+        FieldPanel("bootcamp_location_details"),
         FieldPanel("dates"),
         FieldPanel("dates_details"),
         FieldPanel("price"),
