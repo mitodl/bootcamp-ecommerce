@@ -9,7 +9,7 @@ from cms.serializers import BootcampRunPageSerializer
 def test_bootcamp_run_page_serializer(mocker):
     """The bootcamp run page serializer should include the expected fields"""
     bootcamp_run_page = BootcampRunPageFactory.create()
-    admission_section = AdmissionSectionFactory.create(
+    AdmissionSectionFactory.create(
         parent=bootcamp_run_page,
         admissions_image__title="title of the image",
         notes="notes",

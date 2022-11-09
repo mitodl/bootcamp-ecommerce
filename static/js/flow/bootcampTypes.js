@@ -25,6 +25,8 @@ export type BootcampRunPage = {
   description: ?string,
   subhead: string,
   thumbnail_image_src: ?string,
+  bootcamp_location: string,
+  bootcamp_location_details: string,
 }
 
 export type BootcampRun = {
