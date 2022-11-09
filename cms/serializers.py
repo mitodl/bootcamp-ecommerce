@@ -13,11 +13,11 @@ class BootcampRunPageSerializer(serializers.ModelSerializer):
     bootcamp_location_details = serializers.SerializerMethodField()
 
     def get_bootcamp_location(self, instance):
-        """Get the value of the bootcamp format"""
+        """Get the value of the bootcamp location"""
         return instance.admissions_section.bootcamp_location
 
     def get_bootcamp_location_details(self, instance):
-        """Get the value of the bootcamp format description"""
+        """Get the value of the bootcamp location description"""
         return instance.admissions_section.bootcamp_location_details
 
     def get_thumbnail_image_src(self, bootcamp_run_page):
