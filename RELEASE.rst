@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.99.2
+--------------
+
+- Fix: check for course admission page (#1380)
+- Upgrade redis for M1 user
+
 Version 0.99.1 (Released November 10, 2022)
 --------------
 
