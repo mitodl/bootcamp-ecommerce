@@ -21,9 +21,11 @@ import type {
 const incr = incrementer()
 
 export const generateFakeRunPage = (): BootcampRunPage => ({
-  description:         casual.text,
-  subhead:             casual.text,
-  thumbnail_image_src: casual.url
+  description:               casual.text,
+  subhead:                   casual.text,
+  thumbnail_image_src:       casual.url,
+  bootcamp_location:         casual.text,
+  bootcamp_location_details: casual.text
 })
 
 export const generateFakeRun = (): BootcampRun => ({

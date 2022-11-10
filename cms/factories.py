@@ -276,8 +276,8 @@ class AdmissionSectionFactory(wagtail_factories.PageFactory):
     details = factory.LazyFunction(
         lambda: RichText("<p>{}</p>".format(FAKE.paragraph()))
     )
-    bootcamp_format = factory.fuzzy.FuzzyText(prefix="heading ")
-    bootcamp_format_details = factory.LazyFunction(
+    bootcamp_location = factory.fuzzy.FuzzyText(prefix="heading ")
+    bootcamp_location_details = factory.LazyFunction(
         lambda: RichText("<p>{}</p>".format(FAKE.paragraph()))
     )
     dates = factory.fuzzy.FuzzyText(prefix="heading ")

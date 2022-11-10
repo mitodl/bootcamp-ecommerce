@@ -479,6 +479,9 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
     const thumbnailSrc = application.bootcamp_run.page ?
       application.bootcamp_run.page.thumbnail_image_src :
       null
+    const bootcampLocation = application.bootcamp_run.page ?
+      application.bootcamp_run.page.bootcamp_location :
+      null
     const titleText = application.bootcamp_run.bootcamp.title
     let novoedUrl = null
     if (
@@ -519,7 +522,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
                 <div className="run-details">
                   <div>
                     <span className="label">Location:</span>{" "}
-                    <strong className="text">Online</strong>
+                    <strong className="text">{bootcampLocation}</strong>
                   </div>
                   <div>
                     <span className="label">Dates:</span>{" "}
