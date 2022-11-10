@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.99.2
+Version 0.99.2 (Released November 10, 2022)
 --------------
 
 - Fix: check for course admission page (#1380)
