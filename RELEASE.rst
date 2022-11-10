@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.99.1
+--------------
+
+- Feat: Allow users to specify bootcamp location in CMS (#1377)
+- Remove an obsolete github workflow (#1371)
+
 Version 0.99.0 (Released November 07, 2022)
 --------------
 
