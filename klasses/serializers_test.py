@@ -6,7 +6,7 @@ from datetime import timedelta
 import pytest
 from mitol.common.utils import now_in_utc
 
-from cms.factories import BootcampRunPageFactory
+from cms.factories import AdmissionSectionFactory, BootcampRunPageFactory
 from cms.serializers import BootcampRunPageSerializer
 from klasses.factories import BootcampFactory, BootcampRunFactory, InstallmentFactory
 from klasses.serializers import (
@@ -70,5 +70,17 @@ def test_bootcamp_run_serializer_with_page():
     assert "page" in serialized
     assert serialized["page"] == {}
     page = BootcampRunPageFactory.create(bootcamp_run=run)
+    AdmissionSectionFactory.create(
+        parent=page,
+        admissions_image__title="title of the image",
+        notes="notes",
+        details="details",
+        bootcamp_location="bootcamp format",
+        bootcamp_location_details="format details",
+        dates="dates",
+        dates_details="dates details",
+        price=10,
+        price_details="price details",
+    )
     serialized = BootcampRunSerializer(run, context={"include_page": True}).data
     assert serialized["page"] == BootcampRunPageSerializer(instance=page).data

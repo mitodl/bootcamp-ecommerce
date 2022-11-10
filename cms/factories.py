@@ -42,8 +42,6 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
     header_image = factory.SubFactory(wagtail_factories.ImageFactory)
     thumbnail_image = factory.SubFactory(wagtail_factories.ImageFactory)
     parent = factory.SubFactory(wagtail_factories.PageFactory)
-    bootcamp_location = factory.fuzzy.FuzzyText()
-    bootcamp_location_details = factory.fuzzy.FuzzyText()
 
     class Meta:
         model = models.BootcampRunPage

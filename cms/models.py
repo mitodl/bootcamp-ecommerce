@@ -473,10 +473,11 @@ class AdmissionsSection(BootcampRunChildPage):
     bootcamp_location = models.CharField(
         max_length=255,
         default="Online",
+        null=True,
         help_text="Location of the bootcamp, e.g. Online Bootcamp",
     )
     bootcamp_location_details = RichTextField(
-        blank=True, help_text="Details of the location"
+        null=True, blank=True, help_text="Details of the location"
     )
     dates = models.CharField(
         max_length=255,
