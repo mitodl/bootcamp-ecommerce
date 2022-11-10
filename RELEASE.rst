@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.99.1
+Version 0.99.1 (Released November 10, 2022)
 --------------
 
 - Feat: Allow users to specify bootcamp location in CMS (#1377)
