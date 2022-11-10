@@ -36,11 +36,15 @@ class Command(BaseCommand):
         """
         sys.stdout.write("Syncing user hubspot ids to database...\n")
         result = sync_contact_hubspot_ids_to_db()
-        missing = User.objects.exclude(
-            id__in=HubspotObject.objects.filter(
-                content_type=ContentType.objects.get_for_model(User)
-            ).values_list("object_id", flat=True)
-        ).values_list("username", flat=True)
+        missing = (
+            User.objects.filter(is_active=True, email__contains="@")
+            .exclude(
+                id__in=HubspotObject.objects.filter(
+                    content_type=ContentType.objects.get_for_model(User)
+                ).values_list("object_id", flat=True)
+            )
+            .values_list("username", flat=True)
+        )
         if not result and missing.count() > 0:
             sys.stderr.write(
                 f"Some users could not be matched with hubspot ids:\n {','.join(missing)}\n\n"

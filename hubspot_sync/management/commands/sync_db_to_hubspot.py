@@ -9,7 +9,11 @@ from django.core.management import BaseCommand
 from mitol.common.utils import now_in_utc
 from mitol.hubspot_api.api import HubspotObjectType
 
-from hubspot_sync.tasks import batch_upsert_hubspot_deals, batch_upsert_hubspot_objects
+from applications.models import BootcampApplication, BootcampApplicationLine
+from hubspot_sync.tasks import (
+    batch_upsert_hubspot_objects,
+    batch_upsert_associations,
+)
 from klasses.models import BootcampRun
 
 
@@ -32,6 +36,7 @@ class Command(BaseCommand):
         task = batch_upsert_hubspot_objects.delay(
             HubspotObjectType.CONTACTS.value,
             ContentType.objects.get_for_model(User).model,
+            User._meta.app_label,
             self.create,
         )
         start = now_in_utc()
@@ -51,6 +56,7 @@ class Command(BaseCommand):
         task = batch_upsert_hubspot_objects.delay(
             HubspotObjectType.PRODUCTS.value,
             ContentType.objects.get_for_model(BootcampRun).model,
+            BootcampRun._meta.app_label,
             self.create,
         )
         start = now_in_utc()
@@ -66,13 +72,53 @@ class Command(BaseCommand):
         """
         Sync all applications with deals in hubspot
         """
-        sys.stdout.write("  Syncing orders with hubspot deals...\n")
-        task = batch_upsert_hubspot_deals.delay(self.create)
+        sys.stdout.write("  Syncing applications with hubspot deals...\n")
+        task = batch_upsert_hubspot_objects.delay(
+            HubspotObjectType.DEALS.value,
+            ContentType.objects.get_for_model(BootcampApplication).model,
+            BootcampApplication._meta.app_label,
+            self.create,
+        )
         start = now_in_utc()
         task.get()
         total_seconds = (now_in_utc() - start).total_seconds()
         self.stdout.write(
             "Syncing of orders/lines to hubspot finished, took {} seconds\n".format(
+                total_seconds
+            )
+        )
+
+    def sync_lines(self):
+        """
+        Sync all applications with line_items in hubspot
+        """
+        sys.stdout.write("  Syncing application lines with hubspot line_items...\n")
+        task = batch_upsert_hubspot_objects.delay(
+            HubspotObjectType.LINES.value,
+            ContentType.objects.get_for_model(BootcampApplicationLine).model,
+            BootcampApplicationLine._meta.app_label,
+            self.create,
+        )
+        start = now_in_utc()
+        task.get()
+        total_seconds = (now_in_utc() - start).total_seconds()
+        self.stdout.write(
+            "Syncing of application lines to hubspot finished, took {} seconds\n".format(
+                total_seconds
+            )
+        )
+
+    def sync_associations(self):
+        """
+        Sync all deal associations in hubspot
+        """
+        sys.stdout.write("  Syncing deal associations with hubspot...\n")
+        task = batch_upsert_associations.delay()
+        start = now_in_utc()
+        task.get()
+        total_seconds = (now_in_utc() - start).total_seconds()
+        self.stdout.write(
+            "Syncing of deal associations to hubspot finished, took {} seconds\n".format(
                 total_seconds
             )
         )
@@ -85,14 +131,16 @@ class Command(BaseCommand):
         self.sync_contacts()
         self.sync_products()
         self.sync_deals()
+        self.sync_lines()
+        self.sync_associations()
 
     def add_arguments(self, parser):
         """
         Definition of arguments this command accepts
         """
         parser.add_argument(
-            "--contacts",
             "--users",
+            "--contacts",
             dest="sync_contacts",
             action="store_true",
             help="Sync all users",
@@ -104,11 +152,24 @@ class Command(BaseCommand):
             help="Sync all products",
         )
         parser.add_argument(
+            "--applications",
             "--deals",
-            "--orders",
             dest="sync_deals",
             action="store_true",
-            help="Sync all orders",
+            help="Sync all bootcamp applications (deals)",
+        )
+        parser.add_argument(
+            "--lines",
+            "--line_items",
+            dest="sync_lines",
+            action="store_true",
+            help="Sync all application line items",
+        )
+        parser.add_argument(
+            "--associations",
+            dest="sync_associations",
+            action="store_true",
+            help="Sync all application associations",
         )
         parser.add_argument(
             "mode",
@@ -128,6 +189,8 @@ class Command(BaseCommand):
             options["sync_contacts"]
             or options["sync_products"]
             or options["sync_deals"]
+            or options["sync_lines"]
+            or options["sync_associations"]
         ):
             # If no flags are set, sync everything
             self.sync_all()
@@ -139,4 +202,8 @@ class Command(BaseCommand):
                 self.sync_products()
             if options["sync_deals"]:
                 self.sync_deals()
+            if options["sync_lines"]:
+                self.sync_lines()
+            if options["sync_associations"]:
+                self.sync_associations()
         sys.stdout.write("Hubspot sync complete\n")

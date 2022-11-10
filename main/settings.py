@@ -958,7 +958,7 @@ HUBSPOT_CONFIG = {
 }
 HUBSPOT_MAX_CONCURRENT_TASKS = get_int(
     name="HUBSPOT_MAX_CONCURRENT_TASKS",
-    default=5,
+    default=4,
     description="Max number of concurrent Hubspot tasks to run",
 )
 HUBSPOT_PIPELINE_ID = get_string(

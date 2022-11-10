@@ -6,10 +6,10 @@ import pytest
 from applications.models import BootcampApplication
 from ecommerce.models import Order
 from hubspot_sync.task_helpers import (
-    sync_hubspot_deal,
-    sync_hubspot_deal_from_order,
-    sync_hubspot_user,
+    sync_hubspot_application,
+    sync_hubspot_application_from_order,
     sync_hubspot_product,
+    sync_hubspot_user,
 )
 from klasses.factories import BootcampRunFactory
 
@@ -26,10 +26,10 @@ def mock_hubspot(mocker):
 
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_application(settings, mock_hubspot, hubspot_key):
-    """sync_hubspot_deal task helper should call tasks if an API key is present"""
+    """sync_hubspot_application task helper should call tasks if an API key is present"""
     settings.MITOL_HUBSPOT_API_PRIVATE_TOKEN = hubspot_key
     application = BootcampApplication()
-    sync_hubspot_deal(application)
+    sync_hubspot_application(application)
     if hubspot_key is not None:
         mock_hubspot.sync_deal_with_hubspot.delay.assert_called_once_with(
             application.id
@@ -40,10 +40,10 @@ def test_sync_hubspot_application(settings, mock_hubspot, hubspot_key):
 
 @pytest.mark.parametrize("hubspot_key", [None, "abc"])
 def test_sync_hubspot_application_from_order(settings, mock_hubspot, hubspot_key):
-    """sync_hubspot_deal_from_order task helper should call tasks if an API key is present"""
+    """sync_hubspot_application_from_order task helper should call tasks if an API key is present"""
     settings.MITOL_HUBSPOT_API_PRIVATE_TOKEN = hubspot_key
     order = Order(application=BootcampApplication())
-    sync_hubspot_deal_from_order(order)
+    sync_hubspot_application_from_order(order)
     if hubspot_key is not None:
         mock_hubspot.sync_deal_with_hubspot.delay.assert_called_once_with(
             order.application.id
@@ -53,11 +53,11 @@ def test_sync_hubspot_application_from_order(settings, mock_hubspot, hubspot_key
 
 
 def test_sync_hubspot_application_from_order_no_application(settings, mocker):
-    """sync_hubspot_deal_from_order should log an error if no application exists for the order"""
+    """sync_hubspot_application_from_order should log an error if no application exists for the order"""
     settings.MITOL_HUBSPOT_API_PRIVATE_TOKEN = "abc"
     mock_log = mocker.patch("hubspot_sync.task_helpers.log.error")
     order = Order(application=None, id=2)
-    sync_hubspot_deal_from_order(order)
+    sync_hubspot_application_from_order(order)
     mock_log.assert_called_once_with(
         "No matching BootcampApplication found for order %s", order.id
     )

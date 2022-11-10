@@ -1,48 +1,47 @@
 """Hubspot CRM API sync utilities"""
-from builtins import hasattr
 import logging
 import re
+from builtins import hasattr
 from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from hubspot.crm.objects import (
-    SimplePublicObjectInput,
-)
+from django.core.validators import validate_email
+from hubspot.crm.objects import SimplePublicObjectInput
 from mitol.common.utils.collections import replace_null_values
 from mitol.hubspot_api.api import (
-    find_contact,
-    find_deal,
-    find_product,
-    upsert_object_request,
+    HubspotApi,
+    HubspotAssociationType,
     HubspotObjectType,
     associate_objects_request,
-    HubspotAssociationType,
+    find_contact,
+    find_deal,
     find_line_item,
+    find_product,
     get_all_objects,
-    HubspotApi,
     get_line_items_for_deal,
+    upsert_object_request,
 )
 from mitol.hubspot_api.models import HubspotObject
 
 from applications.constants import INTEGRATION_PREFIX
 from applications.models import BootcampApplication, BootcampApplicationLine
 from hubspot_sync.serializers import (
-    HubspotProductSerializer,
     HubspotDealSerializer,
     HubspotLineSerializer,
+    HubspotProductSerializer,
 )
 from klasses.models import BootcampRun
 
 log = logging.getLogger()
 
 
-def parse_hubspot_deal_id(hubspot_id):
+def parse_hubspot_deal_id(hubspot_id) -> int:
     """
-    Return an object ID parsed from a hubspot_sync ID
+    Return an object ID parsed from a hubspot ID
     Args:
-        hubspot_id(str): The formatted hubspot_sync ID
+        hubspot_id(str): The formatted hubspot ID
 
     Returns:
         int: The object ID or None
@@ -203,17 +202,16 @@ def get_hubspot_id_for_object(
     ).first()
     if hubspot_obj:
         return hubspot_obj.hubspot_id
-    model = obj.__class__
-    if model == User:
+    if isinstance(obj, User) and validate_email(obj.email):
         hubspot_obj = find_contact(obj.email)
-    elif model == BootcampApplication:
+    elif isinstance(obj, BootcampApplication):
         serialized_deal = HubspotDealSerializer(obj).data
         hubspot_obj = find_deal(
             name=serialized_deal["dealname"],
             amount=serialized_deal["amount"],
             raise_count_error=raise_error,
         )
-    elif model == BootcampApplicationLine:
+    elif isinstance(obj, BootcampApplicationLine):
         serialized_line = HubspotLineSerializer(obj).data
         application_id = get_hubspot_id_for_object(obj.application)
         hubspot_obj = find_line_item(
@@ -221,7 +219,7 @@ def get_hubspot_id_for_object(
             hs_product_id=serialized_line["hs_product_id"],
             raise_count_error=raise_error,
         )
-    elif model == BootcampRun:
+    elif isinstance(obj, BootcampRun):
         serialized_product = HubspotProductSerializer(obj).data
         hubspot_obj = find_product(
             serialized_product["name"],
@@ -303,14 +301,16 @@ def sync_deal_with_hubspot(application_id: int):
     result = upsert_object_request(
         content_type, HubspotObjectType.DEALS.value, object_id=application_id, body=body
     )
-    # Create association between deal and contact
-    associate_objects_request(
-        HubspotObjectType.DEALS.value,
-        result.id,
-        HubspotObjectType.CONTACTS.value,
-        get_hubspot_id_for_object(application.user),
-        HubspotAssociationType.DEAL_CONTACT.value,
-    )
+    # Create association between deal and contact if any
+    contact = get_hubspot_id_for_object(application.user)
+    if contact:
+        associate_objects_request(
+            HubspotObjectType.DEALS.value,
+            result.id,
+            HubspotObjectType.CONTACTS.value,
+            contact,
+            HubspotAssociationType.DEAL_CONTACT.value,
+        )
 
     sync_line_item_with_hubspot(application.line.id)
     return result
@@ -327,10 +327,11 @@ def sync_contact_hubspot_ids_to_db():
         HubspotObjectType.CONTACTS.value, properties=["email", "hs_additional_emails"]
     )
     content_type = ContentType.objects.get_for_model(User)
+    active_users = User.objects.filter(is_active=True)
     for contact in contacts:
-        user = User.objects.filter(email=contact.properties["email"]).first()
+        user = active_users.filter(email=contact.properties["email"]).first()
         if not user and contact.properties["hs_additional_emails"]:
-            user = User.objects.filter(
+            user = active_users.filter(
                 email__in=contact.properties["hs_additional_emails"].split(";")
             ).first()
         if user:
@@ -340,7 +341,7 @@ def sync_contact_hubspot_ids_to_db():
                 defaults={"hubspot_id": contact.id},
             )
     return (
-        User.objects.count()
+        active_users.count()
         == HubspotObject.objects.filter(content_type=content_type).count()
     )
 
@@ -356,7 +357,9 @@ def sync_product_hubspot_ids_to_db() -> bool:
     product_mapping = {}
     for bootcamp_run in BootcampRun.objects.all():
         product_mapping.setdefault(bootcamp_run.title, []).append(bootcamp_run.id)
-    products = get_all_objects(HubspotObjectType.PRODUCTS.value)
+    products = get_all_objects(
+        HubspotObjectType.PRODUCTS.value, properties=["name", "bootcamp_run_id"]
+    )
     for product in products:
         matching_runs = product_mapping.get(product.properties["name"])
         if not matching_runs:
@@ -364,8 +367,9 @@ def sync_product_hubspot_ids_to_db() -> bool:
         if len(matching_runs) > 1:
             # Narrow down by price
             for obj_id in matching_runs:
-                if BootcampRun.objects.get(id=obj_id).price == Decimal(
-                    product.properties["amount"]
+                if (
+                    BootcampRun.objects.get(id=obj_id).bootcamp_run_id
+                    == product.properties["bootcamp_run_id"]
                 ):
                     matching_run = obj_id
         else:
@@ -398,7 +402,7 @@ def sync_deal_line_hubspot_ids_to_db(application, hubspot_application_id) -> boo
     application_line = application.line
 
     matches = 0
-    if line_items and len(line_items) == 1:
+    if len(line_items) == 1:
         HubspotObject.objects.update_or_create(
             content_type=ContentType.objects.get_for_model(application_line),
             object_id=application_line.id,

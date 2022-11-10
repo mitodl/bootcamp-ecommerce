@@ -1,4 +1,4 @@
-""" Task helper functions for ecommerce """
+""" Task helper functions for hubspot_sync """
 import logging
 
 from django.conf import settings
@@ -19,7 +19,7 @@ def sync_hubspot_user(user):
         tasks.sync_contact_with_hubspot.delay(user.id)
 
 
-def sync_hubspot_deal(application):
+def sync_hubspot_application(application):
     """
     Trigger celery task to sync a deal to Hubspot
 
@@ -30,7 +30,7 @@ def sync_hubspot_deal(application):
         tasks.sync_deal_with_hubspot.delay(application.id)
 
 
-def sync_hubspot_deal_from_order(order):
+def sync_hubspot_application_from_order(order):
     """
     Trigger celery task to sync a deal from an order to Hubspot
 
@@ -38,7 +38,7 @@ def sync_hubspot_deal_from_order(order):
         order (Order): The order to sync
     """
     try:
-        sync_hubspot_deal(order.application)
+        sync_hubspot_application(order.application)
     except AttributeError:
         log.error("No matching BootcampApplication found for order %s", order.id)
 

@@ -327,7 +327,7 @@ class BootcampApplication(TimestampedModel):
         """
         Return an integration id to be used by Hubspot as the unique deal id.
         This is necessary because the integration id used to be based on PersonalPrice.id,
-        and going forward, not all applicants will have a PersonalPrice.  So hubspot_sync deals
+        and going forward, not all applicants will have a PersonalPrice.  So hubspot deals
         will be based on BootcampApplication instead and this requires that there be no
         overlap in integration ids between new and old deals.
 

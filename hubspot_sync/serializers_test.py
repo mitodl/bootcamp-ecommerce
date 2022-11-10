@@ -5,20 +5,20 @@ import pytest
 from django.contrib.contenttypes.models import ContentType
 from mitol.hubspot_api.models import HubspotObject
 
-from applications.constants import AppStates, SUBMISSION_TYPE_STATE
+from applications.constants import SUBMISSION_TYPE_STATE, AppStates
 from applications.factories import BootcampApplicationFactory
-from ecommerce.factories import OrderFactory, LineFactory
+from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import Order
 from hubspot_sync.constants import HUBSPOT_DEAL_PREFIX
 from hubspot_sync.serializers import (
-    HubspotProductSerializer,
     HubspotDealSerializer,
     HubspotLineSerializer,
+    HubspotProductSerializer,
 )
 from klasses.factories import (
-    PersonalPriceFactory,
-    InstallmentFactory,
     BootcampRunFactory,
+    InstallmentFactory,
+    PersonalPriceFactory,
 )
 from klasses.models import BootcampRun
 

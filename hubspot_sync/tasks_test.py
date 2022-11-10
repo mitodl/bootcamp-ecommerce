@@ -6,15 +6,20 @@ from math import ceil
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
+from hubspot.crm.associations import BatchInputPublicAssociation, PublicAssociation
 from hubspot.crm.objects import BatchInputSimplePublicObjectInput
-
-from mitol.hubspot_api.api import HubspotObjectType
-from mitol.hubspot_api.factories import SimplePublicObjectFactory, HubspotObjectFactory
+from mitol.hubspot_api.api import HubspotAssociationType, HubspotObjectType
+from mitol.hubspot_api.factories import HubspotObjectFactory, SimplePublicObjectFactory
+from mitol.hubspot_api.models import HubspotObject
 
 from applications.factories import BootcampApplicationFactory
 from applications.models import BootcampApplication
 from hubspot_sync import tasks
 from hubspot_sync.api import make_contact_sync_message
+from hubspot_sync.tasks import (
+    batch_upsert_associations,
+    batch_upsert_associations_chunked,
+)
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRun
 from profiles.factories import UserFactory
@@ -87,8 +92,9 @@ def test_batch_upsert_hubspot_deals_chunked(mocker):
 
 
 @pytest.mark.parametrize("create", [True, False])
-def test_batch_upsert_hubspot_objects(mocker, mocked_celery, create):
+def test_batch_upsert_hubspot_objects(settings, mocker, mocked_celery, create):
     """batch_upsert_hubspot_objects should call batch_upsert_hubspot_objects_chunked w/correct args"""
+    settings.HUBSPOT_MAX_CONCURRENT_TASKS = 4
     mock_create = mocker.patch(
         "hubspot_sync.tasks.batch_create_hubspot_objects_chunked.s"
     )
@@ -106,7 +112,7 @@ def test_batch_upsert_hubspot_objects(mocker, mocked_celery, create):
     ]
     with pytest.raises(TabError):
         tasks.batch_upsert_hubspot_objects.delay(
-            HubspotObjectType.PRODUCTS.value, "bootcamprun", create
+            HubspotObjectType.PRODUCTS.value, "bootcamprun", "klasses", create=create
         )
     mocked_celery.replace.assert_called_once()
     if create:
@@ -119,15 +125,15 @@ def test_batch_upsert_hubspot_objects(mocker, mocked_celery, create):
         )
         mock_update.assert_not_called()
     else:
-        assert mock_update.call_count == 5
+        assert mock_update.call_count == 4
         mock_update.assert_any_call(
             HubspotObjectType.PRODUCTS.value,
             "bootcamprun",
             [
                 (hso.object_id, hso.hubspot_id)
                 for hso in sorted(hs_objects, key=lambda o: o.object_id)[
-                    0:21
-                ]  # 103/5 == 21
+                    0:26
+                ]  # 103/4 == 26
             ],
         )
         mock_create.assert_not_called()
@@ -199,5 +205,82 @@ def test_batch_create_hubspot_objects_chunked(mocker, id_count):
                 make_contact_sync_message(mock_id)
                 for mock_id in mock_ids[0 : min(id_count, 10)]
             ]
+        ),
+    )
+
+
+def test_batch_upsert_associations(settings, mocker, mocked_celery):
+    """
+    batch_upsert_associations should call batch_upsert_associations_chunked w/correct lists of ids
+    """
+    mock_assoc_chunked = mocker.patch(
+        "hubspot_sync.tasks.batch_upsert_associations_chunked"
+    )
+    settings.HUBSPOT_MAX_CONCURRENT_TASKS = 4
+    application_ids = sorted(
+        [app.id for app in BootcampApplicationFactory.create_batch(10)]
+    )
+    with pytest.raises(TabError):
+        batch_upsert_associations.delay()
+    mock_assoc_chunked.s.assert_any_call(application_ids[0:3])
+    mock_assoc_chunked.s.assert_any_call(application_ids[6:9])
+    mock_assoc_chunked.s.assert_any_call([application_ids[9]])
+    assert mock_assoc_chunked.s.call_count == 4
+
+    with pytest.raises(TabError):
+        batch_upsert_associations.delay(application_ids[3:5])
+    mock_assoc_chunked.s.assert_any_call([application_ids[3]])
+    mock_assoc_chunked.s.assert_any_call([application_ids[4]])
+
+
+def test_batch_upsert_associations_chunked(settings, mocker):
+    """
+    batch_upsert_associations_chunked should make expected API calls
+    """
+    mock_hubspot_api = mocker.patch("hubspot_sync.tasks.HubspotApi")
+    applications = BootcampApplicationFactory.create_batch(5)
+    expected_line_associations = [
+        PublicAssociation(
+            _from=HubspotObjectFactory.create(
+                content_type=ContentType.objects.get_for_model(app.line),
+                object_id=app.line.id,
+                content_object=app.line,
+            ).hubspot_id,
+            to=HubspotObjectFactory.create(
+                content_type=ContentType.objects.get_for_model(app),
+                object_id=app.id,
+                content_object=app,
+            ).hubspot_id,
+            type=HubspotAssociationType.LINE_DEAL.value,
+        )
+        for app in applications
+    ]
+    expected_contact_associations = [
+        PublicAssociation(
+            _from=HubspotObject.objects.get(
+                content_type=ContentType.objects.get_for_model(app), object_id=app.id
+            ).hubspot_id,
+            to=HubspotObjectFactory.create(
+                content_type=ContentType.objects.get_for_model(app.user),
+                object_id=app.user.id,
+                content_object=app.user,
+            ).hubspot_id,
+            type=HubspotAssociationType.DEAL_CONTACT.value,
+        )
+        for app in applications
+    ]
+    batch_upsert_associations_chunked.delay([app.id for app in applications])
+    mock_hubspot_api.return_value.crm.associations.batch_api.create.assert_any_call(
+        HubspotObjectType.LINES.value,
+        HubspotObjectType.DEALS.value,
+        batch_input_public_association=BatchInputPublicAssociation(
+            inputs=expected_line_associations
+        ),
+    )
+    mock_hubspot_api.return_value.crm.associations.batch_api.create.assert_any_call(
+        HubspotObjectType.DEALS.value,
+        HubspotObjectType.CONTACTS.value,
+        batch_input_public_association=BatchInputPublicAssociation(
+            inputs=expected_contact_associations
         ),
     )

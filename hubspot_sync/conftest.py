@@ -4,8 +4,8 @@ Fixtures for hubspot_sync tests
 from datetime import datetime
 from types import SimpleNamespace
 
-import pytz
 import pytest
+import pytz
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from hubspot.crm.objects import SimplePublicObject

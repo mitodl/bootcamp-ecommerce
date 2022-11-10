@@ -1,15 +1,14 @@
 """
-Serializers for hubspot_sync
+Serializers for hubspot
 """
 import logging
 from decimal import Decimal
-
 
 from mitol.hubspot_api.api import format_app_id
 from rest_framework import serializers
 
 from applications.api import get_required_submission_type
-from applications.constants import AppStates, SUBMISSION_TYPE_STATE
+from applications.constants import SUBMISSION_TYPE_STATE, AppStates
 from applications.models import BootcampApplication, BootcampApplicationLine
 from ecommerce.models import Order
 from hubspot_sync.constants import HUBSPOT_DEAL_PREFIX
@@ -31,7 +30,7 @@ class UniqueAppIdMixin(serializers.Serializer):
 
 class HubspotProductSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
     """
-    Serializer for turning a BootcampRun into a hubspot_sync Product
+    Serializer for turning a BootcampRun into a hubspot Product
     """
 
     name = serializers.CharField(source="title")
@@ -43,7 +42,7 @@ class HubspotProductSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
 
 class HubspotDealSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
     """
-    Serializer for turning a BootcampApplication into a hubspot_sync deal.
+    Serializer for turning a BootcampApplication into a hubspot deal.
     """
 
     dealname = serializers.SerializerMethodField()

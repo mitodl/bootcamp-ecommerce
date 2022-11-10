@@ -254,7 +254,7 @@ def activate_user(
 
 def send_user_to_hubspot(request, **kwargs):
     """
-    Create a hubspot_sync contact using the hubspot_sync Forms API
+    Create a hubspot contact using the hubspot Forms API
     Submit the user's email and optionally a hubspotutk cookie
     """
     portal_id = settings.HUBSPOT_CONFIG.get("HUBSPOT_PORTAL_ID")

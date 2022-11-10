@@ -18,11 +18,10 @@ from hubspot_sync.serializers import (
 )
 from klasses.factories import (
     BootcampRunFactory,
-    PersonalPriceFactory,
     InstallmentFactory,
+    PersonalPriceFactory,
 )
 from klasses.models import BootcampRun
-
 from profiles.factories import UserFactory
 
 # pylint: disable=redefined-outer-name
@@ -244,7 +243,7 @@ def test_sync_product_hubspot_ids_dupe_names(mocker, mock_hubspot_api):
         SimplePublicObjectFactory(
             properties={
                 "name": installment.bootcamp_run.title,
-                "amount": installment.amount,
+                "bootcamp_run_id": installment.bootcamp_run.bootcamp_run_id,
             }
         )
         for installment in db_run_installments
