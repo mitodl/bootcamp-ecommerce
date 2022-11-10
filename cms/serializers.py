@@ -14,11 +14,19 @@ class BootcampRunPageSerializer(serializers.ModelSerializer):
 
     def get_bootcamp_location(self, instance):
         """Get the value of the bootcamp location"""
-        return instance.admissions_section.bootcamp_location
+        return (
+            None
+            if not instance.admissions_section
+            else instance.admissions_section.bootcamp_location
+        )
 
     def get_bootcamp_location_details(self, instance):
         """Get the value of the bootcamp location description"""
-        return instance.admissions_section.bootcamp_location_details
+        return (
+            None
+            if not instance.admissions_section
+            else instance.admissions_section.bootcamp_location_details
+        )
 
     def get_thumbnail_image_src(self, bootcamp_run_page):
         """Gets the versioned image source URL for the page's thumbnail image"""
