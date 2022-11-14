@@ -139,6 +139,59 @@ def test_batch_upsert_hubspot_objects(settings, mocker, mocked_celery, create):
         mock_create.assert_not_called()
 
 
+def test_batch_update_hubspot_objects_with_ids(settings, mocker, mocked_celery):
+    """batch_upsert_hubspot_objects should call batch_upsert_hubspot_objects_chunked w/specified ids"""
+    settings.HUBSPOT_MAX_CONCURRENT_TASKS = 2
+    mock_update = mocker.patch(
+        "hubspot_sync.tasks.batch_update_hubspot_objects_chunked.s"
+    )
+    synced_products = BootcampRunFactory.create_batch(8)
+    content_type = ContentType.objects.get_for_model(BootcampRun)
+    hs_objects = [
+        HubspotObjectFactory.create(
+            content_type=content_type, object_id=product.id, content_object=product
+        )
+        for product in synced_products
+    ]
+    object_ids = sorted([(obj.object_id, obj.hubspot_id) for obj in hs_objects])
+    with pytest.raises(TabError):
+        tasks.batch_upsert_hubspot_objects.delay(
+            HubspotObjectType.PRODUCTS.value,
+            "bootcamprun",
+            "klasses",
+            create=False,
+            object_ids=[obj[0] for obj in object_ids[0:4]],
+        )
+    mocked_celery.replace.assert_called_once()
+    assert mock_update.call_count == 2
+    mock_update.assert_any_call(
+        HubspotObjectType.PRODUCTS.value, "bootcamprun", object_ids[0:2]
+    )
+    mock_update.assert_any_call(
+        HubspotObjectType.PRODUCTS.value, "bootcamprun", object_ids[2:4]
+    )
+
+
+def test_batch_create_hubspot_objects_with_ids(settings, mocker, mocked_celery):
+    """batch_upsert_hubspot_objects should call batch_upsert_hubspot_objects_chunked w/specified ids"""
+    settings.HUBSPOT_MAX_CONCURRENT_TASKS = 2
+    mock_create = mocker.patch(
+        "hubspot_sync.tasks.batch_create_hubspot_objects_chunked.s"
+    )
+    object_ids = [8, 5, 7, 6]
+    with pytest.raises(TabError):
+        tasks.batch_upsert_hubspot_objects.delay(
+            HubspotObjectType.PRODUCTS.value,
+            "bootcamprun",
+            "klasses",
+            object_ids=object_ids,
+        )
+    mocked_celery.replace.assert_called_once()
+    assert mock_create.call_count == 2
+    mock_create.assert_any_call(HubspotObjectType.PRODUCTS.value, "bootcamprun", [5, 6])
+    mock_create.assert_any_call(HubspotObjectType.PRODUCTS.value, "bootcamprun", [7, 8])
+
+
 @pytest.mark.parametrize("id_count", [5, 15])
 def test_batch_update_hubspot_objects_chunked(mocker, id_count):
     """batch_update_hubspot_objects_chunked should make expected api calls and args"""

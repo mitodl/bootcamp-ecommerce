@@ -23,6 +23,7 @@ class Command(BaseCommand):
     """
 
     create = None
+    object_ids = None
     help = (
         "Sync all Users, Deals, Products, and Lines with Hubspot. Hubspot API key must be set and Hubspot settings"
         "must be configured with configure_hubspot_settings"
@@ -38,6 +39,7 @@ class Command(BaseCommand):
             ContentType.objects.get_for_model(User).model,
             User._meta.app_label,
             self.create,
+            object_ids=self.object_ids,
         )
         start = now_in_utc()
         task.get()
@@ -58,6 +60,7 @@ class Command(BaseCommand):
             ContentType.objects.get_for_model(BootcampRun).model,
             BootcampRun._meta.app_label,
             self.create,
+            object_ids=self.object_ids,
         )
         start = now_in_utc()
         task.get()
@@ -78,6 +81,7 @@ class Command(BaseCommand):
             ContentType.objects.get_for_model(BootcampApplication).model,
             BootcampApplication._meta.app_label,
             self.create,
+            object_ids=self.object_ids,
         )
         start = now_in_utc()
         task.get()
@@ -98,6 +102,7 @@ class Command(BaseCommand):
             ContentType.objects.get_for_model(BootcampApplicationLine).model,
             BootcampApplicationLine._meta.app_label,
             self.create,
+            object_ids=self.object_ids,
         )
         start = now_in_utc()
         task.get()
@@ -113,7 +118,7 @@ class Command(BaseCommand):
         Sync all deal associations in hubspot
         """
         sys.stdout.write("  Syncing deal associations with hubspot...\n")
-        task = batch_upsert_associations.delay()
+        task = batch_upsert_associations.delay(object_ids=self.object_ids)
         start = now_in_utc()
         task.get()
         total_seconds = (now_in_utc() - start).total_seconds()
@@ -138,6 +143,13 @@ class Command(BaseCommand):
         """
         Definition of arguments this command accepts
         """
+        parser.add_argument(
+            "--ids",
+            type=int,
+            help="List of object ids to process, must be used for a specific object model",
+            nargs="+",
+            required=False,
+        )
         parser.add_argument(
             "--users",
             "--contacts",
@@ -184,6 +196,8 @@ class Command(BaseCommand):
             sys.stderr.write("You must specify mode ('create' or 'update')\n")
             sys.exit(1)
         self.create = options["mode"].lower() == "create"
+        self.object_ids = options["ids"]
+
         sys.stdout.write("Syncing with hubspot...\n")
         if not (
             options["sync_contacts"]
@@ -193,7 +207,13 @@ class Command(BaseCommand):
             or options["sync_associations"]
         ):
             # If no flags are set, sync everything
-            self.sync_all()
+            if not self.object_ids:
+                self.sync_all()
+            else:
+                sys.stderr.write(
+                    "You must specify an object type with a list of ids.\n"
+                )
+                sys.exit(1)
         else:
             # If some flags are set, sync the specified models
             if options["sync_contacts"]:

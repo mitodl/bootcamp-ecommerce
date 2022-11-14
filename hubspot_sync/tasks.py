@@ -227,8 +227,13 @@ def batch_update_hubspot_objects_chunked(
 
 
 @app.task(bind=True)
-def batch_upsert_hubspot_objects(
-    self, hubspot_type: str, model_name: str, app_label: str, create: bool = True
+def batch_upsert_hubspot_objects(  # pylint:disable=too-many-arguments
+    self,
+    hubspot_type: str,
+    model_name: str,
+    app_label: str,
+    create: bool = True,
+    object_ids: List[int] = None,
 ):
     """
     Batch create or update objects in hubspot, no associations (so ideal for contacts and products)
@@ -238,20 +243,26 @@ def batch_upsert_hubspot_objects(
         model_name(str): The corresponding bootcamps model name
         app_label(str): The model's containing app
         create(bool): Create if true, update if false
+        object_ids(list): List of specific object ids to process if any
     """
     content_type = ContentType.objects.get_by_natural_key(app_label, model_name)
-    synced_object_ids = HubspotObject.objects.filter(
-        content_type=content_type
-    ).values_list("object_id", "hubspot_id")
-    unsynced_objects = content_type.model_class().objects.exclude(
-        id__in=[id[0] for id in synced_object_ids]
-    )
-    if model_name == "user":
-        unsynced_objects = unsynced_objects.filter(
-            is_active=True, email__contains="@"
-        ).exclude(social_auth__isnull=True)
-    unsynced_object_ids = unsynced_objects.values_list("id", flat=True)
-    object_ids = sorted(unsynced_object_ids if create else synced_object_ids)
+    if not object_ids:
+        synced_object_ids = HubspotObject.objects.filter(
+            content_type=content_type
+        ).values_list("object_id", "hubspot_id")
+        unsynced_objects = content_type.model_class().objects.exclude(
+            id__in=[id[0] for id in synced_object_ids]
+        )
+        if model_name == "user":
+            unsynced_objects = unsynced_objects.filter(
+                is_active=True, email__contains="@"
+            ).exclude(social_auth__isnull=True)
+        unsynced_object_ids = unsynced_objects.values_list("id", flat=True)
+        object_ids = unsynced_object_ids if create else synced_object_ids
+    elif not create:
+        object_ids = HubspotObject.objects.filter(
+            content_type=content_type, object_id__in=object_ids
+        ).values_list("object_id", "hubspot_id")
     # Limit number of chunks to avoid rate limit
     chunk_size = max_concurrent_chunk_size(len(object_ids))
     chunk_func = (
@@ -261,7 +272,7 @@ def batch_upsert_hubspot_objects(
     )
     chunked_tasks = [
         chunk_func.s(hubspot_type, model_name, chunk)
-        for chunk in chunks(object_ids, chunk_size=chunk_size)
+        for chunk in chunks(sorted(object_ids), chunk_size=chunk_size)
     ]
     raise self.replace(celery.group(chunked_tasks))
 
