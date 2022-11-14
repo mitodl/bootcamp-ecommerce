@@ -55,7 +55,7 @@ User.objects.filter(email=USER_EMAIL).update(is_superuser=True, is_staff=True)
 
 # Optional Setup
 
-### Third-part app settings
+### Third-party app settings
 
 In order to get Cybersource integration working for completing test orders,
 ask a fellow developer for these values or pull them from one of the non-production
@@ -78,6 +78,15 @@ JOBMA_ACCESS_TOKEN=
 JOBMA_WEBHOOK_ACCESS_TOKEN=
 JOBMA_BASE_URL=
 ```
+
+#### Hubspot integration
+- For testing/dev purposes, [create a sandbox account under your enterprise account](https://knowledge.hubspot.com/account/set-up-a-hubspot-standard-sandbox-account) if one doesn't exist yet.
+- You will also need a [private app for your sandbox account](https://developers.hubspot.com/docs/api/migrate-an-api-key-integration-to-a-private-app)
+  - Scopes: 
+    - CRM: everything except quotes and feedback
+    - Standard: crm.export, crm.import, e-commerce, integration-sync
+- Set `MITOL_HUBSPOT_API_PRIVATE_TOKEN` to the private app token in your .env file
+- Set `MITOL_HUBSPOT_API_ID_PREFIX` to something unique to your dev instance, like `xpro-dev-<initials>`
 
 ### Seed data
 
