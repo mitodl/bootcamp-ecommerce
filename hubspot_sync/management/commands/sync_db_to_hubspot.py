@@ -118,7 +118,7 @@ class Command(BaseCommand):
         Sync all deal associations in hubspot
         """
         sys.stdout.write("  Syncing deal associations with hubspot...\n")
-        task = batch_upsert_associations.delay(object_ids=self.object_ids)
+        task = batch_upsert_associations.delay(application_ids=self.object_ids)
         start = now_in_utc()
         task.get()
         total_seconds = (now_in_utc() - start).total_seconds()
