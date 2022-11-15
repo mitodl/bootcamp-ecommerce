@@ -86,7 +86,7 @@ JOBMA_BASE_URL=
     - CRM: everything except quotes and feedback
     - Standard: crm.export, crm.import, e-commerce, integration-sync
 - Set `MITOL_HUBSPOT_API_PRIVATE_TOKEN` to the private app token in your .env file
-- Set `MITOL_HUBSPOT_API_ID_PREFIX` to something unique to your dev instance, like `xpro-dev-<initials>`
+- Set `MITOL_HUBSPOT_API_ID_PREFIX` to something unique to your dev instance, like `bootcamps-dev-<initials>`
 
 ### Seed data
 

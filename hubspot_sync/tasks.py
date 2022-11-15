@@ -199,7 +199,7 @@ def batch_update_hubspot_objects_chunked(
 
     Args:
         hubspot_type(str): The hubspot object type (deal, contact, etc)
-        ct_model_name(str): The corresponding xpro model name
+        ct_model_name(str): The corresponding bootcamps model name
         object_ids: List of (object id, hubspot id) tuples to process
 
     Returns:

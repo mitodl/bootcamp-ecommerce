@@ -5,7 +5,7 @@ import django.db.models.deletion
 
 
 def backpopulate_lines(apps, schema_editor):
-    """Create a B2BLine for each B2BOrder"""
+    """Create a BootcampApplicationLine for each BootcampApplication"""
     BootcampApplication = apps.get_model("applications", "BootcampApplication")
     BootcampApplicationLine = apps.get_model("applications", "BootcampApplicationLine")
     applications = BootcampApplication.objects.iterator()

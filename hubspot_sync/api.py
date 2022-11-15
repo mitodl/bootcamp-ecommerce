@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import validate_email
-from hubspot.crm.objects import SimplePublicObjectInput
+from hubspot.crm.objects import SimplePublicObject, SimplePublicObjectInput
 from mitol.common.utils.collections import replace_null_values
 from mitol.hubspot_api.api import (
     HubspotApi,
@@ -239,8 +239,16 @@ def get_hubspot_id_for_object(
         )
 
 
-def sync_contact_with_hubspot(user_id: int):
-    """Sync a user with a hubspot_xpro contact"""
+def sync_contact_with_hubspot(user_id: int) -> SimplePublicObject:
+    """
+    Sync a user with a hubspot contact
+
+    Args:
+        user_id(int): The User id
+
+    Returns:
+        SimplePublicObject: The hubspot contact object
+    """
     body = make_contact_sync_message(user_id)
     content_type = ContentType.objects.get_for_model(User)
 
@@ -249,8 +257,16 @@ def sync_contact_with_hubspot(user_id: int):
     )
 
 
-def sync_product_with_hubspot(product_id: int):
-    """Sync a product with a hubspot_xpro product"""
+def sync_product_with_hubspot(product_id: int) -> SimplePublicObject:
+    """
+    Sync a Product with a hubspot product
+
+    Args:
+        product_id(int): The Product id
+
+    Returns:
+        SimplePublicObject: The hubspot product object
+    """
     body = make_product_sync_message(product_id)
     content_type = ContentType.objects.get_for_model(BootcampRun)
 
@@ -262,8 +278,16 @@ def sync_product_with_hubspot(product_id: int):
     )
 
 
-def sync_line_item_with_hubspot(line_id: int):
-    """Sync a Line with a hubspot line item"""
+def sync_line_item_with_hubspot(line_id: int) -> SimplePublicObject:
+    """
+    Sync a Line with a hubspot line item
+
+    Args:
+        line_id(int): The Line id
+
+    Returns:
+        SimplePublicObject: The hubspot line_item object
+    """
     line = BootcampApplicationLine.objects.get(id=line_id)
     body = make_line_sync_message(line_id)
     content_type = ContentType.objects.get_for_model(BootcampApplicationLine)
@@ -288,8 +312,16 @@ def sync_line_item_with_hubspot(line_id: int):
     return result
 
 
-def sync_deal_with_hubspot(application_id: int):
-    """Sync an Order with a hubspot deal"""
+def sync_deal_with_hubspot(application_id: int) -> SimplePublicObject:
+    """
+    Sync an Order with a hubspot deal
+
+    Args:
+        order_id(int): The Order id
+
+    Returns:
+        SimplePublicObject: The hubspot deal object
+    """
     application = BootcampApplication.objects.get(id=application_id)
     body = make_deal_sync_message(application_id)
     content_type = ContentType.objects.get_for_model(BootcampApplication)
