@@ -23,7 +23,7 @@ from authentication.utils import SocialAuthState
 from authentication.api import create_user_with_generated_username
 
 from compliance import api as compliance_api
-from hubspot.task_helpers import sync_hubspot_user
+from hubspot_sync.task_helpers import sync_hubspot_user
 from profiles.serializers import UserSerializer, ProfileSerializer
 from profiles.utils import usernameify
 

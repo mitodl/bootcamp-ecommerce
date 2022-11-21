@@ -3,8 +3,12 @@ from django.db.transaction import on_commit
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from applications.models import BootcampApplication, ApplicationStepSubmission
-from hubspot.task_helpers import sync_hubspot_application
+from applications.models import (
+    BootcampApplication,
+    ApplicationStepSubmission,
+    BootcampApplicationLine,
+)
+from hubspot_sync.task_helpers import sync_hubspot_application
 
 # pylint:disable=unused-argument
 
@@ -16,6 +20,8 @@ def sync_deal_application(sender, instance, created, **kwargs):
     """Sync application to hubspot"""
     if not created:
         on_commit(lambda: sync_hubspot_application(instance))
+    else:
+        BootcampApplicationLine.objects.update_or_create(application=instance)
 
 
 @receiver(

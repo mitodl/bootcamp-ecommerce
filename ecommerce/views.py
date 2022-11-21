@@ -38,7 +38,7 @@ from ecommerce.serializers import (
     PaymentSerializer,
     OrderSerializer,
 )
-from hubspot.task_helpers import sync_hubspot_application_from_order
+from hubspot_sync.task_helpers import sync_hubspot_application_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
 from main.permissions import UserIsOwnerOrAdminPermission

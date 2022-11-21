@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_bootcamp_run_signal(mocker):
-    """Test that hubspot is synced whenever a Bootcamp is created/updated"""
+    """Test that hubspot_sync is synced whenever a Bootcamp is created/updated"""
     mock_on_commit = mocker.patch("klasses.signals.on_commit")
     bootcamp = BootcampRunFactory.create()
     bootcamp.save()

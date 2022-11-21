@@ -4,49 +4,58 @@ Serializers for hubspot
 import logging
 from decimal import Decimal
 
+from mitol.hubspot_api.api import format_app_id
 from rest_framework import serializers
 
 from applications.api import get_required_submission_type
-from applications.constants import AppStates, SUBMISSION_TYPE_STATE
-from applications.models import BootcampApplication
+from applications.constants import SUBMISSION_TYPE_STATE, AppStates
+from applications.models import BootcampApplication, BootcampApplicationLine
 from ecommerce.models import Order
+from hubspot_sync.constants import HUBSPOT_DEAL_PREFIX
 from klasses.models import BootcampRun
+from main import settings
 
 log = logging.getLogger(__name__)
 
 
-class HubspotProductSerializer(serializers.ModelSerializer):
+class UniqueAppIdMixin(serializers.Serializer):
+    """Unique App ID field for Hubspot serializers"""
+
+    unique_app_id = serializers.SerializerMethodField()
+
+    def get_unique_app_id(self, instance):
+        """Get the app_id for the object"""
+        return format_app_id(instance.id)
+
+
+class HubspotProductSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
     """
     Serializer for turning a BootcampRun into a hubspot Product
     """
 
+    name = serializers.CharField(source="title")
+
     class Meta:
         model = BootcampRun
-        fields = ["title", "bootcamp_run_id"]
+        fields = ["name", "bootcamp_run_id", "unique_app_id"]
 
 
-class HubspotDealSerializer(serializers.ModelSerializer):
+class HubspotDealSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
     """
     Serializer for turning a BootcampApplication into a hubspot deal.
     """
 
-    name = serializers.SerializerMethodField()
-    purchaser = serializers.SerializerMethodField()
-    price = serializers.SerializerMethodField()
+    dealname = serializers.SerializerMethodField()
+    amount = serializers.SerializerMethodField()
     bootcamp_name = serializers.SerializerMethodField()
     application_stage = serializers.SerializerMethodField()
+    pipeline = serializers.ReadOnlyField(default=settings.HUBSPOT_PIPELINE_ID)
 
-    def get_name(self, instance):
+    def get_dealname(self, instance):
         """Get a formatted name for the deal"""
-        return f"Bootcamp-application-order-{instance.id}"
+        return f"{HUBSPOT_DEAL_PREFIX}-{instance.id}"
 
-    def get_purchaser(self, instance):
-        """Get the id of the associated user"""
-        from hubspot.api import format_hubspot_id
-
-        return format_hubspot_id(instance.user.profile.id)
-
-    def get_price(self, instance):
+    def get_amount(self, instance):
         """Get a string of the price"""
         price = instance.bootcamp_run.personal_price(instance.user)
         if price:
@@ -67,7 +76,7 @@ class HubspotDealSerializer(serializers.ModelSerializer):
         return state
 
     def to_representation(self, instance):
-        # Populate order data
+        # Populate deal data
         data = super().to_representation(instance)
         orders = Order.objects.filter(
             user=instance.user, line__bootcamp_run_id=instance.bootcamp_run.id
@@ -83,41 +92,47 @@ class HubspotDealSerializer(serializers.ModelSerializer):
 
             data["total_price_paid"] = amount_paid.to_eng_string()
             if amount_paid >= instance.bootcamp_run.personal_price(instance.user):
-                data["status"] = "shipped"
+                data["dealstage"] = "shipped"
             elif amount_paid > 0 or has_refunds:
-                data["status"] = "processed"
+                data["dealstage"] = "processed"
             else:
-                data["status"] = "checkout_completed"
+                data["dealstage"] = "checkout_completed"
         else:
-            data["status"] = "checkout_pending"
+            data["dealstage"] = "checkout_pending"
 
         return data
 
     class Meta:
         model = BootcampApplication
-        fields = ["name", "price", "application_stage", "purchaser", "bootcamp_name"]
+        fields = [
+            "dealname",
+            "amount",
+            "application_stage",
+            "bootcamp_name",
+            "unique_app_id",
+            "pipeline",
+        ]
 
 
-class HubspotLineSerializer(serializers.ModelSerializer):
+class HubspotLineSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
     """
     Serializer for turning a BootcampApplication into a hubspot line item
     """
 
-    order = serializers.SerializerMethodField()
-    product = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    hs_product_id = serializers.SerializerMethodField()
+    quantity = serializers.CharField(default="1")
 
-    def get_order(self, instance):
-        """Get the id of the associated deal"""
-        from hubspot.api import format_hubspot_id
+    def get_name(self, instance):
+        """Get the product version name"""
+        return instance.application.bootcamp_run.title
 
-        return format_hubspot_id(instance.integration_id)
+    def get_hs_product_id(self, instance):
+        """Return the hubspot id for the product"""
+        from hubspot_sync.api import get_hubspot_id_for_object
 
-    def get_product(self, instance):
-        """Get the id of the associated BootcampRun"""
-        from hubspot.api import format_hubspot_id
-
-        return format_hubspot_id(instance.bootcamp_run.integration_id)
+        return get_hubspot_id_for_object(instance.application.bootcamp_run)
 
     class Meta:
-        model = BootcampApplication
-        fields = ["order", "product"]
+        model = BootcampApplicationLine
+        fields = ["name", "hs_product_id", "unique_app_id", "quantity"]

@@ -340,6 +340,18 @@ class BootcampApplication(TimestampedModel):
         return f"user='{self.user.email}', run='{self.bootcamp_run.title}', state={self.state}"
 
 
+class BootcampApplicationLine(TimestampedModel):
+    """Dummy class for maintaining hubspot ids for deal (aka BootcampApplication) line_items"""
+
+    application = models.OneToOneField(
+        BootcampApplication,
+        unique=True,
+        null=True,
+        related_name="line",
+        on_delete=models.CASCADE,
+    )
+
+
 class SubmissionTypeModel(TimestampedModel):
     """Base model for any type of submission that is required on a user's bootcamp application"""
 

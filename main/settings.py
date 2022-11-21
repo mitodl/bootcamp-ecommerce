@@ -163,13 +163,14 @@ INSTALLED_APPS = (
     "klasses",
     "profiles",
     "applications",
-    "hubspot",
+    "hubspot_sync",
     "authentication",
     "compliance",
     "jobma",
     "novoed",
     # common apps
     "mitol.common.apps.CommonApp",
+    "mitol.hubspot_api.apps.HubspotApiApp",
     # "mitol.mail.apps.MailApp",
     "mitol.authentication.apps.TransitionalAuthenticationApp",
 )
@@ -293,7 +294,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Send a validation email to the user to verify its email address.
     # Disabled by default.
     "social_core.pipeline.mail.mail_validation",
-    # Send the email address and hubspot cookie if it exists to hubspot.
+    # Send the email address and hubspot_sync cookie if it exists to hubspot_sync.
     "authentication.pipeline.user.send_user_to_hubspot",
     # Generate a username for the user
     # NOTE: needs to be right before create_user so nothing overrides the username
@@ -803,14 +804,6 @@ CELERY_RESULT_BACKEND = get_string(
 )
 CELERY_TIMEZONE = "UTC"
 CELERY_BEAT_SCHEDULE = {
-    "check-for-hubspot-sync-errors": {
-        "task": "hubspot.tasks.check_hubspot_api_errors",
-        "schedule": get_int(
-            name="HUBSPOT_LINE_RESYNC_FREQUENCY",
-            default=900,
-            description="How often in seconds to check for hubspot errors",
-        ),
-    },
     "recreate-stale-interview-links": {
         "task": "applications.tasks.refresh_pending_interview_links",
         "schedule": crontab(minute=0, hour=5),
@@ -927,11 +920,20 @@ if DEBUG:
     # it needs to be enabled before other middlewares
     MIDDLEWARE = ("debug_toolbar.middleware.DebugToolbarMiddleware",) + MIDDLEWARE
 
-HUBSPOT_API_KEY = get_string(
-    name="HUBSPOT_API_KEY", default="", description="API key for Hubspot"
+MITOL_HUBSPOT_API_PRIVATE_TOKEN = get_string(
+    name="MITOL_HUBSPOT_API_PRIVATE_TOKEN",
+    default="",
+    description="API key for Hubspot",
 )
-HUBSPOT_ID_PREFIX = get_string(
-    name="HUBSPOT_ID_PREFIX", default="bootcamp", description="Hub spot id prefix."
+MITOL_HUBSPOT_API_RETRIES = get_int(
+    name="MITOL_HUBSPOT_API_RETRIES",
+    default=3,
+    description="# times to retry a failed Hubspot API request",
+)
+MITOL_HUBSPOT_API_ID_PREFIX = get_string(
+    name="MITOL_HUBSPOT_API_ID_PREFIX",
+    default="bootcamp",
+    description="Hub spot id prefix.",
 )
 
 HUBSPOT_CONFIG = {
@@ -954,7 +956,21 @@ HUBSPOT_CONFIG = {
         description="Form ID for Hubspot Forms API",
     ),
 }
-
+HUBSPOT_MAX_CONCURRENT_TASKS = get_int(
+    name="HUBSPOT_MAX_CONCURRENT_TASKS",
+    default=4,
+    description="Max number of concurrent Hubspot tasks to run",
+)
+HUBSPOT_PIPELINE_ID = get_string(
+    name="HUBSPOT_PIPELINE_ID",
+    default=None,
+    description="Hubspot ecommerce pipeline id",
+)
+HUBSPOT_TASK_DELAY = get_int(
+    name="HUBSPOT_TASK_DELAY",
+    default=1000,
+    description="Number of milliseconds to wait between consecutive Hubspot calls",
+)
 RECAPTCHA_SITE_KEY = get_string(
     name="RECAPTCHA_SITE_KEY", default="", description="The ReCaptcha site key"
 )
@@ -1001,7 +1017,7 @@ NOVOED_BASE_URL = get_string(
 PASSWORD_RESET_CONFIRM_URL = "password_reset/confirm/{uid}/{token}/"
 
 # ol-django configuration
-import_settings_modules(globals(), "mitol.authentication.settings.djoser_settings")
+import_settings_modules("mitol.authentication.settings.djoser_settings")
 
 # mitol-django-common
 MITOL_COMMON_USER_FACTORY = "profiles.factories.UserFactory"

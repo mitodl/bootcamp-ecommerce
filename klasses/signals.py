@@ -3,7 +3,7 @@ from django.db.transaction import on_commit
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from hubspot.task_helpers import sync_hubspot_product
+from hubspot_sync.task_helpers import sync_hubspot_product
 from klasses.api import adjust_app_state_for_new_price
 from klasses.models import BootcampRun, PersonalPrice
 
