@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.100.0
+---------------
+
+- Hubspot CRM API syncing (#1374)
+
 Version 0.99.2 (Released November 10, 2022)
 --------------
 
