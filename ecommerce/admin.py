@@ -15,6 +15,7 @@ from applications import models as application_models
 class LineAdmin(TimestampedModelAdmin):
     """Admin for Line"""
 
+    search_fields = ["order__id", "order__user__email", "order__user__username"]
     model = Line
     include_timestamps_in_list = True
     readonly_fields = get_field_names(Line)
