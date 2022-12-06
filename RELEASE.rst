@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.100.1
+Version 0.100.1 (Released December 06, 2022)
 ---------------
 
 - Add search to LineAdmin (#1385)
