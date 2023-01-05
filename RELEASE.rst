@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.101.0
+---------------
+
+- Remove email validation (not necessary) from a hubspot sync function (#1394)
+
 Version 0.100.1 (Released December 06, 2022)
 ---------------
 
