@@ -7,7 +7,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.core.validators import validate_email
+
 from hubspot.crm.objects import SimplePublicObject, SimplePublicObjectInput
 from mitol.common.utils.collections import replace_null_values
 from mitol.hubspot_api.api import (
@@ -202,7 +202,7 @@ def get_hubspot_id_for_object(
     ).first()
     if hubspot_obj:
         return hubspot_obj.hubspot_id
-    if isinstance(obj, User) and validate_email(obj.email):
+    if isinstance(obj, User):
         hubspot_obj = find_contact(obj.email)
     elif isinstance(obj, BootcampApplication):
         serialized_deal = HubspotDealSerializer(obj).data

@@ -1,8 +1,11 @@
 """
 Hubspot API tests
 """
+from unittest.mock import ANY
+
 import pytest
 from django.contrib.contenttypes.models import ContentType
+from mitol.hubspot_api.api import HubspotAssociationType
 from mitol.hubspot_api.factories import HubspotObjectFactory, SimplePublicObjectFactory
 from mitol.hubspot_api.models import HubspotObject
 
@@ -132,6 +135,8 @@ def test_sync_deal_with_hubspot(mocker, mock_hubspot_api, hubspot_application):
     mock_sync_line = mocker.patch(
         "hubspot_sync.api.sync_line_item_with_hubspot", autospec=True
     )
+    mock_associate_contact = mocker.patch("hubspot_sync.api.associate_objects_request")
+
     api.sync_deal_with_hubspot(hubspot_application.id)
 
     mock_hubspot_api.return_value.crm.objects.basic_api.create.assert_called_once_with(
@@ -140,6 +145,13 @@ def test_sync_deal_with_hubspot(mocker, mock_hubspot_api, hubspot_application):
     )
 
     mock_sync_line.assert_any_call(hubspot_application.line.id)
+    mock_associate_contact.assert_called_once_with(
+        api.HubspotObjectType.DEALS.value,
+        FAKE_HUBSPOT_ID,
+        api.HubspotObjectType.CONTACTS.value,
+        ANY,
+        HubspotAssociationType.DEAL_CONTACT.value,
+    )
 
     assert (
         api.HubspotObject.objects.get(
