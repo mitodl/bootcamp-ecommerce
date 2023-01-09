@@ -2,7 +2,7 @@ name: CI
 on: [push]
 jobs:
   python-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     services:
       db:
@@ -15,7 +15,7 @@ jobs:
           --health-retries 5
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
@@ -95,7 +95,7 @@ jobs:
           CELERY_TASK_ALWAYS_EAGER: 'True'
           CELERY_BROKER_URL: redis://localhost:6379/4
           CELERY_RESULT_BACKEND: redis://localhost:6379/4
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres  # pragma: allowlist secret
           DEBUG: 'False'
           ELASTICSEARCH_URL: localhost:9200
           MAILGUN_URL: 'http://fake.example.com'
@@ -108,7 +108,7 @@ jobs:
           file: ./coverage.xml
 
   javascript-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
 
