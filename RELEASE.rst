@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.102.0
+Version 0.102.0 (Released January 11, 2023)
 ---------------
 
 - Replace ubuntu-latest with ubuntu-22.04 (#1397)
