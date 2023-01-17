@@ -42,7 +42,7 @@ cachetools==4.1.0
     # via premailer
 celery[redis]==5.2.7
     # via -r requirements.in
-certifi==2018.10.15
+certifi==2022.12.7
     # via
     #   hubspot-api-client
     #   requests
