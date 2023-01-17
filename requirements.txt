@@ -95,7 +95,7 @@ dj-database-url==0.3.0
     # via -r requirements.in
 dj-static==0.0.6
     # via -r requirements.in
-django==3.2.14
+django==3.2.16
     # via
     #   -r requirements.in
     #   django-anymail
