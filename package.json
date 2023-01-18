@@ -46,7 +46,7 @@
     "eslint-plugin-mocha": "^6.3.0",
     "eslint-plugin-react": "^7.19.0",
     "expose-loader": "0.7.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "fetch-mock": "^9.3.1",
     "flow-bin": "0.94.0",
     "flow-typed": "^3.3.1",
