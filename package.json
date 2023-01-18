@@ -61,7 +61,7 @@
     "mini-css-extract-plugin": "^1.1.2",
     "minimist": "^1.2.6",
     "mocha": "^7.1.1",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "mutationobserver-shim": "^0.3.5",
     "named-urls": "^2.0.0",
     "nyc": "^15.1.0",
