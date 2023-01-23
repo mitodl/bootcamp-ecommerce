@@ -7,7 +7,6 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-
 from hubspot.crm.objects import SimplePublicObject, SimplePublicObjectInput
 from mitol.common.utils.collections import replace_null_values
 from mitol.hubspot_api.api import (

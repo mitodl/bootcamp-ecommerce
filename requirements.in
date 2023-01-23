@@ -13,7 +13,7 @@ django-filter==2.4.0
 django-fsm==2.8.0
 django-ipware==4.0.0
 django-mathfilters==1.0.0
-django-redis==5.2.0
+django-redis>=5.0.0
 django-server-status==0.7.3
 django-webpack-loader==0.7.0
 djangorestframework==3.11.2
@@ -26,10 +26,10 @@ html5lib==1.1
 hubspot-api-client
 django-storages==1.9.1
 ipython==7.31.1
-mitol-django-common==2.6.0
-mitol-django-hubspot-api==1.0.0
-mitol-django-mail==3.2.1
-mitol-django-authentication==1.5.1
+mitol-django-common==2.7.0
+mitol-django-hubspot-api==1.1.0
+mitol-django-mail==3.3.0
+mitol-django-authentication==1.6.0
 newrelic==6.2.0.156
 premailer==3.7.0
 psycopg2==2.8.6

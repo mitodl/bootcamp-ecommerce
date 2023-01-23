@@ -12,8 +12,11 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from hubspot.crm.associations import BatchInputPublicAssociation, PublicAssociation
 from hubspot.crm.objects import BatchInputSimplePublicObjectInput
+from mitol.common.decorators import single_task
 from mitol.common.utils.collections import chunks
 from mitol.hubspot_api.api import HubspotApi, HubspotAssociationType, HubspotObjectType
+from mitol.hubspot_api.decorators import raise_429
+from mitol.hubspot_api.exceptions import TooManyRequestsException
 from mitol.hubspot_api.models import HubspotObject
 
 from applications.models import BootcampApplication
@@ -22,6 +25,23 @@ from hubspot_sync.api import get_hubspot_id_for_object
 from main.celery import app
 
 log = logging.getLogger(__name__)
+
+
+def task_obj_lock(
+    func_name: str, args: List[object], kwargs: dict  # pylint:disable=unused-argument
+) -> str:
+    """
+    Determine a task lock name for a specific task function and object id
+
+    Args:
+        func_name(str): Name of a task function
+        args: Task function arguments, first should be object id
+        kwargs: Any keyword arguments sent to the task function
+
+    Returns:
+        str: The lock id for the task and object
+    """
+    return f"{func_name}_{args[0]}"
 
 
 def max_concurrent_chunk_size(obj_count: int) -> int:
@@ -56,7 +76,15 @@ def batched_chunks(
     return chunks(batch_ids, chunk_size=max_chunk_size)
 
 
-@app.task
+@app.task(
+    acks_late=True,
+    autoretry_for=(BlockingIOError, TooManyRequestsException),
+    max_retries=3,
+    retry_backoff=60,
+    retry_jitter=True,
+)
+@raise_429
+@single_task(10, key=task_obj_lock, cache_name="default")
 def sync_contact_with_hubspot(user_id: int) -> str:
     """
     Sync a user with a hubspot contact
@@ -70,7 +98,15 @@ def sync_contact_with_hubspot(user_id: int) -> str:
     return api.sync_contact_with_hubspot(user_id).id
 
 
-@app.task
+@app.task(
+    acks_late=True,
+    autoretry_for=(BlockingIOError, TooManyRequestsException),
+    max_retries=3,
+    retry_backoff=60,
+    retry_jitter=True,
+)
+@raise_429
+@single_task(10, key=task_obj_lock, cache_name="default")
 def sync_product_with_hubspot(bootcamp_run_id: int) -> str:
     """
     Sync a product with a hubspot product
@@ -84,7 +120,15 @@ def sync_product_with_hubspot(bootcamp_run_id: int) -> str:
     return api.sync_product_with_hubspot(bootcamp_run_id).id
 
 
-@app.task
+@app.task(
+    acks_late=True,
+    autoretry_for=(BlockingIOError, TooManyRequestsException),
+    max_retries=3,
+    retry_backoff=60,
+    retry_jitter=True,
+)
+@raise_429
+@single_task(10, key=task_obj_lock, cache_name="default")
 def sync_deal_with_hubspot(application_id: int) -> str:
     """
     Sync an Order with a hubspot deal
@@ -98,50 +142,14 @@ def sync_deal_with_hubspot(application_id: int) -> str:
     return api.sync_deal_with_hubspot(application_id).id
 
 
-@app.task(acks_late=True)
-def batch_upsert_hubspot_deals_chunked(ids: List[int]) -> List[str]:
-    """
-    Batch sync hubspot deals with matching Order ids
-
-    Args:
-        ids(list): List of object ids to process
-
-    Returns:
-        list(str): List of hubspot deal ids
-    """
-    results = []
-    for application in BootcampApplication.objects.filter(id__in=ids):
-        results.append(api.sync_deal_with_hubspot(application.id).id)
-        time.sleep(settings.HUBSPOT_TASK_DELAY / 1000)
-    return results
-
-
-@app.task(bind=True)
-def batch_upsert_hubspot_deals(self, create: bool):
-    """
-    Batch create/update deals in hubspot
-
-    Args:
-        create(bool): Create if true, update if false
-    """
-    content_type = ContentType.objects.get_for_model(BootcampApplication)
-    synced_ids = HubspotObject.objects.filter(content_type=content_type).values_list(
-        "object_id", flat=True
-    )
-    unsynced_ids = BootcampApplication.objects.exclude(id__in=synced_ids).values_list(
-        "id", flat=True
-    )
-    object_ids = sorted(unsynced_ids if create else synced_ids)
-    # Try to avoid too many consecutive tasks that could trigger rate limiting
-    chunk_size = max_concurrent_chunk_size(len(object_ids))
-    chunked_tasks = [
-        batch_upsert_hubspot_deals_chunked.s(chunk)
-        for chunk in chunks(object_ids, chunk_size=chunk_size)
-    ]
-    raise self.replace(celery.group(chunked_tasks))
-
-
-@app.task(acks_late=True)
+@app.task(
+    acks_late=True,
+    autoretry_for=(TooManyRequestsException,),
+    max_retries=3,
+    retry_backoff=60,
+    retry_jitter=True,
+)
+@raise_429
 def batch_create_hubspot_objects_chunked(
     hubspot_type: str, ct_model_name: str, object_ids: List[int]
 ) -> List[str]:
@@ -190,7 +198,14 @@ def batch_create_hubspot_objects_chunked(
     return created_ids
 
 
-@app.task(acks_late=True)
+@app.task(
+    acks_late=True,
+    autoretry_for=(TooManyRequestsException,),
+    max_retries=3,
+    retry_backoff=60,
+    retry_jitter=True,
+)
+@raise_429
 def batch_update_hubspot_objects_chunked(
     hubspot_type: str, ct_model_name: str, object_ids: List[Tuple[int, str]]
 ) -> List[str]:
@@ -277,7 +292,14 @@ def batch_upsert_hubspot_objects(  # pylint:disable=too-many-arguments
     raise self.replace(celery.group(chunked_tasks))
 
 
-@app.task(acks_late=True)
+@app.task(
+    acks_late=True,
+    autoretry_for=(TooManyRequestsException,),
+    max_retries=3,
+    retry_backoff=60,
+    retry_jitter=True,
+)
+@raise_429
 def batch_upsert_associations_chunked(application_ids: List[int]):
     """
     Upsert batches of deal-contact and line-deal associations
