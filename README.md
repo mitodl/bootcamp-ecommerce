@@ -7,7 +7,7 @@ An app that allows users to apply for MIT Bootcamps, and admins to review those 
 
 # Initial Setup
 
-This app follows the same [initial setup steps outlined in the common ODL web app guide](https://github.com/mitodl/handbook/blob/master/common-web-app-guide.md).
+This app follows the same [initial setup steps outlined in the common ODL web app guide](https://mitodl.github.io/handbook/how-to/common-web-app-guide.html).
 Run through those steps **including the addition of `/etc/hosts` aliases**.
 
 ### Settings
