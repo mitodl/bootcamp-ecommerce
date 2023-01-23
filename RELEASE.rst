@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.103.0
+Version 0.103.0 (Released January 23, 2023)
 ---------------
 
 - Decorators for hubspt functions (#1399)
