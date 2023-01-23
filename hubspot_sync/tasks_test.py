@@ -2,18 +2,16 @@
 Tests for hubspot_sync tasks
 """
 # pylint: disable=redefined-outer-name
-from math import ceil
-
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from hubspot.crm.associations import BatchInputPublicAssociation, PublicAssociation
-from hubspot.crm.objects import BatchInputSimplePublicObjectInput
+from hubspot.crm.objects import ApiException, BatchInputSimplePublicObjectInput
 from mitol.hubspot_api.api import HubspotAssociationType, HubspotObjectType
+from mitol.hubspot_api.exceptions import TooManyRequestsException
 from mitol.hubspot_api.factories import HubspotObjectFactory, SimplePublicObjectFactory
 from mitol.hubspot_api.models import HubspotObject
 
 from applications.factories import BootcampApplicationFactory
-from applications.models import BootcampApplication
 from hubspot_sync import tasks
 from hubspot_sync.api import make_contact_sync_message
 from hubspot_sync.tasks import (
@@ -27,14 +25,14 @@ from profiles.factories import UserFactory
 pytestmark = [pytest.mark.django_db]
 
 
-@pytest.mark.parametrize(
-    "task_func",
-    [
-        "sync_contact_with_hubspot",
-        "sync_product_with_hubspot",
-        "sync_deal_with_hubspot",
-    ],
-)
+SYNC_FUNCTIONS = [
+    "sync_contact_with_hubspot",
+    "sync_product_with_hubspot",
+    "sync_deal_with_hubspot",
+]
+
+
+@pytest.mark.parametrize("task_func", SYNC_FUNCTIONS)
 def test_task_functions(mocker, task_func):
     """These task functions should call the api function of the same name and return a hubspot id"""
     mock_result = SimplePublicObjectFactory()
@@ -46,49 +44,17 @@ def test_task_functions(mocker, task_func):
     mock_api_call.assert_called_once_with(mock_object_id)
 
 
-@pytest.mark.parametrize("create", [True, False])
-@pytest.mark.parametrize("max_batches", [5, 10])
-def test_batch_upsert_hubspot_deals(
-    settings, mocker, mocked_celery, create, max_batches
-):
-    """batch_upsert_hubspot_deals should make expected calls"""
-    settings.HUBSPOT_MAX_CONCURRENT_TASKS = max_batches
-    unsynced_deals = BootcampApplicationFactory.create_batch(103)
-    synced_deals = BootcampApplicationFactory.create_batch(201)
-    content_type = ContentType.objects.get_for_model(BootcampApplication)
-    for deal in synced_deals:
-        HubspotObjectFactory.create(
-            content_type=content_type, object_id=deal.id, content_object=deal
-        )
-    mock_api_call = mocker.patch(
-        "hubspot_sync.tasks.batch_upsert_hubspot_deals_chunked"
+@pytest.mark.parametrize("task_func", SYNC_FUNCTIONS)
+@pytest.mark.parametrize(
+    "status, expected_error", [[429, TooManyRequestsException], [500, ApiException]]
+)
+def test_task_functions_error(mocker, task_func, status, expected_error):
+    """These task functions should return the expected exception class"""
+    mocker.patch(
+        f"hubspot_sync.tasks.api.{task_func}", side_effect=expected_error(status=status)
     )
-    with pytest.raises(TabError):
-        tasks.batch_upsert_hubspot_deals.delay(create)
-    mocked_celery.replace.assert_called_once()
-    expected_deal_ids = sorted(
-        [
-            deal.id for deal in (unsynced_deals if create else synced_deals)
-        ]  # pylint:disable=superfluous-parens
-    )
-    expected_batch_size = ceil(len(expected_deal_ids) / max_batches)
-    mock_api_call.s.assert_any_call(expected_deal_ids[0:expected_batch_size])
-    mock_api_call.s.assert_any_call(
-        expected_deal_ids[expected_batch_size : expected_batch_size * 2]
-    )
-    assert mock_api_call.s.call_count == max_batches
-
-
-def test_batch_upsert_hubspot_deals_chunked(mocker):
-    """batch_upsert_hubspot_deals_chunked should make expected calls"""
-    orders = BootcampApplicationFactory.create_batch(3)
-    mock_results = SimplePublicObjectFactory.create_batch(3)
-    mock_sync_deal = mocker.patch(
-        "hubspot_sync.tasks.api.sync_deal_with_hubspot", side_effect=mock_results
-    )
-    result = tasks.batch_upsert_hubspot_deals_chunked([order.id for order in orders])
-    assert mock_sync_deal.call_count == 3
-    assert result == [result.id for result in mock_results]
+    with pytest.raises(expected_error):
+        getattr(tasks, task_func)(101)
 
 
 @pytest.mark.parametrize("create", [True, False])
