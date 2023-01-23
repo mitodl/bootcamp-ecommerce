@@ -1,6 +1,22 @@
 Release Notes
 =============
 
+Version 0.103.0
+---------------
+
+- Decorators for hubspt functions (#1399)
+- Update README.md (#1401)
+- Bump decode-uri-component from 0.2.0 to 0.2.2 (#1387)
+- Bump loader-utils from 1.4.0 to 1.4.2 (#1382)
+- Bump moment from 2.29.2 to 2.29.4 (#1358)
+- Bump terser from 4.6.11 to 4.8.1 (#1353)
+- Bump qs from 6.5.2 to 6.5.3 (#1388)
+- Bump express from 4.17.1 to 4.17.3 (#1391)
+- Bump json5 from 1.0.1 to 1.0.2 (#1395)
+- Bump django from 3.2.14 to 3.2.16 (#1367)
+- Bump pillow from 9.0.1 to 9.3.0 (#1384)
+- Bump certifi from 2018.10.15 to 2022.12.7 (#1390)
+
 Version 0.102.0 (Released January 11, 2023)
 ---------------
 
