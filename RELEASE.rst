@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.104.0
+---------------
+
+- Update node and jsdom (#1400)
+
 Version 0.103.0 (Released January 23, 2023)
 ---------------
 
