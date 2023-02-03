@@ -1,4 +1,4 @@
-Django==3.2.16
+Django==3.2.17
 celery[redis]==5.2.7
 boto3==1.16.63
 dj-database-url==0.3.0
