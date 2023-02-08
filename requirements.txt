@@ -70,7 +70,7 @@ coreapi==2.3.3
     # via djoser
 coreschema==0.0.4
     # via coreapi
-cryptography==3.4.4
+cryptography==39.0.1
     # via
     #   pyopenssl
     #   pysaml2
@@ -292,7 +292,7 @@ prompt-toolkit==3.0.18
     # via
     #   click-repl
     #   ipython
-psycopg2-binary==2.8.6
+psycopg2==2.8.6
     # via -r requirements.in
 ptyprocess==0.5.1
     # via pexpect
