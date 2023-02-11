@@ -25,7 +25,7 @@ dynamic-rest==2.1.2
 html5lib==1.1
 hubspot-api-client
 django-storages==1.9.1
-ipython==7.31.1
+ipython==8.10.0
 mitol-django-common==2.7.0
 mitol-django-hubspot-api==1.1.0
 mitol-django-mail==3.3.0
