@@ -95,7 +95,7 @@ dj-database-url==0.3.0
     # via -r requirements.in
 dj-static==0.0.6
     # via -r requirements.in
-django==3.2.16
+django==3.2.18
     # via
     #   -r requirements.in
     #   django-anymail
@@ -292,7 +292,7 @@ prompt-toolkit==3.0.18
     # via
     #   click-repl
     #   ipython
-psycopg2-binary==2.8.6
+psycopg2==2.8.6
     # via -r requirements.in
 ptyprocess==0.5.1
     # via pexpect
