@@ -42,6 +42,7 @@ from ecommerce.exceptions import (
     WireTransferImportException,
 )
 from ecommerce.models import Line, Order, WireTransferReceipt
+from hubspot_sync.task_helpers import sync_hubspot_application, sync_hubspot_application_from_order
 from klasses.api import deactivate_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.models import BootcampRun
@@ -364,6 +365,8 @@ def complete_successful_order(order, send_receipt=True):
                 application.state,
                 order.id,
             )
+    else:
+        sync_hubspot_application(application)
 
     if send_receipt is True:
         tasks.send_receipt_email.delay(application.id)
@@ -399,6 +402,8 @@ def handle_rejected_order(*, order, decision):
                 "about order fulfillment failure for order %s",
                 order,
             )
+    # Sync order data with hubspot
+    sync_hubspot_application_from_order(order)
 
 
 def serialize_user_bootcamp_runs(user):

@@ -735,19 +735,28 @@ def test_parse_wire_transfer_csv_missing_header(tmp_path):
         [False, True],  # False, False is an error handled in a separate test
     ],
 )
-def test_import_wire_transfer(with_bootcamp_title, with_run_title):
+@pytest.mark.parametrize("paid_in_full", [True, False])
+def test_import_wire_transfer(
+    mocker, with_bootcamp_title, with_run_title, paid_in_full
+):
     """import_wire_transfer should store a wire transfer in the database and create an order for it"""
+    mock_hubspot_sync = mocker.patch("ecommerce.api.sync_hubspot_application")
     user = User.objects.create(email="hdoof@odl.mit.edu")
     title = "How to be Evil"
+    price = 100
     run = BootcampRunFactory.create(
         **{"title": title} if with_run_title else {},
         **{"bootcamp__title": title} if with_bootcamp_title else {},
     )
-    application = BootcampApplicationFactory.create(bootcamp_run=run, user=user)
+    InstallmentFactory.create(bootcamp_run=run, amount=price)
+    application = BootcampApplicationFactory.create(
+        bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
+    )
+
     wire_transfer = WireTransfer(
         id=2,
         learner_email=user.email,
-        amount=Decimal(100),
+        amount=Decimal(price if paid_in_full else price / 2),
         bootcamp_start_date=run.start_date,
         bootcamp_name=run.bootcamp.title,
         row=[],
@@ -771,6 +780,11 @@ def test_import_wire_transfer(with_bootcamp_title, with_run_title):
     assert WireTransferReceipt.objects.count() == 1
     assert Order.objects.count() == 1
     assert Line.objects.count() == 1
+    application.refresh_from_db()
+    assert application.state == (
+        AppStates.COMPLETE.value if paid_in_full else AppStates.AWAITING_PAYMENT.value
+    )
+    assert mock_hubspot_sync.call_count == (0 if paid_in_full else 1)
 
 
 def test_import_wire_transfer_missing_user():
