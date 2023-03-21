@@ -737,7 +737,7 @@ def test_parse_wire_transfer_csv_missing_header(tmp_path):
 )
 @pytest.mark.parametrize("paid_in_full", [True, False])
 def test_import_wire_transfer(
-    mocker, with_bootcamp_title, with_run_title, paid_in_full
+    settings, mocker, with_bootcamp_title, with_run_title, paid_in_full
 ):
     """import_wire_transfer should store a wire transfer in the database and create an order for it"""
     mock_hubspot_sync = mocker.patch("ecommerce.api.sync_hubspot_application")
