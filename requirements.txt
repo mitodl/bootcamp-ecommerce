@@ -89,8 +89,6 @@ defusedxml==0.7.1
     #   python3-openid
     #   social-auth-core
     #   zeep
-deprecated==1.2.13
-    # via redis
 dj-database-url==0.3.0
     # via -r requirements.in
 dj-static==0.0.6
@@ -269,9 +267,7 @@ oauthlib==2.0.2
 openpyxl==3.0.7
     # via tablib
 packaging==20.9
-    # via
-    #   pytest
-    #   redis
+    # via pytest
 parso==0.8.2
     # via jedi
 pexpect==4.8.0
@@ -292,7 +288,7 @@ prompt-toolkit==3.0.18
     # via
     #   click-repl
     #   ipython
-psycopg2-binary==2.8.6
+psycopg2==2.8.6
     # via -r requirements.in
 ptyprocess==0.5.1
     # via pexpect
@@ -341,7 +337,7 @@ pytz==2022.6
     #   mitol-django-common
     #   pysaml2
     #   zeep
-redis==4.3.4
+redis==4.4.4
     # via
     #   celery
     #   django-redis
@@ -441,8 +437,6 @@ webencodings==0.5.1
     # via html5lib
 willow==1.4
     # via wagtail
-wrapt==1.14.1
-    # via deprecated
 xlrd==2.0.1
     # via tablib
 xlsxwriter==1.2.9
