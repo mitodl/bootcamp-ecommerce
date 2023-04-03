@@ -133,11 +133,7 @@ class OrderFulfillmentView(APIView):
         if decision != CYBERSOURCE_DECISION_ACCEPT:
             handle_rejected_order(order=order, decision=decision)
         else:
-            # import pdb; pdb.set_trace()
             complete_successful_order(order)
-
-        # Sync order data with hubspot
-        sync_hubspot_application_from_order(order)
 
         # The response does not matter to CyberSource
         return Response(status=statuses.HTTP_200_OK)
