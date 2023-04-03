@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.105.0
+---------------
+
+- Call sync_hubspot_application if an order is successful but application is not paid in full (#1411)
+
 Version 0.104.0 (Released January 30, 2023)
 ---------------
 
