@@ -254,7 +254,7 @@ mitol-django-common==2.7.0
     #   mitol-django-authentication
     #   mitol-django-hubspot-api
     #   mitol-django-mail
-mitol-django-hubspot-api==2023.5.10
+mitol-django-hubspot-api==2023.5.22
     # via -r requirements.in
 mitol-django-mail==3.3.0
     # via
