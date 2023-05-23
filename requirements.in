@@ -27,7 +27,7 @@ hubspot-api-client
 django-storages==1.9.1
 ipython==7.31.1
 mitol-django-common==2.7.0
-mitol-django-hubspot-api==1.1.0
+mitol-django-hubspot-api~=2023.5.10
 mitol-django-mail==3.3.0
 mitol-django-authentication==1.6.0
 newrelic==6.2.0.156

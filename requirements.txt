@@ -254,7 +254,7 @@ mitol-django-common==2.7.0
     #   mitol-django-authentication
     #   mitol-django-hubspot-api
     #   mitol-django-mail
-mitol-django-hubspot-api==1.1.0
+mitol-django-hubspot-api==2023.5.10
     # via -r requirements.in
 mitol-django-mail==3.3.0
     # via
@@ -292,7 +292,7 @@ prompt-toolkit==3.0.18
     # via
     #   click-repl
     #   ipython
-psycopg2-binary==2.8.6
+psycopg2==2.8.6
     # via -r requirements.in
 ptyprocess==0.5.1
     # via pexpect
@@ -352,6 +352,7 @@ requests==2.25.1
     #   django-anymail
     #   dynamic-rest
     #   mitol-django-common
+    #   mitol-django-hubspot-api
     #   premailer
     #   pysaml2
     #   requests-oauthlib
