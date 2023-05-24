@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.106.0
+---------------
+
+- Handle hubspot syncing for contacts w/multiple conflicting emails (#1419)
+
 Version 0.105.0 (Released April 03, 2023)
 ---------------
 
