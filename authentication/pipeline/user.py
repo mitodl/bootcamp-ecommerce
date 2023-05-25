@@ -281,3 +281,11 @@ def send_user_to_hubspot(request, **kwargs):
     requests.post(url=url, data=data, headers=headers)
 
     return {}
+
+def sync_user_profile_to_hubspot(
+    backend, user, response, is_new, *args, **kwargs
+):  # pylint: disable=unused-argument
+    """
+    Sync the user's latest profile data with hubspot on login
+    """
+    sync_hubspot_user(user)
