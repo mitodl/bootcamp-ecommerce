@@ -9,7 +9,6 @@ import pytz
 
 from backends.edxorg import EdxOrgOAuth2
 from backends.utils import get_social_username
-from hubspot_sync.task_helpers import sync_hubspot_user
 from profiles.models import Profile
 
 log = logging.getLogger(__name__)

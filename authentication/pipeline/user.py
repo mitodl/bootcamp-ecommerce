@@ -3,28 +3,26 @@ import json
 import logging
 
 import requests
-from social_core.backends.email import EmailAuth
-from social_core.exceptions import AuthException
-from social_core.pipeline.partial import partial
 from django.conf import settings
 from django.db import IntegrityError
 from django.shortcuts import reverse
+from social_core.backends.email import EmailAuth
+from social_core.exceptions import AuthException
+from social_core.pipeline.partial import partial
 
-
+from authentication.api import create_user_with_generated_username
 from authentication.exceptions import (
     InvalidPasswordException,
-    RequirePasswordException,
     RequirePasswordAndPersonalInfoException,
+    RequirePasswordException,
     RequireProfileException,
     RequireRegistrationException,
     UserCreationFailedException,
 )
 from authentication.utils import SocialAuthState
-from authentication.api import create_user_with_generated_username
-
 from compliance import api as compliance_api
 from hubspot_sync.task_helpers import sync_hubspot_user
-from profiles.serializers import UserSerializer, ProfileSerializer
+from profiles.serializers import ProfileSerializer, UserSerializer
 from profiles.utils import usernameify
 
 log = logging.getLogger()
@@ -261,9 +259,6 @@ def send_user_to_hubspot(request, **kwargs):
     form_id = settings.HUBSPOT_CONFIG.get("HUBSPOT_CREATE_USER_FORM_ID")
 
     if not (portal_id and form_id):
-        log.error(
-            "HUBSPOT_PORTAL_ID or HUBSPOT_CREATE_USER_FORM_ID not set. Can't submit to Hubspot forms api."
-        )
         return {}
 
     hutk = request.COOKIES.get("hubspotutk")
@@ -282,10 +277,13 @@ def send_user_to_hubspot(request, **kwargs):
 
     return {}
 
-def sync_user_profile_to_hubspot(
-    backend, user, response, is_new, *args, **kwargs
+
+def sync_user_to_hubspot(
+    strategy, backend, user=None, is_new=False, **kwargs
 ):  # pylint: disable=unused-argument
     """
     Sync the user's latest profile data with hubspot on login
     """
-    sync_hubspot_user(user)
+    if user.is_active:
+        sync_hubspot_user(user)
+    return {}
