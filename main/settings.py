@@ -323,6 +323,8 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.user.user_details",
     # fetch data from edx for those users
     "backends.pipeline_api.update_profile_from_edx",
+    # Sync user data with hubspot
+    "authentication.pipeline.user.sync_user_to_hubspot",
 )
 
 SOCIAL_AUTH_LOGIN_ERROR_URL = "login"
