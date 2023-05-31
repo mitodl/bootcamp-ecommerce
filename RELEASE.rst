@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.106.0
+---------------
+
+- Fix interaction between hubspot contact creation form and hubspot api contact sync (#1423)
+- Bump cookiejar from 2.1.2 to 2.1.4 (#1403)
+- Handle hubspot syncing for contacts w/multiple conflicting emails (#1419)
+
 Version 0.105.0 (Released April 03, 2023)
 ---------------
 
