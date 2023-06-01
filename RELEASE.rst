@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.106.0
+Version 0.106.0 (Released June 01, 2023)
 ---------------
 
 - Fix interaction between hubspot contact creation form and hubspot api contact sync (#1423)
