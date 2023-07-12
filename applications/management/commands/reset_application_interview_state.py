@@ -1,11 +1,12 @@
 """Management command to reset Jobma interview state for a user"""
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
+from applications.api import refresh_jobma_interview_submissions
 from applications.constants import AppStates, REVIEWABLE_APP_STATES
 from applications.management.utils import fetch_bootcamp_run
 from applications.models import BootcampApplication
-from applications.tasks import refresh_pending_interview_links
 from profiles.api import fetch_user
 
 
@@ -45,17 +46,19 @@ class Command(BaseCommand):
             )
         if user_run_application.state not in REVIEWABLE_APP_STATES:
             raise CommandError(
-                f"User's application is already in approved state. User={user}, Run={bootcamp_run}, "
+                f"User's application is not in a reviewable state. User={user}, Run={bootcamp_run}, "
                 f"State={user_run_application.state}."
             )
 
         # Reset User's application state back to Awaiting submissions
-        user_run_application.state = AppStates.AWAITING_USER_SUBMISSIONS.value
-        user_run_application.save()
-        refresh_pending_interview_links()
+        with transaction.atomic():
+            user_run_application.state = AppStates.AWAITING_USER_SUBMISSIONS.value
+            user_run_application.save()
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Jobma interview state has been reset for User={user} Run={bootcamp_run}."
+            refresh_jobma_interview_submissions(user_run_application.submissions.all())
+
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Jobma interview state has been reset for User={user} Run={bootcamp_run}."
+                )
             )
-        )
