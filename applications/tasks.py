@@ -38,7 +38,7 @@ def refresh_pending_interview_links():
     """Recreate old pending interviews"""
     now = now_in_utc()
     cutoff_date = now - timedelta(days=settings.JOBMA_LINK_EXPIRATION_DAYS)
-    for submission in (
+    submissions = (
         ApplicationStepSubmission.objects.select_related("bootcamp_application")
         .exclude(
             Q(bootcamp_application__state__in=REVIEW_COMPLETED_APP_STATES)
@@ -48,15 +48,9 @@ def refresh_pending_interview_links():
             Q(submission_status=SUBMISSION_STATUS_PENDING)
             & Q(videointerviews__created_on__lte=cutoff_date)
         )
-    ):
-        submission.content_object.interview.delete()
-        api.populate_interviews_in_jobma(submission.bootcamp_application)
-        log.debug(
-            "Interview recreated for submission %d, application %d, user %s",
-            submission.id,
-            submission.bootcamp_application.id,
-            submission.bootcamp_application.user.email,
-        )
+    )
+
+    api.refresh_jobma_interview_submissions(submissions)
     # For reasons unknown, a few applications had interviews with null urls and/or no submissions.
     applications = BootcampApplication.objects.filter(
         Q(submissions__isnull=True)

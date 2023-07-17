@@ -4,7 +4,7 @@ Admin views for jobma
 
 from django.contrib import admin
 
-from jobma.models import Interview, Job
+from jobma.models import Interview, Job, InterviewAudit
 
 
 class InterviewAdmin(admin.ModelAdmin):
@@ -66,5 +66,21 @@ class JobAdmin(admin.ModelAdmin):
     get_run_display_title.admin_order_field = "run__title"
 
 
+class InterviewAuditAdmin(admin.ModelAdmin):
+    """Admin for Interview Audit model"""
+
+    model = InterviewAudit
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 admin.site.register(Interview, InterviewAdmin)
 admin.site.register(Job, JobAdmin)
+admin.site.register(InterviewAudit, InterviewAuditAdmin)

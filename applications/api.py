@@ -1,4 +1,5 @@
 """API for bootcamp applications app"""
+import logging
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 
@@ -19,6 +20,8 @@ from applications import tasks
 from jobma.api import create_interview_in_jobma
 from jobma.models import Interview, Job
 from profiles.api import is_user_info_complete
+
+log = logging.getLogger()
 
 
 def get_or_create_bootcamp_application(user, bootcamp_run_id):
@@ -113,6 +116,25 @@ def get_required_submission_type(application):
         .values_list("application_step__submission_type", flat=True)
         .first()
     )
+
+
+def refresh_jobma_interview_submissions(submissions):
+    """
+    Go over each ApplicationStep for the application and refresh the interview links from Jobma.
+
+    Args:
+        submissions (BootcampApplicationStep): A list of bootcamp application submissions
+    """
+
+    for submission in submissions:
+        submission.content_object.interview.delete()
+        populate_interviews_in_jobma(submission.bootcamp_application)
+        log.debug(
+            "Interview recreated for submission %d, application %d, user %s",
+            submission.id,
+            submission.bootcamp_application.id,
+            submission.bootcamp_application.user.email,
+        )
 
 
 def populate_interviews_in_jobma(application):
