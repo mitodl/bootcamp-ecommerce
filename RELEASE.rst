@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.107.0
+---------------
+
+- feat: add a command to reset user's Jobma interview state (#1427)
+
 Version 0.106.0 (Released June 01, 2023)
 ---------------
 
