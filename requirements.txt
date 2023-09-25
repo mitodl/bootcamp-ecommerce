@@ -302,7 +302,7 @@ pycountry==19.8.18
     # via -r requirements.in
 pycparser==2.20
     # via cffi
-pygments==2.8.1
+pygments==2.15.0
     # via ipython
 pyjwt==2.4.0
     # via
