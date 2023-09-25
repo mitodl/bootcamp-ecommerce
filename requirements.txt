@@ -16,6 +16,8 @@ asgiref==3.3.4
     # via
     #   django
     #   djoser
+asttokens==2.2.1
+    # via stack-data
 async-timeout==4.0.2
     # via redis
 attrs==19.3.0
@@ -80,9 +82,7 @@ cssselect==1.1.0
 cssutils==1.0.2
     # via premailer
 decorator==4.0.11
-    # via
-    #   ipython
-    #   traitlets
+    # via ipython
 defusedxml==0.7.1
     # via
     #   pysaml2
@@ -191,6 +191,8 @@ elementpath==2.1.3
     # via xmlschema
 et-xmlfile==1.1.0
     # via openpyxl
+executing==1.2.0
+    # via stack-data
 factory-boy==3.2.0
     # via
     #   mitol-django-common
@@ -218,10 +220,8 @@ inflection==0.5.1
     # via dynamic-rest
 iniconfig==1.1.1
     # via pytest
-ipython==7.31.1
+ipython==8.10.0
     # via -r requirements.in
-ipython-genutils==0.2.0
-    # via traitlets
 isodate==0.6.0
     # via zeep
 itypes==1.2.0
@@ -288,7 +288,7 @@ premailer==3.7.0
     # via
     #   -r requirements.in
     #   mitol-django-mail
-prompt-toolkit==3.0.18
+prompt-toolkit==3.0.36
     # via
     #   click-repl
     #   ipython
@@ -296,6 +296,8 @@ psycopg2==2.8.6
     # via -r requirements.in
 ptyprocess==0.5.1
     # via pexpect
+pure-eval==0.2.2
+    # via stack-data
 py==1.10.0
     # via pytest
 pycountry==19.8.18
@@ -370,6 +372,7 @@ sentry-sdk==0.14.3
     # via -r requirements.in
 six==1.16.0
     # via
+    #   asttokens
     #   click-repl
     #   django-classy-tags
     #   django-compat
@@ -382,7 +385,6 @@ six==1.16.0
     #   pysaml2
     #   python-dateutil
     #   social-auth-app-django
-    #   traitlets
     #   zeep
 social-auth-app-django==4.0.0
     # via
@@ -395,6 +397,8 @@ soupsieve==2.0.1
     # via beautifulsoup4
 sqlparse==0.3.1
     # via django
+stack-data==0.6.2
+    # via ipython
 static3==0.5.1
     # via
     #   -r requirements.in
@@ -409,7 +413,7 @@ toml==0.10.2
     # via pytest
 toolz==0.11.2
     # via mitol-django-mail
-traitlets==4.3.2
+traitlets==5.9.0
     # via
     #   ipython
     #   matplotlib-inline
