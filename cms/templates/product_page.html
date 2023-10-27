@@ -37,7 +37,8 @@
   {% if three_column_image_text_section %} {% include "partials/three-column-image-text-section.html" with page=three_column_image_text_section %} {% endif %}
   {% if program_description_section %} {% include "partials/program-description.html" with page=program_description_section %} {% endif %}
   {% if admissions_section %}{% include "partials/admissions-section.html" with page=admissions_section %}{% endif %}
-  {% if instructors %} {% include "partials/instructor.html" with page=instructors %} {% endif %}
+  {% if instructors %} {% include "partials/instructor.html" with page=instructors type="instructor" %} {% endif %}
+  {% if sponsors %} {% include "partials/instructor.html" with page=sponsors type="sponsor" %} {% endif %}
   {% if alumni %} {% include "partials/alumni.html" with page=alumni %} {% endif %}
   {% if learning_resources %} {% include "partials/learning-resources.html" with page=learning_resources %} {% endif %}
   </div>

@@ -28,6 +28,7 @@ from cms.api import render_template
 from cms.blocks import (
     ResourceBlock,
     InstructorSectionBlock,
+    SponsorSectionBlock,
     ThreeColumnImageTextBlock,
     AlumniBlock,
     TitleLinksBlock,
@@ -224,6 +225,11 @@ class BootcampPage(Page, CommonProperties):
         return self._get_child_page_of_type(InstructorsSection)
 
     @property
+    def sponsors(self):
+        """Gets the sponsors page"""
+        return self._get_child_page_of_type(SponsorsSection)
+
+    @property
     def alumni(self):
         """Gets the faculty members page"""
         return self._get_child_page_of_type(AlumniSection)
@@ -242,6 +248,7 @@ class BootcampPage(Page, CommonProperties):
         "ThreeColumnImageTextSection",
         "ProgramDescriptionSection",
         "InstructorsSection",
+        "SponsorsSection",
         "AlumniSection",
         "LearningResourceSection",
         "AdmissionsSection",
@@ -280,6 +287,7 @@ class BootcampRunPage(BootcampPage):
             "admissions_section": self.admissions_section,
             "alumni": self.alumni,
             "instructors": self.instructors,
+            "sponsors": self.sponsors,
             "learning_resources": self.learning_resources,
             "program_description_section": self.program_description_section,
             "three_column_image_text_section": self.three_column_image_text_section,
@@ -418,10 +426,11 @@ class ProgramDescriptionSection(BootcampRunChildPage):
     ]
 
 
-class InstructorsSection(BootcampRunChildPage):
-    """
-    InstructorsPage representing a "Your MIT Instructors" section on a product page
-    """
+class InstructorSponsorSection(BootcampRunChildPage):
+    """Parent class for Instructor and Sponsor sections in a Bootcamp page"""
+
+    class Meta:
+        abstract = True
 
     banner_image = models.ForeignKey(
         Image,
@@ -444,6 +453,22 @@ class InstructorsSection(BootcampRunChildPage):
         FieldPanel("heading"),
         StreamFieldPanel("sections"),
     ]
+
+
+class InstructorsSection(InstructorSponsorSection):
+    """
+    InstructorsPage representing a "Your MIT Instructors" section on a product page
+    """
+
+
+class SponsorsSection(InstructorSponsorSection):
+    """SponsorsPage representing a "Bootcamp Sponsors" section on a product page"""
+
+    sections = StreamField(
+        [("section", SponsorSectionBlock())],
+        help_text="The sponsor to display in this section",
+    )
+    InstructorSponsorSection._meta.get_field("heading").default = "Sponsors"
 
 
 class AdmissionsSection(BootcampRunChildPage):
