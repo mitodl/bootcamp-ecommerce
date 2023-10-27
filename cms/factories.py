@@ -282,7 +282,7 @@ class InstructorSectionFactory(wagtail_factories.PageFactory):
 
 
 class SponsorSectionFactory(wagtail_factories.PageFactory):
-    """InstructorSectionFactory factory class"""
+    """SponsorSectionFactory factory class"""
 
     banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
     heading = factory.fuzzy.FuzzyText(prefix="heading ")

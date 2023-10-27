@@ -444,14 +444,10 @@ class InstructorSponsorSection(BootcampRunChildPage):
         blank=False,
         help_text="The heading to display on this section.",
     )
-    sections = StreamField(
-        [("section", InstructorSectionBlock())],
-        help_text="The instructor to display in this section",
-    )
+
     content_panels = [
         ImageChooserPanel("banner_image"),
         FieldPanel("heading"),
-        StreamFieldPanel("sections"),
     ]
 
 
@@ -459,6 +455,15 @@ class InstructorsSection(InstructorSponsorSection):
     """
     InstructorsPage representing a "Your MIT Instructors" section on a product page
     """
+
+    sections = StreamField(
+        [("section", InstructorSectionBlock())],
+        help_text="The instructor to display in this section",
+    )
+
+    content_panels = InstructorSponsorSection.content_panels + [
+        StreamFieldPanel("sections"),
+    ]
 
 
 class SponsorsSection(InstructorSponsorSection):
@@ -469,6 +474,10 @@ class SponsorsSection(InstructorSponsorSection):
         help_text="The sponsor to display in this section",
     )
     InstructorSponsorSection._meta.get_field("heading").default = "Sponsors"
+
+    content_panels = InstructorSponsorSection.content_panels + [
+        StreamFieldPanel("sections"),
+    ]
 
 
 class AdmissionsSection(BootcampRunChildPage):
