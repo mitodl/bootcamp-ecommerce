@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.108.0
+---------------
+
+- feat: add sponsors (#1454)
+- Add renovate.json
+
 Version 0.107.0 (Released July 25, 2023)
 ---------------
 
