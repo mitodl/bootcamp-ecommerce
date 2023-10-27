@@ -3,6 +3,7 @@ Wagtail custom blocks for the CMS
 """
 from wagtail.core import blocks
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.core.blocks import StructValue
 
 
 class ResourceBlock(blocks.StructBlock):
@@ -16,22 +17,28 @@ class ResourceBlock(blocks.StructBlock):
 
 class InstructorBlock(blocks.StructBlock):
     """
-    Block class that defines a instructor
+    Block class that defines a instructor or sponsor
     """
 
-    name = blocks.CharBlock(max_length=100, help_text="Name of the instructor.")
+    name = blocks.CharBlock(max_length=100, help_text="Name of the instructor/sponsor.")
     image = ImageChooserBlock(
         help_text="Profile image size must be at least 300x300 pixels."
     )
     title = blocks.CharBlock(
-        max_length=255, help_text="A brief description about the instructor."
+        max_length=255, help_text="A brief description about the instructor/sponsor."
     )
 
 
-class InstructorSectionBlock(blocks.StructBlock):
-    """
-    Block class that defines a instrcutors section
-    """
+class InstructorSponsorItems(StructValue):
+    """Custom value for StructBlock so that it can return Instructors or Sponsors"""
+
+    def instructor_sponsor_items(self):
+        """Return possible items for Instructors or Sponsors to be displayed to the user"""
+        return self.get("members") or self.get("sponsors")
+
+
+class InstructorSponsorBlock(blocks.StructBlock):
+    """Parent Block class for sponsors and instructors"""
 
     heading = blocks.CharBlock(
         max_length=255, help_text="The heading to display for this section on the page."
@@ -40,11 +47,33 @@ class InstructorSectionBlock(blocks.StructBlock):
         help_text="The subhead to display for this section on the page."
     )
     heading_singular = blocks.CharBlock(
-        max_length=100, help_text="Heading that will highlight the instructor point."
+        max_length=100,
+        help_text="Heading that will highlight the instructor or sponsor point.",
     )
+
+    class Meta:
+        value_class = InstructorSponsorItems
+
+
+class InstructorSectionBlock(InstructorSponsorBlock):
+    """
+    Block class that defines an instrcutor section
+    """
+
     members = blocks.StreamBlock(
         [("member", InstructorBlock())],
         help_text="The instructors to display in this section",
+    )
+
+
+class SponsorSectionBlock(InstructorSponsorBlock):
+    """
+    Block class that defines a sponsor section
+    """
+
+    sponsors = blocks.StreamBlock(
+        [("sponsor", InstructorBlock())],
+        help_text="The sponsors to display in this section",
     )
 
 

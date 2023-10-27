@@ -17,6 +17,7 @@ from cms.factories import (
     CatalogGridSectionFactory,
     ThreeColumnImageTextSectionFactory,
     InstructorSectionFactory,
+    SponsorSectionFactory,
     AdmissionSectionFactory,
     CertificateIndexPageFactory,
     CertificatePageFactory,
@@ -164,6 +165,40 @@ def test_instructors_section():
     )
     assert bootcamp_run_page.instructors
     assert bootcamp_run_page.instructors == instructor_section
+
+
+def test_sponsors_section():
+    """
+    Verify that user can create sponsor sections under bootcamp run page.
+    """
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    assert bootcamp_run_page.three_column_image_text_section is None
+    assert models.ThreeColumnImageTextSection.can_create_at(bootcamp_run_page)
+
+    sponsor_section = SponsorSectionFactory.create(
+        parent=bootcamp_run_page,
+        banner_image__title="title of the image",
+        heading="heading",
+        sections=json.dumps(
+            [
+                {
+                    "type": "section",
+                    "value": {
+                        "heading": "Introduction",
+                        "sub_heading": "Subheading",
+                        "heading_singular": "Singular heading",
+                        "sponsors": {
+                            "name": "Name",
+                            "image__title": "Image title",
+                            "title": "Title",
+                        },
+                    },
+                }
+            ]
+        ),
+    )
+    assert bootcamp_run_page.sponsors
+    assert bootcamp_run_page.sponsors == sponsor_section
 
 
 def test_admission_section():

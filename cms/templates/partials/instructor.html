@@ -25,8 +25,8 @@
   <div class="container instructors-container">
   {% for section in page.sections %}
     <div class="container">
-      <div class="slider slider-{{ forloop.counter }}">
-        {% for member in section.value.members %}
+      <div class="slider slider-{{ type }}-{{ forloop.counter }}">
+        {% for member in section.value.instructor_sponsor_items %}
           <div class="slide instructor">
             <div class="slide-holder">
               <img src="{% image_version_url member.value.image "fill-300x300" %}" alt="{{ member.value.name }}">
@@ -44,8 +44,9 @@
   </div>
   <script>
     var totalSections = {{ page.sections|length }};
+    var type = "{{ type }}";
     for(var i=1; i <= totalSections; i++){
-      $(".slider-" + i).slick({
+      $(".slider-" + type  + "-" + i).slick({
         rows:           0,
         slidesToShow:   4,
         slidesToScroll: 1,

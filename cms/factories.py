@@ -16,6 +16,7 @@ from cms.blocks import (
     ThreeColumnImageTextBlock,
     InstructorSectionBlock,
     InstructorBlock,
+    SponsorSectionBlock,
 )
 from klasses.factories import BootcampRunFactory
 
@@ -138,6 +139,18 @@ class InstructorSectionBlockFactory(wagtail_factories.StructBlockFactory):
 
     class Meta:
         model = InstructorSectionBlock
+
+
+class SponsorSectionBlockFactory(wagtail_factories.StructBlockFactory):
+    """SponsorSectionBlockFactory factory class"""
+
+    heading = factory.fuzzy.FuzzyText(prefix="Heading ")
+    sub_heading = factory.fuzzy.FuzzyText(prefix="Sub Heading ")
+    heading_singular = factory.fuzzy.FuzzyText(prefix="Heading Singular ")
+    sponsors = factory.SubFactory(InstructorBlockFactory)
+
+    class Meta:
+        model = SponsorSectionBlock
 
 
 class ProgramDescriptionSectionFactory(wagtail_factories.PageFactory):
@@ -266,6 +279,19 @@ class InstructorSectionFactory(wagtail_factories.PageFactory):
 
     class Meta:
         model = models.InstructorsSection
+
+
+class SponsorSectionFactory(wagtail_factories.PageFactory):
+    """SponsorSectionFactory factory class"""
+
+    banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    heading = factory.fuzzy.FuzzyText(prefix="heading ")
+    sections = wagtail_factories.StreamFieldFactory(
+        {"section": InstructorSectionBlockFactory}
+    )
+
+    class Meta:
+        model = models.SponsorsSection
 
 
 class AdmissionSectionFactory(wagtail_factories.PageFactory):
