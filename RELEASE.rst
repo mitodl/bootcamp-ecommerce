@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.108.0
+Version 0.108.0 (Released October 30, 2023)
 ---------------
 
 - feat: add sponsors (#1454)
