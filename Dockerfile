@@ -14,7 +14,7 @@ RUN curl --silent --location https://bootstrap.pypa.io/get-pip.py | python3 -
 RUN pip install -U pip-tools
 
 # Add, and run as, non-root user.
-RUN mkdir /app
+RUN mkdir /src
 RUN adduser --disabled-password --gecos "" mitodl
 RUN mkdir /var/media && chown -R mitodl:mitodl /var/media
 
@@ -27,14 +27,9 @@ ENV  \
   VIRTUAL_ENV="/opt/venv"
 ENV PATH="$VIRTUAL_ENV/bin:$POETRY_HOME/bin:$PATH"
 
-# Install project packages
-# COPY requirements.txt /tmp/requirements.txt
-# COPY test_requirements.txt /tmp/test_requirements.txt
-# RUN pip install -r requirements.txt -r test_requirements.txt
-
-COPY pyproject.toml /app
-COPY poetry.lock /app
-RUN chown -R mitodl:mitodl /app
+COPY pyproject.toml /src
+COPY poetry.lock /src
+RUN chown -R mitodl:mitodl /src
 RUN mkdir ${VIRTUAL_ENV} && chown -R mitodl:mitodl ${VIRTUAL_ENV}
 
 USER mitodl
@@ -43,12 +38,12 @@ RUN curl -sSL https://install.python-poetry.org \
   POETRY_VERSION=${POETRY_VERSION} \
   POETRY_HOME=${POETRY_HOME} \
   python3 -q
-WORKDIR /app
+WORKDIR /src
 RUN python3 -m venv $VIRTUAL_ENV
 RUN poetry install
 
 # Add project
-COPY . /app
+COPY . /src
 
 # Gather static
 USER root
