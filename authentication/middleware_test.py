@@ -20,7 +20,6 @@ def test_process_exception_no_strategy(rf, settings):
 def test_process_exception(rf, settings):
     """Tests that a process_exception handles auth exceptions correctly"""
     settings.DEBUG = False
-    msg = "error message"
     request = rf.get(reverse("social:complete", args=("email",)))
     # social_django depends on request.sesssion, so use the middleware to set that
     SessionMiddleware().process_request(request)
@@ -30,10 +29,11 @@ def test_process_exception(rf, settings):
     request.backend = backend
 
     middleware = SocialAuthExceptionRedirectMiddleware()
-    result = middleware.process_exception(request, AuthAlreadyAssociated(backend, msg))
+    error = AuthAlreadyAssociated(backend)
+    result = middleware.process_exception(request, error)
     assert result.status_code == status.HTTP_302_FOUND
     assert result.url == "{}?message={}&backend={}".format(
-        reverse("login"), urlquote(msg), backend.name
+        reverse("login"), urlquote(error.__str__()), backend.name
     )
 
 
