@@ -111,3 +111,14 @@ docker-compose run --rm web ./manage.py set_application_state -i 123 --state AWA
 # Provide a user and run instead of a bootcamp application id
 docker-compose run --rm web ./manage.py set_application_state --user me@example.com --run "Bootcamp Run 1" --state AWAITING_RESUME
 ```
+
+
+# Updating python dependencies
+
+Python dependencies are managed with poetry.  If you need to add a new dependency, run this command:
+
+```
+docker compose run --rm web poetry add <dependency>
+```
+This will update the `pyproject.toml` and `poetry.lock` files.  Then run `docker-compose build web celery` to make the change permanent in your docker images.
+Refer to the [poetry documentation](https://python-poetry.org/docs/cli/) for particulars about specifying versions, removing dependencies, etc.
