@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.109.0
+---------------
+
+- feat: use poetry dependency management (#1456)
+
 Version 0.108.0 (Released October 30, 2023)
 ---------------
 
