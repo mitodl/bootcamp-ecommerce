@@ -47,7 +47,9 @@ pytestmark = pytest.mark.django_db
 @pytest.fixture
 def bootcamp_run_submissions():
     """Generate bootcamp runs and submissions"""
-    bootcamp_runs = BootcampRunFactory.create_batch(3)
+    bootcamp_runs = BootcampRunFactory.create_batch(
+        3, start_date=now_in_utc() + timedelta(days=1)
+    )
     submissions = []
     for bootcamp_run in bootcamp_runs:
         application_step = BootcampRunApplicationStepFactory(
@@ -171,7 +173,8 @@ def test_review_submission_update(admin_drf_client, review_status, application_s
     The review submission view should return successful response, and update review_status and application
     """
     bootcamp_application = BootcampApplicationFactory.create(
-        state=AppStates.AWAITING_SUBMISSION_REVIEW.value
+        state=AppStates.AWAITING_SUBMISSION_REVIEW.value,
+        bootcamp_run__start_date=now_in_utc() + timedelta(weeks=1),
     )
     submission = ApplicationStepSubmissionFactory.create(
         is_pending=True,
@@ -243,7 +246,7 @@ def test_review_submission_list_expired(admin_drf_client, bootcamp_run_submissio
     The review submission list view should not return submissions if run ended
     """
     for run in bootcamp_run_submissions.bootcamp_runs:
-        run.end_date = now_in_utc() - timedelta(weeks=1)
+        run.start_date = now_in_utc() - timedelta(weeks=1)
         run.save()
     url = reverse("submissions_api-list")
     resp = admin_drf_client.get(url, dict(limit=100))
@@ -262,7 +265,10 @@ def test_review_submission_list_query_bootcamp_run_id(admin_drf_client):
     """
     The review submission list view should return a list of submissions filtered by bootcamp run id
     """
-    submission = ApplicationStepSubmissionFactory.create(is_review_ready=True)
+    submission = ApplicationStepSubmissionFactory.create(
+        is_review_ready=True,
+        bootcamp_application__bootcamp_run__start_date=now_in_utc() + timedelta(days=1),
+    )
     bootcamp_run = submission.bootcamp_application.bootcamp_run
     ApplicationStepSubmissionFactory.create_batch(3)
     url = reverse("submissions_api-list")
@@ -306,13 +312,28 @@ def test_review_submission_list_query_review_status(admin_drf_client, review_sta
         bootcamp_application=BootcampApplicationFactory.create(state="AWAITING_RESUME"),
     )
 
+    run_future_start_date = now_in_utc() + timedelta(days=1)
     # Create a few submissions that should be included in results
     submissions = [
-        ApplicationStepSubmissionFactory.create(is_pending=True, is_review_ready=True),
-        ApplicationStepSubmissionFactory.create(is_approved=True, is_review_ready=True),
-        ApplicationStepSubmissionFactory.create(is_rejected=True, is_review_ready=True),
         ApplicationStepSubmissionFactory.create(
-            is_waitlisted=True, is_review_ready=True
+            is_pending=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
+        ),
+        ApplicationStepSubmissionFactory.create(
+            is_approved=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
+        ),
+        ApplicationStepSubmissionFactory.create(
+            is_rejected=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
+        ),
+        ApplicationStepSubmissionFactory.create(
+            is_waitlisted=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
         ),
     ]
     submission = next(filter(lambda s: s.review_status == review_status, submissions))
@@ -360,10 +381,23 @@ def test_review_submission_list_query_review_status_in(
     """
     The review submission list view should return a list of all submissions filtered by multiple review statuses
     """
+    run_future_start_date = now_in_utc() + timedelta(days=1)
     submissions = [
-        ApplicationStepSubmissionFactory.create(is_pending=True, is_review_ready=True),
-        ApplicationStepSubmissionFactory.create(is_approved=True, is_review_ready=True),
-        ApplicationStepSubmissionFactory.create(is_rejected=True, is_review_ready=True),
+        ApplicationStepSubmissionFactory.create(
+            is_pending=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
+        ),
+        ApplicationStepSubmissionFactory.create(
+            is_approved=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
+        ),
+        ApplicationStepSubmissionFactory.create(
+            is_rejected=True,
+            is_review_ready=True,
+            bootcamp_application__bootcamp_run__start_date=run_future_start_date,
+        ),
     ]
     submissions = list(
         filter(lambda s: s.review_status in review_statuses, submissions)
