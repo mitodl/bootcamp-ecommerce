@@ -54,6 +54,7 @@ def test_bootcamp_run_serializer():
         "bootcamp": BootcampSerializer(run.bootcamp).data,
         "start_date": serializer_date_format(run.start_date),
         "end_date": serializer_date_format(run.end_date),
+        "early_bird_deadline": None,
         "run_key": run.run_key,
         "installments": [InstallmentSerializer(installment).data],
         "novoed_course_stub": run.novoed_course_stub,

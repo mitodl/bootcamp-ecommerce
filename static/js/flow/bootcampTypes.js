@@ -36,6 +36,7 @@ export type BootcampRun = {
   run_key: string,
   start_date: ?string,
   end_date: ?string,
+  early_bird_deadline: ?string,
   novoed_course_stub: ?string,
   bootcamp: Bootcamp,
   page?: ?BootcampRunPage,

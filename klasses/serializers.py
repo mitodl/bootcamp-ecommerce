@@ -54,6 +54,7 @@ class BootcampRunSerializer(serializers.ModelSerializer):
             "novoed_course_stub",
             "start_date",
             "end_date",
+            "early_bird_deadline",
             "is_payable",
             "installments",
             "bootcamp_run_id",
