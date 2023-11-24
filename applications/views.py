@@ -166,7 +166,7 @@ class ReviewSubmissionViewSet(
         ApplicationStepSubmission.objects.filter(
             Q(submission_status=SUBMISSION_STATUS_SUBMITTED)
             & Q(bootcamp_application__state__in=REVIEWABLE_APP_STATES)
-            & Q(bootcamp_application__bootcamp_run__end_date__gte=now_in_utc())
+            & Q(bootcamp_application__bootcamp_run__start_date__gte=now_in_utc())
         )
         .select_related(
             "bootcamp_application__user__profile",
