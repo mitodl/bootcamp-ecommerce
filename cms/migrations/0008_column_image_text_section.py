@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -31,27 +31,27 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "column_image_text_section",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "column_image_text_section",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "heading",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Heading that will highlight the main point.",
                                                 max_length=100,
                                             ),
                                         ),
                                         (
                                             "sub_heading",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Area sub heading.",
                                                 max_length=250,
                                             ),
                                         ),
-                                        ("body", wagtail.core.blocks.RichTextBlock()),
+                                        ("body", wagtail.blocks.RichTextBlock()),
                                         (
                                             "image",
                                             wagtail.images.blocks.ImageChooserBlock(

@@ -4,8 +4,8 @@ import factory
 from factory.django import DjangoModelFactory
 import faker
 import pytz
-from wagtail.core.models import Site
-from wagtail.core.rich_text import RichText
+from wagtail.models import Site
+from wagtail.rich_text import RichText
 import wagtail_factories
 
 from cms import models

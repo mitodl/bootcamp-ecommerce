@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -31,37 +31,37 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "sections",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "section",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "heading",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="The heading to display for this section on the page.",
                                                 max_length=255,
                                             ),
                                         ),
                                         (
                                             "subhead",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="The subhead to display for this section on the page.",
                                                 max_length=255,
                                             ),
                                         ),
                                         (
                                             "members",
-                                            wagtail.core.blocks.StreamBlock(
+                                            wagtail.blocks.StreamBlock(
                                                 [
                                                     (
                                                         "member",
-                                                        wagtail.core.blocks.StructBlock(
+                                                        wagtail.blocks.StructBlock(
                                                             [
                                                                 (
                                                                     "name",
-                                                                    wagtail.core.blocks.CharBlock(
+                                                                    wagtail.blocks.CharBlock(
                                                                         help_text="Name of the instructor.",
                                                                         max_length=100,
                                                                     ),
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                                                                 ),
                                                                 (
                                                                     "title",
-                                                                    wagtail.core.blocks.CharBlock(
+                                                                    wagtail.blocks.CharBlock(
                                                                         help_text="A brief description about the instructor.",
                                                                         max_length=255,
                                                                     ),

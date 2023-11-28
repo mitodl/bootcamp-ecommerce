@@ -7,7 +7,7 @@ import responses
 
 from django.test.client import Client
 from rest_framework.test import APIClient
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from applications.constants import AppStates, VALID_SUBMISSION_TYPE_CHOICES
 from applications.factories import (

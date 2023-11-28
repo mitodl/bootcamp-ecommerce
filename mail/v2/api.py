@@ -32,8 +32,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
 import premailer
-from wagtail.core.models import Site
-from wagtail.core.sites import get_site_for_hostname
+from wagtail.models import Site
+from wagtail.models.sites import get_site_for_hostname
 
 from cms.utils import get_resource_page_urls
 from mail.v2.exceptions import MultiEmailValidationError

@@ -1,9 +1,9 @@
 """
 Wagtail custom blocks for the CMS
 """
-from wagtail.core import blocks
+from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.core.blocks import StructValue
+from wagtail.blocks import StructValue
 
 
 class ResourceBlock(blocks.StructBlock):

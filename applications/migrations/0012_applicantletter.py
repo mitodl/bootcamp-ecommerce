@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import uuid
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ("updated_on", models.DateTimeField(auto_now=True)),
                 ("is_acceptance", models.BooleanField()),
                 ("letter_subject", models.TextField()),
-                ("letter_text", wagtail.core.fields.RichTextField()),
+                ("letter_text", wagtail.fields.RichTextField()),
                 ("hash", models.UUIDField(default=uuid.uuid4, unique=True)),
                 (
                     "application",

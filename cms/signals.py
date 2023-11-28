@@ -1,7 +1,7 @@
 """CMS signals"""
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from wagtail.core.signals import page_published
+from wagtail.signals import page_published
 
 from cms.models import ResourcePagesSettings
 from cms.utils import invalidate_resource_page_urls

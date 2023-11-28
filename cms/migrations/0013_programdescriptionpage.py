@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "statement",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         blank=True,
                         help_text="The bold statement for the bootcamp program.",
                     ),
@@ -46,28 +46,28 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "body",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         help_text="The body text to display in the header section on the page."
                     ),
                 ),
                 (
                     "steps",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "steps",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "title",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Title that will highlight the main point.",
                                                 max_length=100,
                                             ),
                                         ),
                                         (
                                             "description",
-                                            wagtail.core.blocks.RichTextBlock(),
+                                            wagtail.blocks.RichTextBlock(),
                                         ),
                                     ]
                                 ),

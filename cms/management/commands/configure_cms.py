@@ -4,8 +4,8 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-from wagtail.core.blocks import StreamValue
-from wagtail.core.models import Site, Page
+from wagtail.blocks import StreamValue
+from wagtail.models import Site, Page
 
 from cms.models import HomePage, ResourcePage, ResourcePagesSettings, LetterTemplatePage
 

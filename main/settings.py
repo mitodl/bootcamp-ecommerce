@@ -146,7 +146,7 @@ INSTALLED_APPS = (
     "wagtail.images",
     "wagtail.search",
     "wagtail.admin",
-    "wagtail.core",
+    "wagtail",
     "wagtail.contrib.routable_page",
     "wagtail.contrib.settings",
     "modelcluster",
@@ -721,6 +721,7 @@ SITE_NAME = get_string(
     description="The site name for the app",
 )
 WAGTAIL_SITE_NAME = SITE_NAME
+WAGTAILADMIN_BASE_URL = SITE_BASE_URL
 
 MEDIA_ROOT = get_string(
     name="MEDIA_ROOT",

@@ -13,14 +13,13 @@ from django.http.response import Http404
 from django.urls import reverse
 from django.utils.text import slugify
 from django.shortcuts import render
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, PageChooserPanel
+from wagtail.admin.panels import FieldPanel, TitleFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
-from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.core.blocks import StreamBlock, PageChooserBlock
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
-from wagtail.core.utils import WAGTAIL_APPEND_SLASH
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.blocks import StreamBlock, PageChooserBlock
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Page
+from wagtail.coreutils import WAGTAIL_APPEND_SLASH
 from wagtail.images.models import Image
 from wagtail.snippets.models import register_snippet
 
@@ -203,11 +202,11 @@ class BootcampPage(Page, CommonProperties):
         help_text="Thumbnail size must be at least 690x530 pixels.",
     )
     content_panels = [
-        FieldPanel("title", classname="full"),
-        FieldPanel("subhead", classname="full"),
-        FieldPanel("description", classname="full"),
-        ImageChooserPanel("header_image"),
-        ImageChooserPanel("thumbnail_image"),
+        TitleFieldPanel("title"),
+        FieldPanel("subhead"),
+        FieldPanel("description"),
+        FieldPanel("header_image"),
+        FieldPanel("thumbnail_image"),
     ]
 
     def get_context(self, request, *args, **kwargs):
@@ -371,9 +370,10 @@ class ThreeColumnImageTextSection(BootcampRunChildPage):
         blank=False,
         null=True,
         help_text="Enter detail about area upto max 3 blocks.",
+        use_json_field=True,
     )
 
-    content_panels = [StreamFieldPanel("column_image_text_section")]
+    content_panels = [FieldPanel("column_image_text_section")]
 
 
 class ProgramDescriptionSection(BootcampRunChildPage):
@@ -414,15 +414,16 @@ class ProgramDescriptionSection(BootcampRunChildPage):
         blank=False,
         null=True,
         help_text="Enter detail about steps upto max 7 steps.",
+        use_json_field=True,
     )
 
     content_panels = [
-        FieldPanel("statement", classname="full"),
-        FieldPanel("heading", classname="full"),
-        FieldPanel("body", classname="full"),
-        ImageChooserPanel("image"),
-        ImageChooserPanel("banner_image"),
-        StreamFieldPanel("steps"),
+        FieldPanel("statement"),
+        FieldPanel("heading"),
+        FieldPanel("body"),
+        FieldPanel("image"),
+        FieldPanel("banner_image"),
+        FieldPanel("steps"),
     ]
 
 
@@ -446,7 +447,7 @@ class InstructorSponsorSection(BootcampRunChildPage):
     )
 
     content_panels = [
-        ImageChooserPanel("banner_image"),
+        FieldPanel("banner_image"),
         FieldPanel("heading"),
     ]
 
@@ -459,10 +460,11 @@ class InstructorsSection(InstructorSponsorSection):
     sections = StreamField(
         [("section", InstructorSectionBlock())],
         help_text="The instructor to display in this section",
+        use_json_field=True,
     )
 
     content_panels = InstructorSponsorSection.content_panels + [
-        StreamFieldPanel("sections"),
+        FieldPanel("sections"),
     ]
 
 
@@ -472,11 +474,12 @@ class SponsorsSection(InstructorSponsorSection):
     sections = StreamField(
         [("section", SponsorSectionBlock())],
         help_text="The sponsor to display in this section",
+        use_json_field=True,
     )
     InstructorSponsorSection._meta.get_field("heading").default = "Sponsors"
 
     content_panels = InstructorSponsorSection.content_panels + [
-        StreamFieldPanel("sections"),
+        FieldPanel("sections"),
     ]
 
 
@@ -528,7 +531,7 @@ class AdmissionsSection(BootcampRunChildPage):
     )
 
     content_panels = [
-        ImageChooserPanel("admissions_image"),
+        FieldPanel("admissions_image"),
         FieldPanel("how_to_title"),
         FieldPanel("how_to_link_text"),
         FieldPanel("apply_now_button_text"),
@@ -564,11 +567,12 @@ class ResourcePage(Page):
         [("content", ResourceBlock())],
         blank=False,
         help_text="Enter details of content.",
+        use_json_field=True,
     )
 
     content_panels = Page.content_panels + [
-        ImageChooserPanel("header_image"),
-        StreamFieldPanel("content"),
+        FieldPanel("header_image"),
+        FieldPanel("content"),
     ]
 
     def get_context(self, request, *args, **kwargs):
@@ -622,7 +626,7 @@ class HomeAlumniSection(BootcampRunChildPage):
     )
 
     content_panels = [
-        ImageChooserPanel("banner_image"),
+        FieldPanel("banner_image"),
         FieldPanel("heading"),
         FieldPanel("text"),
         FieldPanel("highlight_quote"),
@@ -666,14 +670,15 @@ class AlumniSection(BootcampRunChildPage):
         [("alumni", AlumniBlock())],
         blank=False,
         help_text="Alumni to display in this section.",
+        use_json_field=True,
     )
     content_panels = [
-        ImageChooserPanel("banner_image"),
+        FieldPanel("banner_image"),
         FieldPanel("heading"),
         FieldPanel("text"),
         FieldPanel("highlight_quote"),
         FieldPanel("highlight_name"),
-        StreamFieldPanel("alumni_bios"),
+        FieldPanel("alumni_bios"),
     ]
 
     class Meta:
@@ -693,9 +698,10 @@ class LearningResourceSection(BootcampRunChildPage):
     items = StreamField(
         [("item", TitleLinksBlock())],
         help_text="The resources with links to display in this section",
+        use_json_field=True,
     )
 
-    content_panels = [FieldPanel("heading"), StreamFieldPanel("items")]
+    content_panels = [FieldPanel("heading"), FieldPanel("items")]
 
     class Meta:
         verbose_name = "Learning Resources Section"
@@ -712,8 +718,9 @@ class CatalogGridSection(BootcampRunChildPage):
         [("bootcamp_run", CatalogSectionBootcampBlock())],
         help_text="The bootcamps to display in this catalog section",
         blank=True,
+        use_json_field=True,
     )
-    content_panels = [StreamFieldPanel("contents")]
+    content_panels = [FieldPanel("contents")]
 
 
 class LetterTemplatePage(Page):
@@ -742,7 +749,7 @@ class LetterTemplatePage(Page):
         FieldPanel("acceptance_text"),
         FieldPanel("rejection_text"),
         FieldPanel("signatory_name"),
-        ImageChooserPanel("signature_image"),
+        FieldPanel("signature_image"),
     ]
 
     base_form_class = LetterTemplatePageForm
@@ -772,7 +779,7 @@ class LetterTemplatePage(Page):
 
 
 @register_setting
-class ResourcePagesSettings(BaseSetting):
+class ResourcePagesSettings(BaseSiteSetting):
     """Wagtail settings for site pages"""
 
     apply_page = models.ForeignKey(
@@ -792,11 +799,11 @@ class ResourcePagesSettings(BaseSetting):
     )
 
     panels = [
-        PageChooserPanel("apply_page"),
-        PageChooserPanel("about_us_page"),
-        PageChooserPanel("bootcamps_programs_page"),
-        PageChooserPanel("terms_of_service_page"),
-        PageChooserPanel("privacy_policy_page"),
+        FieldPanel("apply_page"),
+        FieldPanel("about_us_page"),
+        FieldPanel("bootcamps_programs_page"),
+        FieldPanel("terms_of_service_page"),
+        FieldPanel("privacy_policy_page"),
     ]
 
     class Meta:
@@ -888,7 +895,7 @@ class SignatoryPage(Page):
         FieldPanel("title_1"),
         FieldPanel("title_2"),
         FieldPanel("organization"),
-        ImageChooserPanel("signature_image"),
+        FieldPanel("signature_image"),
     ]
 
     def save(self, *args, **kwargs):  # pylint: disable=signature-differs
@@ -1024,6 +1031,7 @@ class CertificatePage(BootcampRunChildPage):
             max_num=5,
         ),
         help_text="You can choose upto 5 signatories.",
+        use_json_field=True,
     )
 
     content_panels = [
@@ -1031,8 +1039,8 @@ class CertificatePage(BootcampRunChildPage):
         FieldPanel("granting_institution"),
         FieldPanel("certificate_name"),
         FieldPanel("location"),
-        ImageChooserPanel("secondary_image"),
-        StreamFieldPanel("signatories"),
+        FieldPanel("secondary_image"),
+        FieldPanel("signatories"),
     ]
 
     class Meta:

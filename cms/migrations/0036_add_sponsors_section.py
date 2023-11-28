@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -19,43 +19,43 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="instructorssection",
             name="sections",
-            field=wagtail.core.fields.StreamField(
+            field=wagtail.fields.StreamField(
                 [
                     (
                         "section",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "heading",
-                                    wagtail.core.blocks.CharBlock(
+                                    wagtail.blocks.CharBlock(
                                         help_text="The heading to display for this section on the page.",
                                         max_length=255,
                                     ),
                                 ),
                                 (
                                     "subhead",
-                                    wagtail.core.blocks.RichTextBlock(
+                                    wagtail.blocks.RichTextBlock(
                                         help_text="The subhead to display for this section on the page."
                                     ),
                                 ),
                                 (
                                     "heading_singular",
-                                    wagtail.core.blocks.CharBlock(
+                                    wagtail.blocks.CharBlock(
                                         help_text="Heading that will highlight the instructor or sponsor point.",
                                         max_length=100,
                                     ),
                                 ),
                                 (
                                     "members",
-                                    wagtail.core.blocks.StreamBlock(
+                                    wagtail.blocks.StreamBlock(
                                         [
                                             (
                                                 "member",
-                                                wagtail.core.blocks.StructBlock(
+                                                wagtail.blocks.StructBlock(
                                                     [
                                                         (
                                                             "name",
-                                                            wagtail.core.blocks.CharBlock(
+                                                            wagtail.blocks.CharBlock(
                                                                 help_text="Name of the instructor/sponsor.",
                                                                 max_length=100,
                                                             ),
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
                                                         ),
                                                         (
                                                             "title",
-                                                            wagtail.core.blocks.CharBlock(
+                                                            wagtail.blocks.CharBlock(
                                                                 help_text="A brief description about the instructor/sponsor.",
                                                                 max_length=255,
                                                             ),
@@ -103,50 +103,50 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "heading",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         default="Sponsors",
                         help_text="The heading to display on this section.",
                     ),
                 ),
                 (
                     "sections",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "section",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "heading",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="The heading to display for this section on the page.",
                                                 max_length=255,
                                             ),
                                         ),
                                         (
                                             "subhead",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 help_text="The subhead to display for this section on the page."
                                             ),
                                         ),
                                         (
                                             "heading_singular",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Heading that will highlight the instructor or sponsor point.",
                                                 max_length=100,
                                             ),
                                         ),
                                         (
                                             "sponsors",
-                                            wagtail.core.blocks.StreamBlock(
+                                            wagtail.blocks.StreamBlock(
                                                 [
                                                     (
                                                         "sponsor",
-                                                        wagtail.core.blocks.StructBlock(
+                                                        wagtail.blocks.StructBlock(
                                                             [
                                                                 (
                                                                     "name",
-                                                                    wagtail.core.blocks.CharBlock(
+                                                                    wagtail.blocks.CharBlock(
                                                                         help_text="Name of the instructor/sponsor.",
                                                                         max_length=100,
                                                                     ),
@@ -159,7 +159,7 @@ class Migration(migrations.Migration):
                                                                 ),
                                                                 (
                                                                     "title",
-                                                                    wagtail.core.blocks.CharBlock(
+                                                                    wagtail.blocks.CharBlock(
                                                                         help_text="A brief description about the instructor/sponsor.",
                                                                         max_length=255,
                                                                     ),

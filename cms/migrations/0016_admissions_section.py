@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "details",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         help_text="Admission details that need to be displayed."
                     ),
                 ),
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "bootcamp_format_details",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         blank=True, help_text="Details of the format"
                     ),
                 ),
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "dates_details",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         blank=True,
                         help_text="Any details to show for the bootcamp dates.",
                     ),
@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "price_details",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         blank=True, help_text="Price details to display if any."
                     ),
                 ),

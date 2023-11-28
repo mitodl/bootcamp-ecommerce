@@ -1,6 +1,6 @@
 """CMS utils"""
 from cache_memoize import cache_memoize
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from cms.models import ResourcePagesSettings
 
