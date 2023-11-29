@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.110.0
+---------------
+
+- feat: add early bird deadline (#1468)
+- fix: show review applications with future bootcamp run start date only (#1471)
+
 Version 0.109.0 (Released November 16, 2023)
 ---------------
 
