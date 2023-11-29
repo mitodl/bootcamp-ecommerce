@@ -1,4 +1,5 @@
 """Setup all CMS related stuff (home page, catalog etc.)"""
+import json
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -18,6 +19,8 @@ DEFAULT_HOMEPAGE_PROPS = dict(
 )
 DEFAULT_SITE_PROPS = dict(hostname="localhost", port=80, is_default_site=True)
 
+from cms.blocks import ResourceBlock
+
 
 def create_resource_page_under_parent(title, parent):
     """Get/Create a resource page with the given title under the parent page"""
@@ -26,8 +29,7 @@ def create_resource_page_under_parent(title, parent):
         resource = ResourcePage(
             slug=slugify(title),
             title=title,
-            content=StreamValue(
-                "content",
+            content=json.dumps(
                 [
                     {
                         "type": "content",
@@ -37,7 +39,6 @@ def create_resource_page_under_parent(title, parent):
                         },
                     }
                 ],
-                is_lazy=True,
             ),
         )
         parent.add_child(instance=resource)
