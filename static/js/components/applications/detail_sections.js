@@ -136,6 +136,15 @@ export const VideoInterviewDetail = (
           </div>
         ) : (
           <div>
+            {applicationDetail.bootcamp_run.early_bird_deadline ? (
+              <div>
+                <span className="label">Early Bird Deadline: </span>
+                {formatReadableDateFromStr(
+                  applicationDetail.bootcamp_run.early_bird_deadline
+                )}
+              </div>
+            ) : null}
+
             <span className="label">Deadline: </span>
             {formatReadableDateFromStr(step.due_date)}
           </div>
@@ -227,7 +236,7 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
   return (
     <ProgressDetailRow className="payment" fulfilled={fulfilled}>
       <h3>Payment</h3>
-      <div className="col-12 col-sm-6 status-text">
+      <div className="col-12 col-sm-6 status-text" style={{ display: "None" }}>
         <span className="label">Deadline: </span>
         {formatReadableDateFromStr(applicationDetail.payment_deadline)}
       </div>

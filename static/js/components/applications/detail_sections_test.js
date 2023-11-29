@@ -173,6 +173,50 @@ describe("application detail section component", () => {
         }
       })
     })
+
+    //
+    ;[
+      [false, false],
+      [true, false],
+      [true, true],
+      [false, true]
+    ].forEach(([earlyBirdDeadline, submitted]) => {
+      it("should show correct deadline", () => {
+        // $FlowFixMe
+        if (!submitted) {
+          submission.submitted_date = null
+        }
+
+        if (!earlyBirdDeadline) {
+          application.bootcamp_run.early_bird_deadline = null
+        }
+
+        const wrapper = shallow(
+          <VideoInterviewDetail
+            {...defaultProps}
+            step={step}
+            submission={submission}
+            applicationDetail={application}
+          />
+        )
+
+        const deadlineLabels = wrapper.find(
+          "ProgressDetailRow .status-text .label"
+        )
+
+        if (submitted) {
+          assert.lengthOf(deadlineLabels, 1)
+          assert.equal(deadlineLabels.at(0).text(), "Completed: ")
+        } else if (earlyBirdDeadline) {
+          assert.lengthOf(deadlineLabels, 2)
+          assert.equal(deadlineLabels.at(0).text(), "Early Bird Deadline: ")
+          assert.equal(deadlineLabels.at(1).text(), "Deadline: ")
+        } else {
+          assert.lengthOf(deadlineLabels, 1)
+          assert.equal(deadlineLabels.at(0).text(), "Deadline: ")
+        }
+      })
+    })
   })
 
   describe("ReviewDetail", () => {

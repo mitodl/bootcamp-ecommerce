@@ -38,9 +38,10 @@ export const generateFakeRun = (): BootcampRun => ({
   end_date:      moment()
     .add(1, "days")
     .format(),
-  novoed_course_stub: casual.word,
-  page:               generateFakeRunPage(),
-  bootcamp:           {
+  early_bird_deadline: moment().format(),
+  novoed_course_stub:  casual.word,
+  page:                generateFakeRunPage(),
+  bootcamp:            {
     // $FlowFixMe: this should always be a number, but flow doesn't know that
     id:    incr.next().value,
     title: casual.title

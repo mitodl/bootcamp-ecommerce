@@ -62,6 +62,7 @@ class BootcampRun(models.Model):
     run_key = models.IntegerField(unique=True, db_index=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
+    early_bird_deadline = models.DateTimeField(null=True, blank=True)
     bootcamp_run_id = models.CharField(
         null=True, unique=True, blank=True, max_length=255
     )
