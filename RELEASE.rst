@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.110.0
+Version 0.110.0 (Released November 30, 2023)
 ---------------
 
 - feat: add early bird deadline (#1468)
