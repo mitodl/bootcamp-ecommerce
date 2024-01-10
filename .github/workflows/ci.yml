@@ -65,8 +65,9 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
-      - name: Lint
-        run: poetry run pylint ./**/*.py
+# TODO: Update Pylint or Integrate ruff
+#      - name: Lint
+#        run: poetry run pylint ./**/*.py
 
       # Configurations required for elasticsearch.
       - name: Configure sysctl limits

@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "text",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         help_text="Extra text to appear besides alumni quotes in this section."
                     ),
                 ),
@@ -61,11 +61,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "alumni_bios",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "alumni",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "image",
@@ -75,28 +75,28 @@ class Migration(migrations.Migration):
                                         ),
                                         (
                                             "name",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Name of the alumni.",
                                                 max_length=100,
                                             ),
                                         ),
                                         (
                                             "title",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="The title to display after the name.",
                                                 max_length=255,
                                             ),
                                         ),
                                         (
                                             "class_text",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="A brief description about the alumni class.",
                                                 max_length=100,
                                             ),
                                         ),
                                         (
                                             "quote",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 help_text="The quote that appears on the alumni section."
                                             ),
                                         ),

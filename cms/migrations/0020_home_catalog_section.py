@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -30,29 +30,29 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "contents",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "bootcamp_run",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "page",
-                                            wagtail.core.blocks.PageChooserBlock(
+                                            wagtail.blocks.PageChooserBlock(
                                                 "cms.BootcampRunPage",
                                                 help_text="The bootcamp run to display",
                                             ),
                                         ),
                                         (
                                             "format",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="The bootcamp format to display, e.g. Online Bootcamp",
                                                 max_length=128,
                                             ),
                                         ),
                                         (
                                             "application_deadline",
-                                            wagtail.core.blocks.DateTimeBlock(
+                                            wagtail.blocks.DateTimeBlock(
                                                 help_text="The application deadline to display for this bootcamp run"
                                             ),
                                         ),

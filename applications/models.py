@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django_fsm import FSMField, transition, RETURN_VALUE
-from wagtail.core.fields import RichTextField
+from wagtail.fields import RichTextField
 from mitol.common.utils import now_in_utc
 from mitol.common.models import TimestampedModel
 

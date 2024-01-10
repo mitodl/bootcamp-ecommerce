@@ -1,11 +1,11 @@
 """Setup all CMS related stuff (home page, catalog etc.)"""
+import json
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-from wagtail.core.blocks import StreamValue
-from wagtail.core.models import Site, Page
+from wagtail.models import Site, Page
 
 from cms.models import HomePage, ResourcePage, ResourcePagesSettings, LetterTemplatePage
 
@@ -26,8 +26,7 @@ def create_resource_page_under_parent(title, parent):
         resource = ResourcePage(
             slug=slugify(title),
             title=title,
-            content=StreamValue(
-                "content",
+            content=json.dumps(
                 [
                     {
                         "type": "content",
@@ -37,7 +36,6 @@ def create_resource_page_under_parent(title, parent):
                         },
                     }
                 ],
-                is_lazy=True,
             ),
         )
         parent.add_child(instance=resource)

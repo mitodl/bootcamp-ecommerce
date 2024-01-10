@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -32,15 +32,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    wagtail.core.fields.RichTextField(
+                    wagtail.fields.RichTextField(
                         blank=True,
                         help_text="The description shown on the product page",
                     ),
                 ),
                 (
                     "content",
-                    wagtail.core.fields.StreamField(
-                        [("rich_text", wagtail.core.blocks.RichTextBlock())],
+                    wagtail.fields.StreamField(
+                        [("rich_text", wagtail.blocks.RichTextBlock())],
                         blank=True,
                         help_text="The content of the benefits page",
                     ),

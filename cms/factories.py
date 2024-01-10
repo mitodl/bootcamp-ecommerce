@@ -1,25 +1,24 @@
 """Wagtail page factories"""
 
 import factory
-from factory.django import DjangoModelFactory
 import faker
 import pytz
-from wagtail.core.models import Site
-from wagtail.core.rich_text import RichText
 import wagtail_factories
+from factory.django import DjangoModelFactory
+from wagtail.models import Site
+from wagtail.rich_text import RichText
 
 from cms import models
 from cms.blocks import (
-    TitleLinksBlock,
-    TitleDescriptionBlock,
     CatalogSectionBootcampBlock,
-    ThreeColumnImageTextBlock,
-    InstructorSectionBlock,
     InstructorBlock,
+    InstructorSectionBlock,
     SponsorSectionBlock,
+    ThreeColumnImageTextBlock,
+    TitleDescriptionBlock,
+    TitleLinksBlock,
 )
 from klasses.factories import BootcampRunFactory
-
 
 FAKE = faker.Factory.create()
 
@@ -122,7 +121,7 @@ class InstructorBlockFactory(wagtail_factories.StructBlockFactory):
     """InstructorBlockFactory factory class"""
 
     name = factory.fuzzy.FuzzyText(prefix="Name ")
-    image = factory.SubFactory(wagtail_factories.ImageFactory)
+    image = factory.SubFactory(wagtail_factories.ImageChooserBlockFactory)
     title = factory.fuzzy.FuzzyText(prefix="Title ")
 
     class Meta:
@@ -271,10 +270,10 @@ class ResourcePagesSettingsFactory(DjangoModelFactory):
 class InstructorSectionFactory(wagtail_factories.PageFactory):
     """InstructorSectionFactory factory class"""
 
-    banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    banner_image = factory.SubFactory(wagtail_factories.ImageChooserBlockFactory)
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
     sections = wagtail_factories.StreamFieldFactory(
-        {"section": InstructorSectionBlockFactory}
+        {"section": factory.SubFactory(InstructorSectionBlockFactory)}
     )
 
     class Meta:
@@ -284,10 +283,10 @@ class InstructorSectionFactory(wagtail_factories.PageFactory):
 class SponsorSectionFactory(wagtail_factories.PageFactory):
     """SponsorSectionFactory factory class"""
 
-    banner_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    banner_image = factory.SubFactory(wagtail_factories.ImageChooserBlockFactory)
     heading = factory.fuzzy.FuzzyText(prefix="heading ")
     sections = wagtail_factories.StreamFieldFactory(
-        {"section": InstructorSectionBlockFactory}
+        {"section": factory.SubFactory(InstructorSectionBlockFactory)}
     )
 
     class Meta:
@@ -326,7 +325,7 @@ class SignatoryPageFactory(wagtail_factories.PageFactory):
     title_1 = factory.fuzzy.FuzzyText(prefix="Title_1")
     title_2 = factory.fuzzy.FuzzyText(prefix="Title_2")
     organization = factory.fuzzy.FuzzyText(prefix="Organization")
-    signature_image = factory.SubFactory(wagtail_factories.ImageFactory)
+    signature_image = factory.SubFactory(wagtail_factories.ImageChooserBlockFactory)
 
     class Meta:
         model = models.SignatoryPage
@@ -341,6 +340,13 @@ class CertificateIndexPageFactory(wagtail_factories.PageFactory):
         model = models.CertificateIndexPage
 
 
+class SignatoryChooserBlockFactory(wagtail_factories.PageChooserBlockFactory):
+    """SignatoryPage Chooser block factory."""
+
+    class Meta:
+        model = models.SignatoryPage
+
+
 class CertificatePageFactory(wagtail_factories.PageFactory):
     """CertificatePage factory class"""
 
@@ -348,7 +354,7 @@ class CertificatePageFactory(wagtail_factories.PageFactory):
     certificate_name = factory.fuzzy.FuzzyText()
     location = factory.fuzzy.FuzzyText()
     signatories = wagtail_factories.StreamFieldFactory(
-        {"signatory": SignatoryPageFactory}
+        {"signatory": factory.SubFactory(SignatoryChooserBlockFactory)}
     )
 
     class Meta:

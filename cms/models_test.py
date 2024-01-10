@@ -1,28 +1,29 @@
 """ Tests for cms pages. """
 
 import json
-import pytest
 
+import pytest
 from django.http.response import Http404
 from django.test import override_settings
 
+from cms import models
 from cms.factories import (
-    SiteNotificationFactory,
-    BootcampRunPageFactory,
-    ResourcePageFactory,
-    LearningResourceSectionFactory,
-    ProgramDescriptionSectionFactory,
-    HomeAlumniSectionFactory,
-    HomePageFactory,
-    CatalogGridSectionFactory,
-    ThreeColumnImageTextSectionFactory,
-    InstructorSectionFactory,
-    SponsorSectionFactory,
     AdmissionSectionFactory,
+    BootcampRunPageFactory,
+    CatalogGridSectionFactory,
     CertificateIndexPageFactory,
     CertificatePageFactory,
+    HomeAlumniSectionFactory,
+    HomePageFactory,
+    InstructorSectionFactory,
+    LearningResourceSectionFactory,
+    ProgramDescriptionSectionFactory,
+    ResourcePageFactory,
+    SignatoryPageFactory,
+    SiteNotificationFactory,
+    SponsorSectionFactory,
+    ThreeColumnImageTextSectionFactory,
 )
-from cms import models
 from klasses.factories import BootcampRunCertificateFactory
 
 pytestmark = [pytest.mark.django_db]
@@ -143,19 +144,19 @@ def test_instructors_section():
 
     instructor_section = InstructorSectionFactory.create(
         parent=bootcamp_run_page,
-        banner_image__title="title of the image",
+        banner_image__image__title="title of the image",
         heading="heading",
         sections=json.dumps(
             [
                 {
-                    "type": "section",
+                    "type": 0,
                     "value": {
                         "heading": "Introduction",
                         "sub_heading": "Subheading",
                         "heading_singular": "Singular heading",
                         "members": {
                             "name": "Name",
-                            "image__title": "Image title",
+                            "image__image__title": "Image title",
                             "title": "Title",
                         },
                     },
@@ -177,19 +178,19 @@ def test_sponsors_section():
 
     sponsor_section = SponsorSectionFactory.create(
         parent=bootcamp_run_page,
-        banner_image__title="title of the image",
+        banner_image__image__title="title of the image",
         heading="heading",
         sections=json.dumps(
             [
                 {
-                    "type": "section",
+                    "type": 0,
                     "value": {
                         "heading": "Introduction",
                         "sub_heading": "Subheading",
                         "heading_singular": "Singular heading",
                         "sponsors": {
                             "name": "Name",
-                            "image__title": "Image title",
+                            "image__image__title": "Image title",
                             "title": "Title",
                         },
                     },
@@ -316,16 +317,20 @@ def test_certificate_for_bootcamp_run_page():
     assert models.CertificatePage.can_create_at(bootcamp_run_page)
     assert not models.SignatoryPage.can_create_at(bootcamp_run_page)
 
+    signatory = SignatoryPageFactory(
+        name="Name",
+        title_1="Title_1",
+        title_2="Title_2",
+        organization="Organization",
+        signature_image__image__title="Image",
+    )
+
     certificate_page = CertificatePageFactory.create(
         parent=bootcamp_run_page,
         bootcamp_run_name="bootcamp_run",
         certificate_name="certificate_name",
         location="location",
-        signatories__0__signatory__name="Name",
-        signatories__0__signatory__title_1="Title_1",
-        signatories__0__signatory__title_2="Title_2",
-        signatories__0__signatory__organization="Organization",
-        signatories__0__signatory__signature_image__title="Image",
+        signatories__0__signatory__page=signatory,
     )
     assert certificate_page.get_parent() == bootcamp_run_page
     assert certificate_page.bootcamp_run_name == "bootcamp_run"
