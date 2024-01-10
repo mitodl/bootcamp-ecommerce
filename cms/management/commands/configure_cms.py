@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-from wagtail.blocks import StreamValue
 from wagtail.models import Site, Page
 
 from cms.models import HomePage, ResourcePage, ResourcePagesSettings, LetterTemplatePage
@@ -18,8 +17,6 @@ DEFAULT_HOMEPAGE_PROPS = dict(
     title="MIT Bootcamps", tagline="Learn Innovation and Entrepreneurship from MIT"
 )
 DEFAULT_SITE_PROPS = dict(hostname="localhost", port=80, is_default_site=True)
-
-from cms.blocks import ResourceBlock
 
 
 def create_resource_page_under_parent(title, parent):
