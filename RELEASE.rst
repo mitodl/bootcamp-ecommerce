@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.111.0
+---------------
+
+- chore!: Upgrade wagtail to 5.2.1(latest) (#1472)
+
 Version 0.110.0 (Released November 30, 2023)
 ---------------
 
