@@ -56,9 +56,8 @@ export function PaymentHistoryPage({ application, countries }: Props) {
         </a>
       </div>
       <img
-        src="/static/images/bootcamp-logo-black.png"
+        src="/static/images/bootcamp-logo.svg"
         alt="MIT Bootcamps"
-        width="275"
       />
       <div className="payment-history-container">
         <div className="bootcamp-info inner-container">
