@@ -37,7 +37,7 @@ export const SiteNavbar = () => {
         <NavbarBrand tag="div" className="flex-grow-1">
           <a className="brand-logo" href={routes.root}>
             <img
-              src="/static/images/bootcamp-logo.svg"
+              src="/static/images/mit-bootcamps-logo.svg"
               alt="MIT Bootcamps Logo"
             />
           </a>
