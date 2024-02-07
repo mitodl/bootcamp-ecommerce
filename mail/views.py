@@ -43,7 +43,7 @@ def _render_email(email_type):
                         email="janedoe@example.com",
                         profile=dict(name="Jane Doe"),
                         legal_address=dict(
-                            street_address=["795 Massachusetts Ave", "2nd Floor"],
+                            street_address=["600 Technology Square", "2nd Floor"],
                             city="Cambridge",
                             state_or_territory="US-MA",
                             country="US",
