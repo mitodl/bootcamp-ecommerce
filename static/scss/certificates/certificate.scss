@@ -18,7 +18,7 @@
 
     img {
       display: block;
-      width: 130px;
+      width: auto;
       height: 33px;
     }
 
@@ -54,7 +54,6 @@
 
   .certificate-logo {
     float: right;
-    width: 74px;
     margin: 30px 0 0 20px;
     position: relative;
 
@@ -170,28 +169,20 @@
     .certificate-head {
       overflow: hidden;
       max-width: 960px;
-      margin: 0 auto 20px;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      @media (min-width: 768px) {
-        margin: 0 auto 50px;
-      }
+      >:first-child {
+        margin-right: 40px;
 
-      @media (min-width: 1400px) {
-        margin: 0 auto 70px;
+        @media (max-width: 480px) {
+          margin-right: 20px;
+        }
       }
 
       .certificate-b-logo {
-        float: left;
-        width: 125px;
-
-        @media (min-width: 768px) {
-          width: 316px;
-        }
-
-        @media (min-width: 1400px) {
-          width: 465px;
-        }
-
         &:only-child {
           margin: 0 auto;
           float: none;
@@ -199,36 +190,19 @@
 
         img {
           display: block;
-          width: 100%;
-          height: auto;
+          width: auto;
+          min-height: 56px;
+          height: 56px;
 
-          @media (min-width: 320px) {
+          @media (max-width: 480px) {
+            min-height: 40px;
             height: 40px;
-          }
-
-          @media (min-width: 768px) {
-            height: 70px;
-          }
-
-          @media (min-width: 1400px) {
-            height: 105px;
           }
         }
       }
     }
 
     .certificate-c-logo {
-      float: right;
-      width: 125px;
-      text-align: right;
-
-      @media (min-width: 768px) {
-        width: 294px;
-      }
-
-      @media (min-width: 1400px) {
-        width: 440px;
-      }
 
       img {
         display: block;
@@ -237,20 +211,13 @@
 
         &.secondary-image {
           display: inline-block;
-          max-width: 100%;
           width: auto;
-          height: auto;
+          min-height: 56px;
+          height: 56px;
 
-          @media (min-width: 320px) {
+          @media (max-width: 480px) {
+            min-height: 40px;
             height: 40px;
-          }
-
-          @media (min-width: 768px) {
-            height: 70px;
-          }
-
-          @media (min-width: 1400px) {
-            height: 105px;
           }
         }
       }
