@@ -18,7 +18,8 @@
 
     img {
       display: block;
-      width: 100%;
+      width: 130px;
+      height: 33px;
     }
 
     a {
@@ -200,6 +201,18 @@
           display: block;
           width: 100%;
           height: auto;
+
+          @media (min-width: 320px) {
+            height: 35px;
+          }
+
+          @media (min-width: 768px) {
+            height: 70px;
+          }
+
+          @media (min-width: 1400px) {
+            height: 105px;
+          }
         }
       }
     }
@@ -228,12 +241,16 @@
           width: auto;
           height: auto;
 
+          @media (min-width: 320px) {
+            height: 35px;
+          }
+
           @media (min-width: 768px) {
-            max-height: 70px;
+            height: 70px;
           }
 
           @media (min-width: 1400px) {
-            max-height: 105px;
+            height: 105px;
           }
         }
       }
