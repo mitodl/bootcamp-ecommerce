@@ -169,10 +169,14 @@
     .certificate-head {
       overflow: hidden;
       max-width: 960px;
-      margin: 0 auto 15px;
+      margin: 0 auto 25px;
       display: flex;
       align-items: center;
       justify-content: center;
+
+      @media (max-width: 480px) {
+        margin: 0 auto 20px;
+      }
 
       >:first-child {
         margin-right: 40px;
