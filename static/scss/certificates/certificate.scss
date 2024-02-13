@@ -163,7 +163,7 @@
   .certificate {
     border: 2px solid $cert-gray-light;
     background: white;
-    padding: 50px 15px;
+    padding: 35px 15px;
     text-align: center;
     color: black;
 
@@ -203,7 +203,7 @@
           height: auto;
 
           @media (min-width: 320px) {
-            height: 35px;
+            height: 40px;
           }
 
           @media (min-width: 768px) {
@@ -242,7 +242,7 @@
           height: auto;
 
           @media (min-width: 320px) {
-            height: 35px;
+            height: 40px;
           }
 
           @media (min-width: 768px) {
