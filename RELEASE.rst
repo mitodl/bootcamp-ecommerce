@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.112.0
+---------------
+
+- style: update logo (#1484)
+- fix(deps): update dependency mitol-django-hubspot-api to v2023.12.19
+- chore(deps): update dependency pylint-django to ~2.5.0
+- chore(deps): update dependency pylint to ~2.17.0
+
 Version 0.111.0 (Released January 18, 2024)
 ---------------
 
