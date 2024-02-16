@@ -146,13 +146,15 @@
   .address-area {
     margin: 0 auto;
     max-width: 270px;
+
     @include media-breakpoint-down(sm) {
       margin: 0 0 15px;
       max-width: 100%;
     }
 
-    h3 {
-      color: $matterhorn;
+    img {
+      height: 35px;
+      width: 130px;
     }
   }
 
@@ -160,7 +162,7 @@
     font-size: 14px;
     line-height: 20px;
     color: gray;
-    margin: 0 0 10px;
+    margin: 10px 0;
   }
 }
 

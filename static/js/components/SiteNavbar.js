@@ -35,12 +35,11 @@ export const SiteNavbar = () => {
         className="container d-flex align-items-center"
       >
         <NavbarBrand tag="div" className="flex-grow-1">
-          <a className="brand-logo" href="http://www.mit.edu">
-            <img src="/static/images/mit_logo.svg" alt="MIT Logo" />
-          </a>
-          <div className="divider">&nbsp;</div>
-          <a className="text-link" href={routes.root}>
-            Bootcamps
+          <a className="brand-logo" href={routes.root}>
+            <img
+              src="/static/images/mit-bootcamps-logo.svg"
+              alt="MIT Bootcamps Logo"
+            />
           </a>
           <a
             className="btn-styled btn-red size-1"
