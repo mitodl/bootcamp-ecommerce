@@ -16,7 +16,15 @@
                         <div class="info d-flex flex-column flex-grow-1">
                             <a href="{% pageurl block.page %}"><h2>{{ block.page.title }}</h2></a>
                             <span class="dates">
-                                {{ block.format }} <br>{{ block.page.bootcamp_run.start_date|date:"F, Y" }} - {{ block.page.bootcamp_run.end_date|date:"F, Y" }}
+                                {% with start=block.page.bootcamp_run.start_date end=block.page.bootcamp_run.end_date%}    
+                                    {% if start|date:"F Y" == end|date:"F Y" %}
+                                        {{ start|date:"F j" }} - {{ end|date:"j, Y" }}
+                                    {% elif start|date:"F" != end|date:"F" and start|date:"Y" == end|date:"Y" %}
+                                        {{ start|date:"F j" }} - {{ end|date:"F j, Y" }}
+                                    {% elif start|date:"Y" != end|date:"Y" %}
+                                        {{ start|date:"F j, Y" }} - {{ end|date:"F j, Y" }}
+                                    {% endif %}
+                                {%endwith%}
                             </span>
                             <div class="flex-grow-1">
                                 {{ block.page.description|richtext }}
