@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.simple_tag
 def bootcamp_duration_format(start, end):
     """Returns the formatted date to be displayed on bootcamps cards"""
