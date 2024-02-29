@@ -1,11 +1,13 @@
 """Tests for custom CMS templatetags"""
+
 from datetime import date
+
 import pytest
 from wagtail.images.views.serve import generate_signature
 from wagtail_factories import ImageFactory
 
-from cms.templatetags.image_version_url import image_version_url
 from cms.templatetags.bootcamp_duration_format import bootcamp_duration_format
+from cms.templatetags.image_version_url import image_version_url
 
 
 @pytest.mark.django_db
@@ -25,20 +27,14 @@ def test_image_version_url():
 
 
 @pytest.mark.parametrize(
-    "start, end",
+    "start, end, expected_format",
     [
-        (date(2024, 1, 15), date(2024, 1, 17)),
-        (date(2024, 1, 15), date(2024, 2, 15)),
-        (date(2024, 1, 15), date(2025, 1, 15)),
+        [date(2024, 1, 15), date(2024, 1, 17), "January 15 - 17, 2024"],
+        [date(2024, 1, 15), date(2024, 2, 15), "January 15 - February 15, 2024"],
+        [date(2024, 1, 15), date(2025, 1, 15), "January 15, 2024 - January 15, 2025"],
+        [date(2024, 1, 15), date(2025, 2, 15), "January 15, 2024 - February 15, 2025"],
     ],
 )
-def test_bootcamp_duration_format(start, end):
-    """Bootcamp Date format tests"""
-    expected_date = (
-        "January 15 - 17, 2024"
-        if start.year == end.year and start.month == end.month
-        else "January 15 - February 15, 2024"
-        if start.year == end.year
-        else "January 15, 2024 - January 15, 2025"
-    )
-    assert bootcamp_duration_format(start, end) == expected_date
+def test_bootcamp_duration_format(start, end, expected_format):
+    """bootcamp_duration_format should format the duration correctly"""
+    assert bootcamp_duration_format(start, end) == expected_format
