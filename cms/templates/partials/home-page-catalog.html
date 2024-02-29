@@ -1,4 +1,4 @@
-{% load static wagtailimages_tags image_version_url wagtailcore_tags %}
+{% load static wagtailimages_tags image_version_url wagtailcore_tags bootcamp_duration_format %}
 <div class="catalog-section">
     <div class="container">
         <div class="row justify-content-center">
@@ -16,7 +16,8 @@
                         <div class="info d-flex flex-column flex-grow-1">
                             <a href="{% pageurl block.page %}"><h2>{{ block.page.title }}</h2></a>
                             <span class="dates">
-                                {{ block.format }} <br>{{ block.page.bootcamp_run.start_date|date:"F, Y" }} - {{ block.page.bootcamp_run.end_date|date:"F, Y" }}
+                                {{ block.format }} <br>
+                                {% bootcamp_duration_format block.page.bootcamp_run.start_date block.page.bootcamp_run.end_date %}
                             </span>
                             <div class="flex-grow-1">
                                 {{ block.page.description|richtext }}
