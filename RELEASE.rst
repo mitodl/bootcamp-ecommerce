@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.112.1
+Version 0.112.1 (Released March 06, 2024)
 ---------------
 
 - fix: dates display on the bootcamp cards (#1487)
