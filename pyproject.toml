@@ -33,7 +33,7 @@ authors  = ["MIT ODL"]
 
 [tool.poetry.dependencies]
 python = "3.9.13"
-django = "^3.2.16"
+django = "^3.2.24"
 celery = {extras = ["redis"], version = "^5.2.7"}
 boto3 = "^1.16.63"
 dj-database-url = "^0.3.0"
