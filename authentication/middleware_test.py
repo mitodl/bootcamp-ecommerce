@@ -8,8 +8,10 @@ from social_django.utils import load_backend, load_strategy
 
 from authentication.middleware import SocialAuthExceptionRedirectMiddleware
 
+
 def dummy_get_response(request):  # pragma: no cover
     return None
+
 
 def test_process_exception_no_strategy(rf, settings):
     """Tests that if the request has no strategy it does nothing"""
