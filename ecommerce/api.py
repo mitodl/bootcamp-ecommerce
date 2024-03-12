@@ -501,7 +501,15 @@ def send_receipt_email(application_id):
 
 WireTransfer = namedtuple(
     "WireTransfer",
-    ["id", "learner_email", "amount", "bootcamp_run_id", "bootcamp_start_date", "bootcamp_name", "row"],
+    [
+        "id",
+        "learner_email",
+        "amount",
+        "bootcamp_run_id",
+        "bootcamp_start_date",
+        "bootcamp_name",
+        "row",
+    ],
 )
 
 
@@ -590,7 +598,9 @@ def import_wire_transfer(wire_transfer, header_row, forced=False):
     otherwise it will be created
     """
     user = User.objects.get(email=wire_transfer.learner_email)
-    bootcamp_run = BootcampRun.objects.get(bootcamp_run_id=wire_transfer.bootcamp_run_id)
+    bootcamp_run = BootcampRun.objects.get(
+        bootcamp_run_id=wire_transfer.bootcamp_run_id
+    )
     application = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
     data = {header_row[col]: value for col, value in enumerate(wire_transfer.row)}
 

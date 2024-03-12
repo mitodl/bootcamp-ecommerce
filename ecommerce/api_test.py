@@ -733,9 +733,7 @@ def test_parse_wire_transfer_csv_missing_header(tmp_path):
 
 
 @pytest.mark.parametrize("paid_in_full", [True, False])
-def test_import_wire_transfer(
-    mocker, paid_in_full
-):
+def test_import_wire_transfer(mocker, paid_in_full):
     """import_wire_transfer should store a wire transfer in the database and create an order for it"""
     mock_hubspot_sync = mocker.patch("ecommerce.api.sync_hubspot_application")
     user = User.objects.create(email="hdoof@odl.mit.edu")
@@ -816,7 +814,10 @@ def test_import_wire_transfers_missing_run():
 def test_import_wire_transfers_no_matching_run_id():
     """import_wire_transfer should error if the given bootcamp run id doesn't match any run"""
     doof_email = "hdoof@odl.mit.edu"
-    run = BootcampRunFactory.create(bootcamp__title="How to be Evil", bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1")
+    run = BootcampRunFactory.create(
+        bootcamp__title="How to be Evil",
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
+    )
     User.objects.create(email=doof_email)
     wire_transfer = WireTransfer(
         id=2,
@@ -835,7 +836,10 @@ def test_import_wire_transfers_missing_application():
     """import_wire_transfer should error if a user hasn't created an application yet"""
     doof_email = "hdoof@odl.mit.edu"
     User.objects.create(email=doof_email)
-    run = BootcampRunFactory.create(bootcamp__title="How to be Evil", bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1")
+    run = BootcampRunFactory.create(
+        bootcamp__title="How to be Evil",
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
+    )
     wire_transfer = WireTransfer(
         id=2,
         learner_email=doof_email,
@@ -855,7 +859,9 @@ def test_import_wire_transfers_update_receipt(mocker):
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21), bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
+        bootcamp__title="How to be Evil",
+        start_date=datetime(2019, 12, 21),
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     BootcampApplicationFactory.create(
         bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
@@ -878,7 +884,9 @@ def test_import_wire_transfers_update_existing_order_amount(mocker):
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21), bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
+        bootcamp__title="How to be Evil",
+        start_date=datetime(2019, 12, 21),
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     BootcampApplicationFactory.create(
         bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
@@ -919,7 +927,9 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
         email=pretty_platypus_email, username="pplatypus"
     )
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21), bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
+        bootcamp__title="How to be Evil",
+        start_date=datetime(2019, 12, 21),
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     for _user in [user, pretty_platypus]:
         BootcampApplicationFactory.create(
@@ -959,12 +969,12 @@ def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
     run = BootcampRunFactory.create(
         bootcamp__title="How to be Evil",
         start_date=datetime(2019, 12, 21),
-        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     bootcamp_run = BootcampRunFactory.create(
         bootcamp__title="How to be Good",
         start_date=datetime(2019, 12, 21),
-        bootcamp_run_id="bootcamp-v1:public+HTBG-ol+R1"
+        bootcamp_run_id="bootcamp-v1:public+HTBG-ol+R1",
     )
     for _run in [run, bootcamp_run]:
         BootcampApplicationFactory.create(
