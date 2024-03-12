@@ -1,5 +1,5 @@
 DRAFT Bootcamp Wire Transfer Log -- BEFORE THIS GOES INTO PRODUCTION REMEMBER TO CHANGE SHARE SETTINGS,,,,,,,,,,,,,,,,,
 Customer Service,,,,,Finance,,,,,,,,Engineering,,,,
-Id,Date transfers requested ,Learner Email,Zendesk Ticket,Bootcamp ID,Payor Name,Learner email,Payment Date,Bootcamp Name,Bootcamp Start Date,Amount,Transfer Type,SAP doc # - Cash Application,Order Updated By,Refund Order ID,Order Completed Date,Errors,Ignore?
-2,11/1/1973,hdoof@odl.mit.edu,,1,Heinz Doofenschmirtz,hdoof@odl.mit.edu,"Oct 20, 2019",How to be Evil,"Dec 21, 2019",100,,,,,,,
-3,11/1/1944,pplatypus@odl.mit.edu,,1,Perry the Platypus,pplatypus@odl.mit.edu,"Oct 20, 2019",How to be Evil,"Dec 21, 2019",50,,,,,,,
+Id,Date transfers requested ,Learner Email,Zendesk Ticket,Bootcamp ID,Payor Name,Learner email,Payment Date,Bootcamp Name,Bootcamp Start Date,Bootcamp Run ID,Amount,Transfer Type,SAP doc # - Cash Application,Order Updated By,Refund Order ID,Order Completed Date,Errors,Ignore?
+2,11/1/1973,hdoof@odl.mit.edu,,1,Heinz Doofenschmirtz,hdoof@odl.mit.edu,"Oct 20, 2019",How to be Evil,"Dec 21, 2019",bootcamp-v1:public+SVCR-ol+R1,100,,,,,,,
+3,11/1/1944,pplatypus@odl.mit.edu,,1,Perry the Platypus,pplatypus@odl.mit.edu,"Oct 20, 2019",How to be Evil,"Dec 21, 2019",bootcamp-v1:public+SVCR-ol+R1,50,,,,,,,

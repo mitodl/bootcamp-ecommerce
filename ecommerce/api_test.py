@@ -637,6 +637,7 @@ def test_parse_wire_transfer_csv():
         "Payment Date",
         "Bootcamp Name",
         "Bootcamp Start Date",
+        "Bootcamp Run ID",
         "Amount",
         "Transfer Type",
         "SAP doc # - Cash Application",
@@ -652,6 +653,7 @@ def test_parse_wire_transfer_csv():
             learner_email="hdoof@odl.mit.edu",
             amount=Decimal(100),
             bootcamp_start_date=datetime(2019, 12, 21),
+            bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
             bootcamp_name="How to be Evil",
             row=[
                 "2",
@@ -664,6 +666,7 @@ def test_parse_wire_transfer_csv():
                 "Oct 20, 2019",
                 "How to be Evil",
                 "Dec 21, 2019",
+                "bootcamp-v1:public+SVCR-ol+R1",
                 "100",
                 "",
                 "",
@@ -679,6 +682,7 @@ def test_parse_wire_transfer_csv():
             learner_email="pplatypus@odl.mit.edu",
             amount=Decimal(50),
             bootcamp_start_date=datetime(2019, 12, 21),
+            bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
             bootcamp_name="How to be Evil",
             row=[
                 "3",
@@ -691,6 +695,7 @@ def test_parse_wire_transfer_csv():
                 "Oct 20, 2019",
                 "How to be Evil",
                 "Dec 21, 2019",
+                "bootcamp-v1:public+SVCR-ol+R1",
                 "50",
                 "",
                 "",
@@ -727,27 +732,15 @@ def test_parse_wire_transfer_csv_missing_header(tmp_path):
     assert ex.value.args[0] == "Unable to find column header Amount"
 
 
-@pytest.mark.parametrize(
-    "with_bootcamp_title,with_run_title",
-    [
-        [True, True],
-        [True, False],
-        [False, True],  # False, False is an error handled in a separate test
-    ],
-)
 @pytest.mark.parametrize("paid_in_full", [True, False])
 def test_import_wire_transfer(
-    settings, mocker, with_bootcamp_title, with_run_title, paid_in_full
+    mocker, paid_in_full
 ):
     """import_wire_transfer should store a wire transfer in the database and create an order for it"""
     mock_hubspot_sync = mocker.patch("ecommerce.api.sync_hubspot_application")
     user = User.objects.create(email="hdoof@odl.mit.edu")
-    title = "How to be Evil"
     price = 100
-    run = BootcampRunFactory.create(
-        **{"title": title} if with_run_title else {},
-        **{"bootcamp__title": title} if with_bootcamp_title else {},
-    )
+    run = BootcampRunFactory.create(bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1")
     InstallmentFactory.create(bootcamp_run=run, amount=price)
     application = BootcampApplicationFactory.create(
         bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
@@ -759,6 +752,7 @@ def test_import_wire_transfer(
         amount=Decimal(price if paid_in_full else price / 2),
         bootcamp_start_date=run.start_date,
         bootcamp_name=run.bootcamp.title,
+        bootcamp_run_id=run.bootcamp_run_id,
         row=[],
     )
     import_wire_transfer(wire_transfer, [])
@@ -795,6 +789,7 @@ def test_import_wire_transfer_missing_user():
         amount=Decimal(100),
         bootcamp_start_date=datetime(2019, 12, 21),
         bootcamp_name="How to be Evil",
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
         row=[],
     )
     with pytest.raises(User.DoesNotExist):
@@ -811,43 +806,25 @@ def test_import_wire_transfers_missing_run():
         amount=Decimal(100),
         bootcamp_start_date=datetime(2019, 12, 21),
         bootcamp_name="How to be Evil",
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
         row=[],
     )
     with pytest.raises(BootcampRun.DoesNotExist):
         import_wire_transfer(wire_transfer, [])
 
 
-def test_import_wire_transfers_duplicate_run():
-    """import_wire_transfer should error if a title matches two separate runs"""
+def test_import_wire_transfers_no_matching_run_id():
+    """import_wire_transfer should error if the given bootcamp run id doesn't match any run"""
     doof_email = "hdoof@odl.mit.edu"
-    title = "How to be Evil"
-    run = BootcampRunFactory.create(bootcamp__title=title)
-    BootcampRunFactory.create(title=title, start_date=run.start_date)
+    run = BootcampRunFactory.create(bootcamp__title="How to be Evil", bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1")
     User.objects.create(email=doof_email)
     wire_transfer = WireTransfer(
         id=2,
         learner_email=doof_email,
         amount=Decimal(100),
         bootcamp_start_date=run.start_date,
-        bootcamp_name=title,
-        row=[],
-    )
-    with pytest.raises(BootcampRun.MultipleObjectsReturned):
-        import_wire_transfer(wire_transfer, [])
-
-
-@pytest.mark.parametrize("delta", [timedelta(days=2), timedelta(days=-2)])
-def test_import_wire_transfers_run_out_of_bounds_date(delta):
-    """import_wire_transfer should error if the given starting date for a bootcamp doesn't match any run"""
-    doof_email = "hdoof@odl.mit.edu"
-    run = BootcampRunFactory.create(bootcamp__title="How to be Evil")
-    User.objects.create(email=doof_email)
-    wire_transfer = WireTransfer(
-        id=2,
-        learner_email=doof_email,
-        amount=Decimal(100),
-        bootcamp_start_date=run.start_date + delta,
         bootcamp_name=run.bootcamp.title,
+        bootcamp_run_id="bootcamp-v1:public+HTBG-ol+R1",
         row=[...],
     )
     with pytest.raises(BootcampRun.DoesNotExist):
@@ -858,12 +835,13 @@ def test_import_wire_transfers_missing_application():
     """import_wire_transfer should error if a user hasn't created an application yet"""
     doof_email = "hdoof@odl.mit.edu"
     User.objects.create(email=doof_email)
-    run = BootcampRunFactory.create(bootcamp__title="How to be Evil")
+    run = BootcampRunFactory.create(bootcamp__title="How to be Evil", bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1")
     wire_transfer = WireTransfer(
         id=2,
         learner_email=doof_email,
         amount=Decimal(100),
         bootcamp_start_date=run.start_date,
+        bootcamp_run_id=run.bootcamp_run_id,
         bootcamp_name=run.bootcamp.title,
         row=[],
     )
@@ -877,7 +855,7 @@ def test_import_wire_transfers_update_receipt(mocker):
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21), bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
     )
     BootcampApplicationFactory.create(
         bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
@@ -888,7 +866,7 @@ def test_import_wire_transfers_update_receipt(mocker):
     import_wire_transfer(wire_transfers[0], header_row, False)
     receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
     assert receipt.data["SAP doc # - Cash Application"] == ""
-    wire_transfers[0].row[12] = "TBD"
+    wire_transfers[0].row[13] = "TBD"
     import_wire_transfer(wire_transfers[0], header_row, False)
     receipt.refresh_from_db()
     assert receipt.data["SAP doc # - Cash Application"] == "TBD"
@@ -900,7 +878,7 @@ def test_import_wire_transfers_update_existing_order_amount(mocker):
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21), bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
     )
     BootcampApplicationFactory.create(
         bootcamp_run=run, user=user, state=AppStates.AWAITING_PAYMENT.value
@@ -913,13 +891,14 @@ def test_import_wire_transfers_update_existing_order_amount(mocker):
     receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
     assert receipt.data["Amount"] == "100"
     assert receipt.order.total_price_paid == 100.00
-    wire_transfers[0].row[10] = "50"
+    wire_transfers[0].row[11] = "50"
     wire_transfer = WireTransfer(
         id=wire_transfers[0].id,
         learner_email=wire_transfers[0].learner_email,
         amount=Decimal(50),
         bootcamp_start_date=wire_transfers[0].bootcamp_start_date,
         bootcamp_name=wire_transfers[0].bootcamp_name,
+        bootcamp_run_id=wire_transfers[0].bootcamp_run_id,
         row=wire_transfers[0].row,
     )
     with pytest.raises(CommandError):
@@ -940,7 +919,7 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
         email=pretty_platypus_email, username="pplatypus"
     )
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21), bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
     )
     for _user in [user, pretty_platypus]:
         BootcampApplicationFactory.create(
@@ -961,6 +940,7 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
         amount=wire_transfers[0].amount,
         bootcamp_start_date=wire_transfers[0].bootcamp_start_date,
         bootcamp_name=wire_transfers[0].bootcamp_name,
+        bootcamp_run_id=wire_transfers[0].bootcamp_run_id,
         row=wire_transfers[0].row,
     )
     with pytest.raises(CommandError):
@@ -977,10 +957,14 @@ def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
-        bootcamp__title="How to be Evil", start_date=datetime(2019, 12, 21)
+        bootcamp__title="How to be Evil",
+        start_date=datetime(2019, 12, 21),
+        bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1"
     )
     bootcamp_run = BootcampRunFactory.create(
-        bootcamp__title="How to be Good", start_date=datetime(2019, 12, 21)
+        bootcamp__title="How to be Good",
+        start_date=datetime(2019, 12, 21),
+        bootcamp_run_id="bootcamp-v1:public+HTBG-ol+R1"
     )
     for _run in [run, bootcamp_run]:
         BootcampApplicationFactory.create(
@@ -1001,6 +985,7 @@ def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
         amount=Decimal(50),
         bootcamp_start_date=wire_transfers[0].bootcamp_start_date,
         bootcamp_name="How to be Good",
+        bootcamp_run_id="bootcamp-v1:public+HTBG-ol+R1",
         row=wire_transfers[0].row,
     )
     with pytest.raises(CommandError):
