@@ -281,7 +281,7 @@ class AuthStateMachine(RuleBasedStateMachine):
                     status_code=status.HTTP_200_OK,
                 ),
             ) as mock_recaptcha_failure,
-            override_settings(**{"RECAPTCHA_SITE_KEY": "fakse"}),
+            override_settings(**{"RECAPTCHA_SITE_KEY": "fake"}),
         ):
             assert_api_call(
                 self.client,

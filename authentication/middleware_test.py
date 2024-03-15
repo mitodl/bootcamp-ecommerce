@@ -9,19 +9,15 @@ from social_django.utils import load_backend, load_strategy
 from authentication.middleware import SocialAuthExceptionRedirectMiddleware
 
 
-def dummy_get_response(request):  # pragma: no cover
-    return None
-
-
-def test_process_exception_no_strategy(rf, settings):
+def test_process_exception_no_strategy(mocker, rf, settings):
     """Tests that if the request has no strategy it does nothing"""
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
-    middleware = SocialAuthExceptionRedirectMiddleware(dummy_get_response)
+    middleware = SocialAuthExceptionRedirectMiddleware(get_response=mocker.Mock())
     assert middleware.process_exception(request, None) is None
 
 
-def test_process_exception(rf, settings):
+def test_process_exception(mocker, rf, settings):
     """Tests that a process_exception handles auth exceptions correctly"""
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
@@ -32,7 +28,7 @@ def test_process_exception(rf, settings):
     request.social_strategy = strategy
     request.backend = backend
 
-    middleware = SocialAuthExceptionRedirectMiddleware(dummy_get_response)
+    middleware = SocialAuthExceptionRedirectMiddleware(get_response=mocker.Mock())
     error = AuthAlreadyAssociated(backend)
     result = middleware.process_exception(request, error)
     assert result.status_code == status.HTTP_302_FOUND
@@ -41,7 +37,7 @@ def test_process_exception(rf, settings):
     )
 
 
-def test_process_exception_non_auth_error(rf, settings):
+def test_process_exception_non_auth_error(mocker, rf, settings):
     """Tests that a process_exception handles non-auth exceptions correctly"""
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
@@ -52,7 +48,7 @@ def test_process_exception_non_auth_error(rf, settings):
     request.social_strategy = strategy
     request.backend = backend
 
-    middleware = SocialAuthExceptionRedirectMiddleware(dummy_get_response)
+    middleware = SocialAuthExceptionRedirectMiddleware(get_response=mocker.Mock())
     assert (
         middleware.process_exception(request, Exception("something bad happened"))
         is None
