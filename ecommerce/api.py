@@ -33,6 +33,7 @@ from ecommerce.constants import (
     WIRE_TRANSFER_ID,
     WIRE_TRANSFER_LEARNER_EMAIL,
     WIRE_TRANSFER_HEADER_FIELDS,
+    WIRE_TRANSFER_BOOTCAMP_RUN_ID,
     WIRE_TRANSFER_BOOTCAMP_START_DATE,
     WIRE_TRANSFER_BOOTCAMP_NAME,
 )
@@ -500,7 +501,15 @@ def send_receipt_email(application_id):
 
 WireTransfer = namedtuple(
     "WireTransfer",
-    ["id", "learner_email", "amount", "bootcamp_start_date", "bootcamp_name", "row"],
+    [
+        "id",
+        "learner_email",
+        "amount",
+        "bootcamp_run_id",
+        "bootcamp_start_date",
+        "bootcamp_name",
+        "row",
+    ],
 )
 
 
@@ -539,6 +548,7 @@ def parse_wire_transfer_csv(csv_path):
             id=int(row[header_index_lookup[WIRE_TRANSFER_ID]]),
             learner_email=row[header_index_lookup[WIRE_TRANSFER_LEARNER_EMAIL]],
             amount=Decimal(row[header_index_lookup[WIRE_TRANSFER_AMOUNT]]),
+            bootcamp_run_id=row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_RUN_ID]],
             bootcamp_start_date=parse_datetime(
                 row[header_index_lookup[WIRE_TRANSFER_BOOTCAMP_START_DATE]]
             ),
@@ -588,14 +598,8 @@ def import_wire_transfer(wire_transfer, header_row, forced=False):
     otherwise it will be created
     """
     user = User.objects.get(email=wire_transfer.learner_email)
-    bootcamp_start_date = wire_transfer.bootcamp_start_date
-    if is_naive(bootcamp_start_date):
-        bootcamp_start_date = make_aware(bootcamp_start_date)
     bootcamp_run = BootcampRun.objects.get(
-        Q(title__iexact=wire_transfer.bootcamp_name)
-        | Q(bootcamp__title__iexact=wire_transfer.bootcamp_name),
-        start_date__gte=bootcamp_start_date - timedelta(days=1),
-        start_date__lte=bootcamp_start_date + timedelta(days=1),
+        bootcamp_run_id=wire_transfer.bootcamp_run_id
     )
     application = BootcampApplication.objects.get(user=user, bootcamp_run=bootcamp_run)
     data = {header_row[col]: value for col, value in enumerate(wire_transfer.row)}
