@@ -85,7 +85,7 @@ user-util = "^0.1.5"
 
 [tool.poetry.group.dev.dependencies]
 astroid = "^2.4.2"
-black = "^22.10.0"
+black = "^24.3.0"
 bpython = "^0.19"
 django-debug-toolbar = "^3.2.4"
 hypothesis = "~4.23.9"
