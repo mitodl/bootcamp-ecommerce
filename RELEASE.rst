@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.113.0
+Version 0.113.0 (Released March 21, 2024)
 ---------------
 
 - feat(import_wire_transfers)!: use bootcamp run id in import_wire_transfers (#1491)
