@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.114.0
+---------------
+
+- chore: upgrade python to 3.10.13 (#1490)
+
 Version 0.113.0 (Released March 21, 2024)
 ---------------
 
