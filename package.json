@@ -114,7 +114,7 @@
     "webpack": "^4.46.0",
     "webpack-bundle-tracker": "0.4.3",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-middleware": "^3.7.2",
+    "webpack-dev-middleware": "^5.3.4",
     "webpack-hot-middleware": "^2.25.0",
     "yup": "^0.31.0"
   },
