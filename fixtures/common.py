@@ -1,4 +1,5 @@
 """Common fixtures"""
+
 # pylint: disable=unused-argument, redefined-outer-name
 from types import SimpleNamespace
 

@@ -1,4 +1,5 @@
 """Factories for jobma models"""
+
 from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
 

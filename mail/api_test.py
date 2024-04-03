@@ -1,6 +1,7 @@
 """
 Test cases for email API
 """
+
 import json
 import string
 

@@ -1,4 +1,5 @@
 """Management command to manipulate a bootcamp application into a certain state"""
+
 from django.core.management.base import BaseCommand, CommandError
 
 from applications.models import BootcampApplication

@@ -1,4 +1,5 @@
 """Tests for general bootcamp serializing functionality"""
+
 import pytest
 
 from profiles.factories import UserFactory, ProfileFactory

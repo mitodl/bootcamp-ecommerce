@@ -1,6 +1,7 @@
 """
 Factories for ecommerce models
 """
+
 from factory import LazyAttribute, SelfAttribute, SubFactory
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice, FuzzyDecimal, FuzzyText

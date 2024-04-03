@@ -1,4 +1,5 @@
 """Authentication views"""
+
 from urllib.parse import quote
 
 import requests

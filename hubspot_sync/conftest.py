@@ -1,6 +1,7 @@
 """
 Fixtures for hubspot_sync tests
 """
+
 from datetime import datetime
 from types import SimpleNamespace
 

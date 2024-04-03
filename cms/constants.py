@@ -1,4 +1,5 @@
 """Constants for the CMS app"""
+
 import pathlib
 
 

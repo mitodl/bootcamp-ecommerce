@@ -1,6 +1,7 @@
 """
 Factories for bootcamp application models
 """
+
 import operator as op
 from factory import Faker, LazyAttribute, Sequence, SubFactory, fuzzy, Trait
 from factory.django import DjangoModelFactory

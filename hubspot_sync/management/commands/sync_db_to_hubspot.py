@@ -1,6 +1,7 @@
 """
 Management command to sync all Users, BootcampRuns (deals) and Orders (BootcampApplications) with Hubspot
 """
+
 import sys
 
 from django.contrib.auth.models import User

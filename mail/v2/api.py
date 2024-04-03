@@ -18,6 +18,7 @@ messages = messages_for_recipients([
 # send the emails
 send_messages(messages)
 """
+
 from email.utils import formataddr
 import logging
 import re

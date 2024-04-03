@@ -1,6 +1,7 @@
 """
 bootcamp views
 """
+
 import json
 
 from django.conf import settings

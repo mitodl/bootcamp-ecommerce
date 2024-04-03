@@ -1,4 +1,5 @@
 """Fixtures for applications"""
+
 import pytest
 
 from cms.factories import LetterTemplatePageFactory

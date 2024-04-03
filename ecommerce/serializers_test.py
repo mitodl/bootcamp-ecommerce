@@ -1,4 +1,5 @@
 """Tests for serializers"""
+
 import pytest
 
 from main.utils import serializer_date_format

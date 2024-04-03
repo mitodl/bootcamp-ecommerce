@@ -1,4 +1,5 @@
 """Ecommerce task tests"""
+
 from ecommerce.tasks import send_receipt_email
 
 

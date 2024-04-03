@@ -1,4 +1,5 @@
 """Testing utils"""
+
 import sys
 import json
 from unittest.mock import Mock

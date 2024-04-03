@@ -1,6 +1,7 @@
 """
 Tests for hubspot_sync task_helpers
 """
+
 import pytest
 
 from applications.models import BootcampApplication

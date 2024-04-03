@@ -1,4 +1,5 @@
 """User utils tests"""
+
 import pytest
 from profiles.utils import ensure_active_user, is_duplicate_username_error, usernameify
 

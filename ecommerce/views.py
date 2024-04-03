@@ -1,4 +1,5 @@
 """Views for ecommerce"""
+
 from decimal import Decimal
 import logging
 

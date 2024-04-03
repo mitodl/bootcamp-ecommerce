@@ -1,6 +1,7 @@
 """
 Test end to end django views.
 """
+
 import json
 
 import pytest

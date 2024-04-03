@@ -1,4 +1,5 @@
 """API functionality for setting the state of an application"""
+
 import os
 import random
 

@@ -1,4 +1,5 @@
 """Tests for bootcamp application serializers"""
+
 # pylint: disable=redefined-outer-name
 from datetime import timedelta
 from types import SimpleNamespace
@@ -165,9 +166,11 @@ def test_application_list_serializer(app_data, has_payments, has_enrollment):
             "bootcamp_run": BootcampRunSerializer(
                 instance=application.bootcamp_run
             ).data,
-            "enrollment": BootcampRunEnrollmentSerializer(instance=enrollment).data
-            if enrollment and application.id == app_data.application.id
-            else None,
+            "enrollment": (
+                BootcampRunEnrollmentSerializer(instance=enrollment).data
+                if enrollment and application.id == app_data.application.id
+                else None
+            ),
             "has_payments": has_payments,
             "certificate_link": None,
         }
@@ -208,15 +211,21 @@ def test_submission_serializer(content_object_factory):
         "review_status": submission.review_status,
         "review_status_date": serializer_date_format(submission.review_status_date),
         "submission_status": submission.submission_status,
-        "interview_url": submission.content_object.interview.results_url
-        if content_object_factory is VideoInterviewSubmissionFactory
-        else None,
-        "take_interview_url": submission.content_object.interview.interview_url
-        if content_object_factory is VideoInterviewSubmissionFactory
-        else None,
-        "interview_token": submission.content_object.interview.interview_token
-        if content_object_factory is VideoInterviewSubmissionFactory
-        else None,
+        "interview_url": (
+            submission.content_object.interview.results_url
+            if content_object_factory is VideoInterviewSubmissionFactory
+            else None
+        ),
+        "take_interview_url": (
+            submission.content_object.interview.interview_url
+            if content_object_factory is VideoInterviewSubmissionFactory
+            else None
+        ),
+        "interview_token": (
+            submission.content_object.interview.interview_token
+            if content_object_factory is VideoInterviewSubmissionFactory
+            else None
+        ),
     }
 
 

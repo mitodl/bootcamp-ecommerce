@@ -1,6 +1,7 @@
 """
 Oauth Backend Tests
 """
+
 from social_django.utils import load_strategy
 
 from backends.edxorg import EdxOrgOAuth2

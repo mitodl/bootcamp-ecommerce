@@ -1,6 +1,7 @@
 """
 Serializers that are needed across all areas of the bootcamp-ecommerce application
 """
+
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 

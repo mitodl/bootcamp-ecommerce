@@ -1,4 +1,5 @@
 """Models for bootcamps"""
+
 import datetime
 import uuid
 from functools import partial

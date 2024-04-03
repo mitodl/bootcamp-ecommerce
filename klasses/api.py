@@ -1,6 +1,7 @@
 """
 API functionality for bootcamps
 """
+
 import logging
 from datetime import datetime, timedelta
 

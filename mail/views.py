@@ -1,4 +1,5 @@
 """Mail views"""
+
 from datetime import timedelta
 
 from django.shortcuts import render

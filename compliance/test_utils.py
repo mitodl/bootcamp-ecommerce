@@ -1,4 +1,5 @@
 """Testing utils around CyberSource"""
+
 from nacl.public import PrivateKey
 from nacl.encoding import Base64Encoder
 from rest_framework import status

@@ -1,6 +1,7 @@
 """
 Tests for ecommerce permissions
 """
+
 from unittest.mock import MagicMock
 
 from django.test import override_settings, TestCase

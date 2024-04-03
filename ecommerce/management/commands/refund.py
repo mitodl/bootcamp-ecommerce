@@ -1,4 +1,5 @@
 """Management command to change enrollment status"""
+
 import sys
 
 from decimal import Decimal

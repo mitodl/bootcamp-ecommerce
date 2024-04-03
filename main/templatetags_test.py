@@ -1,6 +1,7 @@
 """
 Tests for templatetags in the main Django app
 """
+
 # NOTE: This file is located here and not in main/templatetags/ because Django attempts to load
 # all files in the 'templatetags' directory as template tags, even '_test.py' files.
 from datetime import datetime

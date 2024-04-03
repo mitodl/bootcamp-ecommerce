@@ -1,4 +1,5 @@
 """Tests for ecommerce views"""
+
 from unittest.mock import PropertyMock
 
 from django.urls import resolve, reverse

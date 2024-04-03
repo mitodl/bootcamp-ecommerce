@@ -1,6 +1,7 @@
 """
 Tests for the utils
 """
+
 from datetime import datetime, timedelta
 
 import pytest

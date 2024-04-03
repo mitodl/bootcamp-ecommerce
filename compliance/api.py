@@ -1,4 +1,5 @@
 """Compliance API"""
+
 from collections import namedtuple
 import logging
 

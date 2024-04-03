@@ -1,6 +1,7 @@
 """
 APIs for extending the python social auth pipeline
 """
+
 import logging
 from datetime import datetime
 from urllib.parse import urljoin

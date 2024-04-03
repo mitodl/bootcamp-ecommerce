@@ -1,6 +1,7 @@
 """
 Tests for ecommerce admin interface
 """
+
 import pytest
 
 from ecommerce.admin import OrderAdmin

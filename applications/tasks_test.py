@@ -1,4 +1,5 @@
 """Tests for application tasks"""
+
 from datetime import timedelta
 
 import pytest

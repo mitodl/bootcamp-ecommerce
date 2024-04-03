@@ -1,4 +1,5 @@
 """Applications filters"""
+
 from django_filters import FilterSet, NumberFilter
 
 from applications.models import ApplicationStepSubmission

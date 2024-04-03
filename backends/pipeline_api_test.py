@@ -1,6 +1,7 @@
 """
 pipeline Tests
 """
+
 from urllib.parse import urljoin
 
 import pytest

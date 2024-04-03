@@ -1,6 +1,7 @@
 """
 Tests for ecommerce models
 """
+
 import pytest
 
 from main.utils import serialize_model_object

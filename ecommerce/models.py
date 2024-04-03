@@ -1,4 +1,5 @@
 """Models for ecommerce"""
+
 from django.conf import settings
 from django.db.models import (
     CharField,

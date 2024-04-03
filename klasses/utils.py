@@ -11,13 +11,13 @@ def generate_single_certificate(user, bootcamp_run):
             user=user, bootcamp_run=bootcamp_run
         ).first()
         if certificate:
-            result[
-                "msg"
-            ] = "A {} certificate:{} already exists for user:{} in bootcamp-run:{}".format(
-                "revoked" if certificate.is_revoked else "",
-                certificate.link,
-                user.email,
-                bootcamp_run,
+            result["msg"] = (
+                "A {} certificate:{} already exists for user:{} in bootcamp-run:{}".format(
+                    "revoked" if certificate.is_revoked else "",
+                    certificate.link,
+                    user.email,
+                    bootcamp_run,
+                )
             )
         elif BootcampRunEnrollment.objects.filter(
             user=user,
@@ -37,10 +37,10 @@ def generate_single_certificate(user, bootcamp_run):
                 }
             )
         else:
-            result[
-                "msg"
-            ] = "User:{} doesn't have an active enrollment in bootcamp-run:{}".format(
-                user.email, bootcamp_run
+            result["msg"] = (
+                "User:{} doesn't have an active enrollment in bootcamp-run:{}".format(
+                    user.email, bootcamp_run
+                )
             )
     else:
         result["msg"] = "Valid user and bootcamp_run must be provided."
@@ -104,16 +104,16 @@ def revoke_certificate(user, bootcamp_run):
                     }
                 )
             else:
-                result[
-                    "msg"
-                ] = "Certificate:{} is already in revoked state for user:{} in bootcamp-run:{}".format(
-                    certificate.link, user.email, bootcamp_run
+                result["msg"] = (
+                    "Certificate:{} is already in revoked state for user:{} in bootcamp-run:{}".format(
+                        certificate.link, user.email, bootcamp_run
+                    )
                 )
         else:
-            result[
-                "msg"
-            ] = "No Certificate found for user:{} in bootcamp-run:{}".format(
-                user.email, bootcamp_run
+            result["msg"] = (
+                "No Certificate found for user:{} in bootcamp-run:{}".format(
+                    user.email, bootcamp_run
+                )
             )
     else:
         result["msg"] = "Valid user and bootcamp_run must be provided."
@@ -140,16 +140,16 @@ def unrevoke_certificate(user, bootcamp_run):
                     }
                 )
             else:
-                result[
-                    "msg"
-                ] = "Certificate:{} is already in unrevoked state for user:{} in bootcamp-run:{}".format(
-                    certificate.link, user.email, bootcamp_run
+                result["msg"] = (
+                    "Certificate:{} is already in unrevoked state for user:{} in bootcamp-run:{}".format(
+                        certificate.link, user.email, bootcamp_run
+                    )
                 )
         else:
-            result[
-                "msg"
-            ] = "No Certificate found for user:{} in bootcamp-run:{}".format(
-                user.email, bootcamp_run
+            result["msg"] = (
+                "No Certificate found for user:{} in bootcamp-run:{}".format(
+                    user.email, bootcamp_run
+                )
             )
     else:
         result["msg"] = "Valid user and bootcamp_run must be provided."
@@ -166,10 +166,10 @@ def manage_user_certificate_blocking(users, block_state, bootcamp_run):
         )
 
         if not run_enrollments:
-            result[
-                "msg"
-            ] = "Matching query does not exist for users{} for run:{} ".format(
-                users, bootcamp_run
+            result["msg"] = (
+                "Matching query does not exist for users{} for run:{} ".format(
+                    users, bootcamp_run
+                )
             )
             return result
 

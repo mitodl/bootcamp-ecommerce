@@ -1,4 +1,5 @@
 """Tests for authentication views"""
+
 # pylint: disable=redefined-outer-name,too-many-public-methods
 import json
 from contextlib import contextmanager, ExitStack

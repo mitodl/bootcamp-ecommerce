@@ -1,4 +1,5 @@
 """Tests of user pipeline actions"""
+
 # pylint: disable=redefined-outer-name
 
 import pytest

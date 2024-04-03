@@ -1,6 +1,7 @@
 """
 conftest for pytest in this module
 """
+
 from types import SimpleNamespace
 from unittest.mock import Mock
 

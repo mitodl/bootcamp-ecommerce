@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 
 """
+
 # pylint: disable=too-many-lines
 import logging
 import os

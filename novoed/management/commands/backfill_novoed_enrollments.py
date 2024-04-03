@@ -1,4 +1,5 @@
 """Management command to enroll users in a NovoEd course"""
+
 from django.core.management.base import BaseCommand, CommandError
 
 from klasses.api import fetch_bootcamp_run

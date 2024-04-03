@@ -1,4 +1,5 @@
 """Tests for auth middleware"""
+
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.shortcuts import reverse
 from django.utils.http import urlquote

@@ -1,4 +1,5 @@
 """Ecommerce celery tasks"""
+
 from ecommerce import api
 from main.celery import app
 

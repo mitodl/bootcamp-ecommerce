@@ -1,4 +1,5 @@
 """Tests for CMS serializers"""
+
 import pytest
 
 from cms.factories import AdmissionSectionFactory, BootcampRunPageFactory

@@ -1,4 +1,5 @@
 """Signals for application models"""
+
 from django.db.transaction import on_commit
 from django.db.models.signals import post_save
 from django.dispatch import receiver

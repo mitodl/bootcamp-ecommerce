@@ -1,6 +1,7 @@
 """
 Admin views for bootcamp applications
 """
+
 from django import forms
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline

@@ -1,4 +1,5 @@
 """views for jobma"""
+
 import logging
 
 from rest_framework.generics import GenericAPIView

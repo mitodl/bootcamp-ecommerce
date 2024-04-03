@@ -1,6 +1,7 @@
 """
 context processors for bootcamp
 """
+
 import json
 
 from django.conf import settings

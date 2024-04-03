@@ -1,6 +1,7 @@
 """
 Tests for bootcamp serializers
 """
+
 from datetime import timedelta
 
 import pytest
