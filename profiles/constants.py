@@ -1,4 +1,5 @@
 """User constants"""
+
 import pycountry
 
 

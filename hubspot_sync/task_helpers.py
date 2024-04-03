@@ -1,4 +1,5 @@
 """ Task helper functions for hubspot_sync """
+
 import logging
 
 from django.conf import settings

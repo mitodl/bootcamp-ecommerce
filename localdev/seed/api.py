@@ -1,4 +1,5 @@
 """Data seeding API"""
+
 import json
 from collections import defaultdict
 

@@ -1,4 +1,5 @@
 """Users api"""
+
 from collections import namedtuple
 import csv
 from datetime import datetime, timedelta

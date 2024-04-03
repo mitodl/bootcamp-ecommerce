@@ -1,4 +1,5 @@
 """CMS serializers"""
+
 from rest_framework import serializers
 
 from cms import models

@@ -1,4 +1,5 @@
 """Tests for URLs"""
+
 from django.urls import reverse
 
 

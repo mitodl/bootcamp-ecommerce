@@ -1,4 +1,5 @@
 """Application management command utility functions"""
+
 from collections import defaultdict
 
 from django.core.exceptions import ValidationError

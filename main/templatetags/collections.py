@@ -1,4 +1,5 @@
 """Template tags for collections of objects"""
+
 from classytags.arguments import Argument, IntegerArgument
 from classytags.core import Options
 from classytags.helpers import AsTag

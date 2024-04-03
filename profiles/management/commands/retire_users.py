@@ -1,6 +1,7 @@
 """
 Retire user from BootCamp
 """
+
 import logging
 from argparse import RawTextHelpFormatter
 from urllib.parse import urlparse

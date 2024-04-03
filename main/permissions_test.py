@@ -1,4 +1,5 @@
 """Test permissions"""
+
 import pytest
 
 from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission

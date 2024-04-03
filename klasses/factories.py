@@ -1,6 +1,7 @@
 """
 Factories for bootcamp models
 """
+
 import random
 from factory import Faker, Sequence, SubFactory, LazyAttribute
 from factory.django import DjangoModelFactory

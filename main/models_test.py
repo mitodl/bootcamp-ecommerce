@@ -1,4 +1,5 @@
 """Tests for Bootcamp models"""
+
 from django.test import TestCase
 
 from main.utils import serialize_model_object

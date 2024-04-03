@@ -1,4 +1,5 @@
 """urls for jobma"""
+
 from django.conf.urls import url
 
 from jobma.views import JobmaWebhookView

@@ -1,4 +1,5 @@
 """Tests for management commands"""
+
 from io import StringIO
 import pytest
 

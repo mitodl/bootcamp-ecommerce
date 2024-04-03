@@ -1,4 +1,5 @@
 """Applications filters"""
+
 import pytest
 
 from applications.constants import (

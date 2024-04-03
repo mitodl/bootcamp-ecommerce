@@ -1,4 +1,5 @@
 """Utils tests"""
+
 import factory
 import pytest
 

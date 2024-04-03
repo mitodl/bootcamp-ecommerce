@@ -1,4 +1,5 @@
 """Functions for sending email relating to applications"""
+
 from anymail.message import AnymailMessage
 from django.conf import settings
 from django.core import mail

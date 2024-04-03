@@ -1,4 +1,5 @@
 """Exceptions for applications"""
+
 from rest_framework.exceptions import APIException
 
 

@@ -1,4 +1,5 @@
 """Applications models tests"""
+
 from functools import reduce
 from operator import or_, itemgetter
 from unittest.mock import PropertyMock

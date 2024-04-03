@@ -1,4 +1,5 @@
 """Setup all CMS related stuff (home page, catalog etc.)"""
+
 import json
 
 from django.conf import settings

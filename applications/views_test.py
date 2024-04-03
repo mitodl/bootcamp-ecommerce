@@ -1,4 +1,5 @@
 """Tests for bootcamp application views"""
+
 from datetime import timedelta
 from types import SimpleNamespace
 

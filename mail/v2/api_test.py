@@ -1,4 +1,5 @@
 """API tests"""
+
 from email.utils import formataddr
 import pytest
 from mitol.common.pytest_utils import any_instance_of

@@ -1,6 +1,7 @@
 """
 Tests for profiles.models
 """
+
 from builtins import setattr
 
 import pytest

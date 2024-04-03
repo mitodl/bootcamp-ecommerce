@@ -1,4 +1,5 @@
 """CMS signals tests"""
+
 import pytest
 
 from cms.factories import (

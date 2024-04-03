@@ -1,4 +1,5 @@
 """Tests for applications API functionality"""
+
 from decimal import Decimal
 
 from django.core.files.uploadedfile import SimpleUploadedFile

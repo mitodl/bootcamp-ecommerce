@@ -1,4 +1,5 @@
 """API functionality for integrating with NovoEd"""
+
 from urllib.parse import urljoin
 import logging
 import operator

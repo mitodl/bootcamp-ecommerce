@@ -1,4 +1,5 @@
 """Tasks for applications"""
+
 import logging
 from datetime import timedelta
 

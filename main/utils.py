@@ -1,6 +1,7 @@
 """
 General bootcamp utility functions
 """
+
 import json
 import logging
 import os

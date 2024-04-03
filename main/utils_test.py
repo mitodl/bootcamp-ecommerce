@@ -1,6 +1,7 @@
 """
 Tests for the utils module
 """
+
 import datetime
 import operator as op
 from math import ceil

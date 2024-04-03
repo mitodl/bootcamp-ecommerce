@@ -1,4 +1,5 @@
 """Import a alumni spreadsheet"""
+
 from django.core.management.base import BaseCommand
 
 from profiles.api import import_alumni

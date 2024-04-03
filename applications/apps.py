@@ -1,4 +1,5 @@
 """Apps for bootcamp applications"""
+
 from django.apps import AppConfig
 
 

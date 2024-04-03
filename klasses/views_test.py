@@ -1,4 +1,5 @@
 """Views for bootcamps"""
+
 from collections import namedtuple
 from datetime import timedelta
 

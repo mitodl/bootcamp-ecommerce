@@ -1,6 +1,7 @@
 """
 Models classes needed for bootcamp
 """
+
 from datetime import timedelta
 import uuid
 

@@ -1,4 +1,5 @@
 """Tests for CMS functions"""
+
 from django.template.exceptions import TemplateSyntaxError
 import pytest
 

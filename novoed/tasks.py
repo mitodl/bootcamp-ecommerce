@@ -1,4 +1,5 @@
 """NovoEd async tasks"""
+
 import logging
 
 from django.contrib.auth import get_user_model

@@ -1,4 +1,5 @@
 """Utility functions/classes for bootcamp management commands"""
+
 from django.core.management.base import BaseCommand
 
 from mitol.common.utils import has_equal_properties

@@ -1,6 +1,7 @@
 """
 Admin site bindings for profiles
 """
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as ContribUserAdmin
 from django.contrib.auth import get_user_model

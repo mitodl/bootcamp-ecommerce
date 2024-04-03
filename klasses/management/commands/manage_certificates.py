@@ -1,6 +1,7 @@
 """
 Management command to manage certificates.
 """
+
 from django.core.management.base import BaseCommand, CommandError
 
 from klasses.api import fetch_bootcamp_run

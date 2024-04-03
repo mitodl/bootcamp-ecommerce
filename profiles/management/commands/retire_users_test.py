@@ -1,4 +1,5 @@
 """retire user test"""
+
 from datetime import timedelta
 
 import pytest

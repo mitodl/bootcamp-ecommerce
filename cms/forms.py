@@ -1,4 +1,5 @@
 """Forms for CMS"""
+
 from django.core.exceptions import ValidationError
 from django.template.exceptions import TemplateSyntaxError
 from wagtail.admin.forms import WagtailAdminPageForm

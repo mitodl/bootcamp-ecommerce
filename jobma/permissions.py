@@ -1,4 +1,5 @@
 """jobma permission classes"""
+
 import logging
 
 from django.conf import settings

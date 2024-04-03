@@ -1,4 +1,5 @@
 """Management command to correctly set the state of a bootcamp application"""
+
 from django.core.management.base import BaseCommand
 
 from applications.api import derive_application_state

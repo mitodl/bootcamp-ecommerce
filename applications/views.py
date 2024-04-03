@@ -1,4 +1,5 @@
 """Views for bootcamp applications"""
+
 from collections import OrderedDict
 
 import re

@@ -1,4 +1,5 @@
 """Templatetags for dollar value formatting"""
+
 from decimal import Decimal
 
 from django.template import Library

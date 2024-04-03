@@ -1,6 +1,7 @@
 """
 EdX.org backend for Python Social Auth
 """
+
 from datetime import datetime
 from urllib.parse import urljoin
 

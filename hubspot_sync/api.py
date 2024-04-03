@@ -1,4 +1,5 @@
 """Hubspot CRM API sync utilities"""
+
 import logging
 import re
 from builtins import hasattr

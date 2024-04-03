@@ -1,4 +1,5 @@
 """Application management util tests"""
+
 # pylint: disable=redefined-outer-name
 from types import SimpleNamespace
 import pytest

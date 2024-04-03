@@ -1,4 +1,5 @@
 """Test for hubspot_sync serializers"""
+
 from decimal import Decimal
 
 import pytest

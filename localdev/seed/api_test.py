@@ -1,4 +1,5 @@
 """Seed data API tests"""
+
 # pylint: disable=unused-argument, redefined-outer-name
 from types import SimpleNamespace
 import pytest

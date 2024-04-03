@@ -1,6 +1,7 @@
 """
 klasses API tests
 """
+
 # pylint: disable=redefined-outer-name
 import datetime
 from datetime import timedelta
@@ -281,7 +282,7 @@ def test_create_run_enrollment(mocker, user, settings, novoed_integration):
     assert len(successful_enrollments) == num_runs
     assert user.profile.can_skip_application_steps is True
     enrollments = BootcampRunEnrollment.objects.order_by("bootcamp_run__id").all()
-    for (run, enrollment) in zip(runs, enrollments):
+    for run, enrollment in zip(runs, enrollments):
         assert enrollment.change_status is None
         assert enrollment.active is True
         assert enrollment.bootcamp_run == run

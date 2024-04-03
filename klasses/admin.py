@@ -1,6 +1,7 @@
 """
 Admin views for bootcamps
 """
+
 from django.contrib import admin
 from mitol.common.admin import TimestampedModelAdmin
 

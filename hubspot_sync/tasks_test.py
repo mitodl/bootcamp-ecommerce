@@ -1,6 +1,7 @@
 """
 Tests for hubspot_sync tasks
 """
+
 # pylint: disable=redefined-outer-name
 import pytest
 from django.contrib.contenttypes.models import ContentType

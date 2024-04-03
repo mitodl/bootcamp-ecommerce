@@ -1,4 +1,5 @@
 """Authentication utils"""
+
 from social_core.utils import get_strategy
 from social_django.utils import STORAGE
 

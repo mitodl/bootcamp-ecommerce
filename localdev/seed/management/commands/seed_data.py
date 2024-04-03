@@ -1,4 +1,5 @@
 """Management command to create or update seed data"""
+
 from django.core.management.base import BaseCommand
 
 from localdev.seed.api import create_seed_data

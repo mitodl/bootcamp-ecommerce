@@ -1,4 +1,5 @@
 """App config for NovoEd"""
+
 from django.apps import AppConfig
 
 

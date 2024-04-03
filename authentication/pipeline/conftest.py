@@ -1,6 +1,7 @@
 """
 Fixtures for pipeline tests
 """
+
 import pytest
 
 

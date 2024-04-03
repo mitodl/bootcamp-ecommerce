@@ -1,4 +1,5 @@
 """CMS utils"""
+
 from cache_memoize import cache_memoize
 from wagtail.models import Site
 

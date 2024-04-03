@@ -1,4 +1,5 @@
 """ Tests for applications.signals"""
+
 import pytest
 
 from applications.factories import (

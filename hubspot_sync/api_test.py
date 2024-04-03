@@ -1,6 +1,7 @@
 """
 Hubspot API tests
 """
+
 from unittest.mock import ANY
 
 import pytest

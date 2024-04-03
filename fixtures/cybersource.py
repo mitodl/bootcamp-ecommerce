@@ -1,4 +1,5 @@
 """Fxitures for CyberSource tests"""
+
 # pylint: disable=redefined-outer-name
 
 from nacl.public import PrivateKey

@@ -1,4 +1,5 @@
 """Management command to create applications for users that already applied to another bootcamp run"""
+
 from django.core.management.base import BaseCommand, CommandError
 
 from applications.constants import APPROVED_APP_STATES

@@ -1,6 +1,7 @@
 """
 Permission classes for ecommerce
 """
+
 import logging
 
 from rest_framework.permissions import BasePermission

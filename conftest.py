@@ -1,4 +1,5 @@
 """Global fixtures"""
+
 # pylint: disable=wildcard-import,unused-wildcard-import
 from django.conf import settings
 from fixtures.common import *

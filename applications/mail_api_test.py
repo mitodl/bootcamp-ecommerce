@@ -1,4 +1,5 @@
 """Tests for functions sending email relating to applications"""
+
 import pytest
 
 from applications.constants import LETTER_TYPE_APPROVED, LETTER_TYPE_REJECTED

@@ -1,4 +1,5 @@
 """Utils tests"""
+
 import pytest
 
 from cms.factories import ResourcePagesSettingsFactory, ResourcePageFactory

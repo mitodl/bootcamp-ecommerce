@@ -1,4 +1,5 @@
 """API functions for CMS"""
+
 from django.template import engines
 from django.template.base import VariableNode
 from django.template.exceptions import TemplateSyntaxError

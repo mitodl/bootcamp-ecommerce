@@ -1,6 +1,7 @@
 """
 Management command to decrypts a user's ExportInquiryLog record
 """
+
 import sys
 
 from django.core.management import BaseCommand

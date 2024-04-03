@@ -1,4 +1,5 @@
 """Serializers for ecommerce"""
+
 from rest_framework import serializers
 
 from applications.models import BootcampApplication

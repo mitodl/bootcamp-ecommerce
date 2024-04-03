@@ -1085,12 +1085,16 @@ class CertificatePage(BootcampRunChildPage):
         if request.is_preview:
             preview_context = {
                 "learner_name": "Anthony M. Stark",
-                "start_date": parent.bootcamp_run.start_date
-                if parent.bootcamp_run
-                else datetime.now(),
-                "end_date": parent.bootcamp_run.end_date
-                if parent.bootcamp_run
-                else datetime.now(),
+                "start_date": (
+                    parent.bootcamp_run.start_date
+                    if parent.bootcamp_run
+                    else datetime.now()
+                ),
+                "end_date": (
+                    parent.bootcamp_run.end_date
+                    if parent.bootcamp_run
+                    else datetime.now()
+                ),
                 "location": self.location if self.location else "Brisbane, Australia",
                 "certificate_user": None,
             }

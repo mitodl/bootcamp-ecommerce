@@ -1,4 +1,5 @@
 """Import a wire transfer spreadsheet"""
+
 from django.core.management import BaseCommand
 
 from ecommerce.api import import_wire_transfers

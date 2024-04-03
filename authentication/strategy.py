@@ -1,4 +1,5 @@
 """Custom strategy"""
+
 from urllib.parse import urlencode
 
 from django.db import transaction

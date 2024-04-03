@@ -1,4 +1,5 @@
 """Management command to delete seeded data"""
+
 from django.core.management.base import BaseCommand
 
 from localdev.seed.api import delete_seed_data

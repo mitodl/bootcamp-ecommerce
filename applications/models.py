@@ -1,4 +1,5 @@
 """Models for bootcamp applications"""
+
 from decimal import Decimal
 from uuid import uuid4
 from functools import reduce

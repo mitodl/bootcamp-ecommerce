@@ -1,4 +1,5 @@
 """Data seeding configuration/constants"""
+
 import os
 from enum import Enum
 

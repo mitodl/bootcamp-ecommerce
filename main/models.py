@@ -1,4 +1,5 @@
 """Abstract models for use in other applications"""
+
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import (

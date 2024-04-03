@@ -1,4 +1,5 @@
 """Tests for feature flags"""
+
 import pytest
 
 from main import features

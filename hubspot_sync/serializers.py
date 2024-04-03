@@ -1,6 +1,7 @@
 """
 Serializers for hubspot
 """
+
 import logging
 from decimal import Decimal
 

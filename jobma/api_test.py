@@ -1,4 +1,5 @@
 """tests for jobma functions"""
+
 from urllib.parse import urljoin
 
 from django.urls import reverse

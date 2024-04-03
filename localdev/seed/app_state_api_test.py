@@ -1,4 +1,5 @@
 """Tests for API functionality that sets the state of an application"""
+
 # pylint: disable=redefined-outer-name
 import pytest
 

@@ -1,4 +1,5 @@
 """Tests for bootcamp related models"""
+
 from datetime import datetime, timedelta
 
 import pytest
