@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def backpopulate_readable_id(apps, schema_editor):
-    """Backpopulate readble_id for existing bootcamps"""
+    """Backpopulate readable_id for existing bootcamps"""
     BootcampRun = apps.get_model("klasses", "BootcampRun")
     Bootcamp = apps.get_model("klasses", "Bootcamp")
     for bootcamp in Bootcamp.objects.filter(readable_id=None).iterator():
