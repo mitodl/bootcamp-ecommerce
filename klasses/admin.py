@@ -28,8 +28,14 @@ class BootcampAdmin(admin.ModelAdmin):
     """Admin for Bootcamp"""
 
     model = models.Bootcamp
-    list_display = ("title",)
-    search_fields = ("title",)
+    list_display = (
+        "title",
+        "readable_id",
+    )
+    search_fields = (
+        "title",
+        "readable_id",
+    )
     inlines = [BootcampRunInline]
 
 

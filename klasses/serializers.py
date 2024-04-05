@@ -23,7 +23,7 @@ class BootcampSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bootcamp
-        fields = ["id", "title"]
+        fields = ["id", "title", "readable_id"]
 
 
 class BootcampRunSerializer(serializers.ModelSerializer):
