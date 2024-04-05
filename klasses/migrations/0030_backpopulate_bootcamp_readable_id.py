@@ -8,16 +8,13 @@ def backpopulate_readable_id(apps, schema_editor):
     BootcampRun = apps.get_model("klasses", "BootcampRun")
     Bootcamp = apps.get_model("klasses", "Bootcamp")
     for bootcamp in Bootcamp.objects.filter(readable_id=None).iterator():
-        bootcamp_run_id = (
-            BootcampRun.objects.filter(
-                bootcamp_run_id__isnull=False, bootcamp_id=bootcamp.id
-            )
-            .first()
-            .bootcamp_run_id
-        )
-        run = bootcamp_run_id.split("+")[-1]
-        bootcamp.readable_id = bootcamp_run_id.removesuffix(f"+{run}")
-        bootcamp.save()
+        bootcamp_run = BootcampRun.objects.filter(
+            bootcamp_run_id__isnull=False, bootcamp_id=bootcamp.id
+        ).first()
+        if bootcamp_run is not None:
+            run = bootcamp_run.bootcamp_run_id.split("+")[-1]
+            bootcamp.readable_id = bootcamp_run.bootcamp_run_id.removesuffix(f"+{run}")
+            bootcamp.save()
 
 
 class Migration(migrations.Migration):
