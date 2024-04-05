@@ -172,7 +172,7 @@ const ReviewPanelRight = (props: FormProps) => {
       {success ? (
         <Alert color="success" onClick={() => setSuccess(false)}>
           {// $FlowFixMe: review_status won't be null here
-            `Submission ${submission.review_status}`}
+          `Submission ${submission.review_status}`}
         </Alert>
       ) : null}
     </div>
