@@ -90,7 +90,9 @@ export default class IntegrationTestHelper {
   }
 
   configureHOCRenderer(
+    // eslint-disable-next-line no-undef
     WrappedComponent: Class<React.Component<*, *>>,
+    // eslint-disable-next-line no-undef
     InnerComponent: Class<React.Component<*, *>>,
     defaultState: Object,
     defaultProps = {}

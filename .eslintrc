@@ -1,7 +1,10 @@
 {
   "extends": "eslint-config-mitodl",
   "rules": {
-      "no-prototype-builtins": [0]
+      "no-prototype-builtins": [0],
+      "indent": ["error", 2, {
+        "ignoredNodes": ["TemplateLiteral"]
+      }]
   },
   "settings": {
     "react": {
