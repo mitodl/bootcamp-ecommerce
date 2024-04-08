@@ -1,6 +1,21 @@
 Release Notes
 =============
 
+Version 0.115.0
+---------------
+
+- fix(deps): update dependency boto3 to v1.34.79 (#1463)
+- fix(deps): update dependency decimal.js-light to v2.5.1 (#1469)
+- fix(deps): update dependency enzyme-adapter-react-16 to v1.15.8 (#1470)
+- Bump pillow from 10.2.0 to 10.3.0 (#1504)
+- Bump minimist from 1.1.3 to 1.2.8 (#1506)
+- Bump django from 3.2.23 to 3.2.25 (#1492)
+- Bump cryptography from 41.0.5 to 42.0.4 (#1495)
+- Bump pillow from 9.5.0 to 10.2.0 (#1496)
+- Bump black from 22.12.0 to 24.3.0 (#1497)
+- fix(deps): update dependency webpack-dev-middleware to v5 [security] (#1499)
+- fix(deps): update dependency express to v4.19.2 [security]
+
 Version 0.114.0 (Released April 01, 2024)
 ---------------
 
