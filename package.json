@@ -19,6 +19,7 @@
     "@babel/preset-flow": "^7.9.0",
     "@babel/preset-react": "^7.9.4",
     "@babel/register": "^7.9.0",
+    "@babel/traverse": "7.23.2",
     "@mitodl/react-dropzone-uploader": "2.11.4",
     "@reduxjs/toolkit": "^1.5.0",
     "@sentry/browser": "^5.15.5",
