@@ -22,7 +22,8 @@ class BootcampFactory(DjangoModelFactory):
     type = random.choice(["public", "private"])
     topic = FAKE.slug()
     format = random.choice(["ol", "f2f"])
-    readable_id = f"bootcamp-v1:{type}+{topic}-{format}"
+    readable_id_string = f"bootcamp-v1:{type}+{topic}-{format}"
+    readable_id = LazyAttribute(lambda bootcamp: bootcamp.readable_id_string)
 
     class Meta:
         model = models.Bootcamp
