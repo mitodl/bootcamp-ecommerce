@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.115.1
+---------------
+
+- add readable_id to bootcamp model and related changes (#1507)
+- Bump es5-ext from 0.10.53 to 0.10.64 (#1494)
+
 Version 0.115.0 (Released April 08, 2024)
 ---------------
 
