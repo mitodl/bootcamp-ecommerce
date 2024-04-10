@@ -19,6 +19,9 @@ class BootcampFactory(DjangoModelFactory):
     """Factory for Bootcamp"""
 
     title = FuzzyText(prefix="Bootcamp ")
+    readable_id = LazyAttribute(
+        lambda x: f"bootcamp-v1:{ random.choice(['public', 'private']) }+{FAKE.slug()}-{random.choice(['ol', 'f2f'])}"
+    )
 
     class Meta:
         model = models.Bootcamp

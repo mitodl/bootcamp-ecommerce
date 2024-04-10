@@ -41,6 +41,7 @@ def test_bootcamp_serializer():
     assert BootcampSerializer(bootcamp).data == {
         "title": bootcamp.title,
         "id": bootcamp.id,
+        "readable_id": bootcamp.readable_id,
     }
 
 

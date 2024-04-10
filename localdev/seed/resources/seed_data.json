@@ -2,6 +2,7 @@
   "bootcamps": [
     {
       "title": "Single Variable Calculus",
+      "readable_id": "bootcamp-v1:public+SVCR-ol",
       "[runs]": [
         {
           "title": "Single Variable Calculus Run 1",
@@ -32,6 +33,7 @@
     },
     {
       "title": "Multivariable Calculus",
+      "readable_id": "bootcamp-v1:private+MCR-f2f",
       "[runs]": [
         {
           "title": "Multivariable Calculus Run 1",
@@ -72,6 +74,7 @@
     },
     {
       "title": "Differential Equations",
+      "readable_id": "bootcamp-v1:public+DER-f2f",
       "[runs]": [
         {
           "title": "Differential Equations Run 1",

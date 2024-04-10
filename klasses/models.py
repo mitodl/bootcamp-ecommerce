@@ -41,6 +41,14 @@ class Bootcamp(models.Model):
 
     title = models.TextField()
     legacy = models.BooleanField(default=False)
+    readable_id = models.CharField(
+        null=True,
+        blank=True,
+        unique=True,
+        max_length=255,
+        help_text="The unique string to identify this bootcamp. It can be of the form 'bootcamp-v1:TYPE+TOPIC-FORMAT'"
+        "(example: bootcamp-v1:public+IE-f2f)",
+    )
 
     def __str__(self):
         return "Bootcamp {title}".format(title=self.title)
