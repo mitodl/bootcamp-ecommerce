@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.115.1
+Version 0.115.1 (Released April 10, 2024)
 ---------------
 
 - add readable_id to bootcamp model and related changes (#1507)
