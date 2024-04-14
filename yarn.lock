@@ -7693,9 +7693,9 @@ mute-stream@0.0.8:
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
 named-urls@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/named-urls/-/named-urls-2.0.0.tgz#3aac0dbdbe65f579df870627115582ef793dd2d9"
-  integrity sha512-CMZYWDnXModhniw5KEWWkvBu0iMqqYR4mnf4HmoD2FOiumVcj8KnRitK1bmOPXZWNEzi153W4/RRzzs1opwE8g==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/named-urls/-/named-urls-2.0.1.tgz#24bcf998a834d39522da0d4983408744f70e327d"
+  integrity sha512-e/WeLA52FeLZpWt5JcpYp4fZqESBxoNuyJB3LQljHqNPNt0ow1t8QOTFEIeOZf+X+bJOLIXCPCnmyPZnBV8sMg==
   dependencies:
     path-to-regexp "^6.1.0"
 
@@ -8327,9 +8327,9 @@ path-to-regexp@^2.2.1:
   integrity sha512-G6zHoVqC6GGTQkZwF4lkuEyMbVOjoBKAEybQUypI1WTkqinCOrq2x6U2+phkJ1XsEMTy4LjtwPI7HW+NVrRR2w==
 
 path-to-regexp@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-6.1.0.tgz#0b18f88b7a0ce0bfae6a25990c909ab86f512427"
-  integrity sha512-h9DqehX3zZZDCEm+xbfU0ZmwCGFCAAraPJWMXJ4+v32NjZJilVg3k1TcKsRgIb8IQ/izZSaydDc1OhJCZvs2Dw==
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-6.2.2.tgz#324377a83e5049cbecadc5554d6a63a9a4866b36"
+  integrity sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==
 
 pathval@^1.1.0:
   version "1.1.1"
