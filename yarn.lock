@@ -9126,9 +9126,9 @@ react-transition-group@^2.3.1:
     react-lifecycles-compat "^3.0.4"
 
 react-zendesk@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/react-zendesk/-/react-zendesk-0.1.9.tgz#fb8500efffb61bdf78757743f2f0d35f8200af43"
-  integrity sha512-dmfNW5yPy6B1t9iun7Q0tVLHpvEmA/oGo35Rm8NhSzsHgWuAFZUhLMeFlPEIx+/hgTxuZQjr2s01ydDt6cDnHw==
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/react-zendesk/-/react-zendesk-0.1.13.tgz#0b8eb76ea6642f563c948f03e84f34286368036c"
+  integrity sha512-9UNzzgdgC8nr2nZ13PNudspUClZZgsnS3FofnuGK1I7+yDPNAP8iDFD2WSQRJmYDAzH+mTlVB4K+G8lY1/0B+w==
   dependencies:
     prop-types "^15.7.2"
 
