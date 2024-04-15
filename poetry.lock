@@ -3443,19 +3443,19 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [[package]]
 name = "wagtail"
-version = "5.2.1"
+version = "5.2.4"
 description = "A Django content management system."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "wagtail-5.2.1-py3-none-any.whl", hash = "sha256:fde8055e6988b5d88ff561535acfe1d10ca42334eea22bb5acd194f331f887e3"},
-    {file = "wagtail-5.2.1.tar.gz", hash = "sha256:1186b2baa74eee858f4b6b573324990f37a667c91afc439ba2651d8ac4be1a8d"},
+    {file = "wagtail-5.2.4-py3-none-any.whl", hash = "sha256:c1a319693a18a52227e7284d3eda349da0ce7df11c74602d9588112583c9bea9"},
+    {file = "wagtail-5.2.4.tar.gz", hash = "sha256:824090ed4bb3f42af92faf150383acfb5a844808c5508f247a743a23d8a5a24b"},
 ]
 
 [package.dependencies]
 anyascii = ">=0.1.5"
 beautifulsoup4 = ">=4.8,<4.12"
-Django = ">=3.2,<4.3"
+Django = ">=3.2,<5.1"
 django-filter = ">=23.3,<24"
 django-modelcluster = ">=6.1,<7.0"
 django-permissionedforms = ">=0.1,<1.0"
@@ -3468,7 +3468,7 @@ l18n = ">=2018.5"
 openpyxl = ">=3.0.10,<4.0"
 Pillow = ">=9.1.0,<11.0.0"
 requests = ">=2.11.1,<3.0"
-telepath = ">=0.1.1,<1"
+telepath = ">=0.3.1,<1"
 Willow = {version = ">=1.6.2,<1.7", extras = ["heif"]}
 
 [package.extras]
