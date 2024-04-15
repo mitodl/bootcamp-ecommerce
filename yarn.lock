@@ -6959,7 +6959,7 @@ istanbul-lib-processinfo@^2.0.2:
     istanbul-lib-coverage "^3.2.0"
     p-map "^3.0.0"
     rimraf "^3.0.0"
-    uuid "^8.3.2"
+    uuid "^3.3.3"
 
 istanbul-lib-report@^3.0.0:
   version "3.0.1"
@@ -7714,10 +7714,10 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
-mkdirp@0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.5.tgz#d91cefd62d1436ca0f41620e251288d420099def"
-  integrity sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
+mkdirp@0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.3.tgz#5a514b7179259287952881e94410ec5465659f8c"
+  integrity sha512-P+2gwrFqx8lhew375MQHHeTlY8AuOJSrGf0R5ddkEndUkmwpgUob/vQuBD1V22/Cw1/lJr4x+EjllSezBThzBg==
   dependencies:
     minimist "^1.2.5"
 
@@ -9190,20 +9190,20 @@ redux-logger@^3.0.6:
     deep-diff "^0.3.5"
 
 redux-query-interface-superagent@^3.3.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/redux-query-interface-superagent/-/redux-query-interface-superagent-3.6.1.tgz#7e14338a8ce75269c142dc7cee6309341588b973"
-  integrity sha512-Fkw5iHfWxYlLBEH7t6ITPvSzs5YlDFkcP6xyp/1NE1tu9V0ddTWoIZG/gCGlKGsk9j2QBscojG97g7dKp2B4yA==
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/redux-query-interface-superagent/-/redux-query-interface-superagent-3.5.2.tgz#7989a14d3e15b74754cb414d20432e95f53a5ca7"
+  integrity sha512-p+CDCTLpBjfEUpjhyAqPIYSHHZTI/6dVJehIxQggykJllJvP69HGI8aEy6OKz6us5WrO5f8wTrhA3Jj4b4X6nA==
   dependencies:
     superagent "^5.0.6"
 
 redux-query-react@^3.3.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/redux-query-react/-/redux-query-react-3.6.1.tgz#87d8702d804af6b14c806f5d38fed1e32f59374a"
-  integrity sha512-bfxdlSzZ+a3LSZdQ0BkeOgiUphWfS6nByp+pGxUeMoPseYOhSjBaN/K3jDRr5Y8vYboR1QFoNmEVHHX3/cT/bg==
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/redux-query-react/-/redux-query-react-3.5.2.tgz#e185e71a18e62445e92396c0c68858ec7f1ec582"
+  integrity sha512-vKp4CcDJxuDD+iAAgTAKKd2aPHirfpMvJIV6uNX14Y7/f14NT1gHJ+lnmefWNzyl2N7NIgfYxI118zMRMZw/Rw==
   dependencies:
     hoist-non-react-statics "^3.3.0"
 
-redux-query@3.5.2:
+redux-query@^3.3.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/redux-query/-/redux-query-3.5.2.tgz#d916eff0759c0339a6b22b09196c82f0d581b793"
   integrity sha512-iQhItYtolAosEVnugtWmjOnJQjkfYMaR+qy5oyaWNvfXCiiIRGLL5u3T+JhFH3iiADf9TXK1zisnlOd7TY01Xw==
