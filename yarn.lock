@@ -6959,7 +6959,7 @@ istanbul-lib-processinfo@^2.0.2:
     istanbul-lib-coverage "^3.2.0"
     p-map "^3.0.0"
     rimraf "^3.0.0"
-    uuid "^3.3.3"
+    uuid "^8.3.2"
 
 istanbul-lib-report@^3.0.0:
   version "3.0.1"
@@ -7751,7 +7751,7 @@ mocha@^7.1.1:
     js-yaml "3.13.1"
     log-symbols "3.0.0"
     minimatch "3.0.4"
-    mkdirp "0.5.5"
+    mkdirp "0.5.3"
     ms "2.1.1"
     node-environment-flags "1.0.6"
     object.assign "4.1.0"
@@ -9203,10 +9203,10 @@ redux-query-react@^3.3.1:
   dependencies:
     hoist-non-react-statics "^3.3.0"
 
-redux-query@^3.3.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/redux-query/-/redux-query-3.6.1.tgz#17b00bca6f55f0ee339769347235f7a5d7d0cfc3"
-  integrity sha512-Okk3s9DrzMPqar+JStqnG8DXwBbPD25ZfH6gfOTRGDdKy4BOoNypV/FE3kIqonPZzcab94yAtm4W1obK7N7c6w==
+redux-query@3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/redux-query/-/redux-query-3.5.2.tgz#d916eff0759c0339a6b22b09196c82f0d581b793"
+  integrity sha512-iQhItYtolAosEVnugtWmjOnJQjkfYMaR+qy5oyaWNvfXCiiIRGLL5u3T+JhFH3iiADf9TXK1zisnlOd7TY01Xw==
   dependencies:
     backo "^1.1.0"
     invariant "^2.2.0"
