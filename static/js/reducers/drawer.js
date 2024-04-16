@@ -6,38 +6,28 @@ export const setDrawerMeta = createAction("SET_DRAWER_META")
 export const openDrawer = createAction("OPEN_DRAWER")
 export const closeDrawer = createAction("CLOSE_DRAWER")
 
-type DrawerState = {
-  drawerState: ?string,
-  drawerOpen: boolean,
-  drawerMeta: Object
+const initialState = {
+  drawerState: null,
+  drawerOpen:  false,
+  drawerMeta:  {}
 }
 
-export type DrawerChangePayload = {
-  type: ?string,
-  meta?: Object
-}
-
-export const drawer = createReducer(
-  { drawerState: null, drawerOpen: false, drawerMeta: {} },
-  {
-    [setDrawerState]: (state: DrawerState, action: { payload: ?string }) => {
+export const drawer = createReducer(initialState, builder => {
+  builder
+    .addCase(setDrawerState, (state, action) => {
       state.drawerState = action.payload
-    },
-    [setDrawerMeta]: (state: DrawerState, action: { payload: Object }) => {
+    })
+    .addCase(setDrawerMeta, (state, action) => {
       state.drawerMeta = action.payload
-    },
-    [closeDrawer]: (state: DrawerState) => {
+    })
+    .addCase(closeDrawer, state => {
       state.drawerState = null
       state.drawerMeta = {}
       state.drawerOpen = false
-    },
-    [openDrawer]: (
-      state: DrawerState,
-      action: { payload: DrawerChangePayload }
-    ) => {
+    })
+    .addCase(openDrawer, (state, action) => {
       state.drawerState = action.payload.type
       state.drawerMeta = action.payload.meta || {}
       state.drawerOpen = true
-    }
-  }
-)
+    })
+})
