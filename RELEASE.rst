@@ -1,6 +1,27 @@
 Release Notes
 =============
 
+Version 0.116.0 (Released April 17, 2024)
+---------------
+
+- chore(deps): lock file maintenance (#1528)
+- chore(deps): update dependency black to v24.4.0
+- fix(deps): update dependency wagtail to v5.2.4
+- fix(deps): update dependency uwsgi to v2.0.25
+- fix(deps): update dependency url-loader to v4.1.1
+- fix(deps): update dependency react-zendesk to v0.1.13
+- fix(deps): update dependency react-redux to v7.2.9
+- fix(deps): update dependency prettier-eslint-cli to v5.0.1
+- fix(deps): update dependency prettier-eslint to v9.0.2
+- fix(deps): update dependency object.entries to v1.1.8
+- fix(deps): update dependency named-urls to v2.0.1
+- fix(deps): update dependency mutationobserver-shim to v0.3.7
+- fix(deps): update dependency mini-css-extract-plugin to v1.6.2
+- fix(deps): update dependency keycode to v2.2.1
+- fix(deps): update dependency eslint-plugin-babel to v5.3.1
+- fix(deps): update dependency django-fsm to v2.8.2
+- fix(deps): update dependency boto3 to v1.34.84
+
 Version 0.115.1 (Released April 10, 2024)
 ---------------
 
