@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.116.1
+---------------
+
+- Fix: Add nubbins for celery monitoring.
+- Bump ipython from 7.31.1 to 8.10.0 (#1409)
+- Bump http-cache-semantics from 4.1.0 to 4.1.1 (#1406)
+
 Version 0.116.0 (Released April 17, 2024)
 ---------------
 
