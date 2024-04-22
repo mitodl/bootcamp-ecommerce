@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timedelta
 
 import pytz
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Sum
 
 from applications.constants import AppStates
@@ -15,7 +15,6 @@ from klasses.constants import DATE_RANGE_MONTH_FMT, ENROLL_CHANGE_STATUS_DEFERRE
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
 from novoed import tasks as novoed_tasks
-
 
 log = logging.getLogger(__name__)
 
@@ -76,7 +75,7 @@ def adjust_app_state_for_new_price(user, bootcamp_run, new_price=None):
             if it was modified (otherwise, None will be returned)
     """
     total_paid_qset = Line.objects.filter(
-        order__user=user, bootcamp_run=bootcamp_run
+        order__user=user, bootcamp_run=bootcamp_run, order__status=Order.FULFILLED
     ).aggregate(aggregate_total_paid=Sum("price"))
     total_paid = total_paid_qset["aggregate_total_paid"] or 0
     new_price = new_price if new_price is not None else bootcamp_run.price

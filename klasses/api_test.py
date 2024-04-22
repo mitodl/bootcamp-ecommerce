@@ -18,28 +18,28 @@ from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from applications.models import BootcampApplication
 from ecommerce.factories import LineFactory, OrderFactory
+from ecommerce.models import Order
 from klasses.api import (
-    deactivate_run_enrollment,
-    fetch_bootcamp_run,
     adjust_app_state_for_new_price,
     create_run_enrollment,
     create_run_enrollments,
+    deactivate_run_enrollment,
     defer_enrollment,
+    fetch_bootcamp_run,
 )
 from klasses.constants import (
-    ENROLL_CHANGE_STATUS_REFUNDED,
     ENROLL_CHANGE_STATUS_DEFERRED,
+    ENROLL_CHANGE_STATUS_REFUNDED,
 )
 from klasses.factories import (
     BootcampFactory,
-    BootcampRunFactory,
     BootcampRunEnrollmentFactory,
-    PersonalPriceFactory,
+    BootcampRunFactory,
     InstallmentFactory,
+    PersonalPriceFactory,
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from main import features
-
 
 RUN_PRICE = 1000
 
@@ -172,6 +172,39 @@ def test_adjust_app_state_for_new_price(personal_price_amt, init_state, expected
     assert isinstance(returned_app, BootcampApplication)
     assert returned_app.id == app.id
     assert app.state == expected_state
+
+
+@factory.django.mute_signals(signals.post_save)
+@pytest.mark.django_db
+@pytest.mark.parametrize("order_status", [Order.CREATED, Order.FULFILLED])
+def test_adjust_app_state_for_new_price_with_existing_orders(order_status):
+    """
+    Test that adjust_app_state_for_new_price updates an application when personal price exists
+    and partial payment is made with an order in fulfilled status.
+    """
+    app = BootcampApplicationFactory.create(state=AppStates.AWAITING_PAYMENT.value)
+    run = app.bootcamp_run
+    user = app.user
+    personal_price = PersonalPriceFactory.create(price=990, user=user, bootcamp_run=run)
+    InstallmentFactory.create(bootcamp_run=run, amount=RUN_PRICE)
+    # Create payments such that the user has paid the original bootcamp run price
+    LineFactory.create_batch(
+        2,
+        order__user=user,
+        order__status=order_status,
+        bootcamp_run=run,
+        price=int(RUN_PRICE / 2),
+    )
+    returned_app = adjust_app_state_for_new_price(
+        user=user, bootcamp_run=run, new_price=getattr(personal_price, "price", None)
+    )
+    if order_status == Order.CREATED:
+        assert returned_app is None
+    else:
+        app.refresh_from_db()
+        assert isinstance(returned_app, BootcampApplication)
+        assert returned_app.id == app.id
+        assert app.state == AppStates.COMPLETE.value
 
 
 @factory.django.mute_signals(signals.post_save)
