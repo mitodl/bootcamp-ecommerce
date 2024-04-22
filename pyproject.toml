@@ -34,7 +34,7 @@ authors  = ["MIT ODL"]
 [tool.poetry.dependencies]
 python = "3.10.13"
 django = "^4.2.11"
-celery = {extras = ["redis"], version = "^5.2.7"}
+celery = {extras = ["redis"], version = "^5.3.6"}
 boto3 = "^1.16.63"
 dj-database-url = "^0.3.0"
 django-anymail = {extras = ["mailgun"], version = "^8.4"}
@@ -42,8 +42,7 @@ dj-static = "^0.0.6"
 django-cache-memoize = "^0.1.7"
 django-classy-tags = "^1.0.0"
 django-compat = "^1.0.15"
-django-hijack = "^2.1.10"
-django-hijack-admin = "^2.1.7"
+django-hijack = "^3.4.5"
 django-filter = "^23.4"
 django-fsm = "^2.8.0"
 django-ipware = "^4.0.0"
