@@ -163,7 +163,7 @@ def test_adjust_app_state_for_new_price(personal_price_amt, init_state, expected
     InstallmentFactory.create(bootcamp_run=run, amount=RUN_PRICE)
     # Create payments such that the user has paid the original bootcamp run price
     LineFactory.create_batch(
-        2, order__user=user, bootcamp_run=run, price=int(RUN_PRICE / 2)
+        2, order__user=user, order__status=Order.FULFILLED, bootcamp_run=run, price=int(RUN_PRICE / 2)
     )
     returned_app = adjust_app_state_for_new_price(
         user=user, bootcamp_run=run, new_price=getattr(personal_price, "price", None)
