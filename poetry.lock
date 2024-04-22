@@ -240,30 +240,17 @@ files = [
 
 [[package]]
 name = "boto3"
-<<<<<<< HEAD
 version = "1.34.108"
-=======
-version = "1.34.88"
->>>>>>> 186fd13 (bump some more packages)
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-<<<<<<< HEAD
     {file = "boto3-1.34.108-py3-none-any.whl", hash = "sha256:3601267d76cac17f1d4595c3d8d968dc15be074b79bfa3985187a02b328a0a5f"},
     {file = "boto3-1.34.108.tar.gz", hash = "sha256:677723295151d29ff9b363598a20c1997c4e2af7e50669d9e428b757fe586a10"},
 ]
 
 [package.dependencies]
 botocore = ">=1.34.108,<1.35.0"
-=======
-    {file = "boto3-1.34.88-py3-none-any.whl", hash = "sha256:1bd4cef11b7c5f293cede50f3d33ca89fe3413c51f1864f40163c56a732dd6b3"},
-    {file = "boto3-1.34.88.tar.gz", hash = "sha256:168894499578a9d69d6f7deb5811952bf4171c51b95749a9aef32cf67bc71f87"},
-]
-
-[package.dependencies]
-botocore = ">=1.34.88,<1.35.0"
->>>>>>> 186fd13 (bump some more packages)
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -272,22 +259,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-<<<<<<< HEAD
 version = "1.34.108"
-=======
-version = "1.34.88"
->>>>>>> 186fd13 (bump some more packages)
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-<<<<<<< HEAD
     {file = "botocore-1.34.108-py3-none-any.whl", hash = "sha256:b1b9d00804267669c5fcc36489269f7e9c43580c30f0885fbf669cf73cec720b"},
     {file = "botocore-1.34.108.tar.gz", hash = "sha256:384c9408c447631475dc41fdc9bf2e0f30c29c420d96bfe8b468bdc2bace3e13"},
-=======
-    {file = "botocore-1.34.88-py3-none-any.whl", hash = "sha256:e87a660599ed3e14b2a770f4efc3df2f2f6d04f3c7bfd64ddbae186667864a7b"},
-    {file = "botocore-1.34.88.tar.gz", hash = "sha256:36f2e9e8dfa856e55dbbe703aea601f134db3fddc3615f1020a755b27fd26a5e"},
->>>>>>> 186fd13 (bump some more packages)
 ]
 
 [package.dependencies]
@@ -1698,22 +1676,13 @@ tomli = {version = "*", markers = "python_version > \"3.6\" and python_version <
 
 [[package]]
 name = "ipython"
-<<<<<<< HEAD
 version = "8.24.0"
-=======
-version = "8.23.0"
->>>>>>> 186fd13 (bump some more packages)
 description = "IPython: Productive Interactive Computing"
 optional = false
 python-versions = ">=3.10"
 files = [
-<<<<<<< HEAD
     {file = "ipython-8.24.0-py3-none-any.whl", hash = "sha256:d7bf2f6c4314984e3e02393213bab8703cf163ede39672ce5918c51fe253a2a3"},
     {file = "ipython-8.24.0.tar.gz", hash = "sha256:010db3f8a728a578bb641fdd06c063b9fb8e96a9464c63aec6310fbcb5e80501"},
-=======
-    {file = "ipython-8.23.0-py3-none-any.whl", hash = "sha256:07232af52a5ba146dc3372c7bf52a0f890a23edf38d77caef8d53f9cdc2584c1"},
-    {file = "ipython-8.23.0.tar.gz", hash = "sha256:7468edaf4f6de3e1b912e57f66c241e6fd3c7099f2ec2136e239e142e800274d"},
->>>>>>> 186fd13 (bump some more packages)
 ]
 
 [package.dependencies]
@@ -1727,11 +1696,7 @@ prompt-toolkit = ">=3.0.41,<3.1.0"
 pygments = ">=2.4.0"
 stack-data = "*"
 traitlets = ">=5.13.0"
-<<<<<<< HEAD
 typing-extensions = {version = ">=4.6", markers = "python_version < \"3.12\""}
-=======
-typing-extensions = {version = "*", markers = "python_version < \"3.12\""}
->>>>>>> 186fd13 (bump some more packages)
 
 [package.extras]
 all = ["ipython[black,doc,kernel,matplotlib,nbconvert,nbformat,notebook,parallel,qtconsole]", "ipython[test,test-extra]"]
@@ -1744,11 +1709,7 @@ nbformat = ["nbformat"]
 notebook = ["ipywidgets", "notebook"]
 parallel = ["ipyparallel"]
 qtconsole = ["qtconsole"]
-<<<<<<< HEAD
 test = ["pickleshare", "pytest", "pytest-asyncio (<0.22)", "testpath"]
-=======
-test = ["pickleshare", "pytest (<8)", "pytest-asyncio (<0.22)", "testpath"]
->>>>>>> 186fd13 (bump some more packages)
 test-extra = ["curio", "ipython[test]", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.23)", "pandas", "trio"]
 
 [[package]]
@@ -3615,22 +3576,13 @@ files = [
 
 [[package]]
 name = "virtualenv"
-<<<<<<< HEAD
 version = "20.26.2"
-=======
-version = "20.25.3"
->>>>>>> 186fd13 (bump some more packages)
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.7"
 files = [
-<<<<<<< HEAD
     {file = "virtualenv-20.26.2-py3-none-any.whl", hash = "sha256:a624db5e94f01ad993d476b9ee5346fdf7b9de43ccaee0e0197012dc838a0e9b"},
     {file = "virtualenv-20.26.2.tar.gz", hash = "sha256:82bf0f4eebbb78d36ddaee0283d43fe5736b53880b8a8cdcd37390a07ac3741c"},
-=======
-    {file = "virtualenv-20.25.3-py3-none-any.whl", hash = "sha256:8aac4332f2ea6ef519c648d0bc48a5b1d324994753519919bddbb1aff25a104e"},
-    {file = "virtualenv-20.25.3.tar.gz", hash = "sha256:7bb554bbdfeaacc3349fa614ea5bff6ac300fc7c335e9facf3a3bcfc703f45be"},
->>>>>>> 186fd13 (bump some more packages)
 ]
 
 [package.dependencies]
