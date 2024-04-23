@@ -1,31 +1,31 @@
 // @flow
-import React, { useState } from "react"
-import { useSelector } from "react-redux"
-import { useRequest } from "redux-query-react"
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useRequest } from "redux-query-react";
 import {
   Collapse,
   Navbar,
   Nav,
   NavbarBrand,
   NavbarToggler,
-  NavItem
-} from "reactstrap"
+  NavItem,
+} from "reactstrap";
 
-import queries from "../lib/queries"
-import { currentUserSelector } from "../lib/queries/users"
-import { routes } from "../lib/urls"
+import queries from "../lib/queries";
+import { currentUserSelector } from "../lib/queries/users";
+import { routes } from "../lib/urls";
 
-const navbarCollapseSize = "md"
+const navbarCollapseSize = "md";
 
 export const SiteNavbar = () => {
-  useRequest(queries.users.currentUserQuery())
-  const currentUser = useSelector(currentUserSelector)
+  useRequest(queries.users.currentUserQuery());
+  const currentUser = useSelector(currentUserSelector);
 
-  const [isOpen, setIsOpen] = useState(false)
-  const toggle = () => setIsOpen(!isOpen)
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => setIsOpen(!isOpen);
 
   if (!currentUser) {
-    return null
+    return null;
   }
 
   return (
@@ -95,7 +95,7 @@ export const SiteNavbar = () => {
         </Collapse>
       </Navbar>
     </div>
-  )
-}
+  );
+};
 
-export default SiteNavbar
+export default SiteNavbar;

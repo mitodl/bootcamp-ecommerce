@@ -1,17 +1,17 @@
 // @flow
-import React from "react"
-import { Switch, Route, Redirect } from "react-router-dom"
+import React from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 
-import { routes } from "../../lib/urls"
+import { routes } from "../../lib/urls";
 
-import RegisterEmailPage from "./RegisterEmailPage"
-import RegisterConfirmPage from "./RegisterConfirmPage"
-import RegisterConfirmSentPage from "./RegisterConfirmSentPage"
-import RegisterDetailsPage from "./RegisterDetailsPage"
-import RegisterExtraDetailsPage from "./RegisterExtraDetailsPage"
-import RegisterDeniedPage from "./RegisterDeniedPage"
-import RegisterErrorPage from "./RegisterErrorPage"
-import RegisterRetryCompliancePage from "./RegisterRetryCompliancePage"
+import RegisterEmailPage from "./RegisterEmailPage";
+import RegisterConfirmPage from "./RegisterConfirmPage";
+import RegisterConfirmSentPage from "./RegisterConfirmSentPage";
+import RegisterDetailsPage from "./RegisterDetailsPage";
+import RegisterExtraDetailsPage from "./RegisterExtraDetailsPage";
+import RegisterDeniedPage from "./RegisterDeniedPage";
+import RegisterErrorPage from "./RegisterErrorPage";
+import RegisterRetryCompliancePage from "./RegisterRetryCompliancePage";
 
 const RegisterPages = () => (
   <React.Fragment>
@@ -51,6 +51,6 @@ const RegisterPages = () => (
       <Redirect to={routes.register.begin} />
     </Switch>
   </React.Fragment>
-)
+);
 
-export default RegisterPages
+export default RegisterPages;

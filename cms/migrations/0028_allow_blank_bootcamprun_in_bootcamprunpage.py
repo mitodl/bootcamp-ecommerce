@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("cms", "0027_letter_template_image_blank")]
 
     operations = [

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("klasses", "0022_add_related_name_in_bootcampruncertificate")]
 
     operations = [

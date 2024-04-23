@@ -1,24 +1,24 @@
 // @flow
-import React from "react"
+import React from "react";
 
-import { JOBMA, JOBMA_SITE } from "../constants"
+import { JOBMA, JOBMA_SITE } from "../constants";
 
-import type { ApplicationDetail } from "../flow/applicationTypes"
+import type { ApplicationDetail } from "../flow/applicationTypes";
 
 type Props = {
   application: ApplicationDetail,
-  stepId: number
-}
+  stepId: number,
+};
 
 export default function TakeVideoInterviewDisplay({
   application,
-  stepId
+  stepId,
 }: Props) {
   const submission = application.submissions.find(
-    submission => submission.run_application_step_id === stepId
-  )
-  const url = submission && submission.take_interview_url
-  const token = submission && submission.interview_token
+    (submission) => submission.run_application_step_id === stepId,
+  );
+  const url = submission && submission.take_interview_url;
+  const token = submission && submission.interview_token;
 
   return (
     <div className="container drawer-wrapper take-video-interview">
@@ -46,5 +46,5 @@ export default function TakeVideoInterviewDisplay({
         </a>
       </div>
     </div>
-  )
+  );
 }

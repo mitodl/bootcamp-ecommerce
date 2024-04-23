@@ -1,27 +1,27 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
-import { REGISTER_DETAILS_PAGE_TITLE } from "../../constants"
-import { compose } from "redux"
-import { connect } from "react-redux"
-import { mutateAsync } from "redux-query"
-import { connectRequest } from "redux-query-react"
-import { createStructuredSelector } from "reselect"
-import { MetaTags } from "react-meta-tags"
+import React from "react";
+import { REGISTER_DETAILS_PAGE_TITLE } from "../../constants";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import { mutateAsync } from "redux-query";
+import { connectRequest } from "redux-query-react";
+import { createStructuredSelector } from "reselect";
+import { MetaTags } from "react-meta-tags";
 
-import auth from "../../lib/queries/auth"
-import { STATE_ERROR, handleAuthResponse } from "../../lib/auth"
-import queries from "../../lib/queries"
+import auth from "../../lib/queries/auth";
+import { STATE_ERROR, handleAuthResponse } from "../../lib/auth";
+import queries from "../../lib/queries";
 import {
   qsBackendSelector,
   qsErrorCodeSelector,
-  qsPartialTokenSelector
-} from "../../lib/selectors"
-import { formatTitle, isNilOrBlank, transformError } from "../../util/util"
+  qsPartialTokenSelector,
+} from "../../lib/selectors";
+import { formatTitle, isNilOrBlank, transformError } from "../../util/util";
 
-import RegisterDetailsForm from "../../components/forms/RegisterDetailsForm"
+import RegisterDetailsForm from "../../components/forms/RegisterDetailsForm";
 
-import type { RouterHistory, Location } from "react-router"
+import type { RouterHistory, Location } from "react-router";
 
 import type {
   AuthResponse,
@@ -29,64 +29,64 @@ import type {
   Country,
   HttpAuthResponse,
   PartialProfile,
-  User
-} from "../../flow/authTypes"
+  User,
+} from "../../flow/authTypes";
 
 type RegisterProps = {|
   location: Location,
   history: RouterHistory,
-  params: { partialToken: string, backend: string, errors: string }
-|}
+  params: { partialToken: string, backend: string, errors: string },
+|};
 
 type StateProps = {|
-  countries: Array<Country>
-|}
+  countries: Array<Country>,
+|};
 
 type DispatchProps = {|
   registerDetails: (
     name: string,
     legalAddress: LegalAddress,
     partialToken: string,
-    backend: string
-  ) => Promise<HttpAuthResponse<AuthResponse>>
-|}
+    backend: string,
+  ) => Promise<HttpAuthResponse<AuthResponse>>,
+|};
 
 type Props = {|
   ...RegisterProps,
   ...StateProps,
-  ...DispatchProps
-|}
+  ...DispatchProps,
+|};
 
 type State = {
-  user: ?User
-}
+  user: ?User,
+};
 
 export class RegisterRetryCompliancePage extends React.Component<Props, State> {
   state = {
-    user: null
-  }
+    user: null,
+  };
 
   async componentDidMount() {
     const {
       registerDetails,
       history,
-      params: { partialToken, backend }
-    } = this.props
+      params: { partialToken, backend },
+    } = this.props;
     const { body } = await registerDetails(
       // $FlowFixMe
       null,
       // $FlowFixMe
       null,
       partialToken,
-      backend
-    )
+      backend,
+    );
 
     if (!isNilOrBlank(body.errors)) {
       // there is still a compliance issue, set user data in state
-      this.setState({ user: body.extra_data })
+      this.setState({ user: body.extra_data });
     } else {
       // compliance check just passed, nothing to see here, move along
-      handleAuthResponse(history, body, {})
+      handleAuthResponse(history, body, {});
     }
   }
 
@@ -94,33 +94,33 @@ export class RegisterRetryCompliancePage extends React.Component<Props, State> {
     const {
       history,
       registerDetails,
-      params: { partialToken, backend }
-    } = this.props
+      params: { partialToken, backend },
+    } = this.props;
     try {
       // $FlowFixMe
       const { body } = await registerDetails(
         detailsData.profile,
         detailsData.legal_address,
         partialToken,
-        backend
-      )
+        backend,
+      );
 
       handleAuthResponse(history, body, {
         // eslint-disable-next-line camelcase
         [STATE_ERROR]: ({ field_errors }: AuthResponse) =>
-          setErrors(field_errors)
-      })
+          setErrors(field_errors),
+      });
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   render() {
     const {
       countries,
-      params: { errors }
-    } = this.props
-    const { user } = this.state
+      params: { errors },
+    } = this.props;
+    const { user } = this.state;
     return countries && user ? (
       <div className="container auth-page registration-page">
         <MetaTags>
@@ -158,26 +158,26 @@ export class RegisterRetryCompliancePage extends React.Component<Props, State> {
           </div>
         </div>
       </div>
-    ) : null
+    ) : null;
   }
 }
 
 const mapStateToProps = createStructuredSelector({
   params: createStructuredSelector({
     partialToken: qsPartialTokenSelector,
-    backend:      qsBackendSelector,
-    errors:       qsErrorCodeSelector
+    backend: qsBackendSelector,
+    errors: qsErrorCodeSelector,
   }),
-  countries: queries.users.countriesSelector
-})
+  countries: queries.users.countriesSelector,
+});
 
-const mapPropsToConfig = () => [queries.users.countriesQuery()]
+const mapPropsToConfig = () => [queries.users.countriesQuery()];
 
 const registerDetails = (
   profile: PartialProfile,
   legalAddress: LegalAddress,
   partialToken: string,
-  backend
+  backend,
 ) =>
   mutateAsync(
     // $FlowFixMe
@@ -185,16 +185,16 @@ const registerDetails = (
       profile,
       legalAddress,
       partialToken,
-      backend
-    )
-  )
+      backend,
+    ),
+  );
 
 const mapDispatchToProps = {
-  registerDetails
-}
+  registerDetails,
+};
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   // $FlowFixMe
-  connectRequest(mapPropsToConfig)
-)(RegisterRetryCompliancePage)
+  connectRequest(mapPropsToConfig),
+)(RegisterRetryCompliancePage);

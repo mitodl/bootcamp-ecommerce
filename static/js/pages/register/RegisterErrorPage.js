@@ -1,10 +1,10 @@
 // @flow
 /* global SETTINGS:false */
-import React from "react"
-import { MetaTags } from "react-meta-tags"
+import React from "react";
+import { MetaTags } from "react-meta-tags";
 
-import { REGISTER_ERROR_PAGE_TITLE } from "../../constants"
-import { formatTitle } from "../../util/util"
+import { REGISTER_ERROR_PAGE_TITLE } from "../../constants";
+import { formatTitle } from "../../util/util";
 
 const RegisterErrorPage = () => (
   <div className="container auth-page">
@@ -28,6 +28,6 @@ const RegisterErrorPage = () => (
       </div>
     </div>
   </div>
-)
+);
 
-export default RegisterErrorPage
+export default RegisterErrorPage;

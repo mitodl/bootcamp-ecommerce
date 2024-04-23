@@ -1,28 +1,28 @@
 // @flow
-import React from "react"
-import { Formik, Form } from "formik"
+import React from "react";
+import { Formik, Form } from "formik";
 
-import { profileValidation } from "../../lib/validation"
-import { ProfileFields } from "./ProfileFormFields"
-import ButtonWithLoader from "../loaders/ButtonWithLoader"
+import { profileValidation } from "../../lib/validation";
+import { ProfileFields } from "./ProfileFormFields";
+import ButtonWithLoader from "../loaders/ButtonWithLoader";
 
 type Props = {
-  onSubmit: Function
-}
+  onSubmit: Function,
+};
 
 const INITIAL_VALUES = {
   profile: {
-    birth_year:        "",
-    gender:            "",
-    company:           "",
-    job_title:         "",
-    job_function:      "",
-    industry:          "",
-    company_size:      "",
-    years_experience:  "",
-    highest_education: ""
-  }
-}
+    birth_year: "",
+    gender: "",
+    company: "",
+    job_title: "",
+    job_function: "",
+    industry: "",
+    company_size: "",
+    years_experience: "",
+    highest_education: "",
+  },
+};
 
 const RegisterExtraDetailsForm = ({ onSubmit }: Props) => (
   <Formik
@@ -47,6 +47,6 @@ const RegisterExtraDetailsForm = ({ onSubmit }: Props) => (
       </Form>
     )}
   />
-)
+);
 
-export default RegisterExtraDetailsForm
+export default RegisterExtraDetailsForm;

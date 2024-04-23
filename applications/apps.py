@@ -10,4 +10,3 @@ class ApplicationConfig(AppConfig):
 
     def ready(self):
         """Application is ready"""
-        import applications.signals  # pylint:disable=unused-import, unused-variable

@@ -396,7 +396,7 @@ def import_alumni(csv_path):
         for alum in alumni:
             try:
                 import_alum(alum)
-            except:
+            except:  # noqa: E722
                 raise AlumImportException(
                     f"Error while importing row for user={alum.learner_email} bootcamp={alum.bootcamp_name} run={alum.bootcamp_run_title}"
                 )

@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 """Test for NovoEd API functionality"""
+
 import pytest
 
 from rest_framework import status

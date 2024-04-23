@@ -1,4 +1,4 @@
-""" Tests for main.middleware """
+"""Tests for main.middleware"""
 
 import pytest
 from django.test import override_settings

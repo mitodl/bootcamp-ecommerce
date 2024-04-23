@@ -1,4 +1,4 @@
-""" Tests for cms pages. """
+"""Tests for cms pages."""
 
 import json
 

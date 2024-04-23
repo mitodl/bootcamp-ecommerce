@@ -4,21 +4,16 @@ $slick-red: #a31f34;
 /* Slider */
 .slick-slider {
   position: relative;
-
   display: block;
   box-sizing: border-box;
-
   user-select: none;
-
   touch-action: pan-y;
 }
 
 .slick-list {
   position: relative;
-
   display: block;
   overflow: hidden;
-
   margin: 0;
   padding: 0;
 }
@@ -45,14 +40,13 @@ $slick-red: #a31f34;
   margin-right: auto;
 }
 
-.slick-track:before,
-.slick-track:after {
+.slick-track::before,
+.slick-track::after {
   display: table;
-
   content: "";
 }
 
-.slick-track:after {
+.slick-track::after {
   clear: both;
 }
 
@@ -63,7 +57,6 @@ $slick-red: #a31f34;
 .slick-slide {
   display: none;
   float: left;
-
   height: inherit !important;
   min-height: 1px;
 }
@@ -94,9 +87,7 @@ $slick-red: #a31f34;
 
 .slick-vertical .slick-slide {
   display: block;
-
   height: auto;
-
   border: 1px solid transparent;
 }
 
@@ -120,7 +111,7 @@ $slick-red: #a31f34;
   height: 30px;
   border-radius: 50%;
   outline: none !important;
-  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 5px 5px 10px 0 rgb(0 0 0 / 10%);
   margin: -85px 0 0;
   cursor: pointer;
 
@@ -136,10 +127,12 @@ $slick-red: #a31f34;
   @include media-breakpoint-up(lg) {
     padding: 15px 0;
   }
-  @media (min-width: 1275px) {
+
+  @media (width >= 1275px) {
     left: -65px;
   }
-  @media (min-width: 1450px) {
+
+  @media (width >= 1450px) {
     left: -135px;
   }
 
@@ -148,16 +141,18 @@ $slick-red: #a31f34;
     background: black;
   }
 
-  &:after {
+  &::after {
     font-size: 25px;
     line-height: 30px;
     font-family: icomoon;
     content: "\e900";
+
     @include media-breakpoint-up(md) {
       font-size: 22px;
       line-height: 20px;
     }
-    @media (min-width: 1275px) {
+
+    @media (width >= 1275px) {
       font-size: 30px;
       line-height: 40px;
     }
@@ -172,14 +167,15 @@ $slick-red: #a31f34;
     right: -25px;
   }
 
-  &:after {
+  &::after {
     content: "\e901";
   }
-  @media (min-width: 1275px) {
+
+  @media (width >= 1275px) {
     right: -65px;
   }
 
-  @media (min-width: 1450px) {
+  @media (width >= 1450px) {
     right: -135px;
   }
 }

@@ -1,11 +1,11 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
-import * as R from "ramda"
+import React from "react";
+import * as R from "ramda";
 
-import ProgressDetailRow from "./ProgressDetailRow"
+import ProgressDetailRow from "./ProgressDetailRow";
 
-import { formatReadableDateFromStr } from "../../util/util"
+import { formatReadableDateFromStr } from "../../util/util";
 import {
   PAYMENT,
   PROFILE_VIEW,
@@ -15,30 +15,30 @@ import {
   AWAITING_RESUME,
   AWAITING_USER_SUBMISSIONS,
   AWAITING_SUBMISSION_REVIEW,
-  REVIEW_STATUS_WAITLISTED
-} from "../../constants"
+  REVIEW_STATUS_WAITLISTED,
+} from "../../constants";
 
-import type { DrawerChangePayload } from "../../reducers/drawer"
+import type { DrawerChangePayload } from "../../reducers/drawer";
 import type {
   ApplicationDetail,
   ApplicationRunStep,
-  ApplicationSubmission
-} from "../../flow/applicationTypes"
-import type { User } from "../../flow/authTypes"
-import { createNovoEdLinkUrl } from "../../util/util"
+  ApplicationSubmission,
+} from "../../flow/applicationTypes";
+import type { User } from "../../flow/authTypes";
+import { createNovoEdLinkUrl } from "../../util/util";
 
 type DetailSectionProps = {
   ready: boolean,
   fulfilled: boolean,
-  openDrawer: (actionPayload: DrawerChangePayload) => void
-}
+  openDrawer: (actionPayload: DrawerChangePayload) => void,
+};
 
 type ProfileDetailProps = DetailSectionProps & {
-  user: User
-}
+  user: User,
+};
 
 export const ProfileDetail = (props: ProfileDetailProps): React$Element<*> => {
-  const { fulfilled, openDrawer, user } = props
+  const { fulfilled, openDrawer, user } = props;
 
   return (
     <ProgressDetailRow className="profile" fulfilled={fulfilled}>
@@ -60,20 +60,20 @@ export const ProfileDetail = (props: ProfileDetailProps): React$Element<*> => {
         </button>
       </div>
     </ProgressDetailRow>
-  )
-}
+  );
+};
 
 type ResumeDetailProps = DetailSectionProps & {
-  applicationDetail: ApplicationDetail
-}
+  applicationDetail: ApplicationDetail,
+};
 
 export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
-  const { ready, fulfilled, openDrawer, applicationDetail } = props
+  const { ready, fulfilled, openDrawer, applicationDetail } = props;
   const isEditable = [
     AWAITING_RESUME,
     AWAITING_USER_SUBMISSIONS,
-    AWAITING_SUBMISSION_REVIEW
-  ].includes(applicationDetail.state)
+    AWAITING_SUBMISSION_REVIEW,
+  ].includes(applicationDetail.state);
 
   return (
     <ProgressDetailRow className="resume" fulfilled={fulfilled}>
@@ -93,37 +93,31 @@ export const ResumeDetail = (props: ResumeDetailProps): React$Element<*> => {
             onClick={R.partial(openDrawer, [
               {
                 type: RESUME_UPLOAD,
-                meta: { applicationId: applicationDetail.id }
-              }
+                meta: { applicationId: applicationDetail.id },
+              },
             ])}
           >
-            {fulfilled ?
-              "View/Edit Resume or LinkedIn Profile" :
-              "Add Resume or LinkedIn Profile"}
+            {fulfilled
+              ? "View/Edit Resume or LinkedIn Profile"
+              : "Add Resume or LinkedIn Profile"}
           </button>
         </div>
       )}
     </ProgressDetailRow>
-  )
-}
+  );
+};
 
 type SubmissionDetailProps = DetailSectionProps & {
   step: ApplicationRunStep,
   submission: ?ApplicationSubmission,
-  applicationDetail: ApplicationDetail
-}
+  applicationDetail: ApplicationDetail,
+};
 
 export const VideoInterviewDetail = (
-  props: SubmissionDetailProps
+  props: SubmissionDetailProps,
 ): React$Element<*> => {
-  const {
-    ready,
-    fulfilled,
-    step,
-    submission,
-    openDrawer,
-    applicationDetail
-  } = props
+  const { ready, fulfilled, step, submission, openDrawer, applicationDetail } =
+    props;
 
   return (
     <ProgressDetailRow className="submission" fulfilled={fulfilled}>
@@ -140,7 +134,7 @@ export const VideoInterviewDetail = (
               <div>
                 <span className="label">Early Bird Deadline: </span>
                 {formatReadableDateFromStr(
-                  applicationDetail.bootcamp_run.early_bird_deadline
+                  applicationDetail.bootcamp_run.early_bird_deadline,
                 )}
               </div>
             ) : null}
@@ -158,8 +152,8 @@ export const VideoInterviewDetail = (
               onClick={R.partial(openDrawer, [
                 {
                   type: TAKE_VIDEO_INTERVIEW,
-                  meta: { application: applicationDetail, stepId: step.id }
-                }
+                  meta: { application: applicationDetail, stepId: step.id },
+                },
               ])}
             >
               Take Video Interview
@@ -168,11 +162,11 @@ export const VideoInterviewDetail = (
         ) : null
       ) : null}
     </ProgressDetailRow>
-  )
-}
+  );
+};
 
 export const QuizDetail = (props: SubmissionDetailProps): React$Element<*> => {
-  const { fulfilled, step, submission } = props
+  const { fulfilled, step, submission } = props;
 
   return (
     <ProgressDetailRow className="submission" fulfilled={fulfilled}>
@@ -191,25 +185,25 @@ export const QuizDetail = (props: SubmissionDetailProps): React$Element<*> => {
         )}
       </div>
     </ProgressDetailRow>
-  )
-}
+  );
+};
 
 export const ReviewDetail = (
-  props: SubmissionDetailProps
+  props: SubmissionDetailProps,
 ): React$Element<*> => {
-  const { fulfilled, submission } = props
+  const { fulfilled, submission } = props;
 
-  let status
+  let status;
   if (submission) {
     if (
       !submission.review_status_date ||
       submission.review_status === REVIEW_STATUS_WAITLISTED
     ) {
-      status = "Pending"
+      status = "Pending";
     } else if (submission.review_status === REVIEW_STATUS_REJECTED) {
-      status = "Rejected"
+      status = "Rejected";
     } else {
-      status = "Approved"
+      status = "Approved";
     }
   }
 
@@ -223,15 +217,15 @@ export const ReviewDetail = (
         </div>
       )}
     </ProgressDetailRow>
-  )
-}
+  );
+};
 
 type PaymentDetailProps = DetailSectionProps & {
-  applicationDetail: ApplicationDetail
-}
+  applicationDetail: ApplicationDetail,
+};
 
 export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
-  const { ready, fulfilled, openDrawer, applicationDetail } = props
+  const { ready, fulfilled, openDrawer, applicationDetail } = props;
 
   return (
     <ProgressDetailRow className="payment" fulfilled={fulfilled}>
@@ -247,8 +241,8 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
             onClick={R.partial(openDrawer, [
               {
                 type: PAYMENT,
-                meta: { application: applicationDetail }
-              }
+                meta: { application: applicationDetail },
+              },
             ])}
           >
             Make a Payment
@@ -256,28 +250,28 @@ export const PaymentDetail = (props: PaymentDetailProps): React$Element<*> => {
         </div>
       ) : null}
     </ProgressDetailRow>
-  )
-}
+  );
+};
 
 type BootcampStartProps = {
   ready: boolean,
   fulfilled: boolean,
-  applicationDetail: ApplicationDetail
-}
+  applicationDetail: ApplicationDetail,
+};
 
 export const BootcampStartDetail = (
-  props: BootcampStartProps
+  props: BootcampStartProps,
 ): React$Element<*> => {
-  const { ready, fulfilled, applicationDetail } = props
-  let novoedUrl = null
+  const { ready, fulfilled, applicationDetail } = props;
+  let novoedUrl = null;
   if (
     SETTINGS.novoed_base_url &&
     applicationDetail.bootcamp_run.novoed_course_stub
   ) {
     novoedUrl = createNovoEdLinkUrl(
       SETTINGS.novoed_base_url,
-      applicationDetail.bootcamp_run.novoed_course_stub
-    )
+      applicationDetail.bootcamp_run.novoed_course_stub,
+    );
   }
 
   return (
@@ -297,5 +291,5 @@ export const BootcampStartDetail = (
         </div>
       ) : null}
     </ProgressDetailRow>
-  )
-}
+  );
+};

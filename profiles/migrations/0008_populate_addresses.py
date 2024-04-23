@@ -16,7 +16,6 @@ def populate_addresses(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("profiles", "0007_profile_timestamped")]
 
     operations = [migrations.RunPython(populate_addresses, migrations.RunPython.noop)]

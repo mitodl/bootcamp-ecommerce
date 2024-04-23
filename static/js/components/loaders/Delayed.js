@@ -1,38 +1,38 @@
 // @flow
-import React from "react"
+import React from "react";
 
 type Props = {
   delay?: number,
-  children: React$Element<*>
-}
+  children: React$Element<*>,
+};
 type State = {
-  enabled: boolean
-}
+  enabled: boolean,
+};
 export default class Delayed extends React.Component<Props, State> {
-  timeoutId: any
+  timeoutId: any;
 
   constructor(props: Props) {
-    super(props)
+    super(props);
     this.state = {
-      enabled: false
-    }
-    let delay = props.delay
+      enabled: false,
+    };
+    let delay = props.delay;
     if (delay === undefined) {
-      delay = 1000
+      delay = 1000;
     }
 
     // delay loader temporarily to avoid flickering UI
     this.timeoutId = setTimeout(() => {
-      this.setState({ enabled: true })
-    }, delay)
+      this.setState({ enabled: true });
+    }, delay);
   }
 
   componentWillUnmount() {
-    clearTimeout(this.timeoutId)
+    clearTimeout(this.timeoutId);
   }
 
   render() {
-    const { enabled } = this.state
-    return enabled ? this.props.children : null
+    const { enabled } = this.state;
+    return enabled ? this.props.children : null;
   }
 }

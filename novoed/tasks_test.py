@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 """NovoEd task tests"""
+
 import pytest
 
 from novoed.tasks import enroll_users_in_novoed_course, unenroll_user_from_novoed_course

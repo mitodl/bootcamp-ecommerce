@@ -14,7 +14,6 @@ def generate_bootcamp_run_key(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("ecommerce", "0008_make_line_bootcamp_run_id_non_nullable")]
 
     operations = [

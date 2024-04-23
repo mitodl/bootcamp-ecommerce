@@ -1,11 +1,11 @@
 // @flow
-import React from "react"
-import { Switch, Route } from "react-router-dom"
+import React from "react";
+import { Switch, Route } from "react-router-dom";
 
-import { routes } from "../../lib/urls"
+import { routes } from "../../lib/urls";
 
-import ApplicationDashboardPage from "./ApplicationDashboardPage"
-import PaymentHistoryPage from "./PaymentHistoryPage"
+import ApplicationDashboardPage from "./ApplicationDashboardPage";
+import PaymentHistoryPage from "./PaymentHistoryPage";
 
 const ApplicationPages = () => (
   <React.Fragment>
@@ -22,6 +22,6 @@ const ApplicationPages = () => (
       />
     </Switch>
   </React.Fragment>
-)
+);
 
-export default ApplicationPages
+export default ApplicationPages;

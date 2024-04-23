@@ -1,23 +1,23 @@
 // @flow
 /* global SETTINGS:false */
-import React from "react"
-import { REGISTER_DENIED_PAGE_TITLE } from "../../constants"
-import { connect } from "react-redux"
-import { createStructuredSelector } from "reselect"
+import React from "react";
+import { REGISTER_DENIED_PAGE_TITLE } from "../../constants";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
 
-import { qsErrorSelector } from "../../lib/selectors"
-import { MetaTags } from "react-meta-tags"
-import { formatTitle } from "../../util/util"
+import { qsErrorSelector } from "../../lib/selectors";
+import { MetaTags } from "react-meta-tags";
+import { formatTitle } from "../../util/util";
 
 type Props = {|
-  params: { error: ?string }
-|}
+  params: { error: ?string },
+|};
 
 export class RegisterDeniedPage extends React.Component<Props> {
   render() {
     const {
-      params: { error }
-    } = this.props
+      params: { error },
+    } = this.props;
 
     return (
       <div className="container auth-page">
@@ -42,12 +42,12 @@ export class RegisterDeniedPage extends React.Component<Props> {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  params: createStructuredSelector({ error: qsErrorSelector })
-})
+  params: createStructuredSelector({ error: qsErrorSelector }),
+});
 
-export default connect(mapStateToProps)(RegisterDeniedPage)
+export default connect(mapStateToProps)(RegisterDeniedPage);

@@ -1,10 +1,10 @@
 @font-face {
-  font-family: 'canterburyregular';
-  src: url('../fonts/canterbury.regular-webfont.woff2') format('woff2'),
-  url('../fonts/canterbury.regular-webfont.woff') format('woff');
+  font-family: canterburyregular;
+  src:
+    url("../fonts/canterbury.regular-webfont.woff2") format("woff2"),
+    url("../fonts/canterbury.regular-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
-
 }
 
 .certificate-page {
@@ -44,9 +44,14 @@
   max-width: 1400px;
   border-top: 4px solid $cert-footer-border;
   padding: 60px 15px;
-  font: 12px/17px "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font:
+    12px/17px "Open Sans",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
 
-  &:after {
+  &::after {
     clear: both;
     content: "";
     display: block;
@@ -112,6 +117,7 @@
     @include media-breakpoint-down(xs) {
       margin: 0 10px 15px;
     }
+
     display: inline-block;
     vertical-align: middle;
     margin: 0 0 0 15px;
@@ -157,7 +163,7 @@
   padding: 30px 15px;
   max-width: 1400px;
   margin: 0 auto;
-  font-family: "canterburyregular", serif;
+  font-family: canterburyregular, serif;
 
   .certificate {
     border: 2px solid $cert-gray-light;
@@ -174,14 +180,14 @@
       align-items: center;
       justify-content: center;
 
-      @media (max-width: 480px) {
+      @media (width <= 480px) {
         margin: 0 auto 20px;
       }
 
-      >:first-child {
+      > :first-child {
         margin-right: 40px;
 
-        @media (max-width: 480px) {
+        @media (width <= 480px) {
           margin-right: 20px;
         }
       }
@@ -198,7 +204,7 @@
           min-height: 56px;
           height: 56px;
 
-          @media (max-width: 480px) {
+          @media (width <= 480px) {
             min-height: 40px;
             height: 40px;
           }
@@ -207,7 +213,6 @@
     }
 
     .certificate-c-logo {
-
       img {
         display: block;
         width: 100%;
@@ -219,7 +224,7 @@
           min-height: 56px;
           height: 56px;
 
-          @media (max-width: 480px) {
+          @media (width <= 480px) {
             min-height: 40px;
             height: 40px;
           }
@@ -233,11 +238,11 @@
     width: 90px;
     padding-top: 20px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       padding-top: 30px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       padding-top: 60px;
     }
 
@@ -253,15 +258,15 @@
     line-height: 1.2;
     font-size: 20px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 31px;
     }
 
-    @media (min-width: 992px) {
+    @media (width >= 992px) {
       font-size: 35px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 56px;
     }
   }
@@ -271,11 +276,11 @@
     line-height: 1.2;
     font-size: 32px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 50px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 70px;
     }
   }
@@ -286,12 +291,12 @@
     font-size: 18px;
     margin: 0 0 22px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 27px;
       margin: 0 0 35px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 35px;
       margin: 0 0 60px;
     }
@@ -302,15 +307,15 @@
     line-height: 1.2;
     font-size: 24px;
     font-style: italic;
-    font-family: 'Times', Times New Roman, serif;
+    font-family: Times, "Times New Roman", serif;
     margin: 0 0 12px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 36px;
       margin: 0 0 35px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       margin: 0 0 60px;
       font-size: 48px;
     }
@@ -321,11 +326,11 @@
     line-height: 1.2;
     font-size: 18px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 27px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 35px;
     }
   }
@@ -335,11 +340,11 @@
     line-height: 1.2;
     font-size: 28px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 42px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 55px;
     }
   }
@@ -349,11 +354,11 @@
     line-height: 1.2;
     font-size: 24px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 36px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 45px;
     }
   }
@@ -363,11 +368,11 @@
     line-height: 1.2;
     font-size: 24px;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: 36px;
     }
 
-    @media (min-width: 1400px) {
+    @media (width >= 1400px) {
       font-size: 45px;
     }
   }
@@ -378,15 +383,15 @@
   margin: 0 auto;
   max-width: 1000px;
   list-style: none;
-  letter-spacing: -.32em;
+  letter-spacing: -0.32em;
   text-align: center;
-  font-family: 'Times', Times New Roman, serif;
+  font-family: Times, "Times New Roman", serif;
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     padding: 30px 0 0;
   }
 
-  @media (min-width: 1400px) {
+  @media (width >= 1400px) {
     padding: 60px 0 0;
   }
 
@@ -397,7 +402,7 @@
     padding: 0 15px 20px;
     width: 50%;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       width: 20%;
     }
 
@@ -458,7 +463,6 @@
   }
 
   .c-mit-logo {
-
     padding: 0;
     overflow: hidden;
     line-height: 0;
@@ -466,7 +470,6 @@
   }
 
   .certificate-page {
-
     .certificate-logo {
       max-width: 170px;
       margin: 0 auto 10px;

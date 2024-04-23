@@ -1,10 +1,10 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
+import React from "react";
 
 type Props = {
-  className?: string
-}
+  className?: string,
+};
 
 const SupportLink = (props: Props): React$Element<*> => (
   <React.Fragment>
@@ -18,6 +18,6 @@ const SupportLink = (props: Props): React$Element<*> => (
     </a>{" "}
     to resolve this issue.
   </React.Fragment>
-)
+);
 
-export default SupportLink
+export default SupportLink;

@@ -274,7 +274,7 @@ def create_run_enrollments(user, runs, order=None):
     for run in runs:
         try:
             successful_enrollments.append(create_run_enrollment(user, run, order))
-        except:  # pylint: disable=bare-except
+        except:  # noqa: E722
             log.exception(
                 "Failed to create/update enrollment record (user: %s, run: %s, order: %s)",
                 user,

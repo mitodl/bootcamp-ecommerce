@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("klasses", "0002_klass_id_unique")]
 
     operations = [

@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("cms", "0031_certificatepage_new_fields")]
 
     operations = [

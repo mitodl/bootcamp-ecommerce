@@ -1,4 +1,4 @@
-""" Middleware classes for the main app"""
+"""Middleware classes for the main app"""
 
 from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin

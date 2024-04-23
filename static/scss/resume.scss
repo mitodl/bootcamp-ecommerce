@@ -1,5 +1,8 @@
 .resume-linkedin-drawer {
-  p, .caption, .uploaded, .file-types {
+  p,
+  .caption,
+  .uploaded,
+  .file-types {
     color: $med-dark-gray;
   }
 
@@ -75,7 +78,8 @@
       background-color: $button-red;
       border-color: $button-red;
 
-      &:disabled, &[disabled] {
+      &:disabled,
+      &[disabled] {
         color: $white !important;
         background-color: $btn-disabled-gray !important;
         border-color: $btn-disabled-gray !important;

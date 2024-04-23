@@ -1,5 +1,8 @@
 {% if notification %}
-  <div class="notification site-wide d-none" data-notification-id="{{ notification.id }}">
-    {{ notification|safe }}
-  </div>
+<div
+  class="notification site-wide d-none"
+  data-notification-id="{{ notification.id }}"
+>
+  {{ notification|safe }}
+</div>
 {% endif %}

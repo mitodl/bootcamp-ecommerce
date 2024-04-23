@@ -1,69 +1,69 @@
-const webpack = require("webpack")
-const path = require("path")
-const BundleTracker = require("webpack-bundle-tracker")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const { config, babelSharedLoader } = require(path.resolve(
-  "./webpack.config.shared.js"
-))
+const webpack = require("webpack");
+const path = require("path");
+const BundleTracker = require("webpack-bundle-tracker");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { config, babelSharedLoader } = require(
+  path.resolve("./webpack.config.shared.js"),
+);
 
-const prodBabelConfig = Object.assign({}, babelSharedLoader)
+const prodBabelConfig = Object.assign({}, babelSharedLoader);
 
 prodBabelConfig.query.plugins.push(
   "@babel/plugin-transform-react-constant-elements",
-  "@babel/plugin-transform-react-inline-elements"
-)
+  "@babel/plugin-transform-react-inline-elements",
+);
 
-const prodConfig = Object.assign({}, config)
+const prodConfig = Object.assign({}, config);
 prodConfig.module.rules = [
   prodBabelConfig,
   ...config.module.rules,
   {
     test: /\.css$|\.scss$/,
-    use:  [
+    use: [
       {
-        loader: MiniCssExtractPlugin.loader
+        loader: MiniCssExtractPlugin.loader,
       },
       "css-loader",
       "postcss-loader",
-      "sass-loader"
-    ]
-  }
-]
+      "sass-loader",
+    ],
+  },
+];
 
 module.exports = Object.assign(prodConfig, {
   context: __dirname,
-  mode:    "production",
-  output:  {
-    path:               path.resolve("./static/bundles/"),
-    filename:           "[name]-[chunkhash].js",
-    chunkFilename:      "[id]-[chunkhash].js",
-    crossOriginLoading: "anonymous"
+  mode: "production",
+  output: {
+    path: path.resolve("./static/bundles/"),
+    filename: "[name]-[chunkhash].js",
+    chunkFilename: "[id]-[chunkhash].js",
+    crossOriginLoading: "anonymous",
   },
 
   plugins: [
     new webpack.DefinePlugin({
       "process.env": {
-        NODE_ENV: '"production"'
-      }
+        NODE_ENV: '"production"',
+      },
     }),
     new BundleTracker({
       path: __dirname,
-      filename: "./webpack-stats.json"
+      filename: "./webpack-stats.json",
     }),
     new webpack.LoaderOptionsPlugin({
-      minimize: true
+      minimize: true,
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new MiniCssExtractPlugin({
-      filename: "[name]-[contenthash].css"
-    })
+      filename: "[name]-[contenthash].css",
+    }),
   ],
   optimization: {
     splitChunks: {
-      name:      "common",
-      minChunks: 2
+      name: "common",
+      minChunks: 2,
     },
-    minimize: true
+    minimize: true,
   },
-  devtool: "source-map"
-})
+  devtool: "source-map",
+});

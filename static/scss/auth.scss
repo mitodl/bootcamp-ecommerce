@@ -57,7 +57,7 @@
 
 .auth-step {
   text-align: right;
-  font-family: "Lato", Helvetica, sans-serif;
+  font-family: Lato, Helvetica, sans-serif;
   font-size: 19px;
   margin-top: -18px;
   padding-bottom: 21px;
@@ -108,8 +108,7 @@
 
 .register-error-icon {
   margin: 0 auto 15px;
-
-  background-image: url(/static/images/icon-warning.svg);
+  background-image: url("/static/images/icon-warning.svg");
   background-size: cover;
   background-repeat: no-repeat;
   width: 50px;
@@ -134,7 +133,7 @@
   color: $label-gray;
   width: 201px;
 
-  &:after {
+  &::after {
     content: ": ";
   }
 }

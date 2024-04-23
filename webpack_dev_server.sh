@@ -10,8 +10,8 @@ WEBPACK_PORT='8098'
 #       the webpack server on the host machine rather than the container.
 # If neither of those are true, running this script is basically a no-op.
 
-if [[ "$1" == "--install" ]] ; then
-yarn install --frozen-lockfile && echo "Finished yarn install"
+if [[ $1 == "--install" ]]; then
+	yarn install --frozen-lockfile && echo "Finished yarn install"
 fi
 # Start the webpack dev server on the appropriate host and port
 node ./hot-reload-dev-server.js --host "$WEBPACK_HOST" --port "$WEBPACK_PORT"

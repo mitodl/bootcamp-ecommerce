@@ -1,21 +1,21 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
+import React from "react";
 
 type DetailRowProps = {
   className: string,
   fulfilled: boolean,
-  children?: React$Node
-}
+  children?: React$Node,
+};
 
 /*
  * Renders a section of the application progress bar (with a checkbox if this step is complete) along with the
  * detail content of the application step.
  */
 export default function ProgressDetailRow(
-  props: DetailRowProps
+  props: DetailRowProps,
 ): React$Element<*> {
-  const { children, className, fulfilled } = props
+  const { children, className, fulfilled } = props;
 
   return (
     <div
@@ -36,5 +36,5 @@ export default function ProgressDetailRow(
         </div>
       </div>
     </div>
-  )
+  );
 }

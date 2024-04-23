@@ -1,40 +1,43 @@
 // @flow
-import React from "react"
-import { pathOr } from "ramda"
-import { Formik, Form } from "formik"
+import React from "react";
+import { pathOr } from "ramda";
+import { Formik, Form } from "formik";
 
-import { profileValidation, legalAddressValidation } from "../../lib/validation"
-import { LegalAddressFields, ProfileFields } from "./ProfileFormFields"
+import {
+  profileValidation,
+  legalAddressValidation,
+} from "../../lib/validation";
+import { LegalAddressFields, ProfileFields } from "./ProfileFormFields";
 
-import type { Country, CurrentUser } from "../../flow/authTypes"
-import ButtonWithLoader from "../loaders/ButtonWithLoader"
+import type { Country, CurrentUser } from "../../flow/authTypes";
+import ButtonWithLoader from "../loaders/ButtonWithLoader";
 
 type Props = {
   onSubmit: Function,
   countries: Array<Country>,
-  user: CurrentUser
-}
+  user: CurrentUser,
+};
 
 const getInitialValues = (user: CurrentUser) =>
-  user.is_anonymous ?
-    {} :
-    {
-      name:          user.name,
-      email:         user.email,
-      legal_address: user.legal_address,
-      profile:       {
-        ...user.profile,
-        // Should be null but React complains about null values in form fields. So we need to convert to
-        // string and then back to null on submit.
-        gender:            pathOr("", ["gender"], user.profile),
-        birth_year:        pathOr("", ["birth_year"], user.profile),
-        job_function:      pathOr("", ["job_function"], user.profile),
-        company_size:      pathOr("", ["company_size"], user.profile),
-        industry:          pathOr("", ["industry"], user.profile),
-        years_experience:  pathOr("", ["years_experience"], user.profile),
-        highest_education: pathOr("", ["highest_education"], user.profile)
-      }
-    }
+  user.is_anonymous
+    ? {}
+    : {
+        name: user.name,
+        email: user.email,
+        legal_address: user.legal_address,
+        profile: {
+          ...user.profile,
+          // Should be null but React complains about null values in form fields. So we need to convert to
+          // string and then back to null on submit.
+          gender: pathOr("", ["gender"], user.profile),
+          birth_year: pathOr("", ["birth_year"], user.profile),
+          job_function: pathOr("", ["job_function"], user.profile),
+          company_size: pathOr("", ["company_size"], user.profile),
+          industry: pathOr("", ["industry"], user.profile),
+          years_experience: pathOr("", ["years_experience"], user.profile),
+          highest_education: pathOr("", ["highest_education"], user.profile),
+        },
+      };
 
 const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
   <Formik
@@ -46,7 +49,7 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
       setFieldValue,
       setFieldTouched,
       values,
-      errors
+      errors,
     }) => (
       <Form>
         <div className="row">
@@ -91,5 +94,5 @@ const EditProfileForm = ({ onSubmit, countries, user }: Props) => (
       </Form>
     )}
   />
-)
-export default EditProfileForm
+);
+export default EditProfileForm;

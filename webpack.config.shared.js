@@ -1,46 +1,54 @@
-const path = require("path")
-const webpack = require("webpack")
+const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
   config: {
     entry: {
-      root: ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/root"],
-      header: ["core-js/stable", "regenerator-runtime/runtime", "./static/js/entry/header"],
-      sentry_client: './static/js/entry/sentry_client.js',
+      root: [
+        "core-js/stable",
+        "regenerator-runtime/runtime",
+        "./static/js/entry/root",
+      ],
+      header: [
+        "core-js/stable",
+        "regenerator-runtime/runtime",
+        "./static/js/entry/header",
+      ],
+      sentry_client: "./static/js/entry/sentry_client.js",
       style: "./static/js/entry/style",
-      third_party:  "./static/js/entry/third-party",
+      third_party: "./static/js/entry/third-party",
     },
     module: {
       rules: [
         {
           test: /\.(svg|ttf|woff|woff2|eot|gif)$/,
-          use:  "url-loader"
+          use: "url-loader",
         },
         {
           test: require.resolve("jquery"),
-          use:  [
+          use: [
             {
-              loader:  "expose-loader",
-              options: "jQuery"
+              loader: "expose-loader",
+              options: "jQuery",
             },
             {
-              loader:  "expose-loader",
-              options: "$"
-            }
-          ]
-        }
-      ]
+              loader: "expose-loader",
+              options: "$",
+            },
+          ],
+        },
+      ],
     },
     resolve: {
-      modules:    [path.join(__dirname, "static/js"), "node_modules"],
-      extensions: [".js", ".jsx"]
+      modules: [path.join(__dirname, "static/js"), "node_modules"],
+      extensions: [".js", ".jsx"],
     },
     performance: {
-      hints: false
-    }
+      hints: false,
+    },
   },
   babelSharedLoader: {
-    test:    /\.jsx?$/,
+    test: /\.jsx?$/,
     include: [
       path.resolve(__dirname, "static/js"),
       // The query-string is only published in ES6. These paths are added to transpile that library
@@ -48,21 +56,21 @@ module.exports = {
       path.resolve(__dirname, "node_modules/query-string"),
       path.resolve(__dirname, "node_modules/strict-uri-encode"),
       path.resolve(__dirname, "node_modules/split-on-first"),
-      path.resolve(__dirname, "node_modules/waait")
+      path.resolve(__dirname, "node_modules/waait"),
     ],
-    loader:  "babel-loader",
-    query:   {
+    loader: "babel-loader",
+    query: {
       presets: [
         ["@babel/preset-env", { modules: false }],
         "@babel/preset-react",
-        "@babel/preset-flow"
+        "@babel/preset-flow",
       ],
       plugins: [
         "react-hot-loader/babel",
         "@babel/plugin-proposal-object-rest-spread",
         "@babel/plugin-proposal-class-properties",
-        "@babel/plugin-syntax-dynamic-import"
-      ]
-    }
-  }
-}
+        "@babel/plugin-syntax-dynamic-import",
+      ],
+    },
+  },
+};

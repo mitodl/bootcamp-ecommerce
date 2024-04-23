@@ -1,39 +1,39 @@
 // @flow
 /* global SETTINGS:false */
-import React from "react"
-import * as yup from "yup"
+import React from "react";
+import * as yup from "yup";
 
-import { Formik, Field, Form, ErrorMessage } from "formik"
+import { Formik, Field, Form, ErrorMessage } from "formik";
 
-import ScaledRecaptcha from "../ScaledRecaptcha"
-import { EmailInput } from "./elements/inputs"
-import FormError from "./elements/FormError"
-import { emailFieldValidation } from "../../lib/validation"
-import ButtonWithLoader from "../loaders/ButtonWithLoader"
+import ScaledRecaptcha from "../ScaledRecaptcha";
+import { EmailInput } from "./elements/inputs";
+import FormError from "./elements/FormError";
+import { emailFieldValidation } from "../../lib/validation";
+import ButtonWithLoader from "../loaders/ButtonWithLoader";
 
 const emailValidation = yup.object().shape({
-  email:     emailFieldValidation,
-  recaptcha: SETTINGS.recaptchaKey ?
-    yup.string().required("Please verify you're not a robot") :
-    yup.mixed().notRequired()
-})
+  email: emailFieldValidation,
+  recaptcha: SETTINGS.recaptchaKey
+    ? yup.string().required("Please verify you're not a robot")
+    : yup.mixed().notRequired(),
+});
 
 type Props = {
-  onSubmit: Function
-}
+  onSubmit: Function,
+};
 
 export type RegisterEmailFormValues = {
   email: string,
-  recaptcha: ?string
-}
+  recaptcha: ?string,
+};
 
 const RegisterEmailForm = ({ onSubmit }: Props) => (
   <Formik
     onSubmit={onSubmit}
     validationSchema={emailValidation}
     initialValues={{
-      email:     "",
-      recaptcha: SETTINGS.recaptchaKey ? "" : undefined
+      email: "",
+      recaptcha: SETTINGS.recaptchaKey ? "" : undefined,
     }}
     render={({ isSubmitting, setFieldValue }) => (
       <Form>
@@ -50,7 +50,7 @@ const RegisterEmailForm = ({ onSubmit }: Props) => (
         {SETTINGS.recaptchaKey ? (
           <div className="form-group">
             <ScaledRecaptcha
-              onRecaptcha={value => setFieldValue("recaptcha", value)}
+              onRecaptcha={(value) => setFieldValue("recaptcha", value)}
               recaptchaKey={SETTINGS.recaptchaKey}
             />
             <ErrorMessage name="recaptcha" component={FormError} />
@@ -75,6 +75,6 @@ const RegisterEmailForm = ({ onSubmit }: Props) => (
       </Form>
     )}
   />
-)
+);
 
-export default RegisterEmailForm
+export default RegisterEmailForm;

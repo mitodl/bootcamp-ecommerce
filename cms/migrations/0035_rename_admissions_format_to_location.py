@@ -5,7 +5,6 @@ import wagtail.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cms", "0034_signatory_image_set_null_on_delete"),
     ]

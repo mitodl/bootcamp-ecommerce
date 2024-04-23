@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("cms", "0026_add_signatory_fields_letter_template_page")]
 
     operations = [

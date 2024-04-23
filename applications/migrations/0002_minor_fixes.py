@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("applications", "0001_bootcamp_application_models")]
 
     operations = [

@@ -2,7 +2,6 @@
 Factory for Profiles
 """
 
-import random
 import pycountry
 from django.contrib.auth.models import User
 from factory import (

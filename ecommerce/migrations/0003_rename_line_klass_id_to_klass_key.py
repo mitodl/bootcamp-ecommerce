@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("ecommerce", "0002_rename_klass")]
 
     operations = [

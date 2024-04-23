@@ -15,7 +15,7 @@ jobs:
           --health-retries 5
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
+          POSTGRES_PASSWORD: postgres # pragma: allowlist secret
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
@@ -65,9 +65,9 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
-# TODO: Update Pylint or Integrate ruff
-#      - name: Lint
-#        run: poetry run pylint ./**/*.py
+      # TODO: Update Pylint or Integrate ruff
+      #      - name: Lint
+      #        run: poetry run pylint ./**/*.py
 
       # Configurations required for elasticsearch.
       - name: Configure sysctl limits
@@ -87,7 +87,7 @@ jobs:
           celery -A main worker -B -l INFO &
           sleep 10
         env:
-          CELERY_TASK_ALWAYS_EAGER: 'True'
+          CELERY_TASK_ALWAYS_EAGER: "True"
           CELERY_BROKER_URL: redis://localhost:6379/4
           CELERY_RESULT_BACKEND: redis://localhost:6379/4
 
@@ -98,17 +98,17 @@ jobs:
           sudo chown -R $USER:$USER /var/media
           ./scripts/test/python_tests.sh
         env:
-          BOOTCAMP_DB_DISABLE_SSL: 'True'
-          BOOTCAMP_SECURE_SSL_REDIRECT: 'False'
-          CELERY_TASK_ALWAYS_EAGER: 'True'
+          BOOTCAMP_DB_DISABLE_SSL: "True"
+          BOOTCAMP_SECURE_SSL_REDIRECT: "False"
+          CELERY_TASK_ALWAYS_EAGER: "True"
           CELERY_BROKER_URL: redis://localhost:6379/4
           CELERY_RESULT_BACKEND: redis://localhost:6379/4
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres  # pragma: allowlist secret
-          DEBUG: 'False'
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres # pragma: allowlist secret
+          DEBUG: "False"
           ELASTICSEARCH_URL: localhost:9200
-          MAILGUN_URL: 'http://fake.example.com'
-          MAILGUN_KEY: 'fake'
-          NODE_ENV: 'production'
+          MAILGUN_URL: "http://fake.example.com"
+          MAILGUN_KEY: "fake"
+          NODE_ENV: "production"
 
       - name: Upload coverage to CodeCov
         uses: codecov/codecov-action@v1
@@ -123,7 +123,7 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v2-beta
         with:
-          node-version: "13.13.0"
+          node-version: "16.15.0"
 
       - name: Setup environment
         run: sudo apt-get install libelf1

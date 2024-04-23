@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("klasses", "0015_rename_klass_to_bootcamp_run"),
         ("cms", "0003_bootcamp_product_run_page"),

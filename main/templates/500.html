@@ -15,9 +15,16 @@
     <h3 class="text-uppercase">Internal Server Error</h3>
     <div class="errorcode">500</div>
     <div class="bottom-holder">
-      <h3 class="text-uppercase">Here's a helpful link to get you back on track:</h3>
-      <a class="text-capitalize" href="{{ support_url }}" target="_blank" rel="noopener noreferrer">
-          Contact customer support
+      <h3 class="text-uppercase">
+        Here's a helpful link to get you back on track:
+      </h3>
+      <a
+        class="text-capitalize"
+        href="{{ support_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Contact customer support
       </a>
     </div>
   </div>
@@ -27,7 +34,7 @@
   Sentry.showReportDialog({
     eventId: '{{ request.sentry.id }}',
     // use the public DSN (dont include your secret!)
-    dsn: '{{ js_settings_json.sentry_dsn }}'
+    dsn: '{{ js_settings_json.sentry_dsn }}',
   });
 </script>
 {% endif %}

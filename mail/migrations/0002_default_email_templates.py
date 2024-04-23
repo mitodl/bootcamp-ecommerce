@@ -1,4 +1,4 @@
-from django.db import migrations, models
+from django.db import migrations
 
 
 def forwards_func(apps, schema_editor):
@@ -88,7 +88,6 @@ def reverse_func(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("mail", "0001_initial")]
 
     operations = [migrations.RunPython(forwards_func, reverse_func)]

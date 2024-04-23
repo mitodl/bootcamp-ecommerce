@@ -1,94 +1,98 @@
 // @flow
 /* global SETTINGS: false */
-import React, { useState, useEffect } from "react"
-import { useSelector } from "react-redux"
-import { useRequest, useMutation } from "redux-query-react"
-import { MetaTags } from "react-meta-tags"
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useRequest, useMutation } from "redux-query-react";
+import { MetaTags } from "react-meta-tags";
 
-import queries from "../../lib/queries"
-import { allApplicationDetailSelector } from "../../lib/queries/applications"
+import queries from "../../lib/queries";
+import { allApplicationDetailSelector } from "../../lib/queries/applications";
 import {
   submissionQuery,
   submissionReviewMutation,
-  submissionsSelector
-} from "../../lib/queries/submissions"
-import { formatTitle, getFilenameFromPath, isNilOrBlank } from "../../util/util"
+  submissionsSelector,
+} from "../../lib/queries/submissions";
+import {
+  formatTitle,
+  getFilenameFromPath,
+  isNilOrBlank,
+} from "../../util/util";
 
 import {
   REVIEW_DETAIL_TITLE,
   REVIEW_STATUS_APPROVED,
   REVIEW_STATUS_PENDING,
   REVIEW_STATUS_REJECTED,
-  REVIEW_STATUS_WAITLISTED
-} from "../../constants"
-import UserDetails from "../../components/UserDetails"
+  REVIEW_STATUS_WAITLISTED,
+} from "../../constants";
+import UserDetails from "../../components/UserDetails";
 
-import { Alert } from "reactstrap"
+import { Alert } from "reactstrap";
 
-import type { Match } from "react-router"
+import type { Match } from "react-router";
 import type {
   ApplicationDetail,
-  SubmissionReview
-} from "../../flow/applicationTypes"
-import type { User } from "../../flow/authTypes"
+  SubmissionReview,
+} from "../../flow/applicationTypes";
+import type { User } from "../../flow/authTypes";
 
 type PageProps = {
-  match: Match
-}
+  match: Match,
+};
 
 type FormProps = {
-  submission: SubmissionReview
-}
+  submission: SubmissionReview,
+};
 
 type DetailProps = {
   submission: SubmissionReview,
   application: ApplicationDetail,
-  user: User
-}
+  user: User,
+};
 
 const ReviewPanelRight = (props: FormProps) => {
-  const { submission } = props
+  const { submission } = props;
 
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
-  const [selection, setSelection] = useState("")
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [selection, setSelection] = useState("");
 
   const clearState = () => {
-    setSelection(submission.review_status || "")
-    setError()
-  }
+    setSelection(submission.review_status || "");
+    setError();
+  };
 
   useEffect(() => {
-    clearState()
-  }, [submission])
+    clearState();
+  }, [submission]);
 
-  const [{ isPending }, updateStatus] = useMutation(status =>
+  const [{ isPending }, updateStatus] = useMutation((status) =>
     // $FlowFixMe
     submissionReviewMutation({
       ...submission,
-      review_status: status
-    })
-  )
+      review_status: status,
+    }),
+  );
 
   const onSubmit = async (status: string) => {
     if (isNilOrBlank(status)) {
-      return
+      return;
     }
-    const result = await updateStatus(status)
+    const result = await updateStatus(status);
     if (result.status === 200) {
-      setSuccess(true)
-      setError()
+      setSuccess(true);
+      setError();
     } else {
-      setError(result.body.detail)
-      setSuccess(false)
+      setError(result.body.detail);
+      setSuccess(false);
     }
-  }
+  };
 
   const onUpdate = async (e: Object) => {
-    await setSelection(e.target.value)
-  }
+    await setSelection(e.target.value);
+  };
 
-  const currentSelection = selection || submission.review_status
+  const currentSelection = selection || submission.review_status;
 
   return (
     <div className="col-3 review-card review-panel-right">
@@ -156,7 +160,7 @@ const ReviewPanelRight = (props: FormProps) => {
             type="submit"
             disabled={isPending || !selection}
             onClick={() => {
-              onSubmit(selection)
+              onSubmit(selection);
             }}
             className="btn btn-danger btn-submit"
           >
@@ -171,17 +175,19 @@ const ReviewPanelRight = (props: FormProps) => {
       ) : null}
       {success ? (
         <Alert color="success" onClick={() => setSuccess(false)}>
-          {// $FlowFixMe: review_status won't be null here
-            `Submission ${submission.review_status}`}
+          {
+            // $FlowFixMe: review_status won't be null here
+            `Submission ${submission.review_status}`
+          }
         </Alert>
       ) : null}
     </div>
-  )
-}
+  );
+};
 
 const ReviewPanelLeft = (props: DetailProps) => {
-  const { submission, application, user } = props
-  const userDisplayName = user.profile ? user.profile.name : user.username
+  const { submission, application, user } = props;
+  const userDisplayName = user.profile ? user.profile.name : user.username;
   return (
     <div className="col-8 review-card review-panel-left">
       <div className="row section">
@@ -251,32 +257,32 @@ const ReviewPanelLeft = (props: DetailProps) => {
         </div>
       ) : null}
     </div>
-  )
-}
+  );
+};
 
 export default function ReviewDetailPage(props: PageProps) {
-  const { match } = props
-  const { submissionId } = match.params
+  const { match } = props;
+  const { submissionId } = match.params;
 
-  useRequest(submissionQuery(submissionId))
-  const submissions = useSelector(submissionsSelector)
-  const submission = submissions ? submissions[submissionId] : null
+  useRequest(submissionQuery(submissionId));
+  const submissions = useSelector(submissionsSelector);
+  const submission = submissions ? submissions[submissionId] : null;
 
   useRequest(
-    submission ?
-      queries.applications.applicationDetailQuery(submission.application_id) :
-      null
-  )
+    submission
+      ? queries.applications.applicationDetailQuery(submission.application_id)
+      : null,
+  );
 
-  const applicationDetails = useSelector(allApplicationDetailSelector)
+  const applicationDetails = useSelector(allApplicationDetailSelector);
   const application =
-    applicationDetails && submission ?
-      applicationDetails[submission.application_id] :
-      null
-  const user = submission ? submission.learner : null
+    applicationDetails && submission
+      ? applicationDetails[submission.application_id]
+      : null;
+  const user = submission ? submission.learner : null;
 
   if (!submission || !application || !user) {
-    return null
+    return null;
   }
 
   return (
@@ -296,5 +302,5 @@ export default function ReviewDetailPage(props: PageProps) {
         <ReviewPanelRight submission={submission} />
       </div>
     </div>
-  )
+  );
 }

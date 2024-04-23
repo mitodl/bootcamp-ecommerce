@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("profiles", "0008_populate_addresses")]
 
     operations = [migrations.RemoveField(model_name="profile", name="leadership_level")]

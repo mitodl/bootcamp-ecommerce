@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("applications", "0001_bootcamp_application_models"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

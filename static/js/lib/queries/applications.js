@@ -1,133 +1,134 @@
 // @flow
-import { objOf, mergeDeepRight } from "ramda"
+import { objOf, mergeDeepRight } from "ramda";
 
-import { nextState } from "./util"
+import { nextState } from "./util";
 
-import { applicationsAPI, applicationDetailAPI, appResumeAPI } from "../urls"
-import { DEFAULT_NON_GET_OPTIONS } from "../redux_query"
+import { applicationsAPI, applicationDetailAPI, appResumeAPI } from "../urls";
+import { DEFAULT_NON_GET_OPTIONS } from "../redux_query";
 import type {
   Application,
   ApplicationDetail,
-  ApplicationDetailState
-} from "../../flow/applicationTypes"
+  ApplicationDetailState,
+} from "../../flow/applicationTypes";
 // $FlowFixMe: This export exists
-import type { QueryState } from "redux-query"
+import type { QueryState } from "redux-query";
 
-const applicationsKey = "applications"
-export const applicationDetailKey = "applicationDetail"
-export const createAppQueryKey = "createApplication"
-export const appQueryKey = applicationsKey
+const applicationsKey = "applications";
+export const applicationDetailKey = "applicationDetail";
+export const createAppQueryKey = "createApplication";
+export const appQueryKey = applicationsKey;
 
 export const applicationsSelector = (state: any): ?Array<Application> =>
-  state.entities[applicationsKey]
+  state.entities[applicationsKey];
 
 export const applicationsLoadingSelector = (state: any): boolean =>
-  state.queries[applicationsKey] && state.queries[applicationsKey].isPending
+  state.queries[applicationsKey] && state.queries[applicationsKey].isPending;
 
 export const allApplicationDetailSelector = (
-  state: any
-): { [string]: ApplicationDetail } => state.entities[applicationDetailKey]
+  state: any,
+): { [string]: ApplicationDetail } => state.entities[applicationDetailKey];
 
-const appDetailPrefix = "appDetail."
+const appDetailPrefix = "appDetail.";
 export const allApplicationDetailLoadingSelector = (
-  state: any
+  state: any,
 ): { number: boolean } => {
   const applicationIds = Object.keys(state.queries)
-    .filter(key => key.startsWith(appDetailPrefix))
-    .map(key => key.substr(appDetailPrefix.length))
-  const loading = {}
+    .filter((key) => key.startsWith(appDetailPrefix))
+    .map((key) => key.substr(appDetailPrefix.length));
+  const loading = {};
 
   for (const applicationId of applicationIds) {
-    const key = `${appDetailPrefix}${applicationId}`
+    const key = `${appDetailPrefix}${applicationId}`;
     loading[applicationId] =
-      (state.queries[key] && state.queries[key].isPending) || false
+      (state.queries[key] && state.queries[key].isPending) || false;
   }
 
-  return loading
-}
+  return loading;
+};
 
 // HACK: This wouldn't work with R.curry for some reason. Settling for a function that returns a function.
-export const appDetailQuerySelector = (state: any) => (
-  applicationId: string
-): ?QueryState => state.queries[`appDetail.${applicationId}`]
+export const appDetailQuerySelector =
+  (state: any) =>
+  (applicationId: string): ?QueryState =>
+    state.queries[`appDetail.${applicationId}`];
 
 export const applicationDetailSelector = (
   applicationId: number,
-  state: any
+  state: any,
 ): ApplicationDetail =>
-  state.entities[applicationDetailKey][String(applicationId)]
+  state.entities[applicationDetailKey][String(applicationId)];
 
 export default {
   applicationsQuery: () => ({
-    queryKey:  appQueryKey,
-    url:       applicationsAPI.toString(),
+    queryKey: appQueryKey,
+    url: applicationsAPI.toString(),
     transform: objOf(applicationsKey),
-    update:    {
-      [applicationsKey]: nextState
-    }
+    update: {
+      [applicationsKey]: nextState,
+    },
   }),
   createApplicationMutation: (bootcampRunId: number) => ({
     queryKey: createAppQueryKey,
-    url:      applicationsAPI.toString(),
-    options:  {
+    url: applicationsAPI.toString(),
+    options: {
       ...DEFAULT_NON_GET_OPTIONS,
-      method: "POST"
+      method: "POST",
     },
     body: {
-      bootcamp_run_id: bootcampRunId
+      bootcamp_run_id: bootcampRunId,
     },
     transform: objOf(applicationsKey),
-    update:    {
+    update: {
       // If successful, add the newly-created application to the list of loaded applications
       [applicationsKey]: (
         prev: Array<Application>,
-        newApplication: Application
-      ) => [...(prev || []), newApplication]
-    }
+        newApplication: Application,
+      ) => [...(prev || []), newApplication],
+    },
   }),
   applicationDetailQuery: (applicationId: string, force?: boolean) => ({
-    queryKey:  `${appDetailPrefix}${applicationId}`,
-    url:       applicationDetailAPI.param({ applicationId }).toString(),
+    queryKey: `${appDetailPrefix}${applicationId}`,
+    url: applicationDetailAPI.param({ applicationId }).toString(),
     transform: (json: ?ApplicationDetail) => {
       return {
         [applicationDetailKey]: {
-          [applicationId]: json
-        }
-      }
+          [applicationId]: json,
+        },
+      };
     },
     update: {
       [applicationDetailKey]: (
         prev: ApplicationDetailState,
-        transformed: ApplicationDetailState
+        transformed: ApplicationDetailState,
       ) => ({
         ...prev,
-        ...transformed
-      })
+        ...transformed,
+      }),
     },
-    force: !!force
+    force: !!force,
   }),
   applicationLinkedInUrlMutation: (
     applicationId: number,
-    linkedinUrl: string
+    linkedinUrl: string,
   ) => ({
     queryKey: "resume",
-    url:      appResumeAPI.param({ applicationId }).toString(),
-    body:     {
-      linkedin_url: linkedinUrl
+    url: appResumeAPI.param({ applicationId }).toString(),
+    body: {
+      linkedin_url: linkedinUrl,
     },
-    options:   DEFAULT_NON_GET_OPTIONS,
+    options: DEFAULT_NON_GET_OPTIONS,
     transform: (json: Object) => {
       return {
         [applicationDetailKey]: {
-          [applicationId]: json
-        }
-      }
+          [applicationId]: json,
+        },
+      };
     },
     update: {
       [applicationDetailKey]: (
         prev: ApplicationDetailState,
-        transformed: Object
-      ) => mergeDeepRight(prev, transformed)
-    }
-  })
-}
+        transformed: Object,
+      ) => mergeDeepRight(prev, transformed),
+    },
+  }),
+};

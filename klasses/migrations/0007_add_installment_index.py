@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("klasses", "0006_removed_installment_number")]
 
     operations = [

@@ -2,6 +2,7 @@
 """
 Page models for the CMS
 """
+
 from datetime import datetime
 import logging
 from urllib.parse import urljoin

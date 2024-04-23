@@ -9,7 +9,8 @@ $border-style: 1px solid $black;
   margin-bottom: 20px;
   min-height: $thumbnail-img-height;
 
-  .row:before, .row:after {
+  .row::before,
+  .row::after {
     content: none;
   }
 
@@ -85,7 +86,8 @@ $border-style: 1px solid $black;
       flex-grow: 0;
       flex-shrink: 0;
 
-      .top-line, .bottom-line {
+      .top-line,
+      .bottom-line {
         position: absolute;
         width: 16px;
         margin-left: -8px;
@@ -111,17 +113,17 @@ $border-style: 1px solid $black;
         top: 50%;
         left: 50%;
         margin-top: -($progress-circle-size * 0.75);
-        margin-left: -$progress-circle-size/2;
+        margin-left: -$progress-circle-size / 2;
         border-style: none;
-        border-radius: $progress-circle-size/2;
+        border-radius: $progress-circle-size / 2;
         z-index: 1;
         background-color: $light-gray;
 
         i {
           position: absolute;
-          top: ($progress-circle-size - $checkmark-size)/2;
+          top: ($progress-circle-size - $checkmark-size) / 2;
           left: 50%;
-          margin-left: -$checkmark-size/2;
+          margin-left: -$checkmark-size / 2;
           font-size: $checkmark-size;
           font-weight: 600;
           color: $white;
@@ -130,7 +132,8 @@ $border-style: 1px solid $black;
     }
 
     .fulfilled .progress-meter {
-      .check, .bottom-line {
+      .check,
+      .bottom-line {
         background-color: $success;
       }
     }
@@ -159,13 +162,12 @@ $border-style: 1px solid $black;
       display: inline-flex;
 
       &:hover {
-        text-decoration: none;  // this looks weird to me when it's not disabled
+        text-decoration: none; // this looks weird to me when it's not disabled
       }
 
       .material-icons {
         width: 24px;
         margin-right: 10px;
-
       }
     }
   }
@@ -228,5 +230,5 @@ $border-style: 1px solid $black;
       padding-right: 8px;
       vertical-align: top;
     }
- }
+  }
 }

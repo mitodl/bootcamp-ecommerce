@@ -20,7 +20,7 @@
   box-shadow: -5px 5px 10px grey;
   border-color: $white-smoke;
   border-radius: 5px;
-  right: 0px;
+  right: 0;
   left: unset;
 
   .dropdown-divider {
@@ -44,7 +44,6 @@
     &:active {
       background-color: $soft-light-gray;
     }
-
   }
 }
 
@@ -54,7 +53,7 @@
 
   .dropdown-toggle {
     max-width: 100%;
-    padding: 0px;
+    padding: 0;
 
     &:hover {
       cursor: pointer;

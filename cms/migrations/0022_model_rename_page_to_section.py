@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailforms", "0004_add_verbose_name_plural"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

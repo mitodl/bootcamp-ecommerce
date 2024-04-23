@@ -1,59 +1,59 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
-import { clone } from "ramda"
-import { Formik, Form } from "formik"
+import React from "react";
+import { clone } from "ramda";
+import { Formik, Form } from "formik";
 
 import {
   passwordValidation,
-  legalAddressValidation
-} from "../../lib/validation"
-import { LegalAddressFields } from "./ProfileFormFields"
-import ButtonWithLoader from "../loaders/ButtonWithLoader"
+  legalAddressValidation,
+} from "../../lib/validation";
+import { LegalAddressFields } from "./ProfileFormFields";
+import ButtonWithLoader from "../loaders/ButtonWithLoader";
 
-import type { Country, User } from "../../flow/authTypes"
-import { isNilOrBlank } from "../../util/util"
+import type { Country, User } from "../../flow/authTypes";
+import { isNilOrBlank } from "../../util/util";
 
 type Props = {
   onSubmit: Function,
   countries: Array<Country>,
   includePassword: boolean,
-  user?: User
-}
+  user?: User,
+};
 
 const INITIAL_VALUES = {
-  password:      "",
+  password: "",
   legal_address: {
-    first_name:         "",
-    last_name:          "",
-    street_address:     [""],
-    city:               "",
-    country:            "",
+    first_name: "",
+    last_name: "",
+    street_address: [""],
+    city: "",
+    country: "",
     state_or_territory: "",
-    postal_code:        ""
+    postal_code: "",
   },
   profile: {
-    name: ""
-  }
-}
+    name: "",
+  },
+};
 
 const RegisterDetailsForm = ({
   onSubmit,
   countries,
   user,
-  includePassword
+  includePassword,
 }: Props) => {
   const initialValues =
-    user && !isNilOrBlank(user) ? user : clone(INITIAL_VALUES)
+    user && !isNilOrBlank(user) ? user : clone(INITIAL_VALUES);
   if (includePassword) {
     // $FlowFixMe
-    initialValues.password = ""
+    initialValues.password = "";
   }
   return (
     <Formik
       onSubmit={onSubmit}
       validationSchema={legalAddressValidation.concat(
-        includePassword ? passwordValidation : null
+        includePassword ? passwordValidation : null,
       )}
       initialValues={initialValues}
       render={({ isSubmitting, setFieldValue, setFieldTouched, values }) => (
@@ -80,7 +80,7 @@ const RegisterDetailsForm = ({
         </Form>
       )}
     />
-  )
-}
+  );
+};
 
-export default RegisterDetailsForm
+export default RegisterDetailsForm;

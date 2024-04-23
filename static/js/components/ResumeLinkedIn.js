@@ -1,52 +1,52 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
-import { compose } from "redux"
-import { connect } from "react-redux"
-import { mutateAsync, requestAsync } from "redux-query"
+import React from "react";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import { mutateAsync, requestAsync } from "redux-query";
 import Dropzone, {
   formatBytes,
-  formatDuration
-} from "@mitodl/react-dropzone-uploader"
-import { values, join, keys } from "ramda"
-import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik"
-import * as yup from "yup"
+  formatDuration,
+} from "@mitodl/react-dropzone-uploader";
+import { values, join, keys } from "ramda";
+import { ErrorMessage, Field, Form, Formik, FormikActions } from "formik";
+import * as yup from "yup";
 
-import SupportLink from "./SupportLink"
-import ButtonWithLoader from "./loaders/ButtonWithLoader"
-import FormError from "./forms/elements/FormError"
-import { closeDrawer } from "../reducers/drawer"
+import SupportLink from "./SupportLink";
+import ButtonWithLoader from "./loaders/ButtonWithLoader";
+import FormError from "./forms/elements/FormError";
+import { closeDrawer } from "../reducers/drawer";
 import applications, {
-  applicationDetailSelector
-} from "../lib/queries/applications"
-import { DEFAULT_NON_GET_OPTIONS } from "../lib/redux_query"
-import queries from "../lib/queries"
+  applicationDetailSelector,
+} from "../lib/queries/applications";
+import { DEFAULT_NON_GET_OPTIONS } from "../lib/redux_query";
+import queries from "../lib/queries";
 import {
   getFilenameFromMediaPath,
   getFirstResponseBodyError,
   getXhrResponseError,
   isErrorResponse,
-  isNilOrBlank
-} from "../util/util"
-import { appResumeAPI } from "../lib/urls"
+  isNilOrBlank,
+} from "../util/util";
+import { appResumeAPI } from "../lib/urls";
 import {
   ALLOWED_FILE_EXTENSIONS,
-  DEFAULT_MAX_RESUME_FILE_SIZE
-} from "../constants"
+  DEFAULT_MAX_RESUME_FILE_SIZE,
+} from "../constants";
 
 import type {
   ApplicationDetail,
-  ResumeLinkedInResponse
-} from "../flow/applicationTypes"
-import type IPreviewProps from "@mitodl/react-dropzone-uploader"
+  ResumeLinkedInResponse,
+} from "../flow/applicationTypes";
+import type IPreviewProps from "@mitodl/react-dropzone-uploader";
 
 type UploaderProps = {
   application: ApplicationDetail,
   resumeFilename: ?string,
-  onSuccessfulUpload: Function
-}
+  onSuccessfulUpload: Function,
+};
 
-const defaultUploadErrorText = "Your file failed to upload."
+const defaultUploadErrorText = "Your file failed to upload.";
 
 /*
  * Custom component to pass to react-dropzone-uploader. Used to display the file being uploaded, progress bar, and
@@ -63,7 +63,7 @@ class CustomPreview extends React.PureComponent<IPreviewProps> {
         cancel,
         remove,
         restart,
-        meta: { response }
+        meta: { response },
       },
       meta: {
         name = "",
@@ -72,26 +72,26 @@ class CustomPreview extends React.PureComponent<IPreviewProps> {
         previewUrl,
         status,
         duration,
-        validationError
+        validationError,
       },
       isUpload,
       canCancel,
       canRemove,
       canRestart,
-      extra: { minSizeBytes }
-    } = this.props
+      extra: { minSizeBytes },
+    } = this.props;
 
-    let fileNameDisplay = `${name || "?"}, ${formatBytes(size)}`
+    let fileNameDisplay = `${name || "?"}, ${formatBytes(size)}`;
     if (duration) {
-      fileNameDisplay = `${fileNameDisplay}, ${formatDuration(duration)}`
+      fileNameDisplay = `${fileNameDisplay}, ${formatDuration(duration)}`;
     }
-    let errorText = null
+    let errorText = null;
 
     if (status === "error_file_size" || status === "error_validation") {
       if (status === "error_file_size") {
-        errorText = size < minSizeBytes ? "File too small" : "File too large"
+        errorText = size < minSizeBytes ? "File too small" : "File too large";
       } else if (status === "error_validation") {
-        errorText = String(validationError)
+        errorText = String(validationError);
       }
     }
 
@@ -100,9 +100,9 @@ class CustomPreview extends React.PureComponent<IPreviewProps> {
       status === "exception_upload" ||
       status === "error_upload"
     ) {
-      errorText = getXhrResponseError(response) || defaultUploadErrorText
+      errorText = getXhrResponseError(response) || defaultUploadErrorText;
     } else if (status === "aborted") {
-      errorText = "Cancelled"
+      errorText = "Cancelled";
     }
 
     return (
@@ -125,9 +125,9 @@ class CustomPreview extends React.PureComponent<IPreviewProps> {
             <progress
               max={100}
               value={
-                status === "done" || status === "headers_received" ?
-                  100 :
-                  percent
+                status === "done" || status === "headers_received"
+                  ? 100
+                  : percent
               }
             />
           )}
@@ -140,15 +140,15 @@ class CustomPreview extends React.PureComponent<IPreviewProps> {
           </button>
         )}
         {!["preparing", "getting_upload_params", "uploading", "done"].includes(
-          status
+          status,
         ) &&
           canRemove && (
-          <button className="borderless" onClick={remove}>
-            <i className="material-icons" onClick={remove}>
+            <button className="borderless" onClick={remove}>
+              <i className="material-icons" onClick={remove}>
                 close
-            </i>
-          </button>
-        )}
+              </i>
+            </button>
+          )}
         {status === "done" && canRemove && (
           <button className="borderless" onClick={remove}>
             <i className="material-icons" onClick={remove}>
@@ -161,31 +161,31 @@ class CustomPreview extends React.PureComponent<IPreviewProps> {
           "exception_upload",
           "error_upload",
           "aborted",
-          "ready"
+          "ready",
         ].includes(status) &&
           canRestart && (
-          <button className="borderless" onClick={restart}>
-            <i className="material-icons">refresh</i>
-          </button>
-        )}
+            <button className="borderless" onClick={restart}>
+              <i className="material-icons">refresh</i>
+            </button>
+          )}
         {errorText && <div className="error text-left">{errorText}</div>}
       </div>
-    )
+    );
   }
 }
 
 export const ResumeUploader = (props: UploaderProps) => {
-  const { application, resumeFilename, onSuccessfulUpload } = props
+  const { application, resumeFilename, onSuccessfulUpload } = props;
 
   const onChangeStatus = async (fileWithMeta, status) => {
     if (status === "done") {
-      await onSuccessfulUpload()
+      await onSuccessfulUpload();
     }
-  }
+  };
 
   const onSubmit = (files, allFiles) => {
-    allFiles.forEach(f => f.remove())
-  }
+    allFiles.forEach((f) => f.remove());
+  };
 
   const inputContent = (
     // This key is needed to avoid a warning in react-dropzone-uploader
@@ -196,14 +196,14 @@ export const ResumeUploader = (props: UploaderProps) => {
         Allowed file types: {join(",", keys(ALLOWED_FILE_EXTENSIONS))}
       </span>
     </div>
-  )
+  );
 
   return (
     <React.Fragment>
       <Dropzone
         getUploadParams={() => ({
           url: appResumeAPI.param({ applicationId: application.id }).toString(),
-          ...DEFAULT_NON_GET_OPTIONS
+          ...DEFAULT_NON_GET_OPTIONS,
         })}
         onChangeStatus={onChangeStatus}
         onSubmit={onSubmit}
@@ -212,7 +212,7 @@ export const ResumeUploader = (props: UploaderProps) => {
         classNames="drop-outline"
         maxFiles={1}
         styles={{
-          dropzone: { minHeight: 200, maxHeight: 250 }
+          dropzone: { minHeight: 200, maxHeight: 250 },
         }}
         accept={join(",", values(ALLOWED_FILE_EXTENSIONS))}
         maxSizeBytes={SETTINGS.upload_max_size || DEFAULT_MAX_RESUME_FILE_SIZE}
@@ -224,8 +224,8 @@ export const ResumeUploader = (props: UploaderProps) => {
         </p>
       )}
     </React.Fragment>
-  )
-}
+  );
+};
 
 export const resumeLinkedInValidation = yup.object().shape({
   linkedInUrl: yup
@@ -237,19 +237,19 @@ export const resumeLinkedInValidation = yup.object().shape({
     .lowercase()
     .matches(
       "^(http|https)://([a-zA-Z]{2,3}[.]|)linkedin[.]([a-zA-Z]{2,3})/+([a-zA-Z0-9-_])+/+([a-zA-Z0-9-_])+.*$",
-      "Please enter a valid LinkedIn URL"
+      "Please enter a valid LinkedIn URL",
     )
     .when("resumeFilename", (resumeFilename, schema) => {
       if (isNilOrBlank(resumeFilename)) {
-        return schema.required("A resume or a LinkedIn URL must be provided.")
+        return schema.required("A resume or a LinkedIn URL must be provided.");
       }
-    })
-})
+    }),
+});
 
 type ResumeLinkedInForm = {
   linkedInUrl: string,
-  resumeFilename: string
-}
+  resumeFilename: string,
+};
 
 type Props = {
   application: ?ApplicationDetail,
@@ -257,72 +257,72 @@ type Props = {
   fetchAppDetail: (applicationId: string, force: boolean) => Promise<void>,
   addLinkedInUrl: (
     applicationId: number,
-    linkedInUrl: string
-  ) => Promise<ResumeLinkedInResponse>
-}
+    linkedInUrl: string,
+  ) => Promise<ResumeLinkedInResponse>,
+};
 
 export class ResumeLinkedIn extends React.Component<Props> {
   onFormSubmit = async (
     { linkedInUrl, resumeFilename }: ResumeLinkedInForm,
-    actions: FormikActions<*>
+    actions: FormikActions<*>,
   ) => {
-    const { application, addLinkedInUrl, closeDrawer } = this.props
+    const { application, addLinkedInUrl, closeDrawer } = this.props;
 
     if (!application) {
-      return
+      return;
     }
 
     if (resumeFilename !== "" && linkedInUrl === "") {
-      actions.resetForm()
-      closeDrawer()
-      return
+      actions.resetForm();
+      closeDrawer();
+      return;
     }
 
-    const linkedInResponse = await addLinkedInUrl(application.id, linkedInUrl)
+    const linkedInResponse = await addLinkedInUrl(application.id, linkedInUrl);
 
     if (isErrorResponse(linkedInResponse)) {
-      const responseBodyError = getFirstResponseBodyError(linkedInResponse)
+      const responseBodyError = getFirstResponseBodyError(linkedInResponse);
       actions.setErrors({
         linkedInUrl: responseBodyError || (
           <span>
             Something went wrong while adding your LinkedIn profile. Please try
             again, or <SupportLink />
           </span>
-        )
-      })
-      actions.setSubmitting(false)
+        ),
+      });
+      actions.setSubmitting(false);
     } else {
-      actions.resetForm()
-      closeDrawer()
+      actions.resetForm();
+      closeDrawer();
     }
-  }
+  };
 
   handleSuccessfulUpload = async () => {
-    const { application, fetchAppDetail } = this.props
+    const { application, fetchAppDetail } = this.props;
 
     if (!application) {
-      return
+      return;
     }
 
     // HACK: react-dropzone-uploader does not yet provide a way to access the
     // server response after a successful upload. To get around this, we make
     // another request for the application detail to "refresh" that data and get
     // the up-to-date resume.
-    await fetchAppDetail(String(application.id), true)
-  }
+    await fetchAppDetail(String(application.id), true);
+  };
 
   render() {
-    const { application } = this.props
+    const { application } = this.props;
 
     if (!application) {
-      return null
+      return null;
     }
 
-    const resumeFilename = getFilenameFromMediaPath(application.resume_url)
+    const resumeFilename = getFilenameFromMediaPath(application.resume_url);
     const initialFormValues: ResumeLinkedInForm = {
-      linkedInUrl:    application.linkedin_url || "",
-      resumeFilename: resumeFilename
-    }
+      linkedInUrl: application.linkedin_url || "",
+      resumeFilename: resumeFilename,
+    };
 
     return (
       <div className="container drawer-wrapper resume-linkedin-drawer">
@@ -367,36 +367,36 @@ export class ResumeLinkedIn extends React.Component<Props> {
           )}
         />
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  application: applicationDetailSelector(ownProps.applicationId, state)
-})
+  application: applicationDetailSelector(ownProps.applicationId, state),
+});
 
-const mapDispatchToProps = dispatch => ({
-  closeDrawer:    () => dispatch(closeDrawer()),
+const mapDispatchToProps = (dispatch) => ({
+  closeDrawer: () => dispatch(closeDrawer()),
   addLinkedInUrl: async (
     applicationId: number,
-    linkedInUrl: string
+    linkedInUrl: string,
   ): Promise<ResumeLinkedInResponse> =>
     dispatch(
       mutateAsync(
-        applications.applicationLinkedInUrlMutation(applicationId, linkedInUrl)
-      )
+        applications.applicationLinkedInUrlMutation(applicationId, linkedInUrl),
+      ),
     ),
   fetchAppDetail: async (applicationId: string, force: ?boolean) =>
     dispatch(
       requestAsync(
         queries.applications.applicationDetailQuery(
           String(applicationId),
-          !!force
-        )
-      )
-    )
-})
+          !!force,
+        ),
+      ),
+    ),
+});
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  ResumeLinkedIn
-)
+  ResumeLinkedIn,
+);

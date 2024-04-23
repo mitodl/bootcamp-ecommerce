@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("klasses", "0013_personalprice_application_stage")]
 
     operations = [

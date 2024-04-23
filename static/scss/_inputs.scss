@@ -5,7 +5,11 @@
   cursor: pointer;
 
   &.large-cta {
-    background-image: linear-gradient(to right, $mit-brand 0%, $red-fade-to 100%);
+    background-image: linear-gradient(
+      to right,
+      $mit-brand 0%,
+      $red-fade-to 100%
+    );
     border-radius: 3px;
     font-size: 16px;
     font-weight: 400;
@@ -26,14 +30,16 @@
   }
 }
 
-button, .btn-styled {
+button,
+.btn-styled {
   border-radius: 5px;
   font-weight: 600;
   border-width: 2px;
   border-style: solid;
   padding: 6px 12px;
 
-  &:disabled, &[disabled] {
+  &:disabled,
+  &[disabled] {
     color: $btn-disabled-gray !important;
     border-color: $btn-disabled-gray !important;
   }
@@ -154,9 +160,9 @@ input {
 
 // Styles for hiding up/down arrows in number-type input
 // sass-lint:disable no-vendor-prefixes
-input[type=number] {
+input[type="number"] {
   &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    appearance: none;
     cursor: pointer;
     display: block;
     width: 8px;
@@ -165,23 +171,24 @@ input[type=number] {
     position: relative;
   }
 
-  &::-webkit-inner-spin-button:before,
-  &::-webkit-inner-spin-button:after {
+  &::-webkit-inner-spin-button::before,
+  &::-webkit-inner-spin-button::after {
     content: "^";
     position: absolute;
     right: 0;
     font-family: monospace;
   }
 
-  &::-webkit-inner-spin-button:before {
+  &::-webkit-inner-spin-button::before {
     top: 0;
   }
 
-  &::-webkit-inner-spin-button:after {
+  &::-webkit-inner-spin-button::after {
     bottom: 0;
-    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
   }
 }
+
 // sass-lint:enable no-vendor-prefixes
 
 .dropdown.standard-select {
@@ -196,7 +203,8 @@ input[type=number] {
   .dropdown-item {
     white-space: normal;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: $soft-light-gray;
     }
   }
@@ -231,8 +239,8 @@ input[type=number] {
 .styled-select-container {
   $select-padding: 15px;
   $select-padding-l: $select-padding * 1.4;
-  $select-border: 1px solid ;
-  $select-border-radius: 0px;
+  $select-border: 1px solid;
+  $select-border-radius: 0;
   $select-color: $med-dark-gray;
   $caret-size: 8px;
 
@@ -240,7 +248,7 @@ input[type=number] {
   display: inline-block;
   background-color: #fff;
 
-  &:before {
+  &::before {
     content: "";
     display: inline-block;
     position: absolute;
@@ -259,7 +267,8 @@ input[type=number] {
     position: relative;
     box-shadow: none;
     appearance: none;
-    padding: $select-padding ($caret-size * 3 + $select-padding-l) $select-padding $select-padding-l;
+    padding: $select-padding ($caret-size * 3 + $select-padding-l)
+      $select-padding $select-padding-l;
     border: $select-border;
     border-radius: $select-border-radius;
     background: transparent;
@@ -269,7 +278,8 @@ input[type=number] {
       outline: transparent;
     }
 
-    &:-moz-focusring { // sass-lint:disable-line no-vendor-prefixes
+    &:-moz-focusring {
+      // sass-lint:disable-line no-vendor-prefixes
       color: transparent;
       text-shadow: 0 0 0 #000;
     }

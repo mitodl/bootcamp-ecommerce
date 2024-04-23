@@ -1,72 +1,72 @@
 // @flow
-import { assert } from "chai"
-import { Drawer as RMWCDrawer } from "@rmwc/drawer"
+import { assert } from "chai";
+import { Drawer as RMWCDrawer } from "@rmwc/drawer";
 
-import Drawer from "./Drawer"
+import Drawer from "./Drawer";
 import {
   NEW_APPLICATION,
   PAYMENT,
   PROFILE_EDIT,
-  PROFILE_VIEW
-} from "../constants"
+  PROFILE_VIEW,
+} from "../constants";
 
-import IntegrationTestHelper from "../util/integration_test_helper"
-import { closeDrawer, openDrawer } from "../reducers/drawer"
-import { makeApplicationDetail } from "../factories/application"
+import IntegrationTestHelper from "../util/integration_test_helper";
+import { closeDrawer, openDrawer } from "../reducers/drawer";
+import { makeApplicationDetail } from "../factories/application";
 
 describe("Drawer", () => {
-  let helper, render
+  let helper, render;
 
   beforeEach(() => {
-    helper = new IntegrationTestHelper()
+    helper = new IntegrationTestHelper();
     // Mock API response for bootcamp runs. NewApplication requests this when loading
     helper.handleRequestStub
       .withArgs("/api/bootcampruns/?available=true")
       .returns({
         status: 200,
-        body:   []
-      })
-    render = helper.configureReduxQueryRenderer(Drawer)
-  })
+        body: [],
+      });
+    render = helper.configureReduxQueryRenderer(Drawer);
+  });
 
   afterEach(() => {
-    helper.cleanup()
-  })
+    helper.cleanup();
+  });
 
   //
-  ;[
+  [
     [PROFILE_EDIT, "EditProfileDisplay"],
     [PROFILE_VIEW, "ViewProfileDisplay"],
     [PAYMENT, "PaymentDisplay"],
-    [NEW_APPLICATION, "NewApplication"]
+    [NEW_APPLICATION, "NewApplication"],
   ].forEach(([type, expComponent]) => {
     it(`should render a drawer component with a ${expComponent} child`, async () => {
-      const { wrapper } = await render({}, [openDrawer({ type })])
-      assert.ok(wrapper.find(RMWCDrawer).exists())
-      assert.isTrue(wrapper.find(expComponent).exists())
-    })
-  })
+      const { wrapper } = await render({}, [openDrawer({ type })]);
+      assert.ok(wrapper.find(RMWCDrawer).exists());
+      assert.isTrue(wrapper.find(expComponent).exists());
+    });
+  });
 
   it("should have the drawer open if action is dispatched", async () => {
-    const { wrapper } = await render({}, [openDrawer({ type: PAYMENT })])
-    assert.isTrue(wrapper.find(RMWCDrawer).prop("open"))
-  })
+    const { wrapper } = await render({}, [openDrawer({ type: PAYMENT })]);
+    assert.isTrue(wrapper.find(RMWCDrawer).prop("open"));
+  });
 
   it("should pass down a close function to drawer", async () => {
-    const { wrapper, store } = await render({}, [closeDrawer()])
-    wrapper.find(RMWCDrawer).prop("onClose")()
-    assert.isFalse(store.getState().drawer.drawerOpen)
-  })
+    const { wrapper, store } = await render({}, [closeDrawer()]);
+    wrapper.find(RMWCDrawer).prop("onClose")();
+    assert.isFalse(store.getState().drawer.drawerOpen);
+  });
 
   it("should pass down metadata to an inner drawer component (if metadata exists)", async () => {
-    const meta = { application: makeApplicationDetail() }
+    const meta = { application: makeApplicationDetail() };
     const { wrapper, store } = await render({}, [
-      openDrawer({ type: PAYMENT, meta: meta })
-    ])
-    assert.isTrue(wrapper.find(RMWCDrawer).prop("open"))
-    assert.deepEqual(store.getState().drawer.drawerMeta, meta)
+      openDrawer({ type: PAYMENT, meta: meta }),
+    ]);
+    assert.isTrue(wrapper.find(RMWCDrawer).prop("open"));
+    assert.deepEqual(store.getState().drawer.drawerMeta, meta);
     Object.keys(meta).forEach((key: string) => {
-      assert.deepEqual(wrapper.find("PaymentDisplay").prop(key), meta[key])
-    })
-  })
-})
+      assert.deepEqual(wrapper.find("PaymentDisplay").prop(key), meta[key]);
+    });
+  });
+});

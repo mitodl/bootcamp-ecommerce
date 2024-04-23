@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("ecommerce", "0007_data_migration_for_ecommerce_bootcamp_run_id")]
 
     operations = [

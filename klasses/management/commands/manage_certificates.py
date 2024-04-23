@@ -95,7 +95,7 @@ class Command(BaseCommand):
             unrevoke = options.get("unrevoke")
             users_to_block = options.get("block")
             users_to_unblock = options.get("unblock")
-        except:
+        except:  # noqa: E722
             raise CommandError("Provided values are not valid.")
 
         if generate_single and (not user or not bootcamp_run):

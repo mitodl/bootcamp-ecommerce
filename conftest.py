@@ -2,9 +2,9 @@
 
 # pylint: disable=wildcard-import,unused-wildcard-import
 from django.conf import settings
-from fixtures.common import *
-from fixtures.autouse import *
-from fixtures.cybersource import *
+from fixtures.common import *  # noqa: F403
+from fixtures.autouse import *  # noqa: F403
+from fixtures.cybersource import *  # noqa: F403
 
 TEST_MEDIA_ROOT = "/var/media/test_media_root"
 

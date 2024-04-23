@@ -4,7 +4,7 @@ Test for ecommerce functions
 
 # pylint: disable=too-many-lines
 from base64 import b64encode
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 import hashlib
 import hmac

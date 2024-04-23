@@ -9,17 +9,17 @@ export type Payment = {
   run_key: number,
   price: number,
   description: string,
-}
+};
 
 export type Installment = {
   amount: number,
   deadline: string,
-}
+};
 
 export type Bootcamp = {
   id: number,
   title: string,
-}
+};
 
 export type BootcampRunPage = {
   description: ?string,
@@ -27,7 +27,7 @@ export type BootcampRunPage = {
   thumbnail_image_src: ?string,
   bootcamp_location: string,
   bootcamp_location_details: string,
-}
+};
 
 export type BootcampRun = {
   id: number,
@@ -43,14 +43,14 @@ export type BootcampRun = {
   installments: Array<Installment>,
   is_payable: boolean,
   allows_skipped_steps: boolean,
-}
+};
 
 export type BootcampRunEnrollment = {
   id: number,
   user_id: number,
   bootcamp_run_id: number,
   novoed_sync_date: ?string,
-}
+};
 
 export type PayableBootcampRun = {
   run_key: number,
@@ -61,7 +61,7 @@ export type PayableBootcampRun = {
   price: number,
   total_paid: number,
   payments: Array<Payment>,
-  installments: Array<Installment>
-}
+  installments: Array<Installment>,
+};
 
-export type PayableRunsResponse = Array<PayableBootcampRun>
+export type PayableRunsResponse = Array<PayableBootcampRun>;

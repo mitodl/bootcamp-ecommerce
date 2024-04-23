@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("cms", "0022_model_rename_page_to_section")]
 
     operations = [

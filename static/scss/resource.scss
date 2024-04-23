@@ -5,21 +5,19 @@ html {
 }
 
 .resource-container {
-
   padding-bottom: 30px;
-  color: #000000;
+  color: #000;
   font-size: 16px;
   line-height: 28px;
   position: relative;
 
   &.without-banner {
-
     .resource-content {
       padding: 30px 30px 15px;
       margin: 0;
 
       @include media-breakpoint-down(sm) {
-        padding: 15px 15px 15px;
+        padding: 15px;
       }
     }
   }
@@ -54,7 +52,7 @@ html {
       padding: 30px 15px 15px;
     }
 
-    &:after {
+    &::after {
       position: absolute;
       left: 200px;
       top: 0;
@@ -81,8 +79,9 @@ html {
         padding-left: 15px;
       }
 
-      &:after {
+      &::after {
         left: 160px;
+
         @include media-breakpoint-down(sm) {
           left: 5px;
         }
@@ -91,7 +90,7 @@ html {
 
     a {
       color: $tundora;
-      text-decoration: none;​
+      text-decoration: none;
 
       &:hover {
         text-decoration: underline;
@@ -176,7 +175,7 @@ html {
       text-decoration: none;
       font-weight: 700;
 
-      &:after {
+      &::after {
         content: "\e905";
         font-family: icomoon;
         margin-left: 10px;
@@ -198,7 +197,6 @@ html {
       font-size: 25px;
       line-height: 30px;
     }
-
   }
 
   h2 {
@@ -227,6 +225,5 @@ html {
         margin: 0 0 15px;
       }
     }
-
   }
 }

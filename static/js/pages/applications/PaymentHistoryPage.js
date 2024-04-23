@@ -1,50 +1,46 @@
 // @flow
-import React from "react"
-import { connect } from "react-redux"
-import { compose, path, pathOr } from "ramda"
-import { connectRequest } from "redux-query-react"
+import React from "react";
+import { connect } from "react-redux";
+import { compose, path, pathOr } from "ramda";
+import { connectRequest } from "redux-query-react";
 
-import Address from "../../components/Address"
-import FullLoader from "../../components/loaders/FullLoader"
+import Address from "../../components/Address";
+import FullLoader from "../../components/loaders/FullLoader";
 
-import { calcOrderBalances } from "../../lib/applicationApi"
-import queries from "../../lib/queries"
+import { calcOrderBalances } from "../../lib/applicationApi";
+import queries from "../../lib/queries";
 import {
   formatPrice,
   formatReadableDateFromStr,
-  formatRunDateRange
-} from "../../util/util"
+  formatRunDateRange,
+} from "../../util/util";
 
-import type { ApplicationDetail } from "../../flow/applicationTypes"
-import type { Country } from "../../flow/authTypes"
+import type { ApplicationDetail } from "../../flow/applicationTypes";
+import type { Country } from "../../flow/authTypes";
 
 type OwnProps = {
   match: {
     params: {
-      applicationId: string
-    }
-  }
-}
+      applicationId: string,
+    },
+  },
+};
 
 type Props = OwnProps & {
   application: ?ApplicationDetail,
-  countries: ?Array<Country>
-}
+  countries: ?Array<Country>,
+};
 export function PaymentHistoryPage({ application, countries }: Props) {
   if (!application || !countries) {
-    return <FullLoader />
+    return <FullLoader />;
   }
 
-  const {
-    ordersAndBalances,
-    totalPaid,
-    totalPrice,
-    balanceRemaining
-  } = calcOrderBalances(application)
+  const { ordersAndBalances, totalPaid, totalPrice, balanceRemaining } =
+    calcOrderBalances(application);
 
   const isRefund = (order: any) => {
-    return order.total_price_paid < 0
-  }
+    return order.total_price_paid < 0;
+  };
 
   return (
     <div className="payment-history container">
@@ -141,26 +137,26 @@ export function PaymentHistoryPage({ application, countries }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const mapStateToProps = (state, ownProps: OwnProps) => {
-  const applicationId = ownProps.match.params.applicationId
+  const applicationId = ownProps.match.params.applicationId;
   const application = path(
     ["entities", "applicationDetail", applicationId],
-    state
-  )
+    state,
+  );
 
   return {
     application,
-    countries: queries.users.countriesSelector(state)
-  }
-}
+    countries: queries.users.countriesSelector(state),
+  };
+};
 const mapPropsToConfigs = (props: Props) => [
   queries.applications.applicationDetailQuery(props.match.params.applicationId),
-  queries.users.countriesQuery()
-]
+  queries.users.countriesQuery(),
+];
 export default compose(
   connect(mapStateToProps),
-  connectRequest(mapPropsToConfigs)
-)(PaymentHistoryPage)
+  connectRequest(mapPropsToConfigs),
+)(PaymentHistoryPage);

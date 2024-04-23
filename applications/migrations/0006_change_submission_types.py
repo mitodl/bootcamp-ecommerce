@@ -30,7 +30,6 @@ def undo_update_submission_types(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("applications", "0005_application_multiple_orders")]
 
     operations = [

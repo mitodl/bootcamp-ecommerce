@@ -71,9 +71,9 @@ def test_render_email_templates(user):
     assert html_body == (
         "<html><head>"
         '<style type="text/css">\n'
-        "p {\n"
-        "  color: blue;\n"
-        "}\n"
+        "  p {\n"
+        "    color: blue;\n"
+        "  }\n"
         "</style>\n"
         "</head><body>"
         '<a href="http://example.com" style="color:red">html link</a>'

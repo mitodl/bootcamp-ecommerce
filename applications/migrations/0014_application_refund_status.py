@@ -5,7 +5,6 @@ import django_fsm
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("applications", "0013_applicantletter_types")]
 
     operations = [

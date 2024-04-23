@@ -1,31 +1,27 @@
 $static-path: "/static";
-
-$default-background-color: #ffffff;
-$default-text-color: #000000;
-$default-subtext-color: rgba(255, 255, 255, 0.9);
+$default-background-color: #fff;
+$default-text-color: #000;
+$default-subtext-color: rgb(255 255 255 / 90%);
 $input-color: #333;
 $placeholder-color: #bbb;
 $input-font-size: 16px;
 $input-radius: 5px;
-
 $button-red: #ec654d;
 $button-dk-grey: #4b4b4b;
 $medium-soft-light-gray: #e6e6e6;
 $med-gray: #b1b1b1;
 $btn-disabled-gray: $med-gray;
 $btn-blue: #007ee5;
-$btn-text-white: #ffffff;
+$btn-text-white: #fff;
 $med-dark-gray: #707070;
 $dark-gray: #202020;
 $red-fade-to: #d22843;
 $red-hover: #e01c3c;
 $mit-brand: #a31f34;
-$black-transparent: rgba(0, 0, 0, 0.9);
-
+$black-transparent: rgb(0 0 0 / 90%);
 $coffee: #72674f;
 $crusta-orange: #f56650;
 $flamingo-orange: #e5604b;
-
 $light-gray: #c2c0bf;
 $input-border-color: $light-gray;
 $dusty-gray: #979797;
@@ -39,9 +35,13 @@ $tab-color: #c2c0bf;
 $label-gray: #7c7b7d;
 $outline-red: #db312a;
 $error-red: #db312a;
-
-$artsy-font: PT Serif, "Times New Roman", Helvetica, Arial, sans-serif;
-$sans-serif-font: Lato, sans-serif;
+$artsy-font:
+  pt serif,
+  "Times New Roman",
+  helvetica,
+  arial,
+  sans-serif;
+$sans-serif-font: lato, sans-serif;
 $table-header-font: 13px normal $sans-serif-font;
 $navy-blue: #355b6b;
 $matterhorn: #505050;
@@ -57,7 +57,7 @@ $dodger-blue: #0084ff;
 $night-rider: #303030;
 $dim-gray: #696969;
 $standard-link-color: $dodger-blue;
-$charcoal: #333333;
+$charcoal: #333;
 $carmine: #a02b2f;
 
 // Social Icons Colours.
@@ -67,7 +67,6 @@ $twitter: #55acee;
 $youtube: #cd201f;
 $instagram: #a17357;
 $soundcloud: #ff5600;
-
 $primary: #a31f34;
 $success: #28a745;
 $danger: #a31f34;

@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("jobma", "0005_applicant_foreign_key")]
 
     operations = [

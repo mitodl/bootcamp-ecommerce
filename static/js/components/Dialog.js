@@ -1,6 +1,11 @@
 // @flow
-import React from "react"
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@rmwc/dialog"
+import React from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@rmwc/dialog";
 
 type Props = {
   open: boolean,
@@ -13,8 +18,8 @@ type Props = {
   id?: string,
   className?: string,
   children?: any,
-  noButtons?: boolean
-}
+  noButtons?: boolean,
+};
 
 export default function OurDialog(props: Props) {
   const {
@@ -28,8 +33,8 @@ export default function OurDialog(props: Props) {
     id,
     className,
     children,
-    noButtons
-  } = props
+    noButtons,
+  } = props;
   return (
     <Dialog open={open} onClose={hideDialog} id={id} className={className}>
       <DialogTitle>
@@ -51,5 +56,5 @@ export default function OurDialog(props: Props) {
         </DialogActions>
       )}
     </Dialog>
-  )
+  );
 }

@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("mail", "0002_default_email_templates")]
 
     operations = [

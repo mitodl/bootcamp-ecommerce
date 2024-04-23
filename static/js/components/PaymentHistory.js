@@ -1,22 +1,22 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
-import * as R from "ramda"
+import React from "react";
+import * as R from "ramda";
 
-import { formatDollarAmount } from "../util/util"
+import { formatDollarAmount } from "../util/util";
 
 export default class PaymentHistory extends React.Component<*, void> {
   props: {
-    runDataWithPayments: Array<Object>
-  }
+    runDataWithPayments: Array<Object>,
+  };
 
   renderPaymentRow = (bootcampRun: Object) => {
     const paymentAmountMsg =
-      bootcampRun.total_paid !== bootcampRun.price ?
-        `${formatDollarAmount(
-          bootcampRun.total_paid
-        )} out of ${formatDollarAmount(bootcampRun.price)}` :
-        `${formatDollarAmount(bootcampRun.total_paid)}`
+      bootcampRun.total_paid !== bootcampRun.price
+        ? `${formatDollarAmount(
+            bootcampRun.total_paid,
+          )} out of ${formatDollarAmount(bootcampRun.price)}`
+        : `${formatDollarAmount(bootcampRun.total_paid)}`;
 
     return (
       <tr key={bootcampRun.run_key}>
@@ -34,11 +34,11 @@ export default class PaymentHistory extends React.Component<*, void> {
           </a>
         </td>
       </tr>
-    )
-  }
+    );
+  };
 
   render() {
-    const { runDataWithPayments } = this.props
+    const { runDataWithPayments } = this.props;
 
     return (
       <div className="payment-history-section">
@@ -59,6 +59,6 @@ export default class PaymentHistory extends React.Component<*, void> {
           </table>
         </div>
       </div>
-    )
+    );
   }
 }

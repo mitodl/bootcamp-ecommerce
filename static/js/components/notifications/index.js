@@ -1,25 +1,25 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
+import React from "react";
 
 import {
   ALERT_TYPE_ERROR,
   ALERT_TYPE_SUCCESS,
-  ALERT_TYPE_TEXT
-} from "../../constants"
+  ALERT_TYPE_TEXT,
+} from "../../constants";
 
 import type {
   NotificationProps,
   TextNotificationProps,
-  ErrorNotificationProps
-} from "../../flow/uiTypes"
+  ErrorNotificationProps,
+} from "../../flow/uiTypes";
 
 export const TextNotification = (
-  props: TextNotificationProps & NotificationProps
-): string | React$Element<*> => props.text
+  props: TextNotificationProps & NotificationProps,
+): string | React$Element<*> => props.text;
 
 export const ErrorNotification = (
-  props: ErrorNotificationProps & NotificationProps
+  props: ErrorNotificationProps & NotificationProps,
 ): string | React$Element<*> =>
   props.text || (
     <span>
@@ -29,30 +29,30 @@ export const ErrorNotification = (
       </a>{" "}
       if the problem persists.
     </span>
-  )
+  );
 
 type NotificationConfig = {
   [string]: {
     bodyComponent: (props: any) => string | React$Element<*>,
-    alertProps: Object
-  }
-}
+    alertProps: Object,
+  },
+};
 
 export const notificationConfigMap: NotificationConfig = {
   [ALERT_TYPE_TEXT]: {
     bodyComponent: TextNotification,
-    alertProps:    {}
+    alertProps: {},
   },
   [ALERT_TYPE_ERROR]: {
     bodyComponent: ErrorNotification,
-    alertProps:    {
-      color: "danger"
-    }
+    alertProps: {
+      color: "danger",
+    },
   },
   [ALERT_TYPE_SUCCESS]: {
     bodyComponent: TextNotification,
-    alertProps:    {
-      color: "success"
-    }
-  }
-}
+    alertProps: {
+      color: "success",
+    },
+  },
+};

@@ -3,26 +3,51 @@
 
 {% block content %}
 
-  <tr>
-      <td style="background-color: #ffffff;">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-              <tr>
-                  <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
-                      {{ content|safe }}
-                  </td>
-              </tr>
-              <tr>
-                  <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
-                      <p style="margin: 0 0 10px;">
-                        Sincerely,<br />
-                        <img src="{{ base_url }}{% if signatory.image %}{% image_version_url signatory.image "fill-300x300" %}{% else %}/static/images/signature-mariah-rawding.png{% endif %}" alt="Signature for {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}" /><br />
-                        {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}<br />
-                        MIT Bootcamps Admissions
-                      </p>
-                  </td>
-              </tr>
-          </table>
-      </td>
-  </tr>
+<tr>
+  <td style="background-color: #ffffff">
+    <table
+      role="presentation"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      width="100%"
+    >
+      <tr>
+        <td
+          style="
+            padding: 20px;
+            font-family: sans-serif;
+            font-size: 15px;
+            line-height: 20px;
+            color: #555555;
+          "
+        >
+          {{ content|safe }}
+        </td>
+      </tr>
+      <tr>
+        <td
+          style="
+            padding: 20px;
+            font-family: sans-serif;
+            font-size: 15px;
+            line-height: 20px;
+            color: #555555;
+          "
+        >
+          <p style="margin: 0 0 10px">
+            Sincerely,<br />
+            <img
+              src="{{ base_url }}{% if signatory.image %}{% image_version_url signatory.image "fill-300x300" %}{% else %}/static/images/signature-mariah-rawding.png{% endif %}"
+              alt="Signature for {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}"
+            /><br />
+            {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}<br />
+            MIT Bootcamps Admissions
+          </p>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
 
 {% endblock %}

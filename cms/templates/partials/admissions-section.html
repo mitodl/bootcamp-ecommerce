@@ -1,58 +1,79 @@
 {% load image_version_url wagtailcore_tags humanize %}
 <div class="container-fluid admissions-section">
-    <div class="row">
-        <img class="admissions-image" src="{% image_version_url page.admissions_image 'fill-1920x540' %}" alt="Admissions" />
-    </div>
-    <div class="row adminssion-header">
-        <div class="col-md-10 offset-md-2 col-sm-12 offset-sm-0 pt-5 bg-white">
-            <div class="container-fluid admissions-section">
-                <div class="row">
-                    <div class="col-md-4 col-sm-12 mb-2">
-                        <h2 class="section-heading">{{ page.how_to_title }}</h2>
-                        <h2 class="admissions-heading mt-2"><a href="{{ resource_page_urls.how_to_apply }}">{{ page.how_to_link_text }}</a></h2>
-                    </div>
-                    <div class="col-md-7 col-sm-12 admissions-detail">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col">
-                                    {{ page.details|richtext }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-flex flex-row">
-                                    <div class="flex-shrink-0">
-                                        <a href="{{ apply_url }}" class="btn btn-primary btn-apply">{{ page.apply_now_button_text }}</a>
-                                    </div>
-                                    <div class="notes d-flex flex-grow-1 ml-3">{{ page.notes }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row pb-5 light-grey-bg">
-        <div class="col-md-10 offset-md-1 col-sm-12 offset-sm-0">
+  <div class="row">
+    <img
+      class="admissions-image"
+      src="{% image_version_url page.admissions_image 'fill-1920x540' %}"
+      alt="Admissions"
+    />
+  </div>
+  <div class="row adminssion-header">
+    <div class="col-md-10 offset-md-2 col-sm-12 offset-sm-0 pt-5 bg-white">
+      <div class="container-fluid admissions-section">
+        <div class="row">
+          <div class="col-md-4 col-sm-12 mb-2">
+            <h2 class="section-heading">{{ page.how_to_title }}</h2>
+            <h2 class="admissions-heading mt-2">
+              <a href="{{ resource_page_urls.how_to_apply }}"
+                >{{ page.how_to_link_text }}</a
+              >
+            </h2>
+          </div>
+          <div class="col-md-7 col-sm-12 admissions-detail">
             <div class="container-fluid">
-              <div class="row text-med-dark-grey">
-                <div class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column">
-                    <h3 class="block-title">Location</h3>
-                    <h2 class="pb-2">{{ page.bootcamp_location }}</h2>
-                    {{ page.bootcamp_location_details|richtext }}
+              <div class="row">
+                <div class="col">
+                  {{ page.details|richtext }}
                 </div>
-                <div class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column">
-                    <h3 class="block-title">Bootcamp Dates</h3>
-                    <h2 class="pb-2">{{ page.dates }}</h2>
-                    {{ page.dates_details|richtext }}
+              </div>
+              <div class="row">
+                <div class="col d-flex flex-row">
+                  <div class="flex-shrink-0">
+                    <a href="{{ apply_url }}" class="btn btn-primary btn-apply"
+                      >{{ page.apply_now_button_text }}</a
+                    >
+                  </div>
+                  <div class="notes d-flex flex-grow-1 ml-3">
+                    {{ page.notes }}
+                  </div>
                 </div>
-                <div class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column">
-                    <h3 class="block-title">Tuition</h3>
-                    <h2 class="pb-2">${{ page.price|intcomma }} USD</h2>
-                    <div>{{ page.price_details|richtext }}</div>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="row pb-5 light-grey-bg">
+    <div class="col-md-10 offset-md-1 col-sm-12 offset-sm-0">
+      <div class="container-fluid">
+        <div class="row text-med-dark-grey">
+          <div
+            class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column"
+          >
+            <h3 class="block-title">Location</h3>
+            <h2 class="pb-2">{{ page.bootcamp_location }}</h2>
+            {{ page.bootcamp_location_details|richtext }}
+          </div>
+          <div
+            class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column"
+          >
+            <h3 class="block-title">Bootcamp Dates</h3>
+            <h2 class="pb-2">{{ page.dates }}</h2>
+            {{ page.dates_details|richtext }}
+          </div>
+          <div
+            class="col-md-4 col-sm-12 mt-5 border-left border-dark d-flex flex-column"
+          >
+            <h3 class="block-title">Tuition</h3>
+            <h2 class="pb-2">
+              ${{ page.price|intcomma }}
+              USD
+            </h2>
+            <div>{{ page.price_details|richtext }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

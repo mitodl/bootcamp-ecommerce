@@ -320,7 +320,7 @@ def send_messages(messages):
     for msg in messages:
         try:
             msg.send()
-        except:  # pylint: disable=bare-except
+        except:  # noqa: E722
             log.exception("Error sending email '%s' to %s", msg.subject, msg.to)
 
 
