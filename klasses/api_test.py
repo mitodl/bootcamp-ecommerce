@@ -191,7 +191,7 @@ def test_adjust_app_state_for_new_price_with_existing_orders(order_status):
     user = app.user
     personal_price = PersonalPriceFactory.create(price=990, user=user, bootcamp_run=run)
     InstallmentFactory.create(bootcamp_run=run, amount=RUN_PRICE)
-    # Create payments such that the user has paid the original bootcamp run price
+    # Create payments to test fulfilled and pending payments
     LineFactory.create_batch(
         2,
         order__user=user,
