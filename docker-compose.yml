@@ -21,6 +21,8 @@ services:
       POSTGRES_PASSWORD: postgres # pragma: allowlist secret
     ports:
       - "5432"
+    environment:
+      POSTGRES_PASSWORD: postgres 
 
   redis:
     image: redis:6.2.14
