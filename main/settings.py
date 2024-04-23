@@ -133,7 +133,7 @@ INSTALLED_APPS = (
     # Hijack
     "hijack",
     "compat",
-    "hijack_admin",
+    "hijack.contrib.admin",
     # other third party APPS
     # wagtail
     "wagtail.contrib.forms",
@@ -195,6 +195,7 @@ MIDDLEWARE = (
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
@@ -401,8 +402,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "main.wsgi.application"
 
 # Hijack
-HIJACK_ALLOW_GET_REQUESTS = True
-HIJACK_LOGOUT_REDIRECT_URL = "/admin/auth/user"
+HIJACK_INSERT_BEFORE = "</body>"
 
 # Database
 # https://github.com/kennethreitz/dj-database-url
