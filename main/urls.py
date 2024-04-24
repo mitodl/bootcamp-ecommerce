@@ -3,7 +3,7 @@ URLs for bootcamp
 """
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.conf.urls.static import static
 from django.urls import re_path, include, path
 from django.contrib import admin
@@ -16,23 +16,23 @@ from wagtail.images.views.serve import ServeView
 
 from main.views import react, BackgroundImagesCSSView, cms_login_redirect_view
 
-root_urlpatterns = [url("", include(wagtail_urls))]
+root_urlpatterns = [re_path("", include(wagtail_urls))]
 
 urlpatterns = (
     [
-        url(r"^status/", include("server_status.urls")),
-        url(r"^admin/", admin.site.urls),
-        url(r"^hijack/", include("hijack.urls", namespace="hijack")),
-        url("", include("applications.urls")),
-        url("", include("ecommerce.urls")),
-        url("", include("social_django.urls", namespace="social")),
+        re_path(r"^status/", include("server_status.urls")),
+        re_path(r"^admin/", admin.site.urls),
+        re_path(r"^hijack/", include("hijack.urls", namespace="hijack")),
+        re_path("", include("applications.urls")),
+        re_path("", include("ecommerce.urls")),
+        re_path("", include("social_django.urls", namespace="social")),
         path("", include("authentication.urls")),
         path("", include("mail.urls")),
         path("", include("profiles.urls")),
         path("", include("klasses.urls")),
-        url("", include("jobma.urls")),
-        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
-        url(
+        re_path("", include("jobma.urls")),
+        re_path(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+        re_path(
             r"^background-images\.css$",
             BackgroundImagesCSSView.as_view(),
             name="background-images-css",
