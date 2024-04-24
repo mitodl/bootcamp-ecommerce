@@ -127,7 +127,6 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
     "rest_framework",
     "rest_framework.authtoken",
-    "server_status",
     "social_django",
     "mathfilters",
     # Hijack
@@ -681,15 +680,6 @@ if get_bool(
     LOGGING["loggers"]["root"]["handlers"] = ["console"]
     LOGGING["loggers"]["ui"]["handlers"] = ["console"]
     LOGGING["loggers"]["django"]["handlers"] = ["console"]
-
-# server-status
-STATUS_TOKEN = get_string(
-    name="STATUS_TOKEN",
-    default="",
-    description="Token to access the status API.",
-    required=True,
-)
-HEALTH_CHECK = ["CELERY", "REDIS", "POSTGRES", "ELASTIC_SEARCH"]
 
 ADWORDS_CONVERSION_ID = get_string(
     name="ADWORDS_CONVERSION_ID", default="", description="Id for adwords conversion"

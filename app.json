@@ -409,10 +409,6 @@
       "description": "The SL tracking ID",
       "required": false
     },
-    "STATUS_TOKEN": {
-      "description": "Token to access the status API.",
-      "required": true
-    },
     "USE_X_FORWARDED_HOST": {
       "description": "Set HOST header to original domain accessed by user",
       "required": false

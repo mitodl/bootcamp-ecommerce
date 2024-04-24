@@ -20,7 +20,6 @@ root_urlpatterns = [re_path("", include(wagtail_urls))]
 
 urlpatterns = (
     [
-        re_path(r"^status/", include("server_status.urls")),
         re_path(r"^admin/", admin.site.urls),
         re_path(r"^hijack/", include("hijack.urls", namespace="hijack")),
         re_path("", include("applications.urls")),
