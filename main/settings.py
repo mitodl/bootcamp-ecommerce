@@ -132,7 +132,6 @@ INSTALLED_APPS = (
     "mathfilters",
     # Hijack
     "hijack",
-    "compat",
     "hijack.contrib.admin",
     # other third party APPS
     # wagtail

@@ -986,19 +986,6 @@ django = ">=1.11"
 six = "*"
 
 [[package]]
-name = "django-compat"
-version = "1.0.15"
-description = "For- and backwards compatibility layer for Django 1.4, 1.7, 1.8, 1.9, 1.10, and 1.11"
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-compat-1.0.15.tar.gz", hash = "sha256:3ac9a3bedc56b9365d9eb241bc5157d0c193769bf995f9a78dc1bc24e7c2331b"},
-]
-
-[package.dependencies]
-six = ">=1.10.0"
-
-[[package]]
 name = "django-debug-toolbar"
 version = "3.8.1"
 description = "A configurable set of panels that display various debug information about the current request/response."
@@ -1126,20 +1113,6 @@ files = [
 [package.dependencies]
 Django = ">=2.2"
 redis = ">=3.0.0"
-
-[[package]]
-name = "django-server-status"
-version = "0.7.3"
-description = "Monitor server status with a healthcheck."
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-server-status-0.7.3.tar.gz", hash = "sha256:9126e20d78c88f62ffe382c1a5c73f1206ba8dca07a8039e81e3f35f1f75941a"},
-    {file = "django_server_status-0.7.3-py3-none-any.whl", hash = "sha256:2a018c731504a3c82d45717bca011c4f6b1d547f5384c9b0a04b439e9e5c3552"},
-]
-
-[package.dependencies]
-django = "*"
 
 [[package]]
 name = "django-storages"

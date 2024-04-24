@@ -3,7 +3,7 @@ URLs for bootcamp applications
 """
 
 from django.urls import path
-from django.conf.urls import url, include
+from django.urls import re_path, include
 from rest_framework import routers
 
 from applications.views import (
@@ -20,8 +20,8 @@ router.register(
 router.register(r"submissions", ReviewSubmissionViewSet, basename="submissions_api")
 
 urlpatterns = [
-    url(r"^api/", include(router.urls)),
-    url(
+    re_path(r"^api/", include(router.urls)),
+    re_path(
         r"^api/applications/(?P<pk>\d+)/resume/$",
         UploadResumeView.as_view(),
         name="upload-resume",
