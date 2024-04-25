@@ -96,12 +96,14 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
             .select_related("user", "bootcamp_run__bootcamp")
         )
 
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
 
 
 class InstallmentAdmin(admin.ModelAdmin):
@@ -141,12 +143,14 @@ class PersonalPriceAdmin(admin.ModelAdmin):
             .select_related("user", "bootcamp_run__bootcamp")
         )
 
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
 
 
 class BootcampRunCertificateAdmin(TimestampedModelAdmin):
@@ -168,19 +172,23 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
             "user", "bootcamp_run"
         )
 
+    @admin.display(
+        description="Active",
+        boolean=True,
+    )
     def get_revoked_state(self, obj):
         """return the revoked state"""
         return obj.is_revoked is not True
 
-    get_revoked_state.short_description = "Active"
-    get_revoked_state.boolean = True
 
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
 
 
 admin.site.register(models.Bootcamp, BootcampAdmin)

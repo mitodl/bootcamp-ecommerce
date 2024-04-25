@@ -1,12 +1,12 @@
 """urls for jobma"""
 
-from django.urls import re_path
+from django.urls import path
 
 from jobma.views import JobmaWebhookView
 
 urlpatterns = [
-    re_path(
-        r"api/v0/jobma_webhook/(?P<pk>\d+)/$",
+    path(
+        "api/v0/jobma_webhook/<int:pk>/",
         JobmaWebhookView.as_view(),
         name="jobma-webhook",
     )
