@@ -88,10 +88,7 @@ class OrderAdmin(TimestampedModelAdmin):
         """Returns the user email"""
         return obj.user.email
 
-
-    @admin.display(
-        description="Application"
-    )
+    @admin.display(description="Application")
     def application_link(self, obj):
         """Returns a link to the related application"""
         if not hasattr(obj, "application") or obj.application is None:
@@ -107,7 +104,6 @@ class OrderAdmin(TimestampedModelAdmin):
                 obj.application.id,
             )
         )
-
 
 
 @admin.register(OrderAudit)
@@ -154,7 +150,6 @@ class ReceiptAdmin(TimestampedModelAdmin):
             return None
         return obj.order.user.email
 
-
     @admin.display(
         description="Status",
         ordering="order__status",
@@ -165,10 +160,7 @@ class ReceiptAdmin(TimestampedModelAdmin):
             return None
         return obj.order.status
 
-
-    @admin.display(
-        description="Order"
-    )
+    @admin.display(description="Order")
     def order_link(self, obj):
         """Returns a link to the related order"""
         if obj.order is None:
@@ -182,7 +174,6 @@ class ReceiptAdmin(TimestampedModelAdmin):
                 obj.order.id,
             )
         )
-
 
 
 @admin.register(WireTransferReceipt)
@@ -218,7 +209,6 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
             return None
         return obj.order.user.email
 
-
     @admin.display(
         description="Status",
         ordering="order__status",
@@ -229,10 +219,7 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
             return None
         return obj.order.status
 
-
-    @admin.display(
-        description="Order"
-    )
+    @admin.display(description="Order")
     def order_link(self, obj):
         """Returns a link to the related order"""
         if obj.order is None:
@@ -246,6 +233,3 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
                 obj.order.id,
             )
         )
-
-
-

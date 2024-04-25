@@ -1,2 +1,1 @@
 """Initialize applications app"""
-

@@ -105,7 +105,6 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
         return obj.user.email
 
 
-
 class InstallmentAdmin(admin.ModelAdmin):
     """Admin for Installment"""
 
@@ -152,7 +151,6 @@ class PersonalPriceAdmin(admin.ModelAdmin):
         return obj.user.email
 
 
-
 class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     """Admin for BootcampRunCertificate"""
 
@@ -180,7 +178,6 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
         """return the revoked state"""
         return obj.is_revoked is not True
 
-
     @admin.display(
         description="User",
         ordering="user__email",
@@ -188,7 +185,6 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
-
 
 
 admin.site.register(models.Bootcamp, BootcampAdmin)
