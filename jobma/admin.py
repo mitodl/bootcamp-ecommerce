@@ -38,7 +38,6 @@ class InterviewAdmin(admin.ModelAdmin):
         """Returns the user email"""
         return obj.applicant.email
 
-
     @admin.display(
         description="Job Title",
         ordering="job__job_title",
@@ -46,7 +45,6 @@ class InterviewAdmin(admin.ModelAdmin):
     def get_job_title(self, obj):
         """Returns the job title"""
         return obj.job.job_title
-
 
 
 @admin.register(Job)
@@ -73,7 +71,6 @@ class JobAdmin(admin.ModelAdmin):
         return obj.run.display_title
 
 
-
 @admin.register(InterviewAudit)
 class InterviewAuditAdmin(admin.ModelAdmin):
     """Admin for Interview Audit model"""
@@ -88,5 +85,3 @@ class InterviewAuditAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-
-

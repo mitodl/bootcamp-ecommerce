@@ -31,7 +31,6 @@ class ApplicationStepAdmin(admin.ModelAdmin):
         return obj.bootcamp.title
 
 
-
 class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
     """Admin for BootcampRunApplicationStep"""
 
@@ -63,7 +62,6 @@ class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
         """Returns the bootcamp run display title"""
         return obj.bootcamp_run.display_title
 
-
     @admin.display(
         description="Submission Type",
         ordering="application_step__submission_type",
@@ -72,7 +70,6 @@ class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
         """Returns the application step submission type"""
         return obj.application_step.submission_type
 
-
     @admin.display(
         description="Step Order",
         ordering="application_step__step_order",
@@ -80,7 +77,6 @@ class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
     def get_step_order(self, obj):
         """Returns the application step order"""
         return obj.application_step.step_order
-
 
 
 class OrderInline(admin.StackedInline):
@@ -130,7 +126,6 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
         """Returns the user email"""
         return obj.user.email
 
-
     @admin.display(
         description="Bootcamp Run",
         ordering="bootcamp_run__title",
@@ -138,7 +133,6 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.bootcamp_run.display_title
-
 
 
 class AppStepSubmissionInline(GenericTabularInline):
@@ -195,7 +189,6 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             else app_step_submissions[0].bootcamp_application.user.email
         )
 
-
     @admin.display(
         description="App Bootcamp Run",
         ordering="app_step_submission__bootcamp_application__bootcamp_run__title",
@@ -209,10 +202,7 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             else app_step_submissions[0].bootcamp_application.bootcamp_run.display_title
         )
 
-
-    @admin.display(
-        description="Submission"
-    )
+    @admin.display(description="Submission")
     def app_step_submission_link(self, obj):
         """Returns a link to the related bootcamp application"""
         app_step_submissions = obj.app_step_submissions.all()
@@ -232,7 +222,6 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
         )
 
 
-
 class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     """Admin class for VideoInterviewSubmission"""
 
@@ -243,9 +232,7 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     def get_list_display(self, request):
         return tuple(super().get_list_display(request) or ()) + ("interview_link",)
 
-    @admin.display(
-        description="Interview"
-    )
+    @admin.display(description="Interview")
     def interview_link(self, obj):
         """Returns a link to the related interview record"""
         if not hasattr(obj, "interview") or obj.interview is None:
@@ -259,7 +246,6 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
                 obj.interview.id,
             )
         )
-
 
 
 class QuizSubmissionAdmin(SubmissionTypeAdmin):
@@ -329,9 +315,7 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
             return tuple(self.readonly_fields or ()) + ("content_type", "object_id")
         return self.readonly_fields
 
-    @admin.display(
-        description="submission object"
-    )
+    @admin.display(description="submission object")
     def submission_content_obj_link(self, obj):
         """Returns a link to the content object"""
         if obj.content_object is None:
@@ -348,7 +332,6 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
             )
         )
 
-
     @admin.display(
         description="User",
         ordering="user__email",
@@ -357,7 +340,6 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
         """Returns the user email"""
         return obj.bootcamp_application.user.email
 
-
     @admin.display(
         description="Bootcamp Run",
         ordering="bootcamp_run__title",
@@ -365,7 +347,6 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.bootcamp_application.bootcamp_run.display_title
-
 
 
 class ApplicantLetterAdmin(TimestampedModelAdmin):
@@ -390,7 +371,6 @@ class ApplicantLetterAdmin(TimestampedModelAdmin):
         """Returns the user email"""
         return obj.application.user.email
 
-
     @admin.display(
         description="Bootcamp Run",
         ordering="bootcamp_run__title",
@@ -398,7 +378,6 @@ class ApplicantLetterAdmin(TimestampedModelAdmin):
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.application.bootcamp_run.display_title
-
 
 
 admin.site.register(models.ApplicationStep, ApplicationStepAdmin)
