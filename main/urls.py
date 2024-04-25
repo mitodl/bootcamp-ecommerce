@@ -16,21 +16,21 @@ from wagtail.images.views.serve import ServeView
 
 from main.views import react, BackgroundImagesCSSView, cms_login_redirect_view
 
-root_urlpatterns = [re_path("", include(wagtail_urls))]
+root_urlpatterns = [path("", include(wagtail_urls))]
 
 urlpatterns = (
     [
         re_path(r"^admin/", admin.site.urls),
-        re_path(r"^hijack/", include("hijack.urls", namespace="hijack")),
-        re_path("", include("applications.urls")),
-        re_path("", include("ecommerce.urls")),
-        re_path("", include("social_django.urls", namespace="social")),
+        path("hijack/", include("hijack.urls", namespace="hijack")),
+        path("", include("applications.urls")),
+        path("", include("ecommerce.urls")),
+        path("", include("social_django.urls", namespace="social")),
         path("", include("authentication.urls")),
         path("", include("mail.urls")),
         path("", include("profiles.urls")),
         path("", include("klasses.urls")),
-        re_path("", include("jobma.urls")),
-        re_path(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+        path("", include("jobma.urls")),
+        path("logout/", auth_views.LogoutView.as_view(), name="logout"),
         re_path(
             r"^background-images\.css$",
             BackgroundImagesCSSView.as_view(),
@@ -39,7 +39,7 @@ urlpatterns = (
         # named routes mapped to the react app
         path("signin/", react, name="login"),
         path("signin/password/", react, name="login-password"),
-        re_path(r"^signin/forgot-password/$", react, name="password-reset"),
+        path("signin/forgot-password/", react, name="password-reset"),
         path(
             "signin/forgot-password/confirm/<slug:uid>/<slug:token>/",
             react,
@@ -74,9 +74,9 @@ urlpatterns = (
             name="wagtailimages_serve",
         ),
         re_path(r"^cms/login", cms_login_redirect_view, name="wagtailadmin_login"),
-        re_path(r"^cms/", include(wagtailadmin_urls)),
-        re_path(r"^documents/", include(wagtaildocs_urls)),
-        re_path(r"^idp/", include("djangosaml2idp.urls")),
+        path("cms/", include(wagtailadmin_urls)),
+        path("documents/", include(wagtaildocs_urls)),
+        path("idp/", include("djangosaml2idp.urls")),
     ]
     + root_urlpatterns
     + (
