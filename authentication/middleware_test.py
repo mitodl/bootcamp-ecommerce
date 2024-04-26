@@ -23,7 +23,7 @@ def test_process_exception(mocker, rf, settings):
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
     # social_django depends on request.sesssion, so use the middleware to set that
-    SessionMiddleware().process_request(request)
+    SessionMiddleware(get_response=mocker.Mock()).process_request(request)
     strategy = load_strategy(request)
     backend = load_backend(strategy, "email", None)
     request.social_strategy = strategy
@@ -43,7 +43,7 @@ def test_process_exception_non_auth_error(mocker, rf, settings):
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
     # social_django depends on request.sesssion, so use the middleware to set that
-    SessionMiddleware().process_request(request)
+    SessionMiddleware(get_response=mocker.Mock()).process_request(request)
     strategy = load_strategy(request)
     backend = load_backend(strategy, "email", None)
     request.social_strategy = strategy
