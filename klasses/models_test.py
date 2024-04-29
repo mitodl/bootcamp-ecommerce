@@ -138,7 +138,7 @@ def test_bootcamp_run_is_payable(future_start_date, expected_result):
     bootcamp_run = None
     if future_start_date is None:
         start_date = None
-        bootcamp_run = BootcampRunFactory.build(start_date=start_date)
+        bootcamp_run = BootcampRunFactory.create(start_date=start_date)
     elif future_start_date:
         start_date = now_in_utc() + timedelta(days=10)
     else:

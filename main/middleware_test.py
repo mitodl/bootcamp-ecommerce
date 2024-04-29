@@ -15,11 +15,11 @@ from main.middleware import CachelessAPIMiddleware
     ],
 )
 def test_cacheless_api_middleware(
-    rf, view, cache_value, cacheable_endpoints_cache_value
+    rf, view, cache_value, cacheable_endpoints_cache_value, mocker
 ):
     """Tests that the response has a cache-control header for API URLs"""
     request = rf.get(reverse(view))
-    middleware = CachelessAPIMiddleware()
+    middleware = CachelessAPIMiddleware(get_response=mocker.Mock())
     assert (
         middleware.process_response(request, {}).get("Cache-Control", None)
         == cache_value

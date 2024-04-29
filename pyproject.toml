@@ -40,7 +40,7 @@ dj-database-url = "^0.3.0"
 django-anymail = {extras = ["mailgun"], version = "^8.4"}
 dj-static = "^0.0.6"
 django-cache-memoize = "^0.1.7"
-django-classy-tags = "^1.0.0"
+django-classy-tags = "^4.1.0"
 django-hijack = "^3.4.5"
 django-filter = "^23.4"
 django-fsm = "^2.8.0"
