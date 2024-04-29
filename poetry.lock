@@ -973,17 +973,17 @@ dev = ["black", "flake8", "therapist", "tox", "twine"]
 
 [[package]]
 name = "django-classy-tags"
-version = "1.0.0"
+version = "4.1.0"
 description = "Class based template tags for Django"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "django-classy-tags-1.0.0.tar.gz", hash = "sha256:ad6a25fc2b58a098f00d86bd5e5dad47922f5ca4e744bc3cccb7b4be5bc35eb1"},
+    {file = "django-classy-tags-4.1.0.tar.gz", hash = "sha256:c8d9d1aa2fa6e71c4d866df4dd11d23a69b8d25bbb750b2490a17b161774ee59"},
+    {file = "django_classy_tags-4.1.0-py3-none-any.whl", hash = "sha256:1c784cf1bac49c20a77b8f7d1541867c64076642a160a847ff449588d4e01e55"},
 ]
 
 [package.dependencies]
-django = ">=1.11"
-six = "*"
+django = ">=3.2"
 
 [[package]]
 name = "django-debug-toolbar"
