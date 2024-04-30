@@ -17,7 +17,7 @@ x-environment:
 
 services:
   db:
-    image: postgres:12.17
+    image: postgres:12.18
     ports:
       - "5432"
     environment:
