@@ -5,13 +5,20 @@ Admin views for bootcamps
 from django.contrib import admin
 from mitol.common.admin import TimestampedModelAdmin
 
-from klasses import models
+from klasses.models import (
+    Bootcamp,
+    BootcampRun,
+    BootcampRunCertificate,
+    BootcampRunEnrollment,
+    Installment,
+    PersonalPrice,
+)
 
 
 class BootcampRunInline(admin.StackedInline):
     """Admin Inline for BootcampRun objects"""
 
-    model = models.BootcampRun
+    model = BootcampRun
     extra = 1
     show_change_link = True
 
@@ -19,15 +26,16 @@ class BootcampRunInline(admin.StackedInline):
 class InstallmentInline(admin.StackedInline):
     """Admin Inline for Installment objects"""
 
-    model = models.Installment
+    model = Installment
     extra = 1
     show_change_link = True
 
 
+@admin.register(Bootcamp)
 class BootcampAdmin(admin.ModelAdmin):
     """Admin for Bootcamp"""
 
-    model = models.Bootcamp
+    model = Bootcamp
     list_display = (
         "title",
         "readable_id",
@@ -39,10 +47,11 @@ class BootcampAdmin(admin.ModelAdmin):
     inlines = [BootcampRunInline]
 
 
+@admin.register(BootcampRun)
 class BootcampRunAdmin(admin.ModelAdmin):
     """Admin for BootcampRun"""
 
-    model = models.BootcampRun
+    model = BootcampRun
     list_display = (
         "display_title",
         "bootcamp_run_id",
@@ -60,10 +69,11 @@ class BootcampRunAdmin(admin.ModelAdmin):
     inlines = [InstallmentInline]
 
 
+@admin.register(BootcampRunEnrollment)
 class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
     """Admin for BootcampRunEnrollment"""
 
-    model = models.BootcampRunEnrollment
+    model = BootcampRunEnrollment
     include_created_on_in_list = True
     list_display = (
         "id",
@@ -105,10 +115,11 @@ class BootcampRunEnrollmentAdmin(TimestampedModelAdmin):
         return obj.user.email
 
 
+@admin.register(Installment)
 class InstallmentAdmin(admin.ModelAdmin):
     """Admin for Installment"""
 
-    model = models.Installment
+    model = Installment
     list_display = ("id", "bootcamp_run", "deadline", "amount")
     raw_id_fields = ("bootcamp_run",)
     search_fields = (
@@ -117,10 +128,11 @@ class InstallmentAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(PersonalPrice)
 class PersonalPriceAdmin(admin.ModelAdmin):
     """Admin for PersonalPrice"""
 
-    model = models.PersonalPrice
+    model = PersonalPrice
     list_display = ("id", "get_user_email", "bootcamp_run", "price")
     list_filter = ("bootcamp_run__bootcamp",)
     raw_id_fields = ("bootcamp_run", "user")
@@ -151,10 +163,11 @@ class PersonalPriceAdmin(admin.ModelAdmin):
         return obj.user.email
 
 
+@admin.register(BootcampRunCertificate)
 class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     """Admin for BootcampRunCertificate"""
 
-    model = models.BootcampRunCertificate
+    model = BootcampRunCertificate
     include_timestamps_in_list = True
     list_display = ["uuid", "get_user_email", "bootcamp_run", "get_revoked_state"]
     search_fields = [
@@ -185,11 +198,3 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
-
-
-admin.site.register(models.Bootcamp, BootcampAdmin)
-admin.site.register(models.BootcampRun, BootcampRunAdmin)
-admin.site.register(models.Installment, InstallmentAdmin)
-admin.site.register(models.PersonalPrice, PersonalPriceAdmin)
-admin.site.register(models.BootcampRunEnrollment, BootcampRunEnrollmentAdmin)
-admin.site.register(models.BootcampRunCertificate, BootcampRunCertificateAdmin)

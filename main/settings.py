@@ -129,7 +129,6 @@ INSTALLED_APPS = (
     "rest_framework.authtoken",
     "social_django",
     "mathfilters",
-    # Hijack
     "hijack",
     "hijack.contrib.admin",
     # other third party APPS

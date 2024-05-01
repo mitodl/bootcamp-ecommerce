@@ -10,15 +10,25 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from mitol.common.admin import TimestampedModelAdmin
 
-from applications import models
+from applications.models import (
+    ApplicationStep,
+    ApplicationStepSubmission,
+    BootcampRunApplicationStep,
+    BootcampApplication,
+    VideoInterviewSubmission,
+    QuizSubmission,
+    ApplicantLetter,
+    Interview,
+)
 from ecommerce.models import Order
 from main.utils import get_field_names
 
 
+@admin.register(ApplicationStep)
 class ApplicationStepAdmin(admin.ModelAdmin):
     """Admin for ApplicationStep"""
 
-    model = models.ApplicationStep
+    model = ApplicationStep
     list_display = ("id", "get_bootcamp_title", "submission_type", "step_order")
     ordering = ("bootcamp", "step_order")
 
@@ -31,10 +41,11 @@ class ApplicationStepAdmin(admin.ModelAdmin):
         return obj.bootcamp.title
 
 
+@admin.register(BootcampRunApplicationStep)
 class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
     """Admin for BootcampRunApplicationStep"""
 
-    model = models.BootcampRunApplicationStep
+    model = BootcampRunApplicationStep
     list_display = (
         "id",
         "get_run_display_title",
@@ -94,10 +105,11 @@ class OrderInline(admin.StackedInline):
         return False
 
 
+@admin.register(BootcampApplication)
 class BootcampApplicationAdmin(TimestampedModelAdmin):
     """Admin for BootcampApplication"""
 
-    model = models.BootcampApplication
+    model = BootcampApplication
     include_timestamps_in_list = True
     inlines = [OrderInline]
     list_display = ("id", "get_user_email", "get_run_display_title", "state")
@@ -138,7 +150,7 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
 class AppStepSubmissionInline(GenericTabularInline):
     """Admin class for ApplicationStepSubmission"""
 
-    model = models.ApplicationStepSubmission
+    model = ApplicationStepSubmission
     max_num = 1
     raw_id_fields = ("bootcamp_application", "run_application_step")
 
@@ -213,7 +225,7 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             '<a href="{}">Submission ({})</a>'.format(
                 reverse(
                     "admin:applications_{}_change".format(
-                        models.ApplicationStepSubmission._meta.model_name
+                        ApplicationStepSubmission._meta.model_name
                     ),
                     args=(app_step_submission.id,),
                 ),  # pylint: disable=protected-access
@@ -222,10 +234,11 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
         )
 
 
+@admin.register(VideoInterviewSubmission)
 class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     """Admin class for VideoInterviewSubmission"""
 
-    model = models.VideoInterviewSubmission
+    model = VideoInterviewSubmission
 
     raw_id_fields = ("interview",)
 
@@ -240,7 +253,7 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
         return mark_safe(
             '<a href="{}">Interview ({})</a>'.format(
                 reverse(
-                    "admin:jobma_{}_change".format(models.Interview._meta.model_name),
+                    "admin:jobma_{}_change".format(Interview._meta.model_name),
                     args=(obj.interview.id,),
                 ),  # pylint: disable=protected-access
                 obj.interview.id,
@@ -248,10 +261,11 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
         )
 
 
+@admin.register(QuizSubmission)
 class QuizSubmissionAdmin(SubmissionTypeAdmin):
     """Admin for QuizSubmission"""
 
-    model = models.QuizSubmission
+    model = QuizSubmission
 
     def get_list_display(self, request):
         return tuple(super().get_list_display(request) or ()) + ("started_date",)
@@ -274,10 +288,11 @@ class ApplicationStepSubmissionForm(forms.ModelForm):
         return object_id
 
 
+@admin.register(ApplicationStepSubmission)
 class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
     """Admin for ApplicationStepSubmission"""
 
-    model = models.ApplicationStepSubmission
+    model = ApplicationStepSubmission
     form = ApplicationStepSubmissionForm
     list_display = (
         "id",
@@ -349,10 +364,11 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
         return obj.bootcamp_application.bootcamp_run.display_title
 
 
+@admin.register(ApplicantLetter)
 class ApplicantLetterAdmin(TimestampedModelAdmin):
     """Admin for ApplicantLetter"""
 
-    model = models.ApplicantLetter
+    model = ApplicantLetter
     list_display = ("id", "letter_type", "get_user_email", "get_run_display_title")
     list_filter = ("letter_type",)
     raw_id_fields = ("application",)
@@ -361,7 +377,7 @@ class ApplicantLetterAdmin(TimestampedModelAdmin):
         "application__bootcamp_run__title",
         "application__bootcamp_run__bootcamp__title",
     )
-    readonly_fields = get_field_names(models.ApplicantLetter)
+    readonly_fields = get_field_names(ApplicantLetter)
 
     @admin.display(
         description="User",
@@ -378,12 +394,3 @@ class ApplicantLetterAdmin(TimestampedModelAdmin):
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.application.bootcamp_run.display_title
-
-
-admin.site.register(models.ApplicationStep, ApplicationStepAdmin)
-admin.site.register(models.BootcampRunApplicationStep, BootcampRunApplicationStepAdmin)
-admin.site.register(models.BootcampApplication, BootcampApplicationAdmin)
-admin.site.register(models.VideoInterviewSubmission, VideoInterviewSubmissionAdmin)
-admin.site.register(models.QuizSubmission, QuizSubmissionAdmin)
-admin.site.register(models.ApplicationStepSubmission, ApplicationStepSubmissionAdmin)
-admin.site.register(models.ApplicantLetter, ApplicantLetterAdmin)
