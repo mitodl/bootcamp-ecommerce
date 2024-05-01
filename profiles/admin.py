@@ -51,7 +51,7 @@ class UserProfileInline(admin.StackedInline):
         return True
 
 
-class UserAdmin(ContribUserAdmin, HijackUserAdminMixin):
+class UserAdmin(ContribUserAdmin):
     """Admin views for user"""
 
     fieldsets = (

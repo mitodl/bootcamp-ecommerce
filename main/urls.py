@@ -20,7 +20,7 @@ root_urlpatterns = [path("", include(wagtail_urls))]
 
 urlpatterns = (
     [
-        re_path(r"^admin/", admin.site.urls),
+        path("admin/", admin.site.urls),
         path("hijack/", include("hijack.urls")),
         path("", include("applications.urls")),
         path("", include("ecommerce.urls")),
