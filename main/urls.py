@@ -21,7 +21,7 @@ root_urlpatterns = [path("", include(wagtail_urls))]
 urlpatterns = (
     [
         re_path(r"^admin/", admin.site.urls),
-        path("hijack/", include("hijack.urls", namespace="hijack")),
+        path("hijack/", include("hijack.urls")),
         path("", include("applications.urls")),
         path("", include("ecommerce.urls")),
         path("", include("social_django.urls", namespace="social")),
