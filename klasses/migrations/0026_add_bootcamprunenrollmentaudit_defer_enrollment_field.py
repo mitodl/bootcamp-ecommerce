@@ -38,15 +38,11 @@ class Migration(migrations.Migration):
                 ("updated_on", models.DateTimeField(auto_now=True)),
                 (
                     "data_before",
-                    models.JSONField(
-                        blank=True, null=True
-                    ),
+                    models.JSONField(blank=True, null=True),
                 ),
                 (
                     "data_after",
-                    models.JSONField(
-                        blank=True, null=True
-                    ),
+                    models.JSONField(blank=True, null=True),
                 ),
                 (
                     "acting_user",
