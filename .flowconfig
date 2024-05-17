@@ -4,6 +4,9 @@
 .*.git/.*
 .*/staticfiles/.*
 .*/static/bundles/.*
+.*/node_modules/redux-query/dist/.*.js.flow
+.*/node_modules/redux-query-react/dist/.*.js.flow
+.*/node_modules/redux-query-interface-superagent/dist/.*.js.flow
 
 [include]
 ./static/js
