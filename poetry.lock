@@ -2891,16 +2891,20 @@ testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
 name = "pytest-env"
-version = "0.6.2"
+version = "0.8.2"
 description = "py.test plugin that allows you to add environment variables."
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "pytest-env-0.6.2.tar.gz", hash = "sha256:7e94956aef7f2764f3c147d216ce066bf6c42948bb9e293169b1b1c880a580c2"},
+    {file = "pytest_env-0.8.2-py3-none-any.whl", hash = "sha256:5e533273f4d9e6a41c3a3120e0c7944aae5674fa773b329f00a5eb1f23c53a38"},
+    {file = "pytest_env-0.8.2.tar.gz", hash = "sha256:baed9b3b6bae77bd75b9238e0ed1ee6903a42806ae9d6aeffb8754cd5584d4ff"},
 ]
 
 [package.dependencies]
-pytest = ">=2.6.0"
+pytest = ">=7.3.1"
+
+[package.extras]
+test = ["coverage (>=7.2.7)", "pytest-mock (>=3.10)"]
 
 [[package]]
 name = "pytest-lazy-fixture"
@@ -3793,4 +3797,4 @@ xmlsec = ["xmlsec (>=0.6.1)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.13"
-content-hash = "147f0cf5555d6245ef58fe55aca34ac8c7a3baaec357d090f5ea31ce3962db7b"
+content-hash = "cc945d2ebe2122211851838c6c6893d1c8a34be1c5360e64b9f1f38ac7dcb40b"
