@@ -278,24 +278,26 @@ crt = ["awscrt (==0.20.9)"]
 
 [[package]]
 name = "bpython"
-version = "0.19"
-description = "Fancy Interface to the Python Interpreter"
+version = "0.24"
+description = ""
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "bpython-0.19-py2.py3-none-any.whl", hash = "sha256:95d95783bfadfa0a25300a648de5aba4423b0ee76b034022a81dde2b5e853c00"},
-    {file = "bpython-0.19.tar.gz", hash = "sha256:476ce09a896c4d34bf5e56aca64650c56fdcfce45781a20dc1521221df8cc49c"},
+    {file = "bpython-0.24-py3-none-any.whl", hash = "sha256:0d196ae3d1ce3dcd559a3fb89ed2c468dfbd1504af0d680b906dd65a9c7a32eb"},
+    {file = "bpython-0.24.tar.gz", hash = "sha256:98736ffd7a8c48fd2bfb53d898a475f4241bde0b672125706af04d9d08fd3dbd"},
 ]
 
 [package.dependencies]
-curtsies = ">=0.1.18"
+curtsies = ">=0.4.0"
+cwcwidth = "*"
 greenlet = "*"
 pygments = "*"
+pyxdg = "*"
 requests = "*"
-six = ">=1.5"
 
 [package.extras]
-jedi = ["jedi"]
+clipboard = ["pyperclip"]
+jedi = ["jedi (>=0.16)"]
 urwid = ["urwid"]
 watch = ["watchdog"]
 
@@ -2991,6 +2993,17 @@ files = [
 ]
 
 [[package]]
+name = "pyxdg"
+version = "0.28"
+description = "PyXDG contains implementations of freedesktop.org standards in python."
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyxdg-0.28-py2.py3-none-any.whl", hash = "sha256:bdaf595999a0178ecea4052b7f4195569c1ff4d344567bccdc12dfdf02d545ab"},
+    {file = "pyxdg-0.28.tar.gz", hash = "sha256:3267bb3074e934df202af2ee0868575484108581e6f3cb006af1da35395e88b4"},
+]
+
+[[package]]
 name = "redis"
 version = "5.0.4"
 description = "Python client for Redis database and key-value store"
@@ -3780,4 +3793,4 @@ xmlsec = ["xmlsec (>=0.6.1)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.13"
-content-hash = "b52e07cc4d3f3c36bf7844079d71eafc40ee6071564d69387c8ef2591675cfeb"
+content-hash = "147f0cf5555d6245ef58fe55aca34ac8c7a3baaec357d090f5ea31ce3962db7b"
