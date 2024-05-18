@@ -2939,19 +2939,19 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "pytest-pylint"
-version = "0.18.0"
+version = "0.21.0"
 description = "pytest plugin to check source code with pylint"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "pytest-pylint-0.18.0.tar.gz", hash = "sha256:790c7a8019fab08e59bd3812db1657a01995a975af8b1c6ce95b9aa39d61da27"},
-    {file = "pytest_pylint-0.18.0-py3-none-any.whl", hash = "sha256:b63aaf8b80ff33c8ceaa7f68323ed04102c7790093ccf6bdb261a4c2dc6fd564"},
+    {file = "pytest-pylint-0.21.0.tar.gz", hash = "sha256:88764b8e1d5cfa18809248e0ccc2fc05035f08c35f0b0222ddcfea1c3c4e553e"},
+    {file = "pytest_pylint-0.21.0-py3-none-any.whl", hash = "sha256:f10d9eaa72b9fbe624ee4b55da0481f56482eee0a467afc1ee3ae8b1fefbd0b4"},
 ]
 
 [package.dependencies]
-pylint = ">=2.3.0"
-pytest = ">=5.4"
-toml = ">=0.7.1"
+pylint = ">=2.15.0"
+pytest = ">=7.0"
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "python-dateutil"
@@ -3797,4 +3797,4 @@ xmlsec = ["xmlsec (>=0.6.1)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.13"
-content-hash = "cc945d2ebe2122211851838c6c6893d1c8a34be1c5360e64b9f1f38ac7dcb40b"
+content-hash = "928001877eebe157d4acc255310261ccb422e895ca642514d5034139462dad91"
