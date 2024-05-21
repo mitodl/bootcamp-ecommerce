@@ -83,7 +83,9 @@ class ValidateOnSaveMixin(Model):
     class Meta:
         abstract = True
 
-    def save(self, force_insert=False, force_update=False, **kwargs):  # pylint: disable=arguments-differ
+    def save(
+        self, force_insert=False, force_update=False, **kwargs
+    ):  # pylint: disable=arguments-differ
         if not (force_insert or force_update):
             self.full_clean()
         super().save(force_insert=force_insert, force_update=force_update, **kwargs)

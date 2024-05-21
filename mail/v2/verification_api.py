@@ -8,7 +8,9 @@ from mail.v2 import api
 from mail.v2.constants import EMAIL_VERIFICATION, EMAIL_CHANGE_EMAIL
 
 
-def send_verification_email(strategy, backend, code, partial_token):  # pylint: disable=unused-argument
+def send_verification_email(
+    strategy, backend, code, partial_token
+):  # pylint: disable=unused-argument
     """
     Sends a verification email for python-social-auth
 

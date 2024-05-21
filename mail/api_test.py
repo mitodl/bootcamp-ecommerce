@@ -26,7 +26,9 @@ pytestmark = pytest.mark.django_db
 def mocked_json():
     """Mocked version of the json method for the Response class"""
 
-    def _json(*args, **kwargs):  # pylint:disable=unused-argument, missing-docstring, redefined-outer-name
+    def _json(
+        *args, **kwargs
+    ):  # pylint:disable=unused-argument, missing-docstring, redefined-outer-name
         return {}
 
     yield _json

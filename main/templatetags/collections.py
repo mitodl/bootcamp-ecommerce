@@ -21,7 +21,9 @@ class CumulativeFieldTotal(AsTag):
         Argument("varname", required=False, resolve=False),
     )
 
-    def get_value(self, context, items, field, offset):  # pylint: disable=arguments-differ
+    def get_value(
+        self, context, items, field, offset
+    ):  # pylint: disable=arguments-differ
         """Sums up a field on a list of objects"""
         if offset is not None:
             items = items[:offset]

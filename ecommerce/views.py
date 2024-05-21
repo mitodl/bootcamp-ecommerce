@@ -151,7 +151,9 @@ class UserBootcampRunDetail(GenericAPIView):
     lookup_url_kwarg = "run_key"
     queryset = BootcampRun.objects.all()
 
-    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
+    def get(
+        self, request, username, *args, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         Returns a serialized bootcamp run and payment for a user
         """
@@ -203,7 +205,9 @@ class UserBootcampRunList(APIView):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated, CanReadIfSelf)
 
-    def get(self, request, username, *args, **kwargs):  # pylint: disable=unused-argument
+    def get(
+        self, request, username, *args, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         Returns serialized bootcamp runs and payments for all runs that a user can pay for.
         """

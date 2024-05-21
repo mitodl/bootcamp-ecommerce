@@ -126,7 +126,9 @@ def migrate_application(from_run_application, to_run):
         # possibly-different order, keep track of the run step ids for which a submission has already been created.
         used_run_step_ids = set()
         for from_app_step_submission in from_app_step_submissions:
-            submission_type = from_app_step_submission.run_application_step.application_step.submission_type
+            submission_type = (
+                from_app_step_submission.run_application_step.application_step.submission_type
+            )
             to_run_step_id = next(
                 step_id
                 for step_id in to_run_steps[submission_type]

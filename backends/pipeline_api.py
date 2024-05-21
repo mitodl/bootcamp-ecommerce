@@ -15,7 +15,9 @@ from profiles.models import Profile
 log = logging.getLogger(__name__)
 
 
-def update_profile_from_edx(backend, user, response, is_new, *args, **kwargs):  # pylint: disable=unused-argument
+def update_profile_from_edx(
+    backend, user, response, is_new, *args, **kwargs
+):  # pylint: disable=unused-argument
     """
     Gets profile information from edX and saves it in the Profile object (creating one if necessary)
 
