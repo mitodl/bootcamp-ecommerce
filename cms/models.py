@@ -73,9 +73,7 @@ class BootcampIndexPage(Page):
             and not parent.get_children().type(cls).exists()
         )
 
-    def route(
-        self, request, path_components
-    ):  # pylint:disable=useless-super-delegation
+    def route(self, request, path_components):  # pylint:disable=useless-super-delegation
         """Placeholder to implement custom routing later on (based on some sort of courseware key like in xPRO)"""
         return super().route(request, path_components)
 
@@ -938,9 +936,7 @@ class CertificateIndexPage(RoutablePageMixin, Page):
         )
 
     @route(r"^([A-Fa-f0-9-]+)/?$")
-    def bootcamp_certificate(
-        self, request, uuid, *args, **kwargs
-    ):  # pylint: disable=unused-argument
+    def bootcamp_certificate(self, request, uuid, *args, **kwargs):  # pylint: disable=unused-argument
         """
         Serve a bootcamp certificate by uuid
         """

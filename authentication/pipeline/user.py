@@ -33,9 +33,7 @@ NAME_MIN_LENGTH = 2
 # pylint: disable=keyword-arg-before-vararg
 
 
-def validate_email_auth_request(
-    strategy, backend, user=None, *args, **kwargs
-):  # pylint: disable=unused-argument
+def validate_email_auth_request(strategy, backend, user=None, *args, **kwargs):  # pylint: disable=unused-argument
     """
     Validates an auth request for email
 
@@ -54,9 +52,7 @@ def validate_email_auth_request(
     return {}
 
 
-def get_username(
-    strategy, backend, user=None, *args, **kwargs
-):  # pylint: disable=unused-argument
+def get_username(strategy, backend, user=None, *args, **kwargs):  # pylint: disable=unused-argument
     """
     Gets the username for a user
 
@@ -225,9 +221,7 @@ def forbid_hijack(strategy, backend, **kwargs):  # pylint: disable=unused-argume
     return {}
 
 
-def activate_user(
-    strategy, backend, user=None, is_new=False, **kwargs
-):  # pylint: disable=unused-argument
+def activate_user(strategy, backend, user=None, is_new=False, **kwargs):  # pylint: disable=unused-argument
     """
     Activate the user's account if they passed export controls
 
@@ -279,9 +273,7 @@ def send_user_to_hubspot(request, **kwargs):
     return {}
 
 
-def sync_user_to_hubspot(
-    strategy, backend, user=None, is_new=False, **kwargs
-):  # pylint: disable=unused-argument
+def sync_user_to_hubspot(strategy, backend, user=None, is_new=False, **kwargs):  # pylint: disable=unused-argument
     """
     Sync the user's latest profile data with hubspot on login
     """

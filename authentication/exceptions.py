@@ -18,9 +18,7 @@ class RequireProviderException(AuthException):
 class PartialException(AuthException):
     """Partial pipeline exception"""
 
-    def __init__(
-        self, backend, partial, errors=None, reason_code=None, user=None
-    ):  # pylint:disable=too-many-arguments
+    def __init__(self, backend, partial, errors=None, reason_code=None, user=None):  # pylint:disable=too-many-arguments
         self.partial = partial
         self.errors = errors
         self.reason_code = reason_code

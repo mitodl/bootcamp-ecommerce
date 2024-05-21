@@ -10,3 +10,4 @@ class CMSConfig(AppConfig):
 
     def ready(self):
         """Application is ready"""
+        import cms.signals  # noqa: F401

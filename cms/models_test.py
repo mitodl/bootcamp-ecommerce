@@ -89,11 +89,7 @@ def test_three_column_image_text_section_under_runpage():
         bootcamp_run_page.three_column_image_text_section
         == three_column_image_text_section
     )
-    for (
-        item
-    ) in (
-        three_column_image_text_section.column_image_text_section
-    ):  # pylint: disable=not-an-iterable
+    for item in three_column_image_text_section.column_image_text_section:  # pylint: disable=not-an-iterable
         assert item.value.get("heading") == "heading of block"
         assert item.value.get("sub_heading") == "subheading of block"
         assert item.value.get("body").source == "<p>body of the block</p>"
@@ -124,11 +120,7 @@ def test_three_column_image_text_section_under_homepage():
     )
     assert home_page.three_column_image_text_section
     assert home_page.three_column_image_text_section == three_column_image_text_section
-    for (
-        item
-    ) in (
-        three_column_image_text_section.column_image_text_section
-    ):  # pylint: disable=not-an-iterable
+    for item in three_column_image_text_section.column_image_text_section:  # pylint: disable=not-an-iterable
         assert item.value.get("heading") == "heading of block"
         assert item.value.get("sub_heading") == "subheading of block"
         assert item.value.get("body").source == "<p>body of the block</p>"

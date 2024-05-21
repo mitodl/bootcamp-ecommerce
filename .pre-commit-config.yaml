@@ -49,8 +49,7 @@ repos:
           - compliance/test_data/cybersource/
           - --exclude-files
           - ".*_test.js"
-          - --exclude-files
-          - "static/js/constants.js"
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.4.0"
     hooks:

@@ -10,3 +10,4 @@ class KlassesConfig(AppConfig):
 
     def ready(self):
         """Application is ready"""
+        import klasses.signals  # noqa: F401

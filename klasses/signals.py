@@ -10,17 +10,13 @@ from klasses.models import BootcampRun, PersonalPrice
 
 
 @receiver(post_save, sender=BootcampRun, dispatch_uid="bootcamp__run_post_save")
-def sync_bootcamp_run(
-    sender, instance, created, **kwargs
-):  # pylint:disable=unused-argument
+def sync_bootcamp_run(sender, instance, created, **kwargs):  # pylint:disable=unused-argument
     """Sync bootcamp run to hubspot"""
     on_commit(lambda: sync_hubspot_product(instance))
 
 
 @receiver(post_save, sender=PersonalPrice, dispatch_uid="personal_price_post_save")
-def personal_price_post_save(
-    sender, instance, created, **kwargs
-):  # pylint:disable=unused-argument
+def personal_price_post_save(sender, instance, created, **kwargs):  # pylint:disable=unused-argument
     """Handles the 'post_save' signal from the PersonalPrice model"""
     on_commit(
         lambda: adjust_app_state_for_new_price(
@@ -32,9 +28,7 @@ def personal_price_post_save(
 
 
 @receiver(post_delete, sender=PersonalPrice, dispatch_uid="personal_price_post_delete")
-def personal_price_post_delete(
-    sender, instance, **kwargs
-):  # pylint:disable=unused-argument
+def personal_price_post_delete(sender, instance, **kwargs):  # pylint:disable=unused-argument
     """Handles the 'post_save' signal from the PersonalPrice model"""
     on_commit(
         lambda: adjust_app_state_for_new_price(

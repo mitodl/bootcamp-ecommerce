@@ -61,9 +61,7 @@ class Command(BaseCommand):
             help="Migrate applications even if the 'from' run and 'to' run belong to different bootcamps.",
         )
 
-    def handle(
-        self, *args, **options
-    ):  # pylint: disable=too-many-locals,too-many-branches
+    def handle(self, *args, **options):  # pylint: disable=too-many-locals,too-many-branches
         from_run_property = options["from_run"]
         to_run_property = options["to_run"]
         from_run = fetch_bootcamp_run(from_run_property)

@@ -81,9 +81,7 @@ class Command(BaseCommand):
 
         super().add_arguments(parser)
 
-    def handle(
-        self, *args, **options
-    ):  # pylint: disable=too-many-locals, too-many-branches
+    def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches
         """Handle command execution"""
         try:
             user = fetch_user(options["user"]) if options["user"] else None

@@ -56,9 +56,7 @@ def mock_jobma_client(mocker):
     )
 
 
-def test_create_and_send_applicant_letter(
-    mocker, application
-):  # pylint: disable=redefined-outer-name
+def test_create_and_send_applicant_letter(mocker, application):  # pylint: disable=redefined-outer-name
     """This should just start a task to forward the request to the API function"""
     letter_type = "letter_type"
     patched = mocker.patch("applications.mail_api.create_and_send_applicant_letter")
