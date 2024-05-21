@@ -1,6 +1,24 @@
 Release Notes
 =============
 
+Version 0.117.0
+---------------
+
+- chore(deps): lock file maintenance
+- fix(deps): update dependency django-cache-memoize to ^0.2.0
+- fix(deps): update dependency dj-database-url to ^0.5.0
+- chore(deps): update redis docker tag to v6.2.14
+- chore(deps): update postgres docker tag to v11.16
+- chore(deps): update node.js to v16.20.2
+- chore(deps): update nginx docker tag to v1.26.0
+- chore(deps): update docker.elastic.co/elasticsearch/elasticsearch docker tag to v6.8.23
+- chore(deps): update dependency responses to ^0.25.0
+- chore(deps): update dependency pytest-pylint to ^0.21.0
+- chore(deps): update dependency pytest-env to ^0.8.0
+- chore(deps): update dependency bpython to ^0.24
+- chore(deps): lock file maintenance (#1534)
+- fix: fix personal prices with unfulfilled orders (#1537)
+
 Version 0.116.1 (Released April 22, 2024)
 ---------------
 
