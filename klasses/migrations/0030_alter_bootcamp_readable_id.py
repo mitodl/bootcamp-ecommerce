@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('klasses', '0029_bootcamp_readable_id'),
+        ("klasses", "0029_bootcamp_readable_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bootcamp',
-            name='readable_id',
-            field=models.CharField(blank=True, help_text="The unique string to identify this bootcamp. It can be of the form 'bootcamp-v1:TYPE+TOPIC-FORMAT'(example: bootcamp-v1:public+IE-f2f)", max_length=255, null=True, unique=True),
+            model_name="bootcamp",
+            name="readable_id",
+            field=models.CharField(
+                blank=True,
+                help_text="The unique string to identify this bootcamp. It can be of the form 'bootcamp-v1:TYPE+TOPIC-FORMAT'(example: bootcamp-v1:public+IE-f2f)",
+                max_length=255,
+                null=True,
+                unique=True,
+            ),
         ),
     ]
