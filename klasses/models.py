@@ -46,8 +46,7 @@ class Bootcamp(models.Model):
         blank=True,
         unique=True,
         max_length=255,
-        help_text="The unique string to identify this bootcamp. It can be of the form 'bootcamp-v1:TYPE+TOPIC-FORMAT'"
-        "(example: bootcamp-v1:public+IE-f2f)",
+        help_text="The unique string to identify this bootcamp. It can be of the form 'bootcamp-v1:TYPE+TOPIC-FORMAT' (example: bootcamp-v1:public+IE-f2f)",
     )
 
     def __str__(self):
