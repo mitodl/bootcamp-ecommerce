@@ -78,7 +78,7 @@
     "react-ga": "^2.7.0",
     "react-google-recaptcha": "^1.0.5",
     "react-hot-loader": "^4.12.20",
-    "react-meta-tags": "^0.4.1",
+    "react-meta-tags": "^0.7.0",
     "react-page-click": "^4.0.4",
     "react-paginate": "^6.3.2",
     "react-redux": "7.2.9",
