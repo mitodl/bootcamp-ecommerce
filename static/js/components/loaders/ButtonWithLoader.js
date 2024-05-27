@@ -1,16 +1,16 @@
 // @flow
-import React from "react"
-import { Spinner } from "reactstrap"
-import Delayed from "./Delayed"
+import React from "react";
+import { Spinner } from "reactstrap";
+import Delayed from "./Delayed";
 
 type Props = {
   loading: boolean,
   disabled?: boolean,
   className?: string,
-  children?: any
-}
+  children?: any,
+};
 const ButtonWithLoader = (props: Props) => {
-  const { loading, disabled, children, className, ...otherProps } = props
+  const { loading, disabled, children, className, ...otherProps } = props;
   return (
     <button
       disabled={disabled !== undefined ? disabled : loading}
@@ -26,7 +26,7 @@ const ButtonWithLoader = (props: Props) => {
       )}
       {children}
     </button>
-  )
-}
+  );
+};
 
-export default ButtonWithLoader
+export default ButtonWithLoader;

@@ -64,5 +64,5 @@ def refresh_pending_interview_links():
             submission.content_object.interview.delete()
         try:
             api.populate_interviews_in_jobma(application)
-        except:  # pylint:disable=bare-except
+        except:  # noqa: E722
             log.exception("Exception processing application %d", application.id)

@@ -22,13 +22,14 @@ html {
       &:first-child {
         .col-border-padding {
           margin-left: 14.5%;
+
           @include media-breakpoint-down(sm) {
             margin-left: 0;
           }
         }
 
         .image-holder {
-          &:after {
+          &::after {
             width: calc(14.5% + 60px);
 
             @include media-breakpoint-down(sm) {
@@ -41,6 +42,7 @@ html {
       &:last-child {
         .col-border-padding {
           margin-right: 14.5%;
+
           @include media-breakpoint-down(sm) {
             margin-right: 0;
           }
@@ -50,7 +52,7 @@ html {
       .image-holder {
         position: relative;
 
-        &:after {
+        &::after {
           position: absolute;
           left: 0;
           bottom: 0;

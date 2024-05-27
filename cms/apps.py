@@ -10,4 +10,4 @@ class CMSConfig(AppConfig):
 
     def ready(self):
         """Application is ready"""
-        import cms.signals  # pylint:disable=unused-import, unused-variable
+        import cms.signals  # noqa: F401

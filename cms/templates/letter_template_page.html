@@ -1,34 +1,36 @@
 {% extends "base.html" %}
 {% load static render_bundle wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags image_version_url %}
 
-{% block title %}{{ site_name }} | Letter{% endblock %}
+{% block title %}{{ site_name }}
+| Letter{% endblock %}
 
 {% block headercontent %}
-  <div id="header"></div>
-  {% render_bundle 'header' %}
+<div id="header"></div>
+{% render_bundle 'header' %}
 {% endblock %}
 
 {% block content %}
-  <div class="top-level-page-body letter-template-page container">
-    {% if preview %}
-      <div class="preview">
-        SAMPLE
-      </div>
-    {% endif %}
+<div class="top-level-page-body letter-template-page container">
+  {% if preview %}
+  <div class="preview">SAMPLE</div>
+  {% endif %}
 
-    <div class="main-content">
-      <div class="col-12 text-right">
-        <a class="print-button btn-link" onClick="window.print()">
-          <span class="material-icons">printer</span> Print Letter
-        </a>
-      </div>
-      {{ content|richtext }}
+  <div class="main-content">
+    <div class="col-12 text-right">
+      <a class="print-button btn-link" onClick="window.print()">
+        <span class="material-icons">printer</span> Print Letter
+      </a>
     </div>
-    <p>
-      Sincerely,<br />
-      <img src="{% if signatory.image %}{% image_version_url signatory.image "fill-300x300" %}{% else %}{% static "images/signature-mariah-rawding.png" %}{% endif %}" alt="Signature for {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}" /><br />
-      {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}<br />
-      MIT Bootcamps Admissions
-    </p>
+    {{ content|richtext }}
   </div>
+  <p>
+    Sincerely,<br />
+    <img
+      src="{% if signatory.image %}{% image_version_url signatory.image "fill-300x300" %}{% else %}{% static "images/signature-mariah-rawding.png" %}{% endif %}"
+      alt="Signature for {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}"
+    /><br />
+    {% if signatory.name %}{{ signatory.name }}{% else %}Mariah Rawding{% endif %}<br />
+    MIT Bootcamps Admissions
+  </p>
+</div>
 {% endblock %}

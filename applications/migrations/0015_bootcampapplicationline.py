@@ -14,7 +14,6 @@ def backpopulate_lines(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("applications", "0014_application_refund_status"),
     ]

@@ -1,16 +1,16 @@
 {% load wagtailcore_tags %}
 <section class="learning-block">
-    <div class="container">
-        <h2>{{page.heading}}</h2>
-        <div class="row">
-            {% for item in page.items %}
-            <div class="col-sm-4">
-                <h3>{{ item.value.title }}</h3>
-                <div class="learning-links">
-                    {{ item.value.links|richtext }}
-                </div>
-            </div>
-            {% endfor %}
+  <div class="container">
+    <h2>{{page.heading}}</h2>
+    <div class="row">
+      {% for item in page.items %}
+      <div class="col-sm-4">
+        <h3>{{ item.value.title }}</h3>
+        <div class="learning-links">
+          {{ item.value.links|richtext }}
         </div>
+      </div>
+      {% endfor %}
     </div>
+  </div>
 </section>

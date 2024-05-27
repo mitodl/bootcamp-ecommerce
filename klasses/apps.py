@@ -10,4 +10,4 @@ class KlassesConfig(AppConfig):
 
     def ready(self):
         """Application is ready"""
-        import klasses.signals  # pylint:disable=unused-import, unused-variable
+        import klasses.signals  # noqa: F401

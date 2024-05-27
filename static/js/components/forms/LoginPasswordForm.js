@@ -1,23 +1,23 @@
 // @flow
-import React from "react"
-import * as yup from "yup"
+import React from "react";
+import * as yup from "yup";
 
-import { Formik, Field, Form, ErrorMessage } from "formik"
-import { Link } from "react-router-dom"
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Link } from "react-router-dom";
 
-import FormError from "./elements/FormError"
-import { PasswordInput } from "./elements/inputs"
-import { passwordFieldValidation } from "../../lib/validation"
-import { routes } from "../../lib/urls"
-import ButtonWithLoader from "../loaders/ButtonWithLoader"
+import FormError from "./elements/FormError";
+import { PasswordInput } from "./elements/inputs";
+import { passwordFieldValidation } from "../../lib/validation";
+import { routes } from "../../lib/urls";
+import ButtonWithLoader from "../loaders/ButtonWithLoader";
 
 const passwordValidation = yup.object().shape({
-  password: passwordFieldValidation
-})
+  password: passwordFieldValidation,
+});
 
 type LoginPasswordFormProps = {
-  onSubmit: Function
-}
+  onSubmit: Function,
+};
 
 const LoginPasswordForm = ({ onSubmit }: LoginPasswordFormProps) => (
   <Formik
@@ -52,6 +52,6 @@ const LoginPasswordForm = ({ onSubmit }: LoginPasswordFormProps) => (
       </Form>
     )}
   />
-)
+);
 
-export default LoginPasswordForm
+export default LoginPasswordForm;

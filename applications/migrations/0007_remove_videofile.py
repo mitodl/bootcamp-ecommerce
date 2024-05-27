@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("jobma", "0003_add_interview_link"),
         ("applications", "0006_change_submission_types"),

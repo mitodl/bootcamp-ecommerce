@@ -1,46 +1,54 @@
 {% load wagtailcore_tags image_version_url %}
 <div id="faculty-block" class="instructor-block">
   <div class="container-fluid px-0">
-      <div class="row no-gutters">
-          <div class="col banner">
-            <img src="{% image_version_url page.banner_image "fill-1920x350" %}" alt="Instructors banner image" />
-          </div>
+    <div class="row no-gutters">
+      <div class="col banner">
+        <img
+          src="{% image_version_url page.banner_image "fill-1920x350" %}"
+          alt="Instructors banner image"
+        />
       </div>
+    </div>
   </div>
   <div class="container instructor-container">
     <div class="row instructors-header">
-        <div class="col-lg-3 col-sm-4">
-            {{page.heading|richtext}}
-        </div>
-        <div class="col-lg-9 col-sm-8 section-headings">
-            {% for section in page.sections %}
-              <h5>{{ section.value.heading }}</h5>
-              {% if section.value.subhead|richtext %}
-                <p class="subheading">{{ section.value.subhead }}</p>
-              {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-  </div>
-  <div class="container instructors-container">
-  {% for section in page.sections %}
-    <div class="container">
-      <div class="slider slider-{{ type }}-{{ forloop.counter }}">
-        {% for member in section.value.instructor_sponsor_items %}
-          <div class="slide instructor">
-            <div class="slide-holder">
-              <img src="{% image_version_url member.value.image "fill-300x300" %}" alt="{{ member.value.name }}">
-              <div class="text-holder">
-                <span class="name">{{ member.value.name }}</span>
-                <span class="title">{{ member.value.title }}</span>
-                <strong class="designation">{{ section.value.heading_singular }}</strong>
-              </div>
-            </div>
-          </div>
+      <div class="col-lg-3 col-sm-4">
+        {{page.heading|richtext}}
+      </div>
+      <div class="col-lg-9 col-sm-8 section-headings">
+        {% for section in page.sections %}
+        <h5>{{ section.value.heading }}</h5>
+        {% if section.value.subhead|richtext %}
+        <p class="subheading">{{ section.value.subhead }}</p>
+        {% endif %}
         {% endfor %}
       </div>
     </div>
-  {% endfor %}
+  </div>
+  <div class="container instructors-container">
+    {% for section in page.sections %}
+    <div class="container">
+      <div class="slider slider-{{ type }}-{{ forloop.counter }}">
+        {% for member in section.value.instructor_sponsor_items %}
+        <div class="slide instructor">
+          <div class="slide-holder">
+            <img
+              src="{% image_version_url member.value.image "fill-300x300" %}"
+              alt="{{ member.value.name }}"
+            />
+            <div class="text-holder">
+              <span class="name">{{ member.value.name }}</span>
+              <span class="title">{{ member.value.title }}</span>
+              <strong class="designation"
+                >{{ section.value.heading_singular }}</strong
+              >
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
   </div>
   <script>
     var totalSections = {{ page.sections|length }};
@@ -79,4 +87,3 @@
     }
   </script>
 </div>
-

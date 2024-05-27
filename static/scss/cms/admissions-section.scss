@@ -37,8 +37,8 @@
 
     @include media-breakpoint-down(sm) {
       border-left: unset;
-      padding-left: 0px;
-      padding-right: 0px;
+      padding-left: 0;
+      padding-right: 0;
     }
   }
 
@@ -46,7 +46,7 @@
     text-transform: unset;
     font-size: 1.25em;
     background-color: $crusta-orange;
-    border-radius: 0.5rem 0.5rem 0.5rem 0rem;
+    border-radius: 0.5rem 0.5rem 0.5rem 0;
     border-color: $crusta-orange;
 
     :hover {

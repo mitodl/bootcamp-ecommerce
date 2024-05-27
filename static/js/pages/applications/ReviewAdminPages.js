@@ -1,11 +1,11 @@
 // @flow
-import React from "react"
-import { Route } from "react-router-dom"
+import React from "react";
+import { Route } from "react-router-dom";
 
-import { routes } from "../../lib/urls"
+import { routes } from "../../lib/urls";
 
-import ReviewDetailPage from "./ReviewDetailPage"
-import ReviewDashboardPage from "./ReviewDashboardPage"
+import ReviewDetailPage from "./ReviewDetailPage";
+import ReviewDashboardPage from "./ReviewDashboardPage";
 
 export default function ReviewAdminPages() {
   return (
@@ -17,5 +17,5 @@ export default function ReviewAdminPages() {
       />
       <Route exact path={routes.review.detail} component={ReviewDetailPage} />
     </>
-  )
+  );
 }

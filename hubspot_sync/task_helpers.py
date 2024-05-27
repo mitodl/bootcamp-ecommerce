@@ -1,4 +1,4 @@
-""" Task helper functions for hubspot_sync """
+"""Task helper functions for hubspot_sync"""
 
 import logging
 

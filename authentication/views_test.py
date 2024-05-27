@@ -349,7 +349,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         # NOTE: This works by "consuming" an extra details auth state,
         #       but discarding the state and starting a new login.
         #       It then re-targets the new state into the extra details again.
-        auth_state = None  # assign None to ensure no accidental usage here
+        auth_state = None  # assign None to ensure no accidental usage here # noqa: F841
 
         return assert_api_call(
             self.client,

@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load static wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags render_bundle %}
 
-{% block title %}{{ site_name }} | {{ page.title }}{% endblock %}
+{% block title %}{{ site_name }}
+|
+{{ page.title }}{% endblock %}
 
 {% block headercontent %}
 <div id="header"></div>
@@ -12,25 +14,39 @@
 <div class="top-level-page-body cms-page">
   <div class="home-page">
     <div class="header">
-        <div class="container">
-            <div class="row d-flex py-5 my-5">
-                <div class="col-md-7 col-sm-12 d-flex flex-column justify-content-center title-column">
-                    <div class="title-block">
-                        <h1>{{ page.title }}</h1>
-                        <h2>{{ page.tagline }}</h2>
-                    </div>
-                </div>
-                <div class="col-md-5 col-sm-12  d-flex flex-column justify-content-center description-column">
-                    {{ page.description|richtext }}
-                </div>
+      <div class="container">
+        <div class="row d-flex py-5 my-5">
+          <div
+            class="col-md-7 col-sm-12 d-flex flex-column justify-content-center title-column"
+          >
+            <div class="title-block">
+              <h1>{{ page.title }}</h1>
+              <h2>{{ page.tagline }}</h2>
             </div>
+          </div>
+          <div
+            class="col-md-5 col-sm-12 d-flex flex-column justify-content-center description-column"
+          >
+            {{ page.description|richtext }}
+          </div>
         </div>
+      </div>
     </div>
   </div>
-  {% if catalog %} {% include "partials/home-page-catalog.html" with page=catalog %} {% endif %}
-  {% if program_description_section %} {% include "partials/program-elements.html" with page=program_description_section %} {% endif %}
-  {% if three_column_image_text_section %} {% include "partials/three-column-image-text-section.html" with page=three_column_image_text_section %} {% endif %}
-  {% if alumni %} {% include "partials/homepage-alumni.html" with page=alumni %} {% endif %}
-  {% if learning_resources %} {% include "partials/learning-resources.html" with page=learning_resources %} {% endif %}
+  {% if catalog %}
+  {% include "partials/home-page-catalog.html" with page=catalog %}
+  {% endif %}
+  {% if program_description_section %}
+  {% include "partials/program-elements.html" with page=program_description_section %}
+  {% endif %}
+  {% if three_column_image_text_section %}
+  {% include "partials/three-column-image-text-section.html" with page=three_column_image_text_section %}
+  {% endif %}
+  {% if alumni %}
+  {% include "partials/homepage-alumni.html" with page=alumni %}
+  {% endif %}
+  {% if learning_resources %}
+  {% include "partials/learning-resources.html" with page=learning_resources %}
+  {% endif %}
 </div>
 {% endblock %}

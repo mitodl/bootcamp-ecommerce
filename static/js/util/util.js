@@ -1,13 +1,13 @@
 // @flow
-import Decimal from "decimal.js-light"
-import * as R from "ramda"
-import _ from "lodash"
-import moment from "moment"
+import Decimal from "decimal.js-light";
+import * as R from "ramda";
+import _ from "lodash";
+import moment from "moment";
 
-import { CS_DEFAULT, CS_ERROR_MESSAGES, ORDER_FULFILLED } from "../constants"
+import { CS_DEFAULT, CS_ERROR_MESSAGES, ORDER_FULFILLED } from "../constants";
 
-import type { BootcampRun } from "../flow/bootcampTypes"
-import type { HttpResponse } from "../flow/httpTypes"
+import type { BootcampRun } from "../flow/bootcampTypes";
+import type { HttpResponse } from "../flow/httpTypes";
 
 /**
  * Creates a POST form with hidden input fields
@@ -15,131 +15,131 @@ import type { HttpResponse } from "../flow/httpTypes"
  * @param payload Each key value pair will become an input field
  */
 export function createForm(url: string, payload: Object): HTMLFormElement {
-  const form = document.createElement("form")
-  form.setAttribute("action", url)
-  form.setAttribute("method", "post")
-  form.setAttribute("class", "cybersource-payload")
+  const form = document.createElement("form");
+  form.setAttribute("action", url);
+  form.setAttribute("method", "post");
+  form.setAttribute("class", "cybersource-payload");
 
   for (const key: string of Object.keys(payload)) {
-    const value = payload[key]
-    const input = document.createElement("input")
-    input.setAttribute("name", key)
-    input.setAttribute("value", value)
-    input.setAttribute("type", "hidden")
-    form.appendChild(input)
+    const value = payload[key];
+    const input = document.createElement("input");
+    input.setAttribute("name", key);
+    input.setAttribute("value", value);
+    input.setAttribute("type", "hidden");
+    form.appendChild(input);
   }
-  return form
+  return form;
 }
 
-export const isNilOrBlank = R.either(R.isNil, R.isEmpty)
+export const isNilOrBlank = R.either(R.isNil, R.isEmpty);
 
 export const formatDollarAmount = (amount: ?number): string => {
-  amount = amount || 0
+  amount = amount || 0;
   const formattedAmount = amount.toLocaleString("en-US", {
-    style:                 "currency",
-    currency:              "USD",
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
-  return formattedAmount.endsWith(".00") ?
-    formattedAmount.substring(0, formattedAmount.length - 3) :
-    formattedAmount
-}
+    maximumFractionDigits: 2,
+  });
+  return formattedAmount.endsWith(".00")
+    ? formattedAmount.substring(0, formattedAmount.length - 3)
+    : formattedAmount;
+};
 
 export const formatReadableDate = (datetime: moment$Moment): string =>
-  datetime.format("MMM D, YYYY")
+  datetime.format("MMM D, YYYY");
 
 export const formatReadableDateFromStr = (datetimeString: string): string =>
-  formatReadableDate(moment(datetimeString))
+  formatReadableDate(moment(datetimeString));
 
 export const formatStartEndDateStrings = (
   startDtString: ?string,
-  endDtString: ?string
+  endDtString: ?string,
 ): string => {
-  let formattedStart, formattedEnd
+  let formattedStart, formattedEnd;
   if (startDtString) {
-    formattedStart = formatReadableDateFromStr(startDtString)
+    formattedStart = formatReadableDateFromStr(startDtString);
   }
   if (endDtString) {
-    formattedEnd = formatReadableDateFromStr(endDtString)
+    formattedEnd = formatReadableDateFromStr(endDtString);
   }
   if (!formattedStart && !formattedEnd) {
-    return ""
+    return "";
   } else if (!formattedStart) {
     // $FlowFixMe: This cannot be un-initialized
-    return `Ends ${formattedEnd}`
+    return `Ends ${formattedEnd}`;
   } else if (!formattedEnd) {
     // $FlowFixMe: This cannot be un-initialized
-    return `Starts ${formattedStart}`
+    return `Starts ${formattedStart}`;
   } else {
-    return `${formattedStart} - ${formattedEnd}`
+    return `${formattedStart} - ${formattedEnd}`;
   }
-}
+};
 
 export const getRunWithFulfilledOrder = (
   runData: ?Array<Object>,
-  orderId: number
+  orderId: number,
 ) =>
   R.find(
-    bootcampRun =>
+    (bootcampRun) =>
       R.any(
-        payment =>
+        (payment) =>
           payment.order.status === ORDER_FULFILLED &&
           payment.order.id === orderId,
-        bootcampRun.payments
+        bootcampRun.payments,
       ),
-    runData
-  )
+    runData,
+  );
 
 export const getInstallmentDeadlineDates = R.map(
-  R.compose(moment, R.prop("deadline"))
-)
+  R.compose(moment, R.prop("deadline")),
+);
 
 export function* incrementer(): Generator<number, *, *> {
-  let int = 1
+  let int = 1;
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    yield int++
+    yield int++;
   }
 }
 
-export const formatTitle = (text: string) => `MIT Bootcamps | ${text}`
+export const formatTitle = (text: string) => `MIT Bootcamps | ${text}`;
 
 export const newSetWith = (set: Set<*>, valueToAdd: any): Set<*> => {
-  const newSet = new Set(set)
-  newSet.add(valueToAdd)
-  return newSet
-}
+  const newSet = new Set(set);
+  newSet.add(valueToAdd);
+  return newSet;
+};
 
 export const newSetWithout = (set: Set<*>, valueToDelete: any): Set<*> => {
-  const newSet = new Set(set)
-  newSet.delete(valueToDelete)
-  return newSet
-}
+  const newSet = new Set(set);
+  newSet.delete(valueToDelete);
+  return newSet;
+};
 
 export const formatPrice = (price: ?string | number | Decimal): string => {
   if (price === null || price === undefined) {
-    return ""
+    return "";
   } else {
-    let decimalPrice: Decimal = Decimal(price).toDecimalPlaces(2)
-    let formattedPrice
-    const isNegative = decimalPrice.isNegative()
+    let decimalPrice: Decimal = Decimal(price).toDecimalPlaces(2);
+    let formattedPrice;
+    const isNegative = decimalPrice.isNegative();
     if (isNegative) {
-      decimalPrice = decimalPrice.times(-1)
+      decimalPrice = decimalPrice.times(-1);
     }
 
     if (decimalPrice.isInteger()) {
-      formattedPrice = decimalPrice.toFixed(0)
+      formattedPrice = decimalPrice.toFixed(0);
     } else {
-      formattedPrice = decimalPrice.toFixed(2, Decimal.ROUND_HALF_UP)
+      formattedPrice = decimalPrice.toFixed(2, Decimal.ROUND_HALF_UP);
     }
 
-    return `${isNegative ? "-" : ""}$${formattedPrice}`
+    return `${isNegative ? "-" : ""}$${formattedPrice}`;
   }
-}
+};
 
 export const getFilenameFromPath = (url: string) =>
-  url.substring(url.lastIndexOf("/") + 1)
+  url.substring(url.lastIndexOf("/") + 1);
 
 /*
  * Our uploaded filenames begin with a media path. Until we start saving the
@@ -151,92 +151,92 @@ export const getFilenameFromMediaPath = R.compose(
   R.join("_"),
   R.tail(),
   R.split("_"),
-  R.defaultTo("")
-)
+  R.defaultTo(""),
+);
 
 export const isErrorStatusCode = (statusCode: number): boolean =>
-  statusCode >= 400
+  statusCode >= 400;
 
 export const isErrorResponse = (response: HttpResponse<*>): boolean =>
-  isErrorStatusCode(response.status)
+  isErrorStatusCode(response.status);
 
 export const getResponseBodyErrors = (
-  response: HttpResponse<*>
+  response: HttpResponse<*>,
 ): string | Array<string> | null => {
   if (!response || !response.body || !response.body.errors) {
-    return null
+    return null;
   }
   if (Array.isArray(response.body.errors)) {
-    return response.body.errors.length === 0 ? null : response.body.errors
+    return response.body.errors.length === 0 ? null : response.body.errors;
   }
-  return response.body.errors === "" ? null : response.body.errors
-}
+  return response.body.errors === "" ? null : response.body.errors;
+};
 
 export const getFirstResponseBodyError = (
-  response: HttpResponse<*>
+  response: HttpResponse<*>,
 ): ?string => {
-  const errors = getResponseBodyErrors(response)
+  const errors = getResponseBodyErrors(response);
   if (!Array.isArray(errors)) {
-    return errors
+    return errors;
   }
-  return errors.length === 0 ? null : errors[0]
-}
+  return errors.length === 0 ? null : errors[0];
+};
 
 export const getXhrResponseError = (response: Object): ?string => {
   if (_.isString(response)) {
     try {
-      response = JSON.parse(response)
+      response = JSON.parse(response);
     } catch (e) {
-      return null
+      return null;
     }
   }
   if (!_.isObject(response)) {
-    return null
+    return null;
   }
   if (_.isArray(response) && response.length > 0) {
-    return response[0]
+    return response[0];
   }
   if (response.errors && response.errors.length > 0) {
-    return response.errors[0]
+    return response.errors[0];
   }
   if (response.error && response.error !== "") {
-    return response.error
+    return response.error;
   }
-  return null
-}
+  return null;
+};
 
 export const parsePrice = (priceStr: string | number): Decimal => {
-  let price
+  let price;
   try {
-    price = new Decimal(priceStr)
+    price = new Decimal(priceStr);
   } catch (e) {
-    return null
+    return null;
   }
-  return price.toDecimalPlaces(2)
-}
+  return price.toDecimalPlaces(2);
+};
 
 export const formatRunDateRange = (run: BootcampRun) =>
   `${run.start_date ? formatReadableDateFromStr(run.start_date) : "TBD"} - ${
     run.end_date ? formatReadableDateFromStr(run.end_date) : "TBD"
-  }`
+  }`;
 
 export const recoverableErrorCode = (error: string) =>
-  error ? error.match(/(CS_101|CS_102)/g) : null
+  error ? error.match(/(CS_101|CS_102)/g) : null;
 
 export const transformError = (error: string) =>
-  CS_ERROR_MESSAGES[recoverableErrorCode(error) || CS_DEFAULT]
+  CS_ERROR_MESSAGES[recoverableErrorCode(error) || CS_DEFAULT];
 
 export const isLocalStorageSupported = () => {
   try {
-    const key = "__local_storage_access_key__"
-    window.localStorage.setItem(key, key)
-    window.localStorage.getItem(key)
-    return true
+    const key = "__local_storage_access_key__";
+    window.localStorage.setItem(key, key);
+    window.localStorage.getItem(key);
+    return true;
   } catch (e) {
-    return false
+    return false;
   }
-}
+};
 
 export const createNovoEdLinkUrl = (baseUrl: string, stub: string): string => {
-  return `${baseUrl}/#!/courses/${stub}/home`
-}
+  return `${baseUrl}/#!/courses/${stub}/home`;
+};

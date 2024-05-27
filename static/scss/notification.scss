@@ -13,10 +13,13 @@
   .alert {
     margin-bottom: 0;
 
-    &.alert-info, &.alert-danger, &.alert-success {
+    &.alert-info,
+    &.alert-danger,
+    &.alert-success {
       color: white;
 
-      a.alert-link, .close {
+      a.alert-link,
+      .close {
         color: white;
       }
 
@@ -31,11 +34,7 @@
     }
 
     &.alert-info {
-      background: linear-gradient(
-        to right,
-        #fe28e4 0%,
-        #ff783c 100%
-      );
+      background: linear-gradient(to right, #fe28e4 0%, #ff783c 100%);
     }
 
     &.alert-danger {
@@ -51,7 +50,6 @@
 #footer-notifications {
   position: sticky;
   top: 0;
-
   font-weight: bold;
   font-size: 18px;
 }

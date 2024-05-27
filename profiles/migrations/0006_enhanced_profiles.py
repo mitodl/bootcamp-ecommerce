@@ -7,7 +7,6 @@ import profiles.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("profiles", "0005_profile_smapply_demographic_data"),

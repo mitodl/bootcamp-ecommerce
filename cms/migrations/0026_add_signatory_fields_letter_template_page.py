@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailimages", "0022_uploadedimage"),
         ("cms", "0025_add_resource_pages_settings"),

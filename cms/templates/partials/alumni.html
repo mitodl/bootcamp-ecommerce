@@ -1,35 +1,41 @@
 {% load image_version_url wagtailcore_tags static %}
 <div class="alumni-block container-fluid">
-        <div class="banner">
-          <img src="{% image_version_url page.banner_image "fill-1920x200" %}" alt="Alumni banner image" />
-        </div>
-        <div class="container alumni-container">
-            <div class="row alumni-header">
-                <div class="col-sm-6">
-                    <h2>{{ page.heading }}</h2>
-                    {{page.text|richtext}}
-                </div>
-                <div class="col-sm-6 align-self-center">
-                    <blockquote class="text-holder">
-                        <q>{{ page.highlight_quote }}</q>
-                        <cite class="name">-{{ page.highlight_name }}</cite>
-                    </blockquote>
-                </div>
-            </div>
-            {% for alumnus in page.alumni_bios %}
-              <div class="row alumnus">
-                  <div class="col-sm-4 img-area">
-                    <div class="image-holder">
-                        <img src="{% image_version_url alumnus.value.image "fill-300x300" %}" alt="{{ alumnus.value.name }}">
-                        <div>{{ alumnus.value.class_text }}</div>
-                    </div>
-                  </div>
-                  <div class="col-sm-8">
-                    <span class="name">{{ alumnus.value.name }}</span>
-                    <span class="title">{{ alumnus.value.title }}</span>
-                    <p>{{ alumnus.value.quote }}</p>
-                  </div>
-              </div>
-            {% endfor %}
-        </div>
+  <div class="banner">
+    <img
+      src="{% image_version_url page.banner_image "fill-1920x200" %}"
+      alt="Alumni banner image"
+    />
+  </div>
+  <div class="container alumni-container">
+    <div class="row alumni-header">
+      <div class="col-sm-6">
+        <h2>{{ page.heading }}</h2>
+        {{page.text|richtext}}
+      </div>
+      <div class="col-sm-6 align-self-center">
+        <blockquote class="text-holder">
+          <q>{{ page.highlight_quote }}</q>
+          <cite class="name">-{{ page.highlight_name }}</cite>
+        </blockquote>
+      </div>
     </div>
+    {% for alumnus in page.alumni_bios %}
+    <div class="row alumnus">
+      <div class="col-sm-4 img-area">
+        <div class="image-holder">
+          <img
+            src="{% image_version_url alumnus.value.image "fill-300x300" %}"
+            alt="{{ alumnus.value.name }}"
+          />
+          <div>{{ alumnus.value.class_text }}</div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <span class="name">{{ alumnus.value.name }}</span>
+        <span class="title">{{ alumnus.value.title }}</span>
+        <p>{{ alumnus.value.quote }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

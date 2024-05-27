@@ -28,7 +28,6 @@ def reverse_update_null_review_status(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("applications", "0008_bootcampapplication_linkedin_url")]
 
     operations = [

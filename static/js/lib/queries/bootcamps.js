@@ -1,39 +1,42 @@
 // @flow
-import { nextState } from "./util"
+import { nextState } from "./util";
 
-import type { BootcampRun, PayableRunsResponse } from "../../flow/bootcampTypes"
+import type {
+  BootcampRun,
+  PayableRunsResponse,
+} from "../../flow/bootcampTypes";
 
-export const bootcampRunsKey = "bootcampRuns"
-export const payableRunsEntityKey = "payableRuns"
-export const payableRunsQueryKey = payableRunsEntityKey
+export const bootcampRunsKey = "bootcampRuns";
+export const payableRunsEntityKey = "payableRuns";
+export const payableRunsQueryKey = payableRunsEntityKey;
 
 export const bootcampRunsSelector = (state: any): ?Array<BootcampRun> =>
-  state.entities[bootcampRunsKey]
+  state.entities[bootcampRunsKey];
 
 export default {
   bootcampRunsQuery: () => ({
-    queryKey:  bootcampRunsKey,
-    url:       "/api/bootcampruns/?available=true",
+    queryKey: bootcampRunsKey,
+    url: "/api/bootcampruns/?available=true",
     transform: (json: Array<BootcampRun>) => ({
-      [bootcampRunsKey]: json
+      [bootcampRunsKey]: json,
     }),
     update: {
-      [bootcampRunsKey]: nextState
+      [bootcampRunsKey]: nextState,
     },
-    force: true
+    force: true,
   }),
   payableBootcampRunsQuery: (username: string) => ({
-    queryKey:  payableRunsQueryKey,
-    url:       `/api/v0/bootcamps/${username}/`,
+    queryKey: payableRunsQueryKey,
+    url: `/api/v0/bootcamps/${username}/`,
     transform: (json: ?PayableRunsResponse) => ({
-      [payableRunsEntityKey]: json
+      [payableRunsEntityKey]: json,
     }),
     update: {
       [payableRunsEntityKey]: (
         prev: PayableRunsResponse,
-        next: PayableRunsResponse
-      ) => next
+        next: PayableRunsResponse,
+      ) => next,
     },
-    force: true
-  })
-}
+    force: true,
+  }),
+};

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("klasses", "0019_bootcamprun_update_run_key_indexes")]
 
     operations = [

@@ -7,7 +7,6 @@ import wagtail.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("applications", "0011_applicationstepsubmission_submission_status")
     ]

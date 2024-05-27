@@ -1470,4 +1470,3 @@ Version 0.0.0 (Released May 10, 2017)
 --------------
 
 - First release
-

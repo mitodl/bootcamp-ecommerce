@@ -1,35 +1,35 @@
 // @flow
-import React from "react"
-import { useSelector } from "react-redux"
-import { useRequest } from "redux-query-react"
-import { useHistory, useLocation } from "react-router"
-import { Link } from "react-router-dom"
-import ReactPaginate from "react-paginate"
-import { reverse } from "named-urls"
+import React from "react";
+import { useSelector } from "react-redux";
+import { useRequest } from "redux-query-react";
+import { useHistory, useLocation } from "react-router";
+import { Link } from "react-router-dom";
+import ReactPaginate from "react-paginate";
+import { reverse } from "named-urls";
 
-import SubmissionFacets from "../../components/SubmissionFacets"
+import SubmissionFacets from "../../components/SubmissionFacets";
 
 import {
   submissionsQuery,
-  submissionFacetsSelector
-} from "../../lib/queries/submissions"
-import { REVIEW_STATUS_DISPLAY_MAP } from "../../constants"
-import { routes } from "../../lib/urls"
-import type { SubmissionReview } from "../../flow/applicationTypes"
-import qs from "query-string"
-import urljoin from "url-join"
+  submissionFacetsSelector,
+} from "../../lib/queries/submissions";
+import { REVIEW_STATUS_DISPLAY_MAP } from "../../constants";
+import { routes } from "../../lib/urls";
+import type { SubmissionReview } from "../../flow/applicationTypes";
+import qs from "query-string";
+import urljoin from "url-join";
 
 /* eslint-disable camelcase */
 type RowProps = {
-  submission: SubmissionReview
-}
+  submission: SubmissionReview,
+};
 export function SubmissionRow({ submission }: RowProps) {
   const {
     review_status, // eslint-disable-line camelcase
-    learner: { profile }
-  } = submission
+    learner: { profile },
+  } = submission;
 
-  const [label, className] = REVIEW_STATUS_DISPLAY_MAP[review_status]
+  const [label, className] = REVIEW_STATUS_DISPLAY_MAP[review_status];
 
   return (
     <div className="submission-row row my-3">
@@ -46,35 +46,38 @@ export function SubmissionRow({ submission }: RowProps) {
         {label}
       </Link>
     </div>
-  )
+  );
 }
 
 type PaginateProps = {
   limit: number,
   count: number,
-  offset: number
-}
+  offset: number,
+};
 
 export function SubmissionPagination(props: PaginateProps) {
-  const { limit, count, offset } = props
+  const { limit, count, offset } = props;
 
-  const initialPage = offset ? offset / limit : 0
-  const pageCount = count <= limit ? 1 : Math.ceil(count / limit)
-  const history = useHistory()
+  const initialPage = offset ? offset / limit : 0;
+  const pageCount = count <= limit ? 1 : Math.ceil(count / limit);
+  const history = useHistory();
 
-  const handlePageClick = data => {
-    const selected = data.selected
-    const newOffset = Math.ceil(selected * limit)
+  const handlePageClick = (data) => {
+    const selected = data.selected;
+    const newOffset = Math.ceil(selected * limit);
     if (newOffset !== offset) {
       const updatedParams = {
         ...qs.parse(location.search),
         offset: newOffset,
-        limit:  limit
-      }
-      const url = urljoin(location.pathname, `/?${qs.stringify(updatedParams)}`)
-      history.push(url)
+        limit: limit,
+      };
+      const url = urljoin(
+        location.pathname,
+        `/?${qs.stringify(updatedParams)}`,
+      );
+      history.push(url);
     }
-  }
+  };
 
   return pageCount > 1 ? (
     <div className="submission-paging row justify-content-center">
@@ -99,23 +102,23 @@ export function SubmissionPagination(props: PaginateProps) {
         nextLinkClassName="page-link"
       />
     </div>
-  ) : null
+  ) : null;
 }
 /* eslint-enable camelcase */
 
 export default function ReviewDashboardPage() {
-  const location = useLocation()
-  const [{ isFinished }] = useRequest(submissionsQuery(location.search))
+  const location = useLocation();
+  const [{ isFinished }] = useRequest(submissionsQuery(location.search));
   const { next, previous, count, results, facets } = useSelector(
-    submissionFacetsSelector
-  )
+    submissionFacetsSelector,
+  );
 
-  const offset = qs.parse(location.search).offset || 0
-  const limit = next ?
-    qs.parse(new URL(next).search).limit :
-    previous ?
-      qs.parse(new URL(previous).search).limit :
-      10
+  const offset = qs.parse(location.search).offset || 0;
+  const limit = next
+    ? qs.parse(new URL(next).search).limit
+    : previous
+      ? qs.parse(new URL(previous).search).limit
+      : 10;
 
   return (
     <div className="review-dashboard-page container-lg">
@@ -146,5 +149,5 @@ export default function ReviewDashboardPage() {
         </div>
       ) : null}
     </div>
-  )
+  );
 }

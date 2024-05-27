@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("ecommerce", "0009_remove_line_run_key")]
 
     operations = [

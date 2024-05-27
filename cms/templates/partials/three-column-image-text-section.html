@@ -1,19 +1,26 @@
 {% load image_version_url %}
 <div class="three-column-image-text-section">
   <div class="container-fluid">
-      <div class="row section-row">
-        {% for column_area in page.column_image_text_section %}
-          <div class="three-column {% if forloop.counter == 2 %}col-30{% else %}col-35{% endif %} px-0">
-            <div class="image-holder">
-              <img class='w-100' style="height: 300px; object-fit: cover" src="{% image_version_url column_area.value.image 'fill-1000x500' %}" alt="{{ column_area.value.heading }}" />
-            </div>
-            <div class="col-border-padding">
-              <h2>{{ column_area.value.heading }}</h2>
-              <h5>{{ column_area.value.sub_heading }}</h5>
-              <p>{{ column_area.value.body }}</p>
-            </div>
-          </div>
-        {% endfor %}
+    <div class="row section-row">
+      {% for column_area in page.column_image_text_section %}
+      <div
+        class="three-column {% if forloop.counter == 2 %}col-30{% else %}col-35{% endif %} px-0"
+      >
+        <div class="image-holder">
+          <img
+            class="w-100"
+            style="height: 300px; object-fit: cover"
+            src="{% image_version_url column_area.value.image 'fill-1000x500' %}"
+            alt="{{ column_area.value.heading }}"
+          />
+        </div>
+        <div class="col-border-padding">
+          <h2>{{ column_area.value.heading }}</h2>
+          <h5>{{ column_area.value.sub_heading }}</h5>
+          <p>{{ column_area.value.body }}</p>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </div>

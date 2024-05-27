@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("klasses", "0007_add_installment_index")]
 
     operations = [

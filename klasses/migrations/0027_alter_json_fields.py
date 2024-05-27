@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("klasses", "0026_add_bootcamprunenrollmentaudit_defer_enrollment_field"),
     ]

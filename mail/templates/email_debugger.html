@@ -1,63 +1,84 @@
 <html>
-<head>
-  <title>Email Debugger</title>
-  <style type="text/css">
-    pre {
-      white-space: pre-wrap;       /* Since CSS 2.1 */
-      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-      white-space: -pre-wrap;      /* Opera 4-6 */
-      white-space: -o-pre-wrap;    /* Opera 7 */
-      word-wrap: break-word;       /* Internet Explorer 5.5+ */
-      line-height: 15px;
-    }
-  </style>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet"/>
-  {% load render_bundle %}
-  {% render_bundle 'style' %}
-  {% render_bundle "third_party" %}
-</head>
-<body>
-<div class="container-fluid">
-  <div class="card mt-2">
-    <form method="POST" action="{% url 'email-debugger' %}" class="form-inline m-0">
-      {% for field in form %}
-        <label class="m-2" for="{{ field.name }}">{{ field.label }}</label>
-        {{ field }}
-      {% endfor %}
-      <button type="submit" class="btn btn-primary m-2">Render</button>
-    </form>
-  </div>
-
-  {% if subject %}
-
-  <div class="card mt-2" style="height:85%;">
-    <div class="card-header">
-      <ul id="tabnav" class="nav nav-pills card-header-pills">
-        <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#html-body">HTML</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#plain-body">Plaintext</a>
-        </li>
-      </ul>
-    </div>
-    <div class="card-content" style="height:100%;">
-      <div class="tab-content" style="height:100%;">
-        <div id="html-body" class="tab-pane active" style="height:100%;">
-          <iframe frameborder="0" width="100%" height="100%" src="data:text/html,{{ html_body|urlencode }}"></iframe>
-        </div>
-        <div id="plain-body" class="tab-pane"><pre class="p-1">{{ text_body }}</pre></div>
+  <head>
+    <title>Email Debugger</title>
+    <style type="text/css">
+      pre {
+        white-space: pre-wrap; /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+        line-height: 15px;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    {% load render_bundle %}
+    {% render_bundle 'style' %}
+    {% render_bundle "third_party" %}
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="card mt-2">
+        <form
+          method="POST"
+          action="{% url 'email-debugger' %}"
+          class="form-inline m-0"
+        >
+          {% for field in form %}
+          <label class="m-2" for="{{ field.name }}">{{ field.label }}</label>
+          {{ field }}
+          {% endfor %}
+          <button type="submit" class="btn btn-primary m-2">Render</button>
+        </form>
       </div>
+
+      {% if subject %}
+
+      <div class="card mt-2" style="height: 85%">
+        <div class="card-header">
+          <ul id="tabnav" class="nav nav-pills card-header-pills">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#html-body"
+                >HTML</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#plain-body"
+                >Plaintext</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="card-content" style="height: 100%">
+          <div class="tab-content" style="height: 100%">
+            <div id="html-body" class="tab-pane active" style="height: 100%">
+              <iframe
+                frameborder="0"
+                width="100%"
+                height="100%"
+                src="data:text/html,{{ html_body|urlencode }}"
+              ></iframe>
+            </div>
+            <div id="plain-body" class="tab-pane">
+              <pre class="p-1">{{ text_body }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
-  </div>
-  {% endif %}
-</div>
-</body>
-<script>
-$('#tabnav a').on('click', function (e) {
-  e.preventDefault();
-  $(this).tab('show');
-});
-</script>
+  </body>
+  <script>
+    $('#tabnav a').on('click', function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+  </script>
 </html>

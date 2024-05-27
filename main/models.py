@@ -3,9 +3,7 @@
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import (
-    DateTimeField,
     ForeignKey,
-    Manager,
     Model,
     SET_NULL,
     JSONField,

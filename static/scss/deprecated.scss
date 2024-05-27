@@ -3,12 +3,12 @@
   min-height: 500px;
 
   &.top-content-container {
-    padding: 17vh 0 25px 0;
+    padding: 17vh 0 25px;
   }
 
   p {
     max-width: 725px;
-    margin: 0 auto 60px auto;
+    margin: 0 auto 60px;
     color: $default-subtext-color;
   }
 
@@ -25,7 +25,7 @@
 }
 
 .top-content-container {
-  padding: 20px 30px 0 30px;
+  padding: 20px 30px 0;
 }
 
 button.btn.large-cta {

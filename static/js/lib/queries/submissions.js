@@ -1,90 +1,90 @@
 // @flow
-import { createSelector } from "reselect"
-import { compose, objOf, pick, merge, curry, propOr } from "ramda"
-import qs from "query-string"
+import { createSelector } from "reselect";
+import { compose, objOf, pick, merge, curry, propOr } from "ramda";
+import qs from "query-string";
 
-import { submissionsAPI, submissionDetailAPI } from "../urls"
-import { getCookie } from "../api"
+import { submissionsAPI, submissionDetailAPI } from "../urls";
+import { getCookie } from "../api";
 
 import type {
   SubmissionReview,
-  SubmissionFacetData
-} from "../../flow/applicationTypes"
+  SubmissionFacetData,
+} from "../../flow/applicationTypes";
 
-const submissionsFacetsKey = "submissionsFacets"
-const submissionKey = "submissions"
+const submissionsFacetsKey = "submissionsFacets";
+const submissionKey = "submissions";
 
 const submissionDetailTransform = curry((submissionId, json) => ({
   [submissionKey]: {
-    [submissionId]: json
-  }
-}))
+    [submissionId]: json,
+  },
+}));
 
 export const submissionQuery = (submissionId: number) => ({
-  url:       submissionDetailAPI.param({ submissionId }).toString(),
+  url: submissionDetailAPI.param({ submissionId }).toString(),
   transform: submissionDetailTransform(submissionId),
-  update:    {
-    [submissionKey]: merge
-  }
-})
+  update: {
+    [submissionKey]: merge,
+  },
+});
 
 export const submissionsSelector = createSelector(
-  state => state.entities,
-  propOr({}, submissionKey)
-)
+  (state) => state.entities,
+  propOr({}, submissionKey),
+);
 
 type SubmissionReviewState = {
-  [string]: SubmissionReview
-}
+  [string]: SubmissionReview,
+};
 
 export const submissionReviewMutation = (submission: SubmissionReview) => ({
-  url:       submissionDetailAPI.param({ submissionId: submission.id }).toString(),
-  body:      submission,
+  url: submissionDetailAPI.param({ submissionId: submission.id }).toString(),
+  body: submission,
   transform: submissionDetailTransform(submission.id),
-  update:    {
+  update: {
     [submissionKey]: (
       prev: SubmissionReviewState,
-      transformed: SubmissionReviewState
+      transformed: SubmissionReviewState,
     ) => ({
       ...prev,
-      ...transformed
-    })
+      ...transformed,
+    }),
   },
   options: {
-    method:  "PATCH",
+    method: "PATCH",
     headers: {
-      "X-CSRFTOKEN": getCookie("csrftoken")
-    }
-  }
-})
+      "X-CSRFTOKEN": getCookie("csrftoken"),
+    },
+  },
+});
 
 const facetTransform = compose(
   objOf(submissionsFacetsKey),
-  pick(["count", "next", "previous", "results", "facets"])
-)
+  pick(["count", "next", "previous", "results", "facets"]),
+);
 
 type FacetState = {
   count: number,
   next: string,
   previous: string,
   facets: SubmissionFacetData,
-  results: Array<SubmissionReview>
-}
+  results: Array<SubmissionReview>,
+};
 
 export const submissionsQuery = (params: string) => {
-  const url = submissionsAPI.query(qs.parse(params)).toString()
+  const url = submissionsAPI.query(qs.parse(params)).toString();
 
   return {
-    queryKey:  params ? `submissions__${params}` : "submissions",
+    queryKey: params ? `submissions__${params}` : "submissions",
     url,
     transform: facetTransform,
-    force:     true,
-    update:    {
+    force: true,
+    update: {
       [submissionsFacetsKey]: (
         prevState: { [string]: FacetState },
-        nextState: FacetState
+        nextState: FacetState,
       ) => {
-        const { count, next, previous, facets, results } = nextState
+        const { count, next, previous, facets, results } = nextState;
 
         // need to store the result of each request with different parameters
         // in order to deal with the situation where the user selects and then
@@ -94,14 +94,14 @@ export const submissionsQuery = (params: string) => {
           next,
           previous,
           facets,
-          results
-        }
-      }
-    }
-  }
-}
+          results,
+        };
+      },
+    },
+  };
+};
 
 export const submissionFacetsSelector = createSelector(
-  state => state.entities,
-  entities => entities[submissionsFacetsKey] ?? {}
-)
+  (state) => state.entities,
+  (entities) => entities[submissionsFacetsKey] ?? {},
+);

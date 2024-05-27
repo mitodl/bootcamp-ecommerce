@@ -8,17 +8,21 @@ $vertical-spacing: 7px;
 
 .navbar {
   padding: $vertical-spacing $horizontal-spacing;
+
   // Negative margin allows children to have a positive top margin to add space when items wrap
   margin-top: -$vertical-spacing;
   background-color: $white;
   border-radius: 0;
 
-  .navbar-brand, ul, button.navbar-toggler {
+  .navbar-brand,
+  ul,
+  button.navbar-toggler {
     margin-top: $vertical-spacing;
     white-space: nowrap;
   }
 
-  .navbar-brand, ul {
+  .navbar-brand,
+  ul {
     height: $inner-toolbar-height;
   }
 

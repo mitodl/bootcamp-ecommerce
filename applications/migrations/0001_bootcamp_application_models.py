@@ -19,7 +19,6 @@ def _get_video_file_path(instance, filename):  # pylint: disable=unused-argument
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

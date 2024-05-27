@@ -5,7 +5,6 @@ import wagtail.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("cms", "0008_column_image_text_section")]
 
     operations = [

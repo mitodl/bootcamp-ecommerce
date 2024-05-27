@@ -7,7 +7,6 @@ import wagtail.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("klasses", "0014_no_max_len_application_stage"),
         ("wagtailredirects", "0006_redirect_increase_max_length"),

@@ -1,10 +1,10 @@
 // @flow
-import React from "react"
-import { Spinner } from "reactstrap"
+import React from "react";
+import { Spinner } from "reactstrap";
 
-import Delayed from "./Delayed"
+import Delayed from "./Delayed";
 
-type Props = {}
+type Props = {};
 export default class FullLoader extends React.Component<Props> {
   render() {
     return (
@@ -15,6 +15,6 @@ export default class FullLoader extends React.Component<Props> {
           <Spinner type="grow" />
         </div>
       </Delayed>
-    )
+    );
   }
 }

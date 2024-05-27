@@ -1,4 +1,4 @@
 // @flow
-import superagent from "redux-query-interface-superagent"
+import superagent from "redux-query-interface-superagent";
 
-export const makeRequest = superagent
+export const makeRequest = superagent;

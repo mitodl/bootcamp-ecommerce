@@ -6,7 +6,6 @@ import wagtail.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
         ("cms", "0023_resource_page_optional_hero_image"),

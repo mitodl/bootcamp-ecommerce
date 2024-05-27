@@ -10,8 +10,7 @@
     min-height: 350px;
     display: flex;
     justify-content: flex-end;
-    flex-wrap: wrap;
-    flex-direction: column;
+    flex-flow: column wrap;
     padding-bottom: 140px;
     position: relative;
     z-index: 1;
@@ -48,7 +47,7 @@
   position: relative;
   margin: 0 -15px;
 
-  &:after {
+  &::after {
     display: block;
     clear: both;
     content: "";
@@ -155,7 +154,7 @@
 
     .section-headings {
       @include media-breakpoint-down(sm) {
-        border: 0px;
+        border: 0;
         padding-left: 15px;
       }
 
@@ -165,11 +164,11 @@
       h5 {
         font-size: 20px;
         font-weight: 700;
-        margin: 0px;
+        margin: 0;
       }
 
       p {
-        margin: 10px 0 25px 0;
+        margin: 10px 0 25px;
       }
     }
   }

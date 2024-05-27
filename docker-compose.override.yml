@@ -1,4 +1,4 @@
-version: '3.6'
+version: "3.6"
 
 services:
   web:
@@ -7,17 +7,17 @@ services:
       - django_media:/var/media
     environment:
       DEBUG: ${DEBUG:-True}
-      NODE_ENV: 'development'
-      WEBPACK_USE_DEV_SERVER: 'True'
+      NODE_ENV: "development"
+      WEBPACK_USE_DEV_SERVER: "True"
 
   celery:
     volumes:
       - .:/src
       - django_media:/var/media
     environment:
-      DEBUG: 'True'
-      NODE_ENV: 'development'
-      WEBPACK_USE_DEV_SERVER: 'True'
+      DEBUG: "True"
+      NODE_ENV: "development"
+      WEBPACK_USE_DEV_SERVER: "True"
 
   nginx:
     volumes:
@@ -26,11 +26,10 @@ services:
 
   watch:
     environment:
-      NODE_ENV: 'development'
+      NODE_ENV: "development"
     volumes:
       - .:/src
       - yarn-cache:/home/mitodl/.cache/yarn
-
 
 volumes:
   django_media: {}

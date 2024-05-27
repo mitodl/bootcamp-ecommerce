@@ -6,7 +6,6 @@ import wagtail.contrib.routable_page.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailcore", "0045_assign_unlock_grouppagepermission"),
         ("cms", "0029_certificatepage_signatoryindexpage_signatorypage"),

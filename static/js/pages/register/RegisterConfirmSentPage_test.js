@@ -1,24 +1,24 @@
 // @flow
 /* global SETTINGS: false */
-import { assert } from "chai"
+import { assert } from "chai";
 
 import RegisterConfirmSentPage, {
-  RegisterConfirmSentPage as InnerRegisterConfirmSentPage
-} from "./RegisterConfirmSentPage"
-import IntegrationTestHelper from "../../util/integration_test_helper"
+  RegisterConfirmSentPage as InnerRegisterConfirmSentPage,
+} from "./RegisterConfirmSentPage";
+import IntegrationTestHelper from "../../util/integration_test_helper";
 
-import { routes } from "../../lib/urls"
+import { routes } from "../../lib/urls";
 
 describe("RegisterConfirmSentPage", () => {
-  const userEmail = "test@example.com"
-  const supportUrl = "https://test.edu/form"
+  const userEmail = "test@example.com";
+  const supportUrl = "https://test.edu/form";
 
-  let helper, renderPage
+  let helper, renderPage;
 
   beforeEach(() => {
-    SETTINGS.support_url = supportUrl
+    SETTINGS.support_url = supportUrl;
 
-    helper = new IntegrationTestHelper()
+    helper = new IntegrationTestHelper();
 
     renderPage = helper.configureHOCRenderer(
       RegisterConfirmSentPage,
@@ -26,31 +26,31 @@ describe("RegisterConfirmSentPage", () => {
       {},
       {
         location: {
-          search: `?email=${encodeURIComponent(userEmail)}`
-        }
-      }
-    )
-  })
+          search: `?email=${encodeURIComponent(userEmail)}`,
+        },
+      },
+    );
+  });
 
   afterEach(() => {
-    helper.cleanup()
-  })
+    helper.cleanup();
+  });
 
   it("displays a link to email support", async () => {
-    const { inner } = await renderPage()
-    assert.equal(inner.find(".contact-support > a").prop("href"), supportUrl)
-  })
+    const { inner } = await renderPage();
+    assert.equal(inner.find(".contact-support > a").prop("href"), supportUrl);
+  });
 
   it("displays a link to create account page", async () => {
-    const { inner } = await renderPage()
-    assert.equal(inner.find("li > a").prop("href"), routes.register.begin)
-  })
+    const { inner } = await renderPage();
+    assert.equal(inner.find("li > a").prop("href"), routes.register.begin);
+  });
 
   it("displays user's email on the page", async () => {
-    const { inner } = await renderPage()
+    const { inner } = await renderPage();
     assert.equal(
       inner.find(".auth-card > .col-12 > p > span").text("href"),
-      userEmail
-    )
-  })
-})
+      userEmail,
+    );
+  });
+});

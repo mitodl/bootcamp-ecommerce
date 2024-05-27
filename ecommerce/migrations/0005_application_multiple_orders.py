@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("applications", "0005_application_multiple_orders"),
         ("ecommerce", "0004_rename_klass_to_bootcamp_run"),

@@ -5,7 +5,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("profiles", "0006_enhanced_profiles")]
 
     operations = [

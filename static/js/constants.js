@@ -1,13 +1,13 @@
 // Put constants here
-export const ORDER_FULFILLED = "fulfilled"
-export const TOAST_SUCCESS = "done"
-export const TOAST_FAILURE = "error"
+export const ORDER_FULFILLED = "fulfilled";
+export const TOAST_SUCCESS = "done";
+export const TOAST_FAILURE = "error";
 
 export const GENDER_CHOICES = [
   ["m", "Male"],
   ["f", "Female"],
-  ["o", "Other/Prefer Not to Say"]
-]
+  ["o", "Other/Prefer Not to Say"],
+];
 
 export const EMPLOYMENT_INDUSTRY = [
   "Association, Nonprofit Organization, NGO",
@@ -27,8 +27,8 @@ export const EMPLOYMENT_INDUSTRY = [
   "Information technology",
   "Transportation",
   "Other",
-  "Prefer not to say"
-]
+  "Prefer not to say",
+];
 
 export const EMPLOYMENT_EXPERIENCE = [
   [2, "Less than 2 years"],
@@ -37,8 +37,8 @@ export const EMPLOYMENT_EXPERIENCE = [
   [15, "11 - 15 years"],
   [20, "16 - 20 years"],
   [21, "More than 20 years"],
-  [0, "Prefer not to say"]
-]
+  [0, "Prefer not to say"],
+];
 
 export const EMPLOYMENT_SIZE = [
   [1, "Small/Start-up (1+ employees)"],
@@ -47,8 +47,8 @@ export const EMPLOYMENT_SIZE = [
   [999, "Small to medium-sized (100-999 employees)"],
   [9999, "Medium-sized (1000-9999 employees)"],
   [10000, "Large Enterprise (10,000+ employees)"],
-  [0, "Other (N/A or Don't know)"]
-]
+  [0, "Other (N/A or Don't know)"],
+];
 
 export const EMPLOYMENT_FUNCTION = [
   "Accounting",
@@ -74,8 +74,8 @@ export const EMPLOYMENT_FUNCTION = [
   "Real Estate",
   "Research",
   "Support",
-  "Other"
-]
+  "Other",
+];
 
 export const HIGHEST_EDUCATION_CHOICES = [
   "Doctorate",
@@ -86,167 +86,167 @@ export const HIGHEST_EDUCATION_CHOICES = [
   "Junior secondary/junior high/middle school",
   "Elementary/primary school",
   "No formal education",
-  "Other education"
-]
+  "Other education",
+];
 
-export const ADDRESS_LINES_MAX = 4
-export const US_ALPHA_2 = "US"
-export const CA_ALPHA_2 = "CA"
+export const ADDRESS_LINES_MAX = 4;
+export const US_ALPHA_2 = "US";
+export const CA_ALPHA_2 = "CA";
 
-export const US_POSTAL_CODE_REGEX = /[0-9]{5}(-[0-9]{4}){0,1}/
-export const CA_POSTAL_CODE_REGEX = /[A-Z][0-9][A-Z] [0-9][A-Z][0-9]/
-export const NAME_REGEX = /^(?![~!@&)(+:'.?/,`-]+)([^/^$#*=[\]`%_;<>{}"|]+)$/
+export const US_POSTAL_CODE_REGEX = /[0-9]{5}(-[0-9]{4}){0,1}/;
+export const CA_POSTAL_CODE_REGEX = /[A-Z][0-9][A-Z] [0-9][A-Z][0-9]/;
+export const NAME_REGEX = /^(?![~!@&)(+:'.?/,`-]+)([^/^$#*=[\]`%_;<>{}"|]+)$/;
 
-export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2]
-export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2]
+export const COUNTRIES_REQUIRING_POSTAL_CODE = [US_ALPHA_2, CA_ALPHA_2];
+export const COUNTRIES_REQUIRING_STATE = [US_ALPHA_2, CA_ALPHA_2];
 
-export const ALERT_TYPE_TEXT = "text"
-export const ALERT_TYPE_ERROR = "error"
-export const ALERT_TYPE_SUCCESS = "success"
+export const ALERT_TYPE_TEXT = "text";
+export const ALERT_TYPE_ERROR = "error";
+export const ALERT_TYPE_SUCCESS = "success";
 export const ALERT_TYPES = [
   ALERT_TYPE_TEXT,
   ALERT_TYPE_ERROR,
-  ALERT_TYPE_SUCCESS
-]
+  ALERT_TYPE_SUCCESS,
+];
 
-export const APP_STATE_IN_PROGRESS = "In Progress"
-export const APP_STATE_IN_REVIEW = "In Review"
-export const APP_STATE_COMPLETE = "Complete"
-export const APP_STATE_REJECTED = "Rejected"
-export const APP_STATE_REFUNDED = "Refunded"
+export const APP_STATE_IN_PROGRESS = "In Progress";
+export const APP_STATE_IN_REVIEW = "In Review";
+export const APP_STATE_COMPLETE = "Complete";
+export const APP_STATE_REJECTED = "Rejected";
+export const APP_STATE_REFUNDED = "Refunded";
 
-export const AWAITING_RESUME = "AWAITING_RESUME"
-export const AWAITING_USER_SUBMISSIONS = "AWAITING_USER_SUBMISSIONS"
-export const AWAITING_SUBMISSION_REVIEW = "AWAITING_SUBMISSION_REVIEW"
-export const AWAITING_PAYMENT = "AWAITING_PAYMENT"
-export const AWAITING_PROFILE_COMPLETION = "AWAITING_PROFILE_COMPLETION"
-export const COMPLETE = "COMPLETE"
-export const REJECTED = "REJECTED"
-export const REFUNDED = "REFUNDED"
+export const AWAITING_RESUME = "AWAITING_RESUME";
+export const AWAITING_USER_SUBMISSIONS = "AWAITING_USER_SUBMISSIONS";
+export const AWAITING_SUBMISSION_REVIEW = "AWAITING_SUBMISSION_REVIEW";
+export const AWAITING_PAYMENT = "AWAITING_PAYMENT";
+export const AWAITING_PROFILE_COMPLETION = "AWAITING_PROFILE_COMPLETION";
+export const COMPLETE = "COMPLETE";
+export const REJECTED = "REJECTED";
+export const REFUNDED = "REFUNDED";
 
 export const APP_STATE_TEXT_MAP = {
   [AWAITING_PROFILE_COMPLETION]: APP_STATE_IN_PROGRESS,
-  [AWAITING_RESUME]:             APP_STATE_IN_PROGRESS,
-  [AWAITING_USER_SUBMISSIONS]:   APP_STATE_IN_PROGRESS,
-  [AWAITING_SUBMISSION_REVIEW]:  APP_STATE_IN_REVIEW,
-  [AWAITING_PAYMENT]:            APP_STATE_IN_PROGRESS,
-  [COMPLETE]:                    APP_STATE_COMPLETE,
-  [REJECTED]:                    APP_STATE_REJECTED,
-  [REFUNDED]:                    APP_STATE_REFUNDED
-}
+  [AWAITING_RESUME]: APP_STATE_IN_PROGRESS,
+  [AWAITING_USER_SUBMISSIONS]: APP_STATE_IN_PROGRESS,
+  [AWAITING_SUBMISSION_REVIEW]: APP_STATE_IN_REVIEW,
+  [AWAITING_PAYMENT]: APP_STATE_IN_PROGRESS,
+  [COMPLETE]: APP_STATE_COMPLETE,
+  [REJECTED]: APP_STATE_REJECTED,
+  [REFUNDED]: APP_STATE_REFUNDED,
+};
 
-export const SUBMISSION_VIDEO = "videointerviewsubmission"
-export const SUBMISSION_QUIZ = "quizsubmission"
+export const SUBMISSION_VIDEO = "videointerviewsubmission";
+export const SUBMISSION_QUIZ = "quizsubmission";
 
-export const REVIEW_STATUS_APPROVED = "approved"
-export const REVIEW_STATUS_REJECTED = "rejected"
-export const REVIEW_STATUS_PENDING = "pending"
-export const REVIEW_STATUS_WAITLISTED = "waitlisted"
+export const REVIEW_STATUS_APPROVED = "approved";
+export const REVIEW_STATUS_REJECTED = "rejected";
+export const REVIEW_STATUS_PENDING = "pending";
+export const REVIEW_STATUS_WAITLISTED = "waitlisted";
 
 export const REVIEW_STATUS_DISPLAY_MAP = {
-  [REVIEW_STATUS_APPROVED]:   ["Approved", "text-primary"],
-  [REVIEW_STATUS_REJECTED]:   ["Rejected", "text-warning"],
-  [REVIEW_STATUS_PENDING]:    ["Not Reviewed", "text-secondary"],
-  [REVIEW_STATUS_WAITLISTED]: ["Waitlisted", "text-secondary"]
-}
+  [REVIEW_STATUS_APPROVED]: ["Approved", "text-primary"],
+  [REVIEW_STATUS_REJECTED]: ["Rejected", "text-warning"],
+  [REVIEW_STATUS_PENDING]: ["Not Reviewed", "text-secondary"],
+  [REVIEW_STATUS_WAITLISTED]: ["Waitlisted", "text-secondary"],
+};
 
 export const REVIEW_STATUS_TEXT_MAP = {
-  [REVIEW_STATUS_APPROVED]:   REVIEW_STATUS_APPROVED,
-  [REVIEW_STATUS_REJECTED]:   REVIEW_STATUS_REJECTED,
-  [REVIEW_STATUS_PENDING]:    REVIEW_STATUS_PENDING,
-  [REVIEW_STATUS_WAITLISTED]: REVIEW_STATUS_WAITLISTED
-}
+  [REVIEW_STATUS_APPROVED]: REVIEW_STATUS_APPROVED,
+  [REVIEW_STATUS_REJECTED]: REVIEW_STATUS_REJECTED,
+  [REVIEW_STATUS_PENDING]: REVIEW_STATUS_PENDING,
+  [REVIEW_STATUS_WAITLISTED]: REVIEW_STATUS_WAITLISTED,
+};
 
-export const SUBMISSION_STATUS_PENDING = "pending"
-export const SUBMISSION_STATUS_SUBMITTED = "submitted"
+export const SUBMISSION_STATUS_PENDING = "pending";
+export const SUBMISSION_STATUS_SUBMITTED = "submitted";
 
 export const SUBMISSION_STATUS_TEXT_MAP = {
-  SUBMISSION_STATUS_PENDING:   SUBMISSION_STATUS_PENDING,
-  SUBMISSION_STATUS_SUBMITTED: SUBMISSION_STATUS_SUBMITTED
-}
+  SUBMISSION_STATUS_PENDING: SUBMISSION_STATUS_PENDING,
+  SUBMISSION_STATUS_SUBMITTED: SUBMISSION_STATUS_SUBMITTED,
+};
 
-export const ORDER_STATUS_FULFILLED = "fulfilled"
-export const ORDER_STATUS_FAILED = "failed"
+export const ORDER_STATUS_FULFILLED = "fulfilled";
+export const ORDER_STATUS_FAILED = "failed";
 
-export const CYBERSOURCE_RETURN_QS_STATE = "receipt"
-export const CYBERSOURCE_DECISION_ACCEPT = "ACCEPT"
+export const CYBERSOURCE_RETURN_QS_STATE = "receipt";
+export const CYBERSOURCE_DECISION_ACCEPT = "ACCEPT";
 
 // HTML title for different pages
-export const LOGIN_EMAIL_PAGE_TITLE = "Sign In"
-export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE
+export const LOGIN_EMAIL_PAGE_TITLE = "Sign In";
+export const LOGIN_PASSWORD_PAGE_TITLE = LOGIN_EMAIL_PAGE_TITLE;
 
-export const FORGOT_PASSWORD_PAGE_TITLE = "Forgot Password"
-export const FORGOT_PASSWORD_CONFIRM_PAGE_TITLE = FORGOT_PASSWORD_PAGE_TITLE
+export const FORGOT_PASSWORD_PAGE_TITLE = "Forgot Password"; // pragma: allowlist secret
+export const FORGOT_PASSWORD_CONFIRM_PAGE_TITLE = FORGOT_PASSWORD_PAGE_TITLE; // pragma: allowlist secret
 
-export const EDIT_PROFILE_PAGE_TITLE = "Edit Profile"
-export const VIEW_PROFILE_PAGE_TITLE = "View Profile"
+export const EDIT_PROFILE_PAGE_TITLE = "Edit Profile";
+export const VIEW_PROFILE_PAGE_TITLE = "View Profile";
 
-export const REGISTER_EMAIL_PAGE_TITLE = "Register"
-export const REGISTER_CONFIRM_PAGE_TITLE = REGISTER_EMAIL_PAGE_TITLE
-export const REGISTER_DETAILS_PAGE_TITLE = "Create Profile"
-export const REGISTER_EXTRA_DETAILS_PAGE_TITLE = REGISTER_DETAILS_PAGE_TITLE
+export const REGISTER_EMAIL_PAGE_TITLE = "Register";
+export const REGISTER_CONFIRM_PAGE_TITLE = REGISTER_EMAIL_PAGE_TITLE;
+export const REGISTER_DETAILS_PAGE_TITLE = "Create Profile";
+export const REGISTER_EXTRA_DETAILS_PAGE_TITLE = REGISTER_DETAILS_PAGE_TITLE;
 
-export const REGISTER_ERROR_PAGE_TITLE = "Registration Error"
-export const REGISTER_DENIED_PAGE_TITLE = REGISTER_ERROR_PAGE_TITLE
+export const REGISTER_ERROR_PAGE_TITLE = "Registration Error";
+export const REGISTER_DENIED_PAGE_TITLE = REGISTER_ERROR_PAGE_TITLE;
 
-export const ACCOUNT_SETTINGS_PAGE_TITLE = "Account Settings"
-export const EMAIL_CONFIRM_PAGE_TITLE = "Confirm Email Change"
+export const ACCOUNT_SETTINGS_PAGE_TITLE = "Account Settings";
+export const EMAIL_CONFIRM_PAGE_TITLE = "Confirm Email Change";
 
-export const RECEIPT_PAGE_TITLE = "Receipt"
+export const RECEIPT_PAGE_TITLE = "Receipt";
 
-export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard"
-export const REVIEW_DETAIL_TITLE = "Admission"
+export const APPLICATIONS_DASHBOARD_PAGE_TITLE = "Dashboard";
+export const REVIEW_DETAIL_TITLE = "Admission";
 
-export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification"
-export const CMS_NOTIFICATION_SELECTOR = ".site-wide"
-export const CMS_NOTIFICATION_ID_ATTR = "data-notification-id"
-export const CMS_NOTIFICATION_LCL_STORAGE_ID = "dismissedNotification"
-export const APP_NOTIFICATION = "app-notification"
+export const CMS_SITE_WIDE_NOTIFICATION = "cms-site-wide-notification";
+export const CMS_NOTIFICATION_SELECTOR = ".site-wide";
+export const CMS_NOTIFICATION_ID_ATTR = "data-notification-id";
+export const CMS_NOTIFICATION_LCL_STORAGE_ID = "dismissedNotification";
+export const APP_NOTIFICATION = "app-notification";
 
 // Drawer content types
-export const PROFILE_VIEW = "profileView"
-export const PROFILE_EDIT = "profileEdit"
-export const PAYMENT = "payment"
-export const NEW_APPLICATION = "newApplication"
-export const TAKE_VIDEO_INTERVIEW = "TAKE_VIDEO_INTERVIEW"
-export const RESUME_UPLOAD = "resumeUpload"
+export const PROFILE_VIEW = "profileView";
+export const PROFILE_EDIT = "profileEdit";
+export const PAYMENT = "payment";
+export const NEW_APPLICATION = "newApplication";
+export const TAKE_VIDEO_INTERVIEW = "TAKE_VIDEO_INTERVIEW";
+export const RESUME_UPLOAD = "resumeUpload";
 
-export const DEFAULT_MAX_RESUME_FILE_SIZE = 10000000 // 10MB
+export const DEFAULT_MAX_RESUME_FILE_SIZE = 10000000; // 10MB
 
-export const JOBMA = "Jobma"
-export const JOBMA_SITE = "jobma.com"
+export const JOBMA = "Jobma";
+export const JOBMA_SITE = "jobma.com";
 
 export const ALLOWED_FILE_EXTENSIONS = {
-  pdf: "application/pdf"
-}
+  pdf: "application/pdf",
+};
 
 // Submission facets
-export const STATUS_FACET_KEY = "review_statuses"
-export const BOOTCAMP_RUN_FACET_KEY = "bootcamp_runs"
+export const STATUS_FACET_KEY = "review_statuses";
+export const BOOTCAMP_RUN_FACET_KEY = "bootcamp_runs";
 
 export const FACET_DISPLAY_NAMES = {
-  [STATUS_FACET_KEY]:       "Application Status",
-  [BOOTCAMP_RUN_FACET_KEY]: "Bootcamp Run"
-}
+  [STATUS_FACET_KEY]: "Application Status",
+  [BOOTCAMP_RUN_FACET_KEY]: "Bootcamp Run",
+};
 
 export const FACET_OPTION_LABEL_KEYS = {
-  [STATUS_FACET_KEY]:       ["review_status"],
-  [BOOTCAMP_RUN_FACET_KEY]: ["title", "start_date", "end_date"]
-}
+  [STATUS_FACET_KEY]: ["review_status"],
+  [BOOTCAMP_RUN_FACET_KEY]: ["title", "start_date", "end_date"],
+};
 
-export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY]
+export const FACET_ORDER = [BOOTCAMP_RUN_FACET_KEY, STATUS_FACET_KEY];
 
 // Field Error messages
 export const NAME_REGEX_FAIL_MESSAGE =
-  "Name cannot start with a special character, and it cannot contain any character from {/^$#*=[]`%_;<>{}}"
+  "Name cannot start with a special character, and it cannot contain any character from {/^$#*=[]`%_;<>{}}";
 
-export const CS_101 = "CS_101"
-export const CS_102 = "CS_102"
-export const CS_DEFAULT = "CS_DEFAULT"
+export const CS_101 = "CS_101";
+export const CS_102 = "CS_102";
+export const CS_DEFAULT = "CS_DEFAULT";
 
 export const CS_ERROR_MESSAGES = {
   [CS_101]:
     "Missing required fields. Please modify your name/address and try again",
-  [CS_102]:     "Invalid data. Please modify your name/address and try again",
-  [CS_DEFAULT]: "Please try again"
-}
+  [CS_102]: "Invalid data. Please modify your name/address and try again",
+  [CS_DEFAULT]: "Please try again",
+};

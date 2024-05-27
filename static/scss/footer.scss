@@ -20,6 +20,7 @@
       line-height: 25px;
       margin: 12px 0 0;
       font-weight: 700;
+
       @include media-breakpoint-down(sm) {
         margin: 0;
       }
@@ -32,13 +33,11 @@
   }
 
   .hbspt-form {
-
     label {
       display: none;
     }
 
     .hs-email {
-
       display: inline-block;
       vertical-align: top;
       width: calc(100% - 35px);
@@ -64,7 +63,7 @@
       background-size: 18px 18px;
       border: none;
       padding: 0;
-      opacity: .7;
+      opacity: 0.7;
       width: 18px;
       height: 18px;
       cursor: pointer;
@@ -114,14 +113,12 @@
 }
 
 .footer-bottom {
-  padding-top: 40px;
-  padding-bottom: 20px;
+  padding: 40px 999px 20px;
   background: $white-smoke-dark;
+
   /* to carry the background to corners on both left and right sides
      the big number to make it work on the bigger screens */
-  padding-left: 999px;
   margin-left: -999px;
-  padding-right: 999px;
   margin-right: -999px;
 
   @include media-breakpoint-down(sm) {
@@ -130,7 +127,7 @@
 
   .links {
     margin: 0;
-    padding-top: 0px;
+    padding-top: 0;
     padding-bottom: 20px;
 
     li {
@@ -179,7 +176,7 @@
 
     &.facebook {
       a {
-        &:after {
+        &::after {
           background: $facebook;
         }
       }
@@ -187,7 +184,7 @@
 
     &.linkedin {
       a {
-        &:after {
+        &::after {
           background: $linkedin;
         }
       }
@@ -195,7 +192,7 @@
 
     &.twitter {
       a {
-        &:after {
+        &::after {
           background: $twitter;
         }
       }
@@ -203,7 +200,7 @@
 
     &.youtube {
       a {
-        &:after {
+        &::after {
           background: $youtube;
         }
       }
@@ -211,22 +208,56 @@
 
     &.instagram {
       a {
-        &:after {
-          background: radial-gradient(circle farthest-corner at 35% 100%, #fec564, transparent 50%),
-          radial-gradient(circle farthest-corner at 10% 140%, #feda7e, transparent 50%),
-          radial-gradient(ellipse farthest-corner at 0 -25%, #5258cf, transparent 50%),
-          radial-gradient(ellipse farthest-corner at 20% -50%, #5258cf, transparent 50%),
-          radial-gradient(ellipse farthest-corner at 100% 0, #893dc2, transparent 50%),
-          radial-gradient(ellipse farthest-corner at 60% -20%, #893dc2, transparent 50%),
-          radial-gradient(ellipse farthest-corner at 100% 100%, #d9317a, transparent),
-          linear-gradient(#6559ca, #bc318f 30%, #e42e66 50%, #fa5332 70%, #ffdc80 100%);
+        &::after {
+          background: radial-gradient(
+              circle farthest-corner at 35% 100%,
+              #fec564,
+              transparent 50%
+            ),
+            radial-gradient(
+              circle farthest-corner at 10% 140%,
+              #feda7e,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse farthest-corner at 0 -25%,
+              #5258cf,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse farthest-corner at 20% -50%,
+              #5258cf,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse farthest-corner at 100% 0,
+              #893dc2,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse farthest-corner at 60% -20%,
+              #893dc2,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse farthest-corner at 100% 100%,
+              #d9317a,
+              transparent
+            ),
+            linear-gradient(
+              #6559ca,
+              #bc318f 30%,
+              #e42e66 50%,
+              #fa5332 70%,
+              #ffdc80 100%
+            );
         }
       }
     }
 
     &.soundcloud {
       a {
-        &:after {
+        &::after {
           background: $soundcloud;
         }
       }
@@ -240,7 +271,7 @@
       position: relative;
       transition: all 0.25s ease-in-out;
 
-      &:after {
+      &::after {
         position: absolute;
         left: 0;
         top: 0;
@@ -254,7 +285,7 @@
       &:hover {
         color: $default-text-color;
 
-        &:after {
+        &::after {
           height: 100%;
         }
       }

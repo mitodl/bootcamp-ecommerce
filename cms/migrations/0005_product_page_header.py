@@ -6,7 +6,6 @@ import wagtail.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailimages", "0001_squashed_0021"),
         ("cms", "0004_rename_klass_to_bootcamp_run"),

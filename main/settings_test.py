@@ -34,7 +34,6 @@ def settings_sandbox(monkeypatch):
         return vars(sys.modules["main.settings"])
 
     def _patch(overrides):
-
         for key, value in overrides.items():
             monkeypatch.setenv(key, value)
 

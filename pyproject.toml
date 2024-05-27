@@ -53,7 +53,7 @@ django-server-status = "^0.7.3"
 django-webpack-loader = "^0.7.0"
 djangorestframework = "^3.11.2"
 djangorestframework-serializer-extensions = "^2.0.0"
-djangosaml2idp = { git = "https://github.com/OTA-Insight/djangosaml2idp.git", rev = "0b4325782a6fd2c034677b5923041b5df10087ec" }
+djangosaml2idp = { git = "https://github.com/OTA-Insight/djangosaml2idp.git", rev = "0b4325782a6fd2c034677b5923041b5df10087ec" } # pragma: allowlist secret
 djoser = "^2.1.0"
 dynamic-rest = "^2.1.2"
 html5lib = "^1.1"
@@ -112,4 +112,3 @@ six = "^1.16.0"
 testfixtures = "^6.14.1"
 tox = "^3.15.1"
 wagtail-factories = "^4.1.0"
-

@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("klasses", "0027_alter_json_fields"),
         ("jobma", "0008_alter_json_fields"),

@@ -31,7 +31,7 @@ def enroll_users_in_novoed_course(*, user_ids, novoed_course_stub):
                 results["created"] += 1
             elif existed:
                 results["existed"] += 1
-        except:  # pylint: disable=bare-except
+        except:  # noqa: E722
             results["failed"] += 1
             log.exception(
                 "User enrollment in NovoEd failed (%s, %s)",
@@ -53,7 +53,7 @@ def unenroll_user_from_novoed_course(*, user_id, novoed_course_stub):
     try:
         api.unenroll_from_novoed_course(user, novoed_course_stub)
         return user.email, True
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
         log.exception(
             "User unenrollment from NovoEd failed (%s, %s)",
             user.email,

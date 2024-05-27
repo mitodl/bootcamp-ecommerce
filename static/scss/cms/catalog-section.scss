@@ -1,7 +1,7 @@
 // sass-lint:disable mixins-before-declarations
 .catalog-section {
   .catalog-card {
-    padding: 0px 0.5px;
+    padding: 0 0.5px;
     margin-bottom: 90px;
 
     .image-holder {
@@ -10,13 +10,13 @@
       .image-notch {
         width: 60px;
         height: 60px;
-        left: 0px;
-        bottom: 0px;
+        left: 0;
+        bottom: 0;
 
         @include media-breakpoint-down(sm) {
           height: 30px;
           left: unset;
-          right: 0px;
+          right: 0;
         }
       }
     }

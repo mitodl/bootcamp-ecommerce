@@ -7,22 +7,34 @@
 <div id="statement">
   <header>
     <div class="left">
-      <img src="{% static 'images/mit-bootcamps-logo.svg' %}" alt="MIT Bootcamps" />
+      <img
+        src="{% static 'images/mit-bootcamps-logo.svg' %}"
+        alt="MIT Bootcamps"
+      />
     </div>
     <div class="right">
       {% now "F d, Y" %}
     </div>
   </header>
   <section>
-    <h3 class="section-header">Participant<hr /></h3>
+    <h3 class="section-header">
+      Participant
+      <hr />
+    </h3>
     <p>{{ user.full_name }}</p>
   </section>
   <section>
-    <h3 class="section-header">Bootcamp<hr /></h3>
+    <h3 class="section-header">
+      Bootcamp
+      <hr />
+    </h3>
     <p>{{ bootcamp_run.display_title }}</p>
   </section>
   <section>
-    <h3 class="section-header">Payment History<hr /></h3>
+    <h3 class="section-header">
+      Payment History
+      <hr />
+    </h3>
     <table class="payment-history">
       <thead>
         <tr>
@@ -32,10 +44,12 @@
       </thead>
       <tbody>
         {% for payment in bootcamp_run.payments %}
-          <tr>
-            <td>{{ payment.order.created_on|parse_iso_datetime|date:"F d, Y" }}</td>
-            <td>{{ payment.price|dollar_format }}</td>
-          </tr>
+        <tr>
+          <td>
+            {{ payment.order.created_on|parse_iso_datetime|date:"F d, Y" }}
+          </td>
+          <td>{{ payment.price|dollar_format }}</td>
+        </tr>
         {% endfor %}
       </tbody>
       <tfoot>

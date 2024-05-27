@@ -28,7 +28,7 @@ def mock_create_user_strategy(mocker):
     strategy = mocker.Mock(request=mocker.Mock(session={}))
     strategy.request_data.return_value = {
         "profile": {"name": "Jane Doe"},
-        "password": "password1",
+        "password": "password1",  # pragma: allowlist secret
         "legal_address": {
             "first_name": "Jane",
             "last_name": "Doe",

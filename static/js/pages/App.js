@@ -1,53 +1,53 @@
 // @flow
-import React, { Component } from "react"
-import { compose } from "redux"
-import { connect } from "react-redux"
-import { connectRequest } from "redux-query-react"
-import { Switch, Route } from "react-router"
-import urljoin from "url-join"
-import { createStructuredSelector } from "reselect"
+import React, { Component } from "react";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import { connectRequest } from "redux-query-react";
+import { Switch, Route } from "react-router";
+import urljoin from "url-join";
+import { createStructuredSelector } from "reselect";
 
-import PrivateRoute from "../components/PrivateRoute"
-import SiteNavbar from "../components/SiteNavbar"
-import NotificationContainer from "../components/notifications/NotificationContainer"
-import Drawer from "../components/Drawer"
-import LoginPages from "./login/LoginPages"
-import RegisterPages from "./register/RegisterPages"
-import ApplicationPages from "./applications/ApplicationPages"
-import ReviewAdminPages from "./applications/ReviewAdminPages"
+import PrivateRoute from "../components/PrivateRoute";
+import SiteNavbar from "../components/SiteNavbar";
+import NotificationContainer from "../components/notifications/NotificationContainer";
+import Drawer from "../components/Drawer";
+import LoginPages from "./login/LoginPages";
+import RegisterPages from "./register/RegisterPages";
+import ApplicationPages from "./applications/ApplicationPages";
+import ReviewAdminPages from "./applications/ReviewAdminPages";
 
-import EmailConfirmPage from "./settings/EmailConfirmPage"
-import AccountSettingsPage from "./settings/AccountSettingsPage"
+import EmailConfirmPage from "./settings/EmailConfirmPage";
+import AccountSettingsPage from "./settings/AccountSettingsPage";
 
-import { handleCmsNotifications } from "../lib/notifications"
-import users, { currentUserSelector } from "../lib/queries/users"
-import { routes } from "../lib/urls"
+import { handleCmsNotifications } from "../lib/notifications";
+import users, { currentUserSelector } from "../lib/queries/users";
+import { routes } from "../lib/urls";
 
-import type { Match } from "react-router"
+import type { Match } from "react-router";
 
-import { addUserNotification } from "../actions"
-import { ALERT_TYPE_TEXT } from "../constants"
+import { addUserNotification } from "../actions";
+import { ALERT_TYPE_TEXT } from "../constants";
 
-import type { CurrentUser } from "../flow/authTypes"
+import type { CurrentUser } from "../flow/authTypes";
 
 type Props = {
   currentUser: CurrentUser,
   match: Match,
-  addUserNotification: Function
-}
+  addUserNotification: Function,
+};
 
 export class App extends Component<Props> {
   componentDidMount() {
-    const { addUserNotification } = this.props
-    handleCmsNotifications(addUserNotification)
+    const { addUserNotification } = this.props;
+    handleCmsNotifications(addUserNotification);
   }
 
   render() {
-    const { match, currentUser } = this.props
+    const { match, currentUser } = this.props;
 
     if (!currentUser) {
       // application is still loading
-      return <div className="app" />
+      return <div className="app" />;
     }
 
     return (
@@ -84,21 +84,21 @@ export class App extends Component<Props> {
         </div>
         <Drawer />
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  currentUser: currentUserSelector
-})
+  currentUser: currentUserSelector,
+});
 
 const mapDispatchToProps = {
-  addUserNotification
-}
+  addUserNotification,
+};
 
-const mapPropsToConfigs = () => [users.currentUserQuery()]
+const mapPropsToConfigs = () => [users.currentUserQuery()];
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  connectRequest(mapPropsToConfigs)
-)(App)
+  connectRequest(mapPropsToConfigs),
+)(App);

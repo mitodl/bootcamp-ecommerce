@@ -5,7 +5,7 @@ Functions for ecommerce
 from base64 import b64encode
 from collections import namedtuple
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 import hashlib
 import hmac
@@ -19,7 +19,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
-from django.utils.timezone import is_naive, make_aware
 from django_fsm import TransitionNotAllowed
 import pytz
 from rest_framework.exceptions import ValidationError
@@ -401,7 +400,7 @@ def handle_rejected_order(*, order, decision):
                 "Order fulfillment failed for order {order}".format(order=order),
                 settings.ECOMMERCE_EMAIL,
             )
-        except:  # pylint: disable=bare-except
+        except:  # noqa: E722
             log.exception(
                 "Error occurred when sending the email to notify "
                 "about order fulfillment failure for order %s",
@@ -694,7 +693,7 @@ def import_wire_transfers(csv_path, force_flag=False):
         for wire_transfer in wire_transfers:
             try:
                 import_wire_transfer(wire_transfer, header_row, force_flag)
-            except:  # pylint: disable=bare-except
+            except:  # noqa: E722
                 raise WireTransferImportException(
                     f"Error while importing row with Id column={wire_transfer.id}"
                 )

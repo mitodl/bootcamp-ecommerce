@@ -1,30 +1,30 @@
 // @flow
 /* global SETTINGS:false */
-import React from "react"
+import React from "react";
 
-import { Formik, Field, Form, ErrorMessage } from "formik"
+import { Formik, Field, Form, ErrorMessage } from "formik";
 
-import { PasswordInput } from "./elements/inputs"
-import FormError from "./elements/FormError"
-import { resetPasswordFormValidation } from "../../lib/validation"
-import ButtonWithLoader from "../loaders/ButtonWithLoader"
+import { PasswordInput } from "./elements/inputs";
+import FormError from "./elements/FormError";
+import { resetPasswordFormValidation } from "../../lib/validation";
+import ButtonWithLoader from "../loaders/ButtonWithLoader";
 
 type Props = {
-  onSubmit: Function
-}
+  onSubmit: Function,
+};
 
 export type ResetPasswordFormValues = {
   newPassword: string,
-  confirmPassword: string
-}
+  confirmPassword: string,
+};
 
 const ResetPasswordForm = ({ onSubmit }: Props) => (
   <Formik
     onSubmit={onSubmit}
     validationSchema={resetPasswordFormValidation}
     initialValues={{
-      newPassword:   "",
-      reNewPassword: ""
+      newPassword: "",
+      reNewPassword: "",
     }}
     render={({ isSubmitting }) => (
       <Form>
@@ -58,6 +58,6 @@ const ResetPasswordForm = ({ onSubmit }: Props) => (
       </Form>
     )}
   />
-)
+);
 
-export default ResetPasswordForm
+export default ResetPasswordForm;

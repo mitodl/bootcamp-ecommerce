@@ -1,34 +1,34 @@
 // @flow
-import { assert } from "chai"
+import { assert } from "chai";
 
-import { S } from "./sanctuary"
-import { shallow } from "enzyme/build"
-import React from "react"
+import { S } from "./sanctuary";
+import { shallow } from "enzyme/build";
+import React from "react";
 
-const { Maybe } = S
+const { Maybe } = S;
 
 export const assertMaybeEquality = (m1: Maybe, m2: Maybe) => {
-  assert(S.equals(m1, m2), `expected ${m1.value} to equal ${m2.value}`)
-}
+  assert(S.equals(m1, m2), `expected ${m1.value} to equal ${m2.value}`);
+};
 
 export const assertIsNothing = (m: Maybe) => {
-  assert(m.isNothing, `should be nothing, is ${m}`)
-}
+  assert(m.isNothing, `should be nothing, is ${m}`);
+};
 
 export const assertIsJust = (m: Maybe, val: any) => {
-  assert(m.isJust, `should be Just(${val}), is ${m}`)
-  assert.deepEqual(m.value, val)
-}
+  assert(m.isJust, `should be Just(${val}), is ${m}`);
+  assert.deepEqual(m.value, val);
+};
 
 export const findFormikFieldByName = (wrapper: any, name: string) =>
   wrapper
     .find("FormikConnect(FieldInner)")
-    .filterWhere(node => node.prop("name") === name)
+    .filterWhere((node) => node.prop("name") === name);
 
 export const findFormikErrorByName = (wrapper: any, name: string) =>
   wrapper
     .find("FormikConnect(ErrorMessageImpl)")
-    .filterWhere(node => node.prop("name") === name)
+    .filterWhere((node) => node.prop("name") === name);
 
 /**
  * This is here to support testing components that are wrapped with a
@@ -46,15 +46,15 @@ export const findFormikErrorByName = (wrapper: any, name: string) =>
 export const getComponentWithContext = (
   WrappedComponent: Class<React.Component<*, *>>,
   props: Object,
-  context: string | Object
+  context: string | Object,
 ) => {
-  const outer = shallow(<WrappedComponent {...props} />)
-  const inner = outer.props().children(context)
-  return { inner, outer }
-}
+  const outer = shallow(<WrappedComponent {...props} />);
+  const inner = outer.props().children(context);
+  return { inner, outer };
+};
 
-export const shouldIf = (tf: boolean) => (tf ? "should" : "should not")
+export const shouldIf = (tf: boolean) => (tf ? "should" : "should not");
 
-export const shouldIfGt0 = (num: number) => shouldIf(num > 0)
+export const shouldIfGt0 = (num: number) => shouldIf(num > 0);
 
-export const isIf = (tf: boolean) => (tf ? "is" : "is not")
+export const isIf = (tf: boolean) => (tf ? "is" : "is not");

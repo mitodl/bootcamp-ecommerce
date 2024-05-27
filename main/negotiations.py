@@ -1,4 +1,4 @@
-""" Custom negotiation classes for REST framework """
+"""Custom negotiation classes for REST framework"""
 
 from rest_framework.negotiation import BaseContentNegotiation
 

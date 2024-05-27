@@ -1,68 +1,67 @@
 // @flow
 /* global SETTINGS: false */
-import React from "react"
-import { compose } from "redux"
-import { connect } from "react-redux"
-import { connectRequest } from "redux-query-react"
-import { Link } from "react-router-dom"
-import { mutateAsync } from "redux-query"
-import { path } from "ramda"
-import { createStructuredSelector } from "reselect"
-import { MetaTags } from "react-meta-tags"
+import React from "react";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import { connectRequest } from "redux-query-react";
+import { Link } from "react-router-dom";
+import { mutateAsync } from "redux-query";
+import { path } from "ramda";
+import { createStructuredSelector } from "reselect";
+import { MetaTags } from "react-meta-tags";
 
-import { addUserNotification } from "../../actions"
-import { ALERT_TYPE_TEXT, REGISTER_CONFIRM_PAGE_TITLE } from "../../constants"
-import queries from "../../lib/queries"
-import { routes } from "../../lib/urls"
+import { addUserNotification } from "../../actions";
+import { ALERT_TYPE_TEXT, REGISTER_CONFIRM_PAGE_TITLE } from "../../constants";
+import queries from "../../lib/queries";
+import { routes } from "../../lib/urls";
 import {
   STATE_REGISTER_DETAILS,
   STATE_INVALID_EMAIL,
-  handleAuthResponse
-} from "../../lib/auth"
+  handleAuthResponse,
+} from "../../lib/auth";
 
-import { authSelector } from "../../lib/queries/auth"
+import { authSelector } from "../../lib/queries/auth";
 import {
   qsVerificationCodeSelector,
   qsPartialTokenSelector,
-  qsBackendSelector
-} from "../../lib/selectors"
-import { formatTitle } from "../../util/util"
+  qsBackendSelector,
+} from "../../lib/selectors";
+import { formatTitle } from "../../util/util";
 
-import type { RouterHistory, Location } from "react-router"
-import type { AuthResponse } from "../../flow/authTypes"
+import type { RouterHistory, Location } from "react-router";
+import type { AuthResponse } from "../../flow/authTypes";
 
 type Props = {
   addUserNotification: Function,
   location: Location,
   history: RouterHistory,
   auth: ?AuthResponse,
-  params: { verificationCode: string, partialToken: string, backend?: string }
-}
+  params: { verificationCode: string, partialToken: string, backend?: string },
+};
 
 export class RegisterConfirmPage extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
-    const { addUserNotification, auth, history } = this.props
-    const prevState = path(["auth", "state"], prevProps)
+    const { addUserNotification, auth, history } = this.props;
+    const prevState = path(["auth", "state"], prevProps);
 
     if (auth && auth.state !== prevState) {
       handleAuthResponse(history, auth, {
         [STATE_REGISTER_DETAILS]: () => {
           addUserNotification({
             "email-verified": {
-              type:  ALERT_TYPE_TEXT,
+              type: ALERT_TYPE_TEXT,
               props: {
-                text:
-                  "Success! We've verified your email. Please finish your account creation below."
-              }
-            }
-          })
-        }
-      })
+                text: "Success! We've verified your email. Please finish your account creation below.",
+              },
+            },
+          });
+        },
+      });
     }
   }
 
   render() {
-    const { auth } = this.props
+    const { auth } = this.props;
 
     return (
       <div className="container auth-page">
@@ -85,37 +84,39 @@ export class RegisterConfirmPage extends React.Component<Props> {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  auth:   authSelector,
+  auth: authSelector,
   params: createStructuredSelector({
     verificationCode: qsVerificationCodeSelector,
-    partialToken:     qsPartialTokenSelector,
-    backend:          qsBackendSelector
-  })
-})
+    partialToken: qsPartialTokenSelector,
+    backend: qsBackendSelector,
+  }),
+});
 
 const registerConfirmEmail = (
   code: string,
   partialToken: string,
-  backend: string
+  backend: string,
 ) =>
-  // $FlowFixMe
-  mutateAsync(queries.auth.registerConfirmMutation(code, partialToken, backend))
+  mutateAsync(
+    // $FlowFixMe
+    queries.auth.registerConfirmMutation(code, partialToken, backend),
+  );
 
 const mapPropsToConfig = ({
-  params: { verificationCode, partialToken, backend }
-}) => registerConfirmEmail(verificationCode, partialToken, backend)
+  params: { verificationCode, partialToken, backend },
+}) => registerConfirmEmail(verificationCode, partialToken, backend);
 
 const mapDispatchToProps = {
-  addUserNotification
-}
+  addUserNotification,
+};
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   // $FlowFixMe
-  connectRequest(mapPropsToConfig)
-)(RegisterConfirmPage)
+  connectRequest(mapPropsToConfig),
+)(RegisterConfirmPage);

@@ -29,7 +29,9 @@ log = logging.getLogger(__name__)
 
 
 def task_obj_lock(
-    func_name: str, args: List[object], kwargs: dict  # pylint:disable=unused-argument
+    func_name: str,
+    args: List[object],
+    kwargs: dict,  # pylint:disable=unused-argument
 ) -> str:
     """
     Determine a task lock name for a specific task function and object id

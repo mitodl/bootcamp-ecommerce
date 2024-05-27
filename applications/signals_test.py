@@ -1,4 +1,4 @@
-""" Tests for applications.signals"""
+"""Tests for applications.signals"""
 
 import pytest
 
