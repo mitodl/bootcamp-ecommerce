@@ -85,7 +85,7 @@ export function ViewProfileDisplay(props: Props) {
               <TwoColumnRow label="Country">
                 {
                   find(
-                    propEq("code", currentUser.legal_address.country),
+                    propEq(currentUser.legal_address.country, "code"),
                     countries
                   ).name
                 }
@@ -99,11 +99,11 @@ export function ViewProfileDisplay(props: Props) {
                 {
                   find(
                     propEq(
-                      "code",
-                      currentUser.legal_address.state_or_territory
+                      currentUser.legal_address.state_or_territory,
+                      "code"
                     ),
                     find(
-                      propEq("code", currentUser.legal_address.country),
+                      propEq(currentUser.legal_address.country, "code"),
                       countries
                     ).states
                   ).name
