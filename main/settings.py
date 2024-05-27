@@ -1020,9 +1020,8 @@ NOVOED_BASE_URL = get_string(
 
 # Relative URL to be used by Djoser for the link in the password reset email
 # (see: http://djoser.readthedocs.io/en/stable/settings.html#password-reset-confirm-url)
-# fmt: off
-PASSWORD_RESET_CONFIRM_URL = "password_reset/confirm/{uid}/{token}/"  # pragma: allowlist secret
-# fmt: on
+
+PASSWORD_RESET_CONFIRM_URL = "password_reset/confirm/{uid}/{token}/"  # noqa: S105 # pragma: allowlist secret
 
 # ol-django configuration
 import_settings_modules("mitol.authentication.settings.djoser_settings")
