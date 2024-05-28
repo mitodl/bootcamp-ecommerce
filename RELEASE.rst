@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.117.0
+Version 0.117.0 (Released May 28, 2024)
 ---------------
 
 - chore(deps): lock file maintenance
