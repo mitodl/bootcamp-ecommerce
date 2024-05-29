@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.118.0
+---------------
+
+- Initial pre-commit linting (#1539)
+- fix(deps): update dependency react-meta-tags to ^0.7.0
+- fix: missing migration and migrations detection scripts (#1553)
+
 Version 0.117.0 (Released May 28, 2024)
 ---------------
 

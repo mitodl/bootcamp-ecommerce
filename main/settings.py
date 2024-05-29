@@ -37,7 +37,7 @@ from mitol.common.settings.webpack import *  # noqa: F403
 from main.sentry import init_sentry
 
 
-VERSION = "0.117.0"
+VERSION = "0.118.0"
 
 ENVIRONMENT = get_string(
     name="BOOTCAMP_ENVIRONMENT",
