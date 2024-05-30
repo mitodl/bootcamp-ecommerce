@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.118.0
+Version 0.118.0 (Released May 30, 2024)
 ---------------
 
 - Initial pre-commit linting (#1539)
