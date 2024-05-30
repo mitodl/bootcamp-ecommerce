@@ -16,7 +16,7 @@ x-environment: &py-environment
 
 services:
   db:
-    image: postgres:9.6.16
+    image: postgres:9.6.24
     ports:
       - "5432"
 
