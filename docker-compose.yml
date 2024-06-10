@@ -4,7 +4,7 @@ x-environment: &py-environment
   DEBUG: "False"
   DEV_ENV: "True" # necessary to have nginx connect to web container
   NODE_ENV: "production"
-  DATABASE_URL: postgres://postgres@db:5432/postgres
+  DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
   BOOTCAMP_SECURE_SSL_REDIRECT: "False"
   BOOTCAMP_DB_DISABLE_SSL: "True"
   CELERY_TASK_ALWAYS_EAGER: "False"
@@ -16,7 +16,9 @@ x-environment: &py-environment
 
 services:
   db:
-    image: postgres:9.6.16
+    image: postgres:13.15
+    environment:
+      POSTGRES_PASSWORD: postgres # pragma: allowlist secret
     ports:
       - "5432"
 
