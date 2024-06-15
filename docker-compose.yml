@@ -28,7 +28,7 @@ services:
       - "6379"
 
   nginx:
-    image: nginx:1.26.0
+    image: nginx:1.27.0
     ports:
       - "8099:8099"
     links:
