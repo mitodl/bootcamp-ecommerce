@@ -80,7 +80,7 @@ uwsgi = "^2.0.20"
 wagtail = "^5.2.1"
 zeep = "^4.2.1"
 Pillow = "^10.3.0"
-user-util = "^0.1.5"
+user-util = "^0.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
