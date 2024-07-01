@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.118.1 (Released July 01, 2024)
+---------------
+
+- Add flag for Celery to send task state change events
+- refactor: upgrade docker-compose & CI postgres version to 13 (#1558)
+- fix(deps): update dependency sentry-sdk to ^0.20.0
+
 Version 0.118.0 (Released May 30, 2024)
 ---------------
 
