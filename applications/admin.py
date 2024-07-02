@@ -10,30 +10,42 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from mitol.common.admin import TimestampedModelAdmin
 
-from applications import models
+from applications.models import (
+    ApplicationStep,
+    ApplicationStepSubmission,
+    BootcampRunApplicationStep,
+    BootcampApplication,
+    VideoInterviewSubmission,
+    QuizSubmission,
+    ApplicantLetter,
+    Interview,
+)
 from ecommerce.models import Order
 from main.utils import get_field_names
 
 
+@admin.register(ApplicationStep)
 class ApplicationStepAdmin(admin.ModelAdmin):
     """Admin for ApplicationStep"""
 
-    model = models.ApplicationStep
+    model = ApplicationStep
     list_display = ("id", "get_bootcamp_title", "submission_type", "step_order")
     ordering = ("bootcamp", "step_order")
 
+    @admin.display(
+        description="Bootcamp",
+        ordering="bootcamp__title",
+    )
     def get_bootcamp_title(self, obj):
         """Returns the bootcamp title"""
         return obj.bootcamp.title
 
-    get_bootcamp_title.short_description = "Bootcamp"
-    get_bootcamp_title.admin_order_field = "bootcamp__title"
 
-
+@admin.register(BootcampRunApplicationStep)
 class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
     """Admin for BootcampRunApplicationStep"""
 
-    model = models.BootcampRunApplicationStep
+    model = BootcampRunApplicationStep
     list_display = (
         "id",
         "get_run_display_title",
@@ -53,26 +65,29 @@ class BootcampRunApplicationStepAdmin(admin.ModelAdmin):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("bootcamp_run__bootcamp")
 
+    @admin.display(
+        description="Bootcamp Run",
+        ordering="bootcamp_run__title",
+    )
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.bootcamp_run.display_title
 
-    get_run_display_title.short_description = "Bootcamp Run"
-    get_run_display_title.admin_order_field = "bootcamp_run__title"
-
+    @admin.display(
+        description="Submission Type",
+        ordering="application_step__submission_type",
+    )
     def get_submission_type(self, obj):
         """Returns the application step submission type"""
         return obj.application_step.submission_type
 
-    get_submission_type.short_description = "Submission Type"
-    get_submission_type.admin_order_field = "application_step__submission_type"
-
+    @admin.display(
+        description="Step Order",
+        ordering="application_step__step_order",
+    )
     def get_step_order(self, obj):
         """Returns the application step order"""
         return obj.application_step.step_order
-
-    get_step_order.short_description = "Step Order"
-    get_step_order.admin_order_field = "application_step__step_order"
 
 
 class OrderInline(admin.StackedInline):
@@ -90,10 +105,11 @@ class OrderInline(admin.StackedInline):
         return False
 
 
+@admin.register(BootcampApplication)
 class BootcampApplicationAdmin(TimestampedModelAdmin):
     """Admin for BootcampApplication"""
 
-    model = models.BootcampApplication
+    model = BootcampApplication
     include_timestamps_in_list = True
     inlines = [OrderInline]
     list_display = ("id", "get_user_email", "get_run_display_title", "state")
@@ -114,25 +130,27 @@ class BootcampApplicationAdmin(TimestampedModelAdmin):
             .select_related("user", "bootcamp_run__bootcamp")
         )
 
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
-
+    @admin.display(
+        description="Bootcamp Run",
+        ordering="bootcamp_run__title",
+    )
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.bootcamp_run.display_title
-
-    get_run_display_title.short_description = "Bootcamp Run"
-    get_run_display_title.admin_order_field = "bootcamp_run__title"
 
 
 class AppStepSubmissionInline(GenericTabularInline):
     """Admin class for ApplicationStepSubmission"""
 
-    model = models.ApplicationStepSubmission
+    model = ApplicationStepSubmission
     max_num = 1
     raw_id_fields = ("bootcamp_application", "run_application_step")
 
@@ -170,6 +188,10 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             )
         )
 
+    @admin.display(
+        description="Application User",
+        ordering="app_step_submission__bootcamp_application__user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         app_step_submissions = obj.app_step_submissions.all()
@@ -179,11 +201,10 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             else app_step_submissions[0].bootcamp_application.user.email
         )
 
-    get_user_email.short_description = "Application User"
-    get_user_email.admin_order_field = (
-        "app_step_submission__bootcamp_application__user__email"
+    @admin.display(
+        description="App Bootcamp Run",
+        ordering="app_step_submission__bootcamp_application__bootcamp_run__title",
     )
-
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         app_step_submissions = obj.app_step_submissions.all()
@@ -193,11 +214,7 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             else app_step_submissions[0].bootcamp_application.bootcamp_run.display_title
         )
 
-    get_run_display_title.short_description = "App Bootcamp Run"
-    get_run_display_title.admin_order_field = (
-        "app_step_submission__bootcamp_application__bootcamp_run__title"
-    )
-
+    @admin.display(description="Submission")
     def app_step_submission_link(self, obj):
         """Returns a link to the related bootcamp application"""
         app_step_submissions = obj.app_step_submissions.all()
@@ -208,7 +225,7 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             '<a href="{}">Submission ({})</a>'.format(
                 reverse(
                     "admin:applications_{}_change".format(
-                        models.ApplicationStepSubmission._meta.model_name
+                        ApplicationStepSubmission._meta.model_name
                     ),
                     args=(app_step_submission.id,),
                 ),  # pylint: disable=protected-access
@@ -216,19 +233,19 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             )
         )
 
-    app_step_submission_link.short_description = "Submission"
 
-
+@admin.register(VideoInterviewSubmission)
 class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
     """Admin class for VideoInterviewSubmission"""
 
-    model = models.VideoInterviewSubmission
+    model = VideoInterviewSubmission
 
     raw_id_fields = ("interview",)
 
     def get_list_display(self, request):
         return tuple(super().get_list_display(request) or ()) + ("interview_link",)
 
+    @admin.display(description="Interview")
     def interview_link(self, obj):
         """Returns a link to the related interview record"""
         if not hasattr(obj, "interview") or obj.interview is None:
@@ -236,20 +253,19 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
         return mark_safe(
             '<a href="{}">Interview ({})</a>'.format(
                 reverse(
-                    "admin:jobma_{}_change".format(models.Interview._meta.model_name),
+                    "admin:jobma_{}_change".format(Interview._meta.model_name),
                     args=(obj.interview.id,),
                 ),  # pylint: disable=protected-access
                 obj.interview.id,
             )
         )
 
-    interview_link.short_description = "Interview"
 
-
+@admin.register(QuizSubmission)
 class QuizSubmissionAdmin(SubmissionTypeAdmin):
     """Admin for QuizSubmission"""
 
-    model = models.QuizSubmission
+    model = QuizSubmission
 
     def get_list_display(self, request):
         return tuple(super().get_list_display(request) or ()) + ("started_date",)
@@ -272,10 +288,11 @@ class ApplicationStepSubmissionForm(forms.ModelForm):
         return object_id
 
 
+@admin.register(ApplicationStepSubmission)
 class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
     """Admin for ApplicationStepSubmission"""
 
-    model = models.ApplicationStepSubmission
+    model = ApplicationStepSubmission
     form = ApplicationStepSubmissionForm
     list_display = (
         "id",
@@ -313,6 +330,7 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
             return tuple(self.readonly_fields or ()) + ("content_type", "object_id")
         return self.readonly_fields
 
+    @admin.display(description="submission object")
     def submission_content_obj_link(self, obj):
         """Returns a link to the content object"""
         if obj.content_object is None:
@@ -329,27 +347,28 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
             )
         )
 
-    submission_content_obj_link.short_description = "submission object"
-
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.bootcamp_application.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
-
+    @admin.display(
+        description="Bootcamp Run",
+        ordering="bootcamp_run__title",
+    )
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.bootcamp_application.bootcamp_run.display_title
 
-    get_run_display_title.short_description = "Bootcamp Run"
-    get_run_display_title.admin_order_field = "bootcamp_run__title"
 
-
+@admin.register(ApplicantLetter)
 class ApplicantLetterAdmin(TimestampedModelAdmin):
     """Admin for ApplicantLetter"""
 
-    model = models.ApplicantLetter
+    model = ApplicantLetter
     list_display = ("id", "letter_type", "get_user_email", "get_run_display_title")
     list_filter = ("letter_type",)
     raw_id_fields = ("application",)
@@ -358,27 +377,20 @@ class ApplicantLetterAdmin(TimestampedModelAdmin):
         "application__bootcamp_run__title",
         "application__bootcamp_run__bootcamp__title",
     )
-    readonly_fields = get_field_names(models.ApplicantLetter)
+    readonly_fields = get_field_names(ApplicantLetter)
 
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.application.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
-
+    @admin.display(
+        description="Bootcamp Run",
+        ordering="bootcamp_run__title",
+    )
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.application.bootcamp_run.display_title
-
-    get_run_display_title.short_description = "Bootcamp Run"
-    get_run_display_title.admin_order_field = "bootcamp_run__title"
-
-
-admin.site.register(models.ApplicationStep, ApplicationStepAdmin)
-admin.site.register(models.BootcampRunApplicationStep, BootcampRunApplicationStepAdmin)
-admin.site.register(models.BootcampApplication, BootcampApplicationAdmin)
-admin.site.register(models.VideoInterviewSubmission, VideoInterviewSubmissionAdmin)
-admin.site.register(models.QuizSubmission, QuizSubmissionAdmin)
-admin.site.register(models.ApplicationStepSubmission, ApplicationStepSubmissionAdmin)
-admin.site.register(models.ApplicantLetter, ApplicantLetterAdmin)

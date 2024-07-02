@@ -3,9 +3,9 @@
   <head>
     {% spaceless %}
     {% load static %}
-    {% load hijack_tags %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load hijack %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     {% include "gtm_head.html" %}
     <link rel="icon" href="{% static 'images/favicon.ico' %}" />
     <link
@@ -48,7 +48,6 @@
     {% endif %}
   </head>
   <body>
-    {% hijack_notification %}
     {% include "gtm_body.html" %}
     {% latest_notification %}
     {% block headercontent %}

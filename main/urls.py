@@ -3,7 +3,7 @@ URLs for bootcamp
 """
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.conf.urls.static import static
 from django.urls import re_path, include, path
 from django.contrib import admin
@@ -16,23 +16,22 @@ from wagtail.images.views.serve import ServeView
 
 from main.views import react, BackgroundImagesCSSView, cms_login_redirect_view
 
-root_urlpatterns = [url("", include(wagtail_urls))]
+root_urlpatterns = [path("", include(wagtail_urls))]
 
 urlpatterns = (
     [
-        url(r"^status/", include("server_status.urls")),
-        url(r"^admin/", admin.site.urls),
-        url(r"^hijack/", include("hijack.urls", namespace="hijack")),
-        url("", include("applications.urls")),
-        url("", include("ecommerce.urls")),
-        url("", include("social_django.urls", namespace="social")),
+        path("admin/", admin.site.urls),
+        path("hijack/", include("hijack.urls")),
+        path("", include("applications.urls")),
+        path("", include("ecommerce.urls")),
+        path("", include("social_django.urls", namespace="social")),
         path("", include("authentication.urls")),
         path("", include("mail.urls")),
         path("", include("profiles.urls")),
         path("", include("klasses.urls")),
-        url("", include("jobma.urls")),
-        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
-        url(
+        path("", include("jobma.urls")),
+        path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+        re_path(
             r"^background-images\.css$",
             BackgroundImagesCSSView.as_view(),
             name="background-images-css",
@@ -40,7 +39,7 @@ urlpatterns = (
         # named routes mapped to the react app
         path("signin/", react, name="login"),
         path("signin/password/", react, name="login-password"),
-        re_path(r"^signin/forgot-password/$", react, name="password-reset"),
+        path("signin/forgot-password/", react, name="password-reset"),
         path(
             "signin/forgot-password/confirm/<slug:uid>/<slug:token>/",
             react,
@@ -75,9 +74,9 @@ urlpatterns = (
             name="wagtailimages_serve",
         ),
         re_path(r"^cms/login", cms_login_redirect_view, name="wagtailadmin_login"),
-        re_path(r"^cms/", include(wagtailadmin_urls)),
-        re_path(r"^documents/", include(wagtaildocs_urls)),
-        re_path(r"^idp/", include("djangosaml2idp.urls")),
+        path("cms/", include(wagtailadmin_urls)),
+        path("documents/", include(wagtaildocs_urls)),
+        path("idp/", include("djangosaml2idp.urls")),
     ]
     + root_urlpatterns
     + (

@@ -7,6 +7,7 @@ from django.contrib import admin
 from jobma.models import Interview, Job, InterviewAudit
 
 
+@admin.register(Interview)
 class InterviewAdmin(admin.ModelAdmin):
     """Admin for Interview"""
 
@@ -29,21 +30,24 @@ class InterviewAdmin(admin.ModelAdmin):
         fields.insert(applicant_index + 1, "status")
         return fields
 
+    @admin.display(
+        description="Applicant",
+        ordering="applicant__email",
+    )
     def get_applicant_email(self, obj):
         """Returns the user email"""
         return obj.applicant.email
 
-    get_applicant_email.short_description = "Applicant"
-    get_applicant_email.admin_order_field = "applicant__email"
-
+    @admin.display(
+        description="Job Title",
+        ordering="job__job_title",
+    )
     def get_job_title(self, obj):
         """Returns the job title"""
         return obj.job.job_title
 
-    get_job_title.short_description = "Job Title"
-    get_job_title.admin_order_field = "job__job_title"
 
-
+@admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
     """Admin for Job"""
 
@@ -58,14 +62,16 @@ class JobAdmin(admin.ModelAdmin):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("run__bootcamp")
 
+    @admin.display(
+        description="Bootcamp Run",
+        ordering="run__title",
+    )
     def get_run_display_title(self, obj):
         """Returns the bootcamp run display title"""
         return obj.run.display_title
 
-    get_run_display_title.short_description = "Bootcamp Run"
-    get_run_display_title.admin_order_field = "run__title"
 
-
+@admin.register(InterviewAudit)
 class InterviewAuditAdmin(admin.ModelAdmin):
     """Admin for Interview Audit model"""
 
@@ -79,8 +85,3 @@ class InterviewAuditAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-
-
-admin.site.register(Interview, InterviewAdmin)
-admin.site.register(Job, JobAdmin)
-admin.site.register(InterviewAudit, InterviewAuditAdmin)

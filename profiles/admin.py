@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as ContribUserAdmin
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from hijack_admin.admin import HijackUserAdminMixin
+from hijack.contrib.admin import HijackUserAdminMixin
 
 from profiles.models import LegalAddress, Profile
 
@@ -51,7 +51,7 @@ class UserProfileInline(admin.StackedInline):
         return True
 
 
-class UserAdmin(ContribUserAdmin, HijackUserAdminMixin):
+class UserAdmin(ContribUserAdmin):
     """Admin views for user"""
 
     fieldsets = (
@@ -71,7 +71,7 @@ class UserAdmin(ContribUserAdmin, HijackUserAdminMixin):
             },
         ),
     )
-    list_display = ("username", "email", "is_staff", "hijack_field", "last_login")
+    list_display = ("username", "email", "is_staff", "last_login")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("username", "email")
     ordering = ("email",)

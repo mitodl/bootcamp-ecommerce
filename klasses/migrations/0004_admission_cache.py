@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-import django.contrib.postgres.fields.jsonb
 from django.db import migrations, models
 import django.db.models.deletion
 
@@ -27,7 +26,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("data", django.contrib.postgres.fields.jsonb.JSONField()),
+                ("data", models.JSONField()),
                 (
                     "klass",
                     models.ForeignKey(
