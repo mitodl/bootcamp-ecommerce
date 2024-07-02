@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.118.2
+---------------
+
+- Revert "Add flag for Celery to send task state change events"
+
 Version 0.118.1 (Released July 01, 2024)
 ---------------
 
