@@ -28,11 +28,11 @@ export function csrfSafeMethod(method: string): boolean {
   return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
 }
 
-const headers = R.mergeRight({ headers: {} })
+const headers = R.mergeRight({ headers: {} });
 
-const method = R.mergeRight({ method: "GET" })
+const method = R.mergeRight({ method: "GET" });
 
-const credentials = R.mergeRight({ credentials: "same-origin" })
+const credentials = R.mergeRight({ credentials: "same-origin" });
 
 const setWith = R.curry((path, valFunc, obj) => R.set(path, valFunc(), obj));
 
