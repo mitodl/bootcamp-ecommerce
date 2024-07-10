@@ -8,6 +8,7 @@ import logging
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.templatetags.static import static
 from django.db import models
 from django.http.response import Http404
@@ -937,7 +938,7 @@ class CertificateIndexPage(RoutablePageMixin, Page):
             and not parent.get_children().type(cls).exists()
         )
 
-    @route(r"^([A-Fa-f0-9-]+)/?$")
+    @route(r"^([A-Fa-f0-9-]{36})/?$")
     def bootcamp_certificate(
         self, request, uuid, *args, **kwargs
     ):  # pylint: disable=unused-argument
@@ -953,7 +954,7 @@ class CertificateIndexPage(RoutablePageMixin, Page):
             certificate = BootcampRunCertificate.objects.get(
                 uuid=uuid, is_revoked=False
             )
-        except BootcampRunCertificate.DoesNotExist:
+        except (BootcampRunCertificate.DoesNotExist,ValidationError):
             raise Http404()
         # Get a CertificatePage to serve this request
         certificate_page = (
