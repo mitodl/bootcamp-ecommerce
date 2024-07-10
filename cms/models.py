@@ -954,7 +954,7 @@ class CertificateIndexPage(RoutablePageMixin, Page):
             certificate = BootcampRunCertificate.objects.get(
                 uuid=uuid, is_revoked=False
             )
-        except (BootcampRunCertificate.DoesNotExist,ValidationError):
+        except (BootcampRunCertificate.DoesNotExist, ValidationError):
             raise Http404()
         # Get a CertificatePage to serve this request
         certificate_page = (

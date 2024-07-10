@@ -371,17 +371,13 @@ def test_certificate_index_page(rf):
         certifcate_index_page.bootcamp_certificate(
             request, "00000000-0000-0000-0000-000000000000"
         )
-    
+
     # Testing invalid UUIDs
     with pytest.raises(Http404):
-        certifcate_index_page.bootcamp_certificate(
-            request, "00000000-0000-"
-        )
+        certifcate_index_page.bootcamp_certificate(request, "00000000-0000-")
 
     with pytest.raises(Http404):
-        certifcate_index_page.bootcamp_certificate(
-            request, ""
-        )
+        certifcate_index_page.bootcamp_certificate(request, "")
     with pytest.raises(Http404):
         certifcate_index_page.bootcamp_certificate(
             request, "00000000-0000-0000-0000-000000000000000"
