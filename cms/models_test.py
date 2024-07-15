@@ -352,7 +352,9 @@ def test_certificate_index_page(rf, user_client):
     home_page = HomePageFactory()
     assert models.CertificateIndexPage.can_create_at(home_page)
 
-    certifcate_index_page = CertificateIndexPageFactory.create(parent=home_page, slug="certificate")
+    certifcate_index_page = CertificateIndexPageFactory.create(
+        parent=home_page, slug="certificate"
+    )
     request = rf.get(certifcate_index_page.get_url())
     bootcamp_run_page = BootcampRunPageFactory.create()
     certificate = BootcampRunCertificateFactory.create(
@@ -363,7 +365,7 @@ def test_certificate_index_page(rf, user_client):
     # Test that certificate request is successful for bootcamp certificates.
     resp = user_client.get(f"/certificate/{certificate.uuid}/")
     assert resp.status_code == 200
-    
+
     request = rf.get(certificate_page.get_url())
     assert (
         certifcate_index_page.bootcamp_certificate(
@@ -400,7 +402,9 @@ def test_certificate_index_page(rf, user_client):
 def test_certificate_request_with_invalid_uuid(rf, user_client, uuid_string):
     """Test that bootcamp certificate request returns a 404 for invalid uuids."""
     home_page = HomePageFactory()
-    certifcate_index_page = CertificateIndexPageFactory.create(parent=home_page, slug="certificate")
+    certifcate_index_page = CertificateIndexPageFactory.create(
+        parent=home_page, slug="certificate"
+    )
     request = rf.get(certifcate_index_page.get_url())
     bootcamp_run_page = BootcampRunPageFactory.create()
     certificate_page = CertificatePageFactory.create(parent=bootcamp_run_page)
