@@ -386,6 +386,7 @@ def test_certificate_index_page(rf, user_client):
     with pytest.raises(Http404):
         certifcate_index_page.index_route(request)
 
+
 @override_settings(**{"FEATURES": {"ENABLE_CERTIFICATE_USER_VIEW": True}})
 @pytest.mark.parametrize(
     "uuid_string",
