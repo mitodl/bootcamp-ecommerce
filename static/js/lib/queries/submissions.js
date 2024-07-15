@@ -1,6 +1,6 @@
 // @flow
 import { createSelector } from "reselect";
-import { compose, objOf, pick, merge, curry, propOr } from "ramda";
+import { compose, objOf, pick, mergeRight, curry, propOr } from "ramda";
 import qs from "query-string";
 
 import { submissionsAPI, submissionDetailAPI } from "../urls";
@@ -24,7 +24,7 @@ export const submissionQuery = (submissionId: number) => ({
   url: submissionDetailAPI.param({ submissionId }).toString(),
   transform: submissionDetailTransform(submissionId),
   update: {
-    [submissionKey]: merge,
+    [submissionKey]: mergeRight,
   },
 });
 
