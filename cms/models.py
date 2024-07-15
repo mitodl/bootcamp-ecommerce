@@ -937,7 +937,7 @@ class CertificateIndexPage(RoutablePageMixin, Page):
             and not parent.get_children().type(cls).exists()
         )
 
-    @route(r"^([A-Fa-f0-9-]+)/?$")
+    @route(r"^([A-Fa-f0-9-]{36})/?$")
     def bootcamp_certificate(
         self, request, uuid, *args, **kwargs
     ):  # pylint: disable=unused-argument

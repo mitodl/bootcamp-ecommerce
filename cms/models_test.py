@@ -345,20 +345,27 @@ def test_certificate_for_bootcamp_run_page():
 
 
 @override_settings(**{"FEATURES": {"ENABLE_CERTIFICATE_USER_VIEW": True}})
-def test_certificate_index_page(rf):
+def test_certificate_index_page(rf, user_client):
     """
     test for certificate index page
     """
     home_page = HomePageFactory()
     assert models.CertificateIndexPage.can_create_at(home_page)
 
-    certifcate_index_page = CertificateIndexPageFactory.create(parent=home_page)
+    certifcate_index_page = CertificateIndexPageFactory.create(
+        parent=home_page, slug="certificate"
+    )
     request = rf.get(certifcate_index_page.get_url())
     bootcamp_run_page = BootcampRunPageFactory.create()
     certificate = BootcampRunCertificateFactory.create(
         bootcamp_run=bootcamp_run_page.bootcamp_run
     )
     certificate_page = CertificatePageFactory.create(parent=bootcamp_run_page)
+
+    # Test that certificate request is successful for bootcamp certificates.
+    resp = user_client.get(f"/certificate/{certificate.uuid}/")
+    assert resp.status_code == 200
+
     request = rf.get(certificate_page.get_url())
     assert (
         certifcate_index_page.bootcamp_certificate(
@@ -380,3 +387,23 @@ def test_certificate_index_page(rf):
 
     with pytest.raises(Http404):
         certifcate_index_page.index_route(request)
+
+
+@override_settings(**{"FEATURES": {"ENABLE_CERTIFICATE_USER_VIEW": True}})
+@pytest.mark.parametrize(
+    "uuid_string",
+    [
+        "",
+        "1bebd843-ebf0-40c0-850e",
+        "1bebd843-ebf0-40c0-850e-fe73baa31b944444",
+        "1bebd843-ebf0-40c0-850e-fe73baa31b94-4ab4",
+    ],
+)
+def test_certificate_request_with_invalid_uuid(user_client, uuid_string):
+    """Test that bootcamp certificate request returns a 404 for invalid uuids."""
+    home_page = HomePageFactory()
+    CertificateIndexPageFactory.create(parent=home_page, slug="certificate")
+    bootcamp_run_page = BootcampRunPageFactory.create()
+    CertificatePageFactory.create(parent=bootcamp_run_page)
+    course_certificate_resp = user_client.get(f"/certificate/{uuid_string}/")
+    assert course_certificate_resp.status_code == 404
