@@ -399,14 +399,13 @@ def test_certificate_index_page(rf, user_client):
         "1bebd843-ebf0-40c0-850e-fe73baa31b94-4ab4",
     ],
 )
-def test_certificate_request_with_invalid_uuid(rf, user_client, uuid_string):
+def test_certificate_request_with_invalid_uuid(user_client, uuid_string):
     """Test that bootcamp certificate request returns a 404 for invalid uuids."""
     home_page = HomePageFactory()
-    certifcate_index_page = CertificateIndexPageFactory.create(
+    CertificateIndexPageFactory.create(
         parent=home_page, slug="certificate"
     )
-    request = rf.get(certifcate_index_page.get_url())
     bootcamp_run_page = BootcampRunPageFactory.create()
-    certificate_page = CertificatePageFactory.create(parent=bootcamp_run_page)
+    CertificatePageFactory.create(parent=bootcamp_run_page)
     course_certificate_resp = user_client.get(f"/certificate/{uuid_string}/")
     assert course_certificate_resp.status_code == 404
