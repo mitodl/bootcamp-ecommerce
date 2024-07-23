@@ -1,6 +1,26 @@
 Release Notes
 =============
 
+Version 0.119.0 (Released July 23, 2024)
+---------------
+
+- fix: revert sass to old version 1.32.13 (#1576)
+- fix(deps): update dependency sass to v1.77.8
+- fix: invalid certificate uuid should raise 404 (#1575)
+- fix(deps): update dependency ramda to ^0.30.0 (#1550)
+- Revert "chore(deps): update yarn to v1.22.22 (#1462)" (#1572)
+- chore(deps): update actions/cache action to v4 (#1568)
+- fix(deps): update react monorepo to v16.14.0
+- fix(deps): update dependency sass to v1.77.6
+- chore(deps): update yarn to v1.22.22 (#1462)
+- fix(deps): update dependency yup to ^0.32.0
+- fix(deps): update dependency user-util to ^0.3.0
+- fix(deps): update dependency static3 to ^0.7.0
+- fix(deps): update dependency sass to v1.77.5
+- chore(deps): update nginx docker tag to v1.27.0
+- Add -E flag to worker subcommand for sending task events
+- Revert "Add flag for Celery to send task state change events"
+
 Version 0.118.1 (Released July 01, 2024)
 ---------------
 
