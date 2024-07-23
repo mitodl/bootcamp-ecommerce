@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.119.0
+Version 0.119.0 (Released July 23, 2024)
 ---------------
 
 - fix: revert sass to old version 1.32.13 (#1576)
