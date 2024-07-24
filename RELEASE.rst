@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.120.0
+---------------
+
+- Bump sentry-sdk from 0.20.3 to 2.8.0 (#1580)
+
 Version 0.119.0 (Released July 23, 2024)
 ---------------
 
