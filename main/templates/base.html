@@ -3,7 +3,7 @@
   <head>
     {% spaceless %}
     {% load static %}
-    {% load hijack_tags %}
+    {% load hijack %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {% include "gtm_head.html" %}
@@ -16,11 +16,6 @@
       rel="stylesheet"
       type="text/css"
       href="{% url 'background-images-css' %}"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'hijack/hijack-styles.css' %}"
     />
     <link
       href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css"
@@ -48,7 +43,6 @@
     {% endif %}
   </head>
   <body>
-    {% hijack_notification %}
     {% include "gtm_body.html" %}
     {% latest_notification %}
     {% block headercontent %}

@@ -919,19 +919,19 @@ static3 = "*"
 
 [[package]]
 name = "django"
-version = "3.2.25"
-description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+version = "4.2.13"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "Django-3.2.25-py3-none-any.whl", hash = "sha256:a52ea7fcf280b16f7b739cec38fa6d3f8953a5456986944c3ca97e79882b4e38"},
-    {file = "Django-3.2.25.tar.gz", hash = "sha256:7ca38a78654aee72378594d63e51636c04b8e28574f5505dff630895b5472777"},
+    {file = "Django-4.2.13-py3-none-any.whl", hash = "sha256:a17fcba2aad3fc7d46fdb23215095dbbd64e6174bf4589171e732b18b07e426a"},
+    {file = "Django-4.2.13.tar.gz", hash = "sha256:837e3cf1f6c31347a1396a3f6b65688f2b4bb4a11c580dcb628b5afe527b68a5"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.3.2,<4"
-pytz = "*"
-sqlparse = ">=0.2.2"
+asgiref = ">=3.6.0,<4"
+sqlparse = ">=0.3.1"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
@@ -973,30 +973,17 @@ dev = ["black", "flake8", "therapist", "tox", "twine"]
 
 [[package]]
 name = "django-classy-tags"
-version = "1.0.0"
+version = "4.1.0"
 description = "Class based template tags for Django"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "django-classy-tags-1.0.0.tar.gz", hash = "sha256:ad6a25fc2b58a098f00d86bd5e5dad47922f5ca4e744bc3cccb7b4be5bc35eb1"},
+    {file = "django-classy-tags-4.1.0.tar.gz", hash = "sha256:c8d9d1aa2fa6e71c4d866df4dd11d23a69b8d25bbb750b2490a17b161774ee59"},
+    {file = "django_classy_tags-4.1.0-py3-none-any.whl", hash = "sha256:1c784cf1bac49c20a77b8f7d1541867c64076642a160a847ff449588d4e01e55"},
 ]
 
 [package.dependencies]
-django = ">=1.11"
-six = "*"
-
-[[package]]
-name = "django-compat"
-version = "1.0.15"
-description = "For- and backwards compatibility layer for Django 1.4, 1.7, 1.8, 1.9, 1.10, and 1.11"
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-compat-1.0.15.tar.gz", hash = "sha256:3ac9a3bedc56b9365d9eb241bc5157d0c193769bf995f9a78dc1bc24e7c2331b"},
-]
-
-[package.dependencies]
-six = ">=1.10.0"
+django = ">=3.2"
 
 [[package]]
 name = "django-debug-toolbar"
@@ -1040,34 +1027,20 @@ files = [
 
 [[package]]
 name = "django-hijack"
-version = "2.3.0"
+version = "3.4.5"
 description = "django-hijack allows superusers to hijack (=login as) and work on behalf of another user."
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-hijack-2.3.0.tar.gz", hash = "sha256:216de6ff863b5f48314795083e96267ff0829ff7f7180c26ca3c17d8a134e1cf"},
-    {file = "django_hijack-2.3.0-py3-none-any.whl", hash = "sha256:8b820b6fe605cf2f3b50817985d7245285a18c027b7e3eb424d18b7908ecd2e1"},
+    {file = "django-hijack-3.4.5.tar.gz", hash = "sha256:7e45b1de786bdc130628e4230b359dde6d8744ecd3bcd668d2b27c5d614a071c"},
+    {file = "django_hijack-3.4.5-py3-none-any.whl", hash = "sha256:129cbe75444b163135871a947d38ffb72181f4f2583544703fc9efe083c9ddad"},
 ]
 
 [package.dependencies]
-django = ">=2.2"
-
-[[package]]
-name = "django-hijack-admin"
-version = "2.1.10"
-description = "Django admin integration for Django Hijack (https://github.com/arteria/django-hijack/)"
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-hijack-admin-2.1.10.tar.gz", hash = "sha256:330f9be331ada831248c9cee5a21202aea70fb9911b443249ce4c28d57d9e2e3"},
-]
-
-[package.dependencies]
-django-compat = ">=1.0.13"
-django-hijack = ">=2.1.5"
+django = ">=3.2"
 
 [package.extras]
-dev = ["flake8"]
+test = ["pytest", "pytest-cov", "pytest-django"]
 
 [[package]]
 name = "django-ipware"
@@ -1140,20 +1113,6 @@ files = [
 [package.dependencies]
 Django = ">=2.2"
 redis = ">=3.0.0"
-
-[[package]]
-name = "django-server-status"
-version = "0.7.3"
-description = "Monitor server status with a healthcheck."
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-server-status-0.7.3.tar.gz", hash = "sha256:9126e20d78c88f62ffe382c1a5c73f1206ba8dca07a8039e81e3f35f1f75941a"},
-    {file = "django_server_status-0.7.3-py3-none-any.whl", hash = "sha256:2a018c731504a3c82d45717bca011c4f6b1d547f5384c9b0a04b439e9e5c3552"},
-]
-
-[package.dependencies]
-django = "*"
 
 [[package]]
 name = "django-storages"
@@ -1230,17 +1189,17 @@ files = [
 
 [[package]]
 name = "djangorestframework"
-version = "3.15.1"
+version = "3.15.2"
 description = "Web APIs for Django, made easy."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "djangorestframework-3.15.1-py3-none-any.whl", hash = "sha256:3ccc0475bce968608cf30d07fb17d8e52d1d7fc8bfe779c905463200750cbca6"},
-    {file = "djangorestframework-3.15.1.tar.gz", hash = "sha256:f88fad74183dfc7144b2756d0d2ac716ea5b4c7c9840995ac3bfd8ec034333c1"},
+    {file = "djangorestframework-3.15.2-py3-none-any.whl", hash = "sha256:2b8871b062ba1aefc2de01f773875441a961fefbf79f5eed1e32b2f096944b20"},
+    {file = "djangorestframework-3.15.2.tar.gz", hash = "sha256:36fe88cd2d6c6bec23dca9804bab2ba5517a8bb9d8f47ebc68981b56840107ad"},
 ]
 
 [package.dependencies]
-django = ">=3.0"
+django = ">=4.2"
 
 [[package]]
 name = "djangorestframework-serializer-extensions"

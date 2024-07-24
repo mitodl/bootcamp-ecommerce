@@ -2,7 +2,7 @@
 
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.shortcuts import reverse
-from django.utils.http import urlquote
+from urllib.parse import quote
 from rest_framework import status
 from social_core.exceptions import AuthAlreadyAssociated
 from social_django.utils import load_backend, load_strategy
@@ -23,7 +23,7 @@ def test_process_exception(mocker, rf, settings):
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
     # social_django depends on request.sesssion, so use the middleware to set that
-    SessionMiddleware().process_request(request)
+    SessionMiddleware(get_response=mocker.Mock()).process_request(request)
     strategy = load_strategy(request)
     backend = load_backend(strategy, "email", None)
     request.social_strategy = strategy
@@ -34,7 +34,7 @@ def test_process_exception(mocker, rf, settings):
     result = middleware.process_exception(request, error)
     assert result.status_code == status.HTTP_302_FOUND
     assert result.url == "{}?message={}&backend={}".format(
-        reverse("login"), urlquote(error.__str__()), backend.name
+        reverse("login"), quote(error.__str__()), backend.name
     )
 
 
@@ -43,7 +43,7 @@ def test_process_exception_non_auth_error(mocker, rf, settings):
     settings.DEBUG = False
     request = rf.get(reverse("social:complete", args=("email",)))
     # social_django depends on request.sesssion, so use the middleware to set that
-    SessionMiddleware().process_request(request)
+    SessionMiddleware(get_response=mocker.Mock()).process_request(request)
     strategy = load_strategy(request)
     backend = load_backend(strategy, "email", None)
     request.social_strategy = strategy

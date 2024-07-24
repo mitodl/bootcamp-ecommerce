@@ -12,6 +12,7 @@ from ecommerce.models import Line, Order, OrderAudit, Receipt, WireTransferRecei
 from applications import models as application_models
 
 
+@admin.register(Line)
 class LineAdmin(TimestampedModelAdmin):
     """Admin for Line"""
 
@@ -41,6 +42,7 @@ class LineInline(admin.StackedInline):
         return False
 
 
+@admin.register(Order)
 class OrderAdmin(TimestampedModelAdmin):
     """Admin for Order"""
 
@@ -78,13 +80,15 @@ class OrderAdmin(TimestampedModelAdmin):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("user")
 
+    @admin.display(
+        description="User",
+        ordering="user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         return obj.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "user__email"
-
+    @admin.display(description="Application")
     def application_link(self, obj):
         """Returns a link to the related application"""
         if not hasattr(obj, "application") or obj.application is None:
@@ -101,9 +105,8 @@ class OrderAdmin(TimestampedModelAdmin):
             )
         )
 
-    application_link.short_description = "Application"
 
-
+@admin.register(OrderAudit)
 class OrderAuditAdmin(admin.ModelAdmin):
     """Admin for OrderAudit"""
 
@@ -117,6 +120,7 @@ class OrderAuditAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(Receipt)
 class ReceiptAdmin(TimestampedModelAdmin):
     """Admin for Receipt"""
 
@@ -136,24 +140,27 @@ class ReceiptAdmin(TimestampedModelAdmin):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("order__user")
 
+    @admin.display(
+        description="User",
+        ordering="order__user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         if obj.order is None:
             return None
         return obj.order.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "order__user__email"
-
+    @admin.display(
+        description="Status",
+        ordering="order__status",
+    )
     def get_order_status(self, obj):
         """Returns the order status"""
         if obj.order is None:
             return None
         return obj.order.status
 
-    get_order_status.short_description = "Status"
-    get_order_status.admin_order_field = "order__status"
-
+    @admin.display(description="Order")
     def order_link(self, obj):
         """Returns a link to the related order"""
         if obj.order is None:
@@ -168,9 +175,8 @@ class ReceiptAdmin(TimestampedModelAdmin):
             )
         )
 
-    order_link.short_description = "Order"
 
-
+@admin.register(WireTransferReceipt)
 class WireTransferReceiptAdmin(TimestampedModelAdmin):
     """Admin for WireTransferReceipt"""
 
@@ -193,24 +199,27 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("order__user")
 
+    @admin.display(
+        description="User",
+        ordering="order__user__email",
+    )
     def get_user_email(self, obj):
         """Returns the user email"""
         if obj.order is None:
             return None
         return obj.order.user.email
 
-    get_user_email.short_description = "User"
-    get_user_email.admin_order_field = "order__user__email"
-
+    @admin.display(
+        description="Status",
+        ordering="order__status",
+    )
     def get_order_status(self, obj):
         """Returns the order status"""
         if obj.order is None:
             return None
         return obj.order.status
 
-    get_order_status.short_description = "Status"
-    get_order_status.admin_order_field = "order__status"
-
+    @admin.display(description="Order")
     def order_link(self, obj):
         """Returns a link to the related order"""
         if obj.order is None:
@@ -224,12 +233,3 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
                 obj.order.id,
             )
         )
-
-    order_link.short_description = "Order"
-
-
-admin.site.register(Line, LineAdmin)
-admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderAudit, OrderAuditAdmin)
-admin.site.register(Receipt, ReceiptAdmin)
-admin.site.register(WireTransferReceipt, WireTransferReceiptAdmin)
