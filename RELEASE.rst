@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.121.0
+---------------
+
+- chore: Upgrade Django to 4.2.x (#1538)
+- fix(deps): update dependency @sentry/browser to v8 (#1581)
+
 Version 0.120.0 (Released July 24, 2024)
 ---------------
 
