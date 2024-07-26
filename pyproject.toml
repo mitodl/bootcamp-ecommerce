@@ -80,7 +80,7 @@ user-util = "^0.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
-astroid = "^2.4.2"
+astroid = "^3.0.0"
 black = "^24.3.0"
 bpython = "^0.24"
 django-debug-toolbar = "^3.2.4"
