@@ -2,8 +2,7 @@
 URLs for ecommerce
 """
 
-from django.conf.urls import url
-from django.urls import path
+from django.urls import path, re_path
 
 from ecommerce.views import (
     CheckoutDataView,
@@ -17,27 +16,27 @@ from ecommerce.views import (
 
 
 urlpatterns = [
-    url(r"^api/v0/payment/$", PaymentView.as_view(), name="create-payment"),
-    url(
-        r"^api/v0/order_fulfillment/$",
+    path("api/v0/payment/", PaymentView.as_view(), name="create-payment"),
+    path(
+        "api/v0/order_fulfillment/",
         OrderFulfillmentView.as_view(),
         name="order-fulfillment",
     ),
-    url(
+    re_path(
         r"^api/v0/bootcamps/(?P<username>[-\w.]+)/$",
         UserBootcampRunList.as_view(),
         name="bootcamp-run-list",
     ),
-    url(
+    re_path(
         r"^api/v0/bootcamps/(?P<username>[-\w.]+)/(?P<run_key>[\d]+)/$",
         UserBootcampRunDetail.as_view(),
         name="bootcamp-run-detail",
     ),
-    url(
-        r"statement/(?P<run_key>[0-9]+)/$",
+    path(
+        "statement/<int:run_key>/",
         UserBootcampRunStatement.as_view(),
         name="bootcamp-run-statement",
     ),
-    url(r"api/orders/(?P<pk>[0-9]+)/$", OrderView.as_view(), name="order-api"),
+    path("api/orders/<int:pk>/", OrderView.as_view(), name="order-api"),
     path("api/checkout/", CheckoutDataView.as_view(), name="checkout-data-detail"),
 ]

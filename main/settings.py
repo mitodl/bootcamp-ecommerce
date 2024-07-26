@@ -127,13 +127,10 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
     "rest_framework",
     "rest_framework.authtoken",
-    "server_status",
     "social_django",
     "mathfilters",
-    # Hijack
     "hijack",
-    "compat",
-    "hijack_admin",
+    "hijack.contrib.admin",
     # other third party APPS
     # wagtail
     "wagtail.contrib.forms",
@@ -195,6 +192,8 @@ MIDDLEWARE = (
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
+    "main.hijack_support_middleware.HijackSupportMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
@@ -401,8 +400,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "main.wsgi.application"
 
 # Hijack
-HIJACK_ALLOW_GET_REQUESTS = True
-HIJACK_LOGOUT_REDIRECT_URL = "/admin/auth/user"
+HIJACK_INSERT_BEFORE = "</body>"
 
 # Database
 # https://github.com/kennethreitz/dj-database-url
@@ -443,7 +441,6 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = True
 
@@ -682,15 +679,6 @@ if get_bool(
     LOGGING["loggers"]["root"]["handlers"] = ["console"]
     LOGGING["loggers"]["ui"]["handlers"] = ["console"]
     LOGGING["loggers"]["django"]["handlers"] = ["console"]
-
-# server-status
-STATUS_TOKEN = get_string(
-    name="STATUS_TOKEN",
-    default="",
-    description="Token to access the status API.",
-    required=True,
-)
-HEALTH_CHECK = ["CELERY", "REDIS", "POSTGRES", "ELASTIC_SEARCH"]
 
 ADWORDS_CONVERSION_ID = get_string(
     name="ADWORDS_CONVERSION_ID", default="", description="Id for adwords conversion"
