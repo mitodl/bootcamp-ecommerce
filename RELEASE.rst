@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.122.0
+---------------
+
+- fix(deps): update dependency wagtail to v5.2.6 [security]
+- fix(deps): update dependency urllib3 to v1.26.19 [security]
+- fix(deps): update dependency django to v4.2.14 [security]
+
 Version 0.121.0 (Released August 06, 2024)
 ---------------
 
