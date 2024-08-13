@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.122.0
+Version 0.122.0 (Released August 13, 2024)
 ---------------
 
 - fix(deps): update dependency wagtail to v5.2.6 [security]
