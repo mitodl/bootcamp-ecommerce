@@ -1,40 +1,40 @@
 """Views for bootcamp applications"""
 
+import re
 from collections import OrderedDict
 
-import re
-from django.db.models import Count, Subquery, OuterRef, IntegerField, Prefetch, Q
+from django.db.models import Count, IntegerField, OuterRef, Prefetch, Q, Subquery
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, status
+from mitol.common.utils import now_in_utc
+from rest_framework import mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_serializer_extensions.views import SerializerExtensionsAPIViewMixin
-from mitol.common.utils import now_in_utc
 
-from applications.constants import SUBMISSION_STATUS_SUBMITTED, REVIEWABLE_APP_STATES
-from applications.serializers import (
-    BootcampApplicationDetailSerializer,
-    BootcampApplicationSerializer,
-    SubmissionReviewSerializer,
-)
 from applications.api import get_or_create_bootcamp_application
+from applications.constants import REVIEWABLE_APP_STATES, SUBMISSION_STATUS_SUBMITTED
 from applications.filters import ApplicationStepSubmissionFilterSet
 from applications.models import (
     ApplicantLetter,
     ApplicationStepSubmission,
     BootcampApplication,
 )
+from applications.serializers import (
+    BootcampApplicationDetailSerializer,
+    BootcampApplicationSerializer,
+    SubmissionReviewSerializer,
+)
 from cms.models import LetterTemplatePage
 from ecommerce.models import Order
 from klasses.models import BootcampRun
-from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
+from main.permissions import UserIsOwnerOrAdminPermission, UserIsOwnerPermission
 from main.utils import serializer_date_format
 
 
@@ -52,7 +52,7 @@ class BootcampApplicationViewset(
     permission_classes = (IsAuthenticated, UserIsOwnerOrAdminPermission)
     owner_field = "user"
 
-    def get_queryset(self):
+    def get_queryset(self):  # noqa: D102
         if self.action == "retrieve":
             return BootcampApplication.objects.prefetch_state_data()
         else:
@@ -68,23 +68,23 @@ class BootcampApplicationViewset(
                 .order_by("-created_on")
             )
 
-    def get_serializer_context(self):
+    def get_serializer_context(self):  # noqa: D102
         added_context = {}
         if self.action == "list":
             added_context = {"include_page": True, "filtered_orders": True}
         return {**super().get_serializer_context(), **added_context}
 
-    def get_serializer_class(self):
+    def get_serializer_class(self):  # noqa: D102
         if self.action == "retrieve":
             return BootcampApplicationDetailSerializer
         elif self.action in {"list", "create"}:
             return BootcampApplicationSerializer
-        raise MethodNotAllowed("Cannot perform the requested action.")
+        raise MethodNotAllowed("Cannot perform the requested action.")  # noqa: EM101
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):  # noqa: ARG002, D102
         bootcamp_run_id = request.data.get("bootcamp_run_id")
         if not bootcamp_run_id:
-            raise ValidationError("Bootcamp run ID required.")
+            raise ValidationError("Bootcamp run ID required.")  # noqa: EM101
         if not BootcampRun.objects.filter(id=bootcamp_run_id).exists():
             return Response(
                 data={"error": "Bootcamp does not exist"},
@@ -194,7 +194,7 @@ class UploadResumeView(GenericAPIView):
     queryset = BootcampApplication.objects.all()
     serializer_class = BootcampApplicationDetailSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):  # noqa: ARG002
         """
         Update the application with resume and/or linkedin URL
         """
@@ -202,7 +202,7 @@ class UploadResumeView(GenericAPIView):
         linkedin_url = request.data.get("linkedin_url")
         resume_file = request.FILES.get("file")
         if linkedin_url is None and resume_file is None and not application.resume_file:
-            raise ValidationError("At least one form of resume is required.")
+            raise ValidationError("At least one form of resume is required.")  # noqa: EM101
         if linkedin_url:
             self.validate_linkedin_url(linkedin_url)
 
@@ -230,7 +230,7 @@ class UploadResumeView(GenericAPIView):
         Args:
             linkedin_url (string): LinkedIn URL of a user
         """
-        if len(linkedin_url) > 200:
+        if len(linkedin_url) > 200:  # noqa: PLR2004
             raise ValidationError(
                 {"errors": "The URL should be less than 200 characters."}
             )

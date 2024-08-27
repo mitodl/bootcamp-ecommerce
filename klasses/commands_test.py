@@ -1,8 +1,8 @@
 """Tests for management commands"""
 
 from io import StringIO
-import pytest
 
+import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
@@ -59,12 +59,14 @@ def test_manage_certificates_command(mocker, method, command_kwargs):
         elif command_kwargs.get("block"):
             users_to_block = command_kwargs.get("block")
             run_command("manage_certificates", run=bootcamp_run.id, **command_kwargs)
-            patched_method.assert_called_once_with(users_to_block, True, bootcamp_run)
+            patched_method.assert_called_once_with(users_to_block, True, bootcamp_run)  # noqa: FBT003
         elif command_kwargs.get("unblock"):
             users_to_unblock = command_kwargs.get("unblock")
             run_command("manage_certificates", run=bootcamp_run.id, **command_kwargs)
             patched_method.assert_called_once_with(
-                users_to_unblock, False, bootcamp_run
+                users_to_unblock,
+                False,
+                bootcamp_run,  # noqa: FBT003
             )
         else:
             run_command(

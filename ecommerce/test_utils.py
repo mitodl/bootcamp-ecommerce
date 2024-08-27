@@ -22,7 +22,7 @@ def create_test_application():
     application = BootcampApplicationFactory.create(
         user=user, bootcamp_run=bootcamp_run, state=AppStates.AWAITING_PAYMENT.value
     )
-    return application
+    return application  # noqa: RET504
 
 
 def create_purchasable_bootcamp_run():

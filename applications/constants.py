@@ -2,7 +2,6 @@
 
 from enum import Enum
 
-
 SUBMISSION_VIDEO = "videointerviewsubmission"
 SUBMISSION_QUIZ = "quizsubmission"
 VALID_SUBMISSION_TYPE_CHOICES = [
@@ -49,7 +48,7 @@ APPROVED_APP_STATES = [
     AppStates.COMPLETE.value,
     AppStates.REFUNDED.value,
 ]
-REVIEW_COMPLETED_APP_STATES = APPROVED_APP_STATES + [AppStates.REJECTED.value]
+REVIEW_COMPLETED_APP_STATES = APPROVED_APP_STATES + [AppStates.REJECTED.value]  # noqa: RUF005
 VALID_APP_STATE_CHOICES = list(
     zip((member.value for member in AppStates), (member.value for member in AppStates))
 )

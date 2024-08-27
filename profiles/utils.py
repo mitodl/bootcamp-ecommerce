@@ -73,7 +73,7 @@ def usernameify(full_name, email=""):
         username = _reformat_for_username(email.split("@")[0])
     if not username:
         raise ValueError(
-            "Username could not be generated (full_name: '{}', email: '{}')".format(
+            "Username could not be generated (full_name: '{}', email: '{}')".format(  # noqa: EM103
                 full_name, email
             )
         )

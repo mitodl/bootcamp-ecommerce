@@ -1,19 +1,18 @@
 """Testing utils"""
 
-import sys
-import json
-from unittest.mock import Mock
 import csv
+import json
+import sys
 import tempfile
-from importlib import reload, import_module
+from importlib import import_module, reload
+from unittest.mock import Mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls.base import clear_url_caches
-
-from rest_framework.renderers import JSONRenderer
-from rest_framework import status
-from requests.exceptions import HTTPError
 from mitol.common.pytest_utils import MockResponse as CommonMockResponse
+from requests.exceptions import HTTPError
+from rest_framework import status
+from rest_framework.renderers import JSONRenderer
 
 from main import features
 
@@ -39,7 +38,7 @@ class MockResponse(CommonMockResponse):
     """
 
     @property
-    def ok(self):  # pylint: disable=missing-docstring
+    def ok(self):  # noqa: D102
         return status.HTTP_200_OK <= self.status_code < status.HTTP_400_BAD_REQUEST
 
     def raise_for_status(self):
@@ -53,7 +52,7 @@ class MockHttpError(HTTPError):
 
     def __init__(self, *args, **kwargs):
         response = MockResponse(content={"bad": "response"}, status_code=400)
-        super().__init__(*args, **{**kwargs, **{"response": response}})
+        super().__init__(*args, **{**kwargs, **{"response": response}})  # noqa: PIE800
 
 
 def drf_datetime(dt):
@@ -93,17 +92,17 @@ def create_tempfile_csv(rows_iter):
         SimpleUploadedFile: A temporary CSV file with the given contents
     """
     f = tempfile.NamedTemporaryFile(suffix=".csv", delete=False)
-    with open(f.name, "w", encoding="utf8", newline="") as f:
+    with open(f.name, "w", encoding="utf8", newline="") as f:  # noqa: PTH123
         writer = csv.writer(f, delimiter=",")
         for row in rows_iter:
             writer.writerow(row)
-    with open(f.name, "r") as user_csv:
+    with open(f.name) as user_csv:  # noqa: PTH123
         return SimpleUploadedFile(
             f.name, user_csv.read().encode("utf8"), content_type="application/csv"
         )
 
 
-def format_as_iso8601(time, remove_microseconds=True):
+def format_as_iso8601(time, remove_microseconds=True):  # noqa: FBT002
     """Helper function to format datetime with the Z at the end"""
     # Can't use datetime.isoformat() because format is slightly different from this
     iso_format = "%Y-%m-%dT%H:%M:%S.%f"
@@ -143,7 +142,7 @@ def patched_feature_enabled(patch_dict):
         bool: Value indicating whether or not the feature is enabled
     """
 
-    def _patched(*args, **kwargs):  # pylint:disable=missing-docstring
+    def _patched(*args, **kwargs):
         feature_name = args[0]
         if feature_name in patch_dict:
             return patch_dict[feature_name]

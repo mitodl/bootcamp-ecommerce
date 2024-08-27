@@ -1,20 +1,19 @@
 """URL configurations for authentication"""
 
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import include, path
 from social_core.backends.email import EmailAuth
 
 from authentication.views import (
     LoginEmailView,
     LoginPasswordView,
-    RegisterEmailView,
+    RegisterComplianceView,
     RegisterConfirmView,
     RegisterDetailsView,
-    RegisterComplianceView,
+    RegisterEmailView,
     RegisterExtraDetailsView,
     get_social_auth_types,
 )
-
 
 urlpatterns = [
     path("api/login/email/", LoginEmailView.as_view(), name="psa-login-email"),

@@ -30,12 +30,8 @@ log = logging.getLogger()
 
 NAME_MIN_LENGTH = 2
 
-# pylint: disable=keyword-arg-before-vararg
 
-
-def validate_email_auth_request(
-    strategy, backend, user=None, *args, **kwargs
-):  # pylint: disable=unused-argument
+def validate_email_auth_request(strategy, backend, user=None, *args, **kwargs):  # noqa: ARG001
     """
     Validates an auth request for email
 
@@ -54,9 +50,7 @@ def validate_email_auth_request(
     return {}
 
 
-def get_username(
-    strategy, backend, user=None, *args, **kwargs
-):  # pylint: disable=unused-argument
+def get_username(strategy, backend, user=None, *args, **kwargs):  # noqa: ARG001
     """
     Gets the username for a user
 
@@ -69,9 +63,15 @@ def get_username(
 
 
 @partial
-def create_user_via_email(
-    strategy, backend, user=None, flow=None, current_partial=None, *args, **kwargs
-):  # pylint: disable=too-many-arguments,unused-argument
+def create_user_via_email(  # noqa: C901
+    strategy,
+    backend,
+    user=None,
+    flow=None,
+    current_partial=None,
+    *args,
+    **kwargs,  # noqa: ARG001
+):
     """
     Creates a new user if needed and sets the password and name.
     Args:
@@ -127,12 +127,12 @@ def create_user_via_email(
         try:
             user = create_user_with_generated_username(serializer, username)
             if user is None:
-                raise IntegrityError(
-                    "Failed to create User with generated username ({})".format(
+                raise IntegrityError(  # noqa: TRY301
+                    "Failed to create User with generated username ({})".format(  # noqa: EM103
                         username
                     )
                 )
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             raise UserCreationFailedException(backend, current_partial) from exc
     else:
         user = serializer.save()
@@ -141,8 +141,14 @@ def create_user_via_email(
 
 @partial
 def create_profile(
-    strategy, backend, user=None, flow=None, current_partial=None, *args, **kwargs
-):  # pylint: disable=too-many-arguments,unused-argument
+    strategy,
+    backend,
+    user=None,
+    flow=None,
+    current_partial=None,
+    *args,
+    **kwargs,  # noqa: ARG001
+):
     """
     Creates a new profile for the user
     Args:
@@ -177,8 +183,14 @@ def create_profile(
 
 @partial
 def validate_password(
-    strategy, backend, user=None, flow=None, current_partial=None, *args, **kwargs
-):  # pylint: disable=unused-argument
+    strategy,
+    backend,
+    user=None,
+    flow=None,
+    current_partial=None,
+    *args,
+    **kwargs,  # noqa: ARG001
+):
     """
     Validates a user's password for login
 
@@ -211,7 +223,7 @@ def validate_password(
     return {}
 
 
-def forbid_hijack(strategy, backend, **kwargs):  # pylint: disable=unused-argument
+def forbid_hijack(strategy, backend, **kwargs):  # noqa: ARG001
     """
     Forbid an admin user from trying to login/register while hijacking another user
 
@@ -221,13 +233,11 @@ def forbid_hijack(strategy, backend, **kwargs):  # pylint: disable=unused-argume
     """
     # As first step in pipeline, stop a hijacking admin from going any further
     if strategy.session_get("is_hijacked_user"):
-        raise AuthException("You are hijacking another user, don't try to login again")
+        raise AuthException("You are hijacking another user, don't try to login again")  # noqa: EM101
     return {}
 
 
-def activate_user(
-    strategy, backend, user=None, is_new=False, **kwargs
-):  # pylint: disable=unused-argument
+def activate_user(strategy, backend, user=None, is_new=False, **kwargs):  # noqa: ARG001, FBT002
     """
     Activate the user's account if they passed export controls
 
@@ -279,9 +289,7 @@ def send_user_to_hubspot(request, **kwargs):
     return {}
 
 
-def sync_user_to_hubspot(
-    strategy, backend, user=None, is_new=False, **kwargs
-):  # pylint: disable=unused-argument
+def sync_user_to_hubspot(strategy, backend, user=None, is_new=False, **kwargs):  # noqa: ARG001, FBT002
     """
     Sync the user's latest profile data with hubspot on login
     """

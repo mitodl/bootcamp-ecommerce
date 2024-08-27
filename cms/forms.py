@@ -17,8 +17,8 @@ class LetterTemplatePageForm(WagtailAdminPageForm):
         try:
             render_template(acceptance_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)
         except TemplateSyntaxError as ex:
-            raise ValidationError(
-                "Unable to render acceptance template text: %(exception)s",
+            raise ValidationError(  # noqa: B904, TRY200
+                "Unable to render acceptance template text: %(exception)s",  # noqa: EM101
                 params={"exception": ex},
             )
         return acceptance_text
@@ -29,8 +29,8 @@ class LetterTemplatePageForm(WagtailAdminPageForm):
         try:
             render_template(rejection_text, context=SAMPLE_DECISION_TEMPLATE_CONTEXT)
         except TemplateSyntaxError as ex:
-            raise ValidationError(
-                "Unable to render rejection template text: %(exception)s",
+            raise ValidationError(  # noqa: B904, TRY200
+                "Unable to render rejection template text: %(exception)s",  # noqa: EM101
                 params={"exception": ex},
             )
         return rejection_text

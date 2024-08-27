@@ -61,7 +61,7 @@ def test_verify_api_disabled_no_compliance_check(
         [False, False, True],
     ],
 )
-def test_verify_exports_compliance_user_active(
+def test_verify_exports_compliance_user_active(  # noqa: PLR0913
     mailoutbox,
     mocker,
     mock_create_user_strategy,
@@ -70,7 +70,7 @@ def test_verify_exports_compliance_user_active(
     is_active,
     inquiry_exists,
     should_verify,
-):  # pylint: disable=too-many-arguments
+):
     """Assert that the user is verified only if they already haven't been"""
     user.is_active = is_active
     if inquiry_exists:
@@ -128,9 +128,9 @@ def test_verify_exports_compliance_api_raises_exception(
 
 
 @pytest.mark.parametrize("email_fails", [True, False])
-def test_verify_exports_compliance_denied(
+def test_verify_exports_compliance_denied(  # noqa: PLR0913
     mailoutbox, mocker, mock_create_user_strategy, mock_email_backend, user, email_fails
-):  # pylint:disable=too-many-arguments
+):
     """Assert that a UserExportBlockedException is raised if the inquiry result is denied"""
     reason_code = 100
     mock_api = mocker.patch("authentication.pipeline.compliance.api")

@@ -5,12 +5,10 @@ from urllib.parse import quote_plus
 from django.urls import reverse
 
 from mail.v2 import api
-from mail.v2.constants import EMAIL_VERIFICATION, EMAIL_CHANGE_EMAIL
+from mail.v2.constants import EMAIL_CHANGE_EMAIL, EMAIL_VERIFICATION
 
 
-def send_verification_email(
-    strategy, backend, code, partial_token
-):  # pylint: disable=unused-argument
+def send_verification_email(strategy, backend, code, partial_token):  # noqa: ARG001
     """
     Sends a verification email for python-social-auth
 

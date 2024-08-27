@@ -1,7 +1,7 @@
 """Views for ecommerce"""
 
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -36,15 +36,14 @@ from ecommerce.models import Line, Order, Receipt
 from ecommerce.permissions import IsSignedByCyberSource
 from ecommerce.serializers import (
     CheckoutDataSerializer,
-    PaymentSerializer,
     OrderSerializer,
+    PaymentSerializer,
 )
 from hubspot_sync.task_helpers import sync_hubspot_application_from_order
 from klasses.models import BootcampRun
 from klasses.permissions import CanReadIfSelf
 from main.permissions import UserIsOwnerOrAdminPermission
 from main.serializers import serialize_maybe_user
-
 
 log = logging.getLogger(__name__)
 User = get_user_model()
@@ -59,7 +58,7 @@ class PaymentView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PaymentSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):  # noqa: ARG002
         """
         Create an unfulfilled order and return a response for it.
         """
@@ -77,7 +76,7 @@ class PaymentView(CreateAPIView):
                 application.id,
                 application.state,
             )
-            raise ValidationError("Invalid application state")
+            raise ValidationError("Invalid application state")  # noqa: EM101
 
         order = create_unfulfilled_order(
             application=application, payment_amount=payment_amount
@@ -109,7 +108,7 @@ class OrderFulfillmentView(APIView):
     authentication_classes = ()
     permission_classes = (IsSignedByCyberSource,)
 
-    def post(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):  # noqa: ARG002
         """
         Confirmation from CyberSource which fulfills an existing Order.
         """
@@ -128,7 +127,7 @@ class OrderFulfillmentView(APIView):
             return Response(status=statuses.HTTP_200_OK)
         elif order.status != Order.CREATED:
             raise EcommerceException(
-                "Order {} is expected to have status 'created'".format(order.id)
+                "Order {} is expected to have status 'created'".format(order.id)  # noqa: EM103
             )
 
         if decision != CYBERSOURCE_DECISION_ACCEPT:
@@ -151,9 +150,7 @@ class UserBootcampRunDetail(GenericAPIView):
     lookup_url_kwarg = "run_key"
     queryset = BootcampRun.objects.all()
 
-    def get(
-        self, request, username, *args, **kwargs
-    ):  # pylint: disable=unused-argument
+    def get(self, request, username, *args, **kwargs):  # noqa: ARG002
         """
         Returns a serialized bootcamp run and payment for a user
         """
@@ -178,7 +175,7 @@ class UserBootcampRunStatement(RetrieveAPIView):
     queryset = BootcampRun.objects.all()
     renderer_classes = (TemplateHTMLRenderer,)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):  # noqa: ARG002
         """
         Fetches a user's bootcamp run payment information and renders their statement
         (or raises a 404 if they have no payments for the specified bootcamp run)
@@ -205,9 +202,7 @@ class UserBootcampRunList(APIView):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated, CanReadIfSelf)
 
-    def get(
-        self, request, username, *args, **kwargs
-    ):  # pylint: disable=unused-argument
+    def get(self, request, username, *args, **kwargs):  # noqa: ARG002
         """
         Returns serialized bootcamp runs and payments for all runs that a user can pay for.
         """

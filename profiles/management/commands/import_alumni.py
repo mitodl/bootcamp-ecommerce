@@ -14,6 +14,6 @@ class Command(BaseCommand):
         """Handle arguments"""
         parser.add_argument("csv_path", type=str, help="path to the csv")
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002
         """Import a csv of bootcamp alumni"""
         import_alumni(options["csv_path"])

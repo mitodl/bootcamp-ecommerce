@@ -10,7 +10,7 @@ from mitol.common.utils import webpack_public_path
 from cms.utils import get_resource_page_urls
 
 
-def api_keys(request):  # pylint: disable=unused-argument
+def api_keys(request):  # noqa: ARG001
     """
     Pass a `APIKEYS` dictionary into the template context, which holds
     IDs and secret keys for the various APIs used in this project.
@@ -49,7 +49,7 @@ def js_settings(request):
     }
 
 
-def configuration_context(request):  # pylint: disable=unused-argument
+def configuration_context(request):
     """
     Configuration context for django templates
     """

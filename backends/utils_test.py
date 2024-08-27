@@ -9,11 +9,8 @@ import pytz
 from requests.exceptions import HTTPError
 
 from backends import utils
-from backends.utils import get_social_username
 from backends.edxorg import EdxOrgOAuth2
-
-# pylint: disable=protected-access
-
+from backends.utils import get_social_username
 
 pytestmark = pytest.mark.django_db
 
@@ -42,7 +39,6 @@ def mock_refresh(mocker, social_extra_data):
     )
 
 
-# pylint: disable=redefined-outer-name
 def test_refresh(mock_refresh, now, user):
     """The refresh needs to be called"""
 
@@ -81,7 +77,7 @@ def test_no_refresh(mock_refresh, now, user):
 def test_refresh_400_error_server(mocker, mock_refresh, user):
     """Test to check what happens when the OAUTH server returns 400 code"""
 
-    def raise_http_error(*args, **kwargs):  # pylint: disable=unused-argument
+    def raise_http_error(*args, **kwargs):
         """Mock function to raise an exception"""
         error = HTTPError()
         error.response = mocker.MagicMock()
@@ -91,13 +87,13 @@ def test_refresh_400_error_server(mocker, mock_refresh, user):
     mock_refresh.side_effect = raise_http_error
     social_user = user.social_auth.get(provider=EdxOrgOAuth2.name)
     with pytest.raises(utils.InvalidCredentialStored):
-        utils._send_refresh_request(social_user)
+        utils._send_refresh_request(social_user)  # noqa: SLF001
 
 
 def test_refresh_401_error_server(mocker, mock_refresh, user):
     """Test to check what happens when the OAUTH server returns 401 code"""
 
-    def raise_http_error(*args, **kwargs):  # pylint: disable=unused-argument
+    def raise_http_error(*args, **kwargs):
         """Mock function to raise an exception"""
         error = HTTPError()
         error.response = mocker.MagicMock()
@@ -107,13 +103,13 @@ def test_refresh_401_error_server(mocker, mock_refresh, user):
     mock_refresh.side_effect = raise_http_error
     social_user = user.social_auth.get(provider=EdxOrgOAuth2.name)
     with pytest.raises(utils.InvalidCredentialStored):
-        utils._send_refresh_request(social_user)
+        utils._send_refresh_request(social_user)  # noqa: SLF001
 
 
 def test_refresh_500_error_server(mocker, mock_refresh, user):
     """Test to check what happens when the OAUTH server returns 500 code"""
 
-    def raise_http_error(*args, **kwargs):  # pylint: disable=unused-argument
+    def raise_http_error(*args, **kwargs):
         """Mock function to raise an exception"""
         error = HTTPError()
         error.response = mocker.MagicMock()
@@ -123,7 +119,7 @@ def test_refresh_500_error_server(mocker, mock_refresh, user):
     mock_refresh.side_effect = raise_http_error
     social_user = user.social_auth.get(provider=EdxOrgOAuth2.name)
     with pytest.raises(HTTPError):
-        utils._send_refresh_request(social_user)
+        utils._send_refresh_request(social_user)  # noqa: SLF001
 
 
 def test_anonymous_user(user, mocker):

@@ -1,4 +1,3 @@
-# pylint: disable=redefined-outer-name
 """NovoEd task tests"""
 
 import pytest

@@ -14,7 +14,7 @@ class UserIsOwnerPermission(permissions.BasePermission):
         """
         owner_field = getattr(view, "owner_field", None)
 
-        if owner_field is None:
+        if owner_field is None:  # noqa: SIM108
             # if no owner_field is specified, the object itself is compared
             owner = obj
         else:

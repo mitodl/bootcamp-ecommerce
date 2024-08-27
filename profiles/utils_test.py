@@ -1,6 +1,7 @@
 """User utils tests"""
 
 import pytest
+
 from profiles.utils import ensure_active_user, is_duplicate_username_error, usernameify
 
 
@@ -16,12 +17,12 @@ from profiles.utils import ensure_active_user, is_duplicate_username_error, user
         ["Кирил Френков", None, "кирил-френков"],
         ["年號", None, "年號"],
         ["abcdefghijklmnopqrstuvwxyz", None, "abcdefghijklmnopqrst"],
-        ["ai bi cı dI eİ fI", None, "ai-bi-ci-di-ei-fi"],
+        ["ai bi cı dI eİ fI", None, "ai-bi-ci-di-ei-fi"],  # noqa: RUF001
         ["", "some.email@example.co.uk", "someemail"],
     ],
 )
 def test_usernameify(mocker, full_name, email, expected_username):
-    """usernameify should turn a user's name into a username, or use the email if necessary"""
+    """Usernameify should turn a user's name into a username, or use the email if necessary"""
     # Change the username max length to 20 for test data simplicity's sake
     temp_username_max_len = 20
     mocker.patch("profiles.utils.USERNAME_MAX_LEN", temp_username_max_len)
@@ -32,7 +33,7 @@ def test_usernameify(mocker, full_name, email, expected_username):
 
 
 def test_usernameify_fail():
-    """usernameify should raise an exception if the full name and email both fail to produce a username"""
+    """Usernameify should raise an exception if the full name and email both fail to produce a username"""
     with pytest.raises(ValueError):
         assert usernameify("!!!", email="???@example.com")
 

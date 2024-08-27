@@ -3,27 +3,26 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pytz import UTC
 from mitol.common.utils import now_in_utc
+from pytz import UTC
 
 from ecommerce.test_utils import create_test_application
 from klasses.constants import ENROLL_CHANGE_STATUS_DEFERRED
 from klasses.factories import (
-    InstallmentFactory,
-    BootcampRunFactory,
-    BootcampRunEnrollmentFactory,
-    PersonalPriceFactory,
     BootcampRunCertificateFactory,
+    BootcampRunEnrollmentFactory,
+    BootcampRunFactory,
+    InstallmentFactory,
+    PersonalPriceFactory,
 )
 from main.test_utils import format_as_iso8601
 from profiles.factories import ProfileFactory
 
 pytestmark = pytest.mark.django_db
-# pylint: disable=missing-docstring,redefined-outer-name,unused-argument,protected-access
 
 
 @pytest.fixture()
-def test_data(db):
+def test_data(db):  # noqa: D103
     installment = InstallmentFactory.create()
     bootcamp_run = installment.bootcamp_run
     return installment, bootcamp_run
@@ -92,21 +91,21 @@ def test_bootcamp_run_payment_deadline():
     "start_date,end_date,exp_result",
     [
         [
-            datetime.strptime("01/01/2020", "%m/%d/%Y"),
-            datetime.strptime("01/01/2021", "%m/%d/%Y"),
+            datetime.strptime("01/01/2020", "%m/%d/%Y"),  # noqa: DTZ007
+            datetime.strptime("01/01/2021", "%m/%d/%Y"),  # noqa: DTZ007
             "Jan 1, 2020 - Jan 1, 2021",
         ],
         [
-            datetime.strptime("01/01/2020", "%m/%d/%Y"),
-            datetime.strptime("02/01/2020", "%m/%d/%Y"),
+            datetime.strptime("01/01/2020", "%m/%d/%Y"),  # noqa: DTZ007
+            datetime.strptime("02/01/2020", "%m/%d/%Y"),  # noqa: DTZ007
             "Jan 1 - Feb 1, 2020",
         ],
         [
-            datetime.strptime("01/01/2020", "%m/%d/%Y"),
-            datetime.strptime("01/15/2020", "%m/%d/%Y"),
+            datetime.strptime("01/01/2020", "%m/%d/%Y"),  # noqa: DTZ007
+            datetime.strptime("01/15/2020", "%m/%d/%Y"),  # noqa: DTZ007
             "Jan 1 - 15, 2020",
         ],
-        [datetime.strptime("01/01/2020", "%m/%d/%Y"), None, "Jan 1, 2020"],
+        [datetime.strptime("01/01/2020", "%m/%d/%Y"), None, "Jan 1, 2020"],  # noqa: DTZ007
     ],
 )
 def test_bootcamp_run_formatted_date_range(start_date, end_date, exp_result):
@@ -119,7 +118,8 @@ def test_bootcamp_run_display_title():
     """Test that the display_title property matches expectations"""
     bootcamp_title = "Bootcamp 1"
     bootcamp_run_with_date = BootcampRunFactory.build(
-        bootcamp__title=bootcamp_title, start_date=datetime.now()
+        bootcamp__title=bootcamp_title,
+        start_date=datetime.now(),  # noqa: DTZ005
     )
     assert bootcamp_run_with_date.display_title == "{}, {}".format(
         bootcamp_title, bootcamp_run_with_date.formatted_date_range
@@ -273,7 +273,7 @@ def test_audit(user):
 def test_get_related_field_name():
     """Test audit table related_field_name"""
     assert (
-        BootcampRunEnrollmentFactory._meta.model.get_audit_class().get_related_field_name()
+        BootcampRunEnrollmentFactory._meta.model.get_audit_class().get_related_field_name()  # noqa: SLF001
         == "enrollment"
     )
 

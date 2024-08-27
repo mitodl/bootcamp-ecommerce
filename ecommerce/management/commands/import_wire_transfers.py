@@ -22,6 +22,6 @@ class Command(BaseCommand):
             help="Migrate applications even if the 'from' run and 'to' run belong to different bootcamps.",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002
         """Import CSV of wire transfers"""
         import_wire_transfers(options["csv_path"], options["force"])

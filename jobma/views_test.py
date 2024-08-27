@@ -1,13 +1,12 @@
 """Jobma tests for views"""
 
-from django.urls import reverse
 import pytest
+from django.urls import reverse
 from rest_framework import status
 
 from applications.constants import AppStates
 from applications.factories import ApplicationStepSubmissionFactory
 from jobma.constants import COMPLETED, EXPIRED, PENDING, REJECTED
-
 
 pytestmark = pytest.mark.django_db
 

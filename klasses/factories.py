@@ -3,11 +3,12 @@ Factories for bootcamp models
 """
 
 import random
-from factory import Faker, Sequence, SubFactory, LazyAttribute
-from factory.django import DjangoModelFactory
-from factory.fuzzy import FuzzyDecimal, FuzzyText
+
 import faker
 import pytz
+from factory import Faker, LazyAttribute, Sequence, SubFactory
+from factory.django import DjangoModelFactory
+from factory.fuzzy import FuzzyDecimal, FuzzyText
 
 from klasses import models
 from profiles.factories import UserFactory
@@ -20,7 +21,7 @@ class BootcampFactory(DjangoModelFactory):
 
     title = FuzzyText(prefix="Bootcamp ")
     readable_id = LazyAttribute(
-        lambda x: f"bootcamp-v1:{ random.choice(['public', 'private']) }+{FAKE.slug()}-{random.choice(['ol', 'f2f'])}"
+        lambda x: f"bootcamp-v1:{ random.choice(['public', 'private']) }+{FAKE.slug()}-{random.choice(['ol', 'f2f'])}"  # noqa: ARG005
     )
 
     class Meta:

@@ -80,7 +80,7 @@ def transform_object_properties(object_data: dict, mapping: dict) -> dict:
 
     """
     hubspot_dict = {}
-    for key in object_data.keys():
+    for key in object_data.keys():  # noqa: SIM118
         value = object_data.get(key)
         hubspot_key = mapping.get(key)
         if hubspot_key:
@@ -182,7 +182,7 @@ def make_line_sync_message(application_line_id):
 
 def get_hubspot_id_for_object(
     obj: BootcampApplication or BootcampApplicationLine or BootcampRun or User,
-    raise_error: bool = False,
+    raise_error: bool = False,  # noqa: FBT001, FBT002
 ):
     """
     Get the hubspot id for an object, querying Hubspot if necessary
@@ -225,7 +225,7 @@ def get_hubspot_id_for_object(
             serialized_product["name"],
             raise_count_error=raise_error,
         )
-    if hubspot_obj and hubspot_obj.id:
+    if hubspot_obj and hubspot_obj.id:  # noqa: RET503
         HubspotObject.objects.update_or_create(
             object_id=obj.id,
             content_type=content_type,

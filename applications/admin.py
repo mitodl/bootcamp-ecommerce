@@ -11,14 +11,14 @@ from django.utils.safestring import mark_safe
 from mitol.common.admin import TimestampedModelAdmin
 
 from applications.models import (
+    ApplicantLetter,
     ApplicationStep,
     ApplicationStepSubmission,
-    BootcampRunApplicationStep,
     BootcampApplication,
-    VideoInterviewSubmission,
-    QuizSubmission,
-    ApplicantLetter,
+    BootcampRunApplicationStep,
     Interview,
+    QuizSubmission,
+    VideoInterviewSubmission,
 )
 from ecommerce.models import Order
 from main.utils import get_field_names
@@ -101,7 +101,7 @@ class OrderInline(admin.StackedInline):
     ordering = ("-created_on",)
     min_num = 0
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
 
@@ -225,10 +225,10 @@ class SubmissionTypeAdmin(TimestampedModelAdmin):
             '<a href="{}">Submission ({})</a>'.format(
                 reverse(
                     "admin:applications_{}_change".format(
-                        ApplicationStepSubmission._meta.model_name
+                        ApplicationStepSubmission._meta.model_name  # noqa: SLF001
                     ),
                     args=(app_step_submission.id,),
-                ),  # pylint: disable=protected-access
+                ),
                 app_step_submission.id,
             )
         )
@@ -242,8 +242,8 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
 
     raw_id_fields = ("interview",)
 
-    def get_list_display(self, request):
-        return tuple(super().get_list_display(request) or ()) + ("interview_link",)
+    def get_list_display(self, request):  # noqa: D102
+        return tuple(super().get_list_display(request) or ()) + ("interview_link",)  # noqa: RUF005
 
     @admin.display(description="Interview")
     def interview_link(self, obj):
@@ -253,9 +253,9 @@ class VideoInterviewSubmissionAdmin(SubmissionTypeAdmin):
         return mark_safe(
             '<a href="{}">Interview ({})</a>'.format(
                 reverse(
-                    "admin:jobma_{}_change".format(Interview._meta.model_name),
+                    "admin:jobma_{}_change".format(Interview._meta.model_name),  # noqa: SLF001
                     args=(obj.interview.id,),
-                ),  # pylint: disable=protected-access
+                ),
                 obj.interview.id,
             )
         )
@@ -267,8 +267,8 @@ class QuizSubmissionAdmin(SubmissionTypeAdmin):
 
     model = QuizSubmission
 
-    def get_list_display(self, request):
-        return tuple(super().get_list_display(request) or ()) + ("started_date",)
+    def get_list_display(self, request):  # noqa: D102
+        return tuple(super().get_list_display(request) or ()) + ("started_date",)  # noqa: RUF005
 
 
 class ApplicationStepSubmissionForm(forms.ModelForm):
@@ -283,7 +283,7 @@ class ApplicationStepSubmissionForm(forms.ModelForm):
             and not content_type.model_class().objects.filter(id=object_id).exists()
         ):
             raise ValidationError(
-                f"The object_id must match the id of a {content_type.model} object"
+                f"The object_id must match the id of a {content_type.model} object"  # noqa: EM102
             )
         return object_id
 
@@ -323,11 +323,11 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
             .prefetch_related("content_object")
         )
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request, obj=None):  # noqa: ARG002, D102
         # Only allow the content_type and object_id to be set if a new object is being created. Otherwise, set those
         # to readonly.
         if obj and obj.id is not None:
-            return tuple(self.readonly_fields or ()) + ("content_type", "object_id")
+            return tuple(self.readonly_fields or ()) + ("content_type", "object_id")  # noqa: RUF005
         return self.readonly_fields
 
     @admin.display(description="submission object")
@@ -339,10 +339,10 @@ class ApplicationStepSubmissionAdmin(TimestampedModelAdmin):
             '<a href="{}">{}</a>'.format(
                 reverse(
                     "admin:applications_{}_change".format(
-                        obj.content_object._meta.model_name
+                        obj.content_object._meta.model_name  # noqa: SLF001
                     ),
                     args=(obj.object_id,),
-                ),  # pylint: disable=protected-access
+                ),
                 obj.content_object,
             )
         )

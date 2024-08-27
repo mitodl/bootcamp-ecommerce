@@ -16,8 +16,6 @@ from klasses.factories import BootcampRunFactory
 
 pytestmark = pytest.mark.django_db
 
-# pylint:disable=redefined-outer-name
-
 
 @pytest.fixture
 def mock_hubspot(mocker):

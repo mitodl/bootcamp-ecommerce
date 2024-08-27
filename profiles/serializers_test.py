@@ -1,16 +1,15 @@
 """Tests for profiles.serializers"""
 
 import pytest
-
 from rest_framework.exceptions import ValidationError
 
-from profiles.factories import UserFactory, LegalAddressFactory
+from profiles.factories import LegalAddressFactory, UserFactory
 from profiles.models import ChangeEmailRequest
-from profiles.serializers import ChangeEmailRequestUpdateSerializer
-from profiles.serializers import LegalAddressSerializer, UserSerializer
-
-
-# pylint:disable=redefined-outer-name
+from profiles.serializers import (
+    ChangeEmailRequestUpdateSerializer,
+    LegalAddressSerializer,
+    UserSerializer,
+)
 
 
 @pytest.fixture()
@@ -84,7 +83,7 @@ def test_validate_legal_address(sample_address):
         ],
     ],
 )
-def test_validate_required_fields_US_CA(sample_address, field, value, error):
+def test_validate_required_fields_US_CA(sample_address, field, value, error):  # noqa: N802
     """Test that missing required fields causes a validation error"""
     sample_address[field] = value
     serializer = LegalAddressSerializer(data=sample_address)

@@ -1,8 +1,8 @@
 """Templatetags for pycountry formatting"""
 
+import pycountry
 from django.template import Library
 from django.template.defaultfilters import stringfilter
-import pycountry
 
 register = Library()
 

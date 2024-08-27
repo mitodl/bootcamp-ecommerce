@@ -1,29 +1,29 @@
 """Tests for user api"""
 
-from pathlib import Path
-from datetime import datetime
 import logging
+from datetime import datetime
+from pathlib import Path
+
 import factory
 import pytest
-
 from django.contrib.auth import get_user_model
 
 from ecommerce.factories import BootcampRunFactory
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from profiles.api import (
-    get_user_by_id,
+    Alum,
     fetch_user,
     fetch_users,
     find_available_username,
     get_first_and_last_names,
-    is_user_info_complete,
-    parse_alumni_csv,
-    Alum,
+    get_user_by_id,
     import_alum,
     import_alumni,
+    is_user_info_complete,
+    parse_alumni_csv,
 )
 from profiles.exceptions import AlumImportException
-from profiles.factories import UserFactory, LegalAddressFactory, ProfileFactory
+from profiles.factories import LegalAddressFactory, ProfileFactory, UserFactory
 from profiles.utils import usernameify
 
 User = get_user_model()
@@ -123,7 +123,7 @@ def test_fetch_users_fail(prop, existing_values, missing_values):
     UserFactory.create_batch(
         len(existing_values), **{prop: factory.Iterator(existing_values)}
     )
-    expected_missing_value_output = str(sorted(list(missing_values)))
+    expected_missing_value_output = str(sorted(list(missing_values)))  # noqa: C414
     with pytest.raises(User.DoesNotExist, match=expected_missing_value_output):
         fetch_users(fetch_users_values)
 
@@ -239,7 +239,7 @@ def test_parse_import_alumni_csv():
 def test_parse_alumni_csv_no_header(tmp_path):
     """parse_alumni_csv should error if no header is found"""
     path = tmp_path / "test.csv"
-    open(path, "w")  # create file
+    open(path, "w")  # create file  # noqa: PTH123, SIM115
     with pytest.raises(AlumImportException) as ex:
         parse_alumni_csv(path)
 
@@ -249,7 +249,7 @@ def test_parse_alumni_csv_no_header(tmp_path):
 def test_parse_alumni_csv_missing_header(tmp_path):
     """parse_alumni_csv should error if not all fields are present"""
     path = tmp_path / "test.csv"
-    with open(path, "w") as f:
+    with open(path, "w") as f:  # noqa: PTH123
         f.write("Learner Email\n")
         f.write("hdoof@odl.mit.edu\n")
 
@@ -261,7 +261,7 @@ def test_parse_alumni_csv_missing_header(tmp_path):
 
 @pytest.mark.django_db
 def test_import_alumni_missing_bootcamp():
-    """test the failure becuase of missing bootcamp"""
+    """Test the failure becuase of missing bootcamp"""
     alum = Alum(
         learner_email="hdoof@odl.mit.edu",
         bootcamp_name="How to be Evil",
@@ -275,13 +275,13 @@ def test_import_alumni_missing_bootcamp():
 
 @pytest.mark.django_db
 def test_import_alumni_with_enrollment(caplog):
-    """check the enrollment created for the user"""
+    """Check the enrollment created for the user"""
     caplog.set_level(logging.INFO)
     run = BootcampRunFactory.create(
         title="How to be Evil Run 1",
         bootcamp__title="How to be Evil",
-        start_date=datetime(2019, 9, 21),
-        end_date=datetime(2019, 12, 21),
+        start_date=datetime(2019, 9, 21),  # noqa: DTZ001
+        end_date=datetime(2019, 12, 21),  # noqa: DTZ001
     )
     alum = Alum(
         learner_email="hdoof@odl.mit.edu",

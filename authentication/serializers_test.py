@@ -3,7 +3,7 @@
 import pytest
 from rest_framework.serializers import ValidationError
 from social_core.backends.email import EmailAuth
-from social_core.exceptions import InvalidEmail, AuthException
+from social_core.exceptions import AuthException, InvalidEmail
 
 from authentication.serializers import RegisterEmailSerializer
 from authentication.utils import SocialAuthState

@@ -13,7 +13,6 @@ from jobma.constants import JOBMA_COMPLETED_INTERVIEW_STATUSES
 from jobma.models import Interview
 from jobma.permissions import JobmaWebhookPermission
 
-
 log = logging.getLogger(__name__)
 
 
@@ -24,7 +23,7 @@ class JobmaWebhookView(GenericAPIView):
     lookup_field = "pk"
     queryset = Interview.objects.all()
 
-    def put(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):  # noqa: ARG002
         """Update the Jobma interview status result"""
         status = request.data["status"]
         results_url = request.data.get("results_url")

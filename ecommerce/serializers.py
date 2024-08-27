@@ -3,7 +3,7 @@
 from rest_framework import serializers
 
 from applications.models import BootcampApplication
-from ecommerce.models import Order, Line, Receipt
+from ecommerce.models import Line, Order, Receipt
 from klasses.serializers import BootcampRunSerializer, InstallmentSerializer
 
 
@@ -44,7 +44,7 @@ class ApplicationOrderSerializer(serializers.ModelSerializer):
 
     def get_payment_method(self, order):
         """Get the payment method used in the last receipt for the order"""
-        if order.payment_type == Order.CYBERSOURCE_TYPE:
+        if order.payment_type == Order.CYBERSOURCE_TYPE:  # noqa: RET503
             # There should only be one receipt for an order most of the time, but it's possible
             # there is a duplicate or a Cybersource error in one of the receipts.
             receipt = order.receipt_set.order_by("id").last()
@@ -82,7 +82,7 @@ class LineSerializer(serializers.ModelSerializer):
     run_key = serializers.SerializerMethodField()
 
     def get_run_key(self, line):
-        """get run_key from bootcamp_run"""
+        """Get run_key from bootcamp_run"""
         return line.bootcamp_run.run_key
 
     class Meta:

@@ -4,16 +4,14 @@ from datetime import timedelta
 
 import pytest
 from django.contrib.auth import get_user_model
-from social_django.models import UserSocialAuth
 from mitol.common.utils import now_in_utc
+from social_django.models import UserSocialAuth
 
 from applications.factories import BootcampApplicationFactory
-
 from jobma.factories import InterviewFactory, JobFactory
+from klasses.factories import BootcampRunFactory
 from profiles.factories import UserFactory, UserSocialAuthFactory
 from profiles.management.commands import retire_users
-
-from klasses.factories import BootcampRunFactory
 
 User = get_user_model()
 
@@ -22,7 +20,7 @@ COMMAND = retire_users.Command()
 
 @pytest.mark.django_db
 def test_single_success():
-    """test retire_users command success with one user"""
+    """Test retire_users command success with one user"""
     test_username = "test_user"
 
     user = UserFactory.create(username=test_username, is_active=True)
@@ -42,7 +40,7 @@ def test_single_success():
 
 @pytest.mark.django_db
 def test_multiple_success():
-    """test retire_users command success with more than one user"""
+    """Test retire_users command success with more than one user"""
     test_usernames = ["foo", "bar", "baz"]
 
     for username in test_usernames:
@@ -64,7 +62,7 @@ def test_multiple_success():
 
 @pytest.mark.django_db
 def test_retire_user_with_email():
-    """test retire_users command success with user email"""
+    """Test retire_users command success with user email"""
     test_email = "test@email.com"
 
     user = UserFactory.create(email=test_email, is_active=True)
@@ -84,7 +82,7 @@ def test_retire_user_with_email():
 
 @pytest.mark.django_db
 def test_interview_applications_expired():
-    """test retire_users command change the status of interviews to expired"""
+    """Test retire_users command change the status of interviews to expired"""
     test_username = "test_user"
 
     user = UserFactory.create(username=test_username, is_active=True)

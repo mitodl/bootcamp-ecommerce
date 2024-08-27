@@ -7,9 +7,9 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from mitol.common.admin import TimestampedModelAdmin
 
-from main.utils import get_field_names
-from ecommerce.models import Line, Order, OrderAudit, Receipt, WireTransferReceipt
 from applications import models as application_models
+from ecommerce.models import Line, Order, OrderAudit, Receipt, WireTransferReceipt
+from main.utils import get_field_names
 
 
 @admin.register(Line)
@@ -22,10 +22,10 @@ class LineAdmin(TimestampedModelAdmin):
     readonly_fields = get_field_names(Line)
     list_display = ("order", "bootcamp_run_id", "price", "description")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # noqa: ARG002, D102
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
 
@@ -38,7 +38,7 @@ class LineInline(admin.StackedInline):
     can_delete = False
     readonly_fields = get_field_names(Line)
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
 
@@ -64,13 +64,13 @@ class OrderAdmin(TimestampedModelAdmin):
     raw_id_fields = ("user", "application")
     inlines = [LineInline]
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # noqa: ARG002, D102
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request, obj, form, change):  # noqa: ARG002
         """
         Saves object and logs change to object
         """
@@ -97,10 +97,10 @@ class OrderAdmin(TimestampedModelAdmin):
             '<a href="{}">Application ({})</a>'.format(
                 reverse(
                     "admin:applications_{}_change".format(
-                        application_models.BootcampApplication._meta.model_name
+                        application_models.BootcampApplication._meta.model_name  # noqa: SLF001
                     ),
                     args=(obj.application.id,),
-                ),  # pylint: disable=protected-access
+                ),
                 obj.application.id,
             )
         )
@@ -113,10 +113,10 @@ class OrderAuditAdmin(admin.ModelAdmin):
     model = OrderAudit
     readonly_fields = get_field_names(OrderAudit)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # noqa: ARG002, D102
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
 
@@ -126,14 +126,14 @@ class ReceiptAdmin(TimestampedModelAdmin):
 
     model = Receipt
     include_created_on_in_list = True
-    readonly_fields = get_field_names(Receipt) + ["order_link"]
+    readonly_fields = get_field_names(Receipt) + ["order_link"]  # noqa: RUF005
     list_display = ("id", "get_user_email", "order_link", "get_order_status")
     search_fields = ("order__user__email", "order__user__username")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # noqa: ARG002, D102
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
     def get_queryset(self, request):
@@ -168,9 +168,9 @@ class ReceiptAdmin(TimestampedModelAdmin):
         return mark_safe(
             '<a href="{}">Order ({})</a>'.format(
                 reverse(
-                    "admin:ecommerce_{}_change".format(Order._meta.model_name),
+                    "admin:ecommerce_{}_change".format(Order._meta.model_name),  # noqa: SLF001
                     args=(obj.order.id,),
-                ),  # pylint: disable=protected-access
+                ),
                 obj.order.id,
             )
         )
@@ -182,17 +182,17 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
 
     model = WireTransferReceipt
     include_created_on_in_list = True
-    readonly_fields = get_field_names(WireTransferReceipt) + ["order_link"]
+    readonly_fields = get_field_names(WireTransferReceipt) + ["order_link"]  # noqa: RUF005
     list_display = ("id", "get_user_email", "order_link", "get_order_status")
     search_fields = ("order__user__email", "order__user__username")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # noqa: ARG002, D102
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
     def get_queryset(self, request):
@@ -227,9 +227,9 @@ class WireTransferReceiptAdmin(TimestampedModelAdmin):
         return mark_safe(
             '<a href="{}">Order ({})</a>'.format(
                 reverse(
-                    "admin:ecommerce_{}_change".format(Order._meta.model_name),
+                    "admin:ecommerce_{}_change".format(Order._meta.model_name),  # noqa: SLF001
                     args=(obj.order.id,),
-                ),  # pylint: disable=protected-access
+                ),
                 obj.order.id,
             )
         )

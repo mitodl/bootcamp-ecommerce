@@ -12,11 +12,11 @@ def backend_settings(settings):
 
 
 @pytest.fixture
-def mock_email_backend(mocker, backend_settings):  # pylint:disable=redefined-outer-name
+def mock_email_backend(mocker, backend_settings):
     """Fixture that returns a fake EmailAuth backend object"""
     backend = mocker.Mock()
     backend.name = "email"
-    backend.setting.side_effect = lambda key, default, **kwargs: backend_settings.get(
+    backend.setting.side_effect = lambda key, default, **kwargs: backend_settings.get(  # noqa: ARG005
         key, default
     )
     return backend

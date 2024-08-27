@@ -17,8 +17,6 @@ from ecommerce.factories import OrderFactory
 from klasses.factories import InstallmentFactory
 from klasses.models import BootcampRun
 
-# pylint: disable=redefined-outer-name
-
 TIMESTAMPS = [
     datetime(2017, 1, 1, tzinfo=pytz.utc),
     datetime(2017, 1, 2, tzinfo=pytz.utc),

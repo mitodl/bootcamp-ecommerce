@@ -11,7 +11,7 @@ class MainAppConfig(BaseApp):
 
     name = "main"
 
-    def ready(self):
+    def ready(self):  # noqa: D102
         # check for missing configurations
 
         envs.validate()

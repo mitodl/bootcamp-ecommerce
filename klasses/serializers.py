@@ -5,7 +5,7 @@ Serializers for bootcamps
 from rest_framework import serializers
 
 from cms.serializers import BootcampRunPageSerializer
-from klasses.models import Bootcamp, BootcampRun, Installment, BootcampRunEnrollment
+from klasses.models import Bootcamp, BootcampRun, BootcampRunEnrollment, Installment
 
 
 class InstallmentSerializer(serializers.ModelSerializer):
@@ -32,7 +32,7 @@ class BootcampRunSerializer(serializers.ModelSerializer):
     bootcamp = BootcampSerializer()
     installments = InstallmentSerializer(many=True, source="installment_set")
 
-    def to_representation(self, instance):
+    def to_representation(self, instance):  # noqa: D102
         page_fields = {}
         if self.context.get("include_page") is True:
             page_fields = {

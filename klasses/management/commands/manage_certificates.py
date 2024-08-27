@@ -6,11 +6,11 @@ from django.core.management.base import BaseCommand, CommandError
 
 from klasses.api import fetch_bootcamp_run
 from klasses.utils import (
-    generate_single_certificate,
     generate_batch_certificates,
+    generate_single_certificate,
+    manage_user_certificate_blocking,
     revoke_certificate,
     unrevoke_certificate,
-    manage_user_certificate_blocking,
 )
 from profiles.api import fetch_user
 
@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
     help = "Creates, assigns and revokes certificates"
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "--user",
             type=str,
@@ -81,9 +81,7 @@ class Command(BaseCommand):
 
         super().add_arguments(parser)
 
-    def handle(
-        self, *args, **options
-    ):  # pylint: disable=too-many-locals, too-many-branches
+    def handle(self, *args, **options):  # noqa: ARG002, C901
         """Handle command execution"""
         try:
             user = fetch_user(options["user"]) if options["user"] else None
@@ -96,31 +94,35 @@ class Command(BaseCommand):
             users_to_block = options.get("block")
             users_to_unblock = options.get("unblock")
         except:  # noqa: E722
-            raise CommandError("Provided values are not valid.")
+            raise CommandError("Provided values are not valid.")  # noqa: B904, EM101, TRY200
 
         if generate_single and (not user or not bootcamp_run):
             raise CommandError(
-                "A valid 'user' and 'run' must be provided with 'generate'."
+                "A valid 'user' and 'run' must be provided with 'generate'."  # noqa: EM101
             )
         if generate_batch and not bootcamp_run:
-            raise CommandError("A valid 'run' must be provided with 'generate-batch'.")
+            raise CommandError("A valid 'run' must be provided with 'generate-batch'.")  # noqa: EM101
         if (revoke or unrevoke) and (not user or not bootcamp_run):
             raise CommandError(
-                "A valid 'user' and 'run' must be provided with 'revoke' or 'unrevoke'"
+                "A valid 'user' and 'run' must be provided with 'revoke' or 'unrevoke'"  # noqa: EM101
             )
         if (users_to_block or users_to_unblock) and not options.get("run"):
             raise CommandError(
-                "A valid 'run' must be provided along with 'block or unblock'."
+                "A valid 'run' must be provided along with 'block or unblock'."  # noqa: EM101
             )
 
         if users_to_block:
             result = manage_user_certificate_blocking(
-                users_to_block, True, bootcamp_run
+                users_to_block,
+                True,
+                bootcamp_run,  # noqa: FBT003
             )
             self.show_message(**result)
         elif users_to_unblock:
             result = manage_user_certificate_blocking(
-                users_to_unblock, False, bootcamp_run
+                users_to_unblock,
+                False,
+                bootcamp_run,  # noqa: FBT003
             )
             self.show_message(**result)
         elif revoke and user and bootcamp_run:
@@ -137,7 +139,7 @@ class Command(BaseCommand):
             self.show_message(**result)
         else:
             raise CommandError(
-                "Provided values are not enough to govern any process, kidnly use --help for more details"
+                "Provided values are not enough to govern any process, kidnly use --help for more details"  # noqa: EM101
             )
 
     def show_message(self, updated, msg):

@@ -8,9 +8,9 @@ from django.db import transaction
 from applications.api import derive_application_state
 from applications.constants import APPROVED_APP_STATES
 from applications.models import (
-    BootcampApplication,
-    ApplicationStepSubmission,
     ApplicationStep,
+    ApplicationStepSubmission,
+    BootcampApplication,
 )
 from klasses.models import BootcampRun
 from main.utils import is_empty_file
@@ -33,7 +33,7 @@ def fetch_bootcamp_run(run_property):
     return bootcamp_run
 
 
-def has_same_application_steps(bootcamp_id1, bootcamp_id2, ignore_order=True):
+def has_same_application_steps(bootcamp_id1, bootcamp_id2, ignore_order=True):  # noqa: FBT002
     """
     Returns True if the application steps are the same for the bootcamps indicated by the given ids
 
@@ -83,7 +83,7 @@ def migrate_application(from_run_application, to_run):
     ).exists()
     if has_completed_app:
         raise ValidationError(
-            "An approved/completed application already exists for this user and run ({}, {})".format(
+            "An approved/completed application already exists for this user and run ({}, {})".format(  # noqa: EM103
                 from_run_application.user.email, to_run.title
             )
         )
@@ -126,9 +126,7 @@ def migrate_application(from_run_application, to_run):
         # possibly-different order, keep track of the run step ids for which a submission has already been created.
         used_run_step_ids = set()
         for from_app_step_submission in from_app_step_submissions:
-            submission_type = (
-                from_app_step_submission.run_application_step.application_step.submission_type
-            )
+            submission_type = from_app_step_submission.run_application_step.application_step.submission_type
             to_run_step_id = next(
                 step_id
                 for step_id in to_run_steps[submission_type]
@@ -137,7 +135,7 @@ def migrate_application(from_run_application, to_run):
             ApplicationStepSubmission.objects.update_or_create(
                 bootcamp_application=to_run_application,
                 run_application_step_id=to_run_step_id,
-                defaults=dict(
+                defaults=dict(  # noqa: C408
                     review_status=from_app_step_submission.review_status,
                     review_status_date=from_app_step_submission.review_status_date,
                     submitted_date=from_app_step_submission.submitted_date,

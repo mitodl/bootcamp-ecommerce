@@ -178,7 +178,7 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
     ]
     raw_id_fields = ("user",)
 
-    def get_queryset(self, request):
+    def get_queryset(self, request):  # noqa: ARG002, D102
         return self.model.all_objects.get_queryset().select_related(
             "user", "bootcamp_run"
         )
@@ -188,7 +188,7 @@ class BootcampRunCertificateAdmin(TimestampedModelAdmin):
         boolean=True,
     )
     def get_revoked_state(self, obj):
-        """return the revoked state"""
+        """Return the revoked state"""
         return obj.is_revoked is not True
 
     @admin.display(

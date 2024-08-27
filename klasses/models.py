@@ -11,14 +11,14 @@ from django.db import models
 from mitol.common.models import TimestampedModel
 from mitol.common.utils import now_in_utc
 
-from main.models import AuditModel, AuditableModel
-from main.utils import format_month_day, serialize_model_object
 from klasses.constants import (
-    ApplicationSource,
-    INTEGRATION_PREFIX_PRODUCT,
-    ENROLL_CHANGE_STATUS_CHOICES,
     DATE_RANGE_MONTH_FMT,
+    ENROLL_CHANGE_STATUS_CHOICES,
+    INTEGRATION_PREFIX_PRODUCT,
+    ApplicationSource,
 )
+from main.models import AuditableModel, AuditModel
+from main.utils import format_month_day, serialize_model_object
 
 
 class ActiveCertificates(models.Manager):
@@ -60,7 +60,7 @@ class BootcampRun(models.Model):
 
     bootcamp = models.ForeignKey(Bootcamp, on_delete=models.CASCADE)
     title = models.TextField(blank=True)
-    source = models.CharField(
+    source = models.CharField(  # noqa: DJ001
         null=True,
         blank=True,
         choices=[(source, source) for source in ApplicationSource.SOURCE_CHOICES],
@@ -74,7 +74,7 @@ class BootcampRun(models.Model):
     bootcamp_run_id = models.CharField(
         null=True, unique=True, blank=True, max_length=255
     )
-    novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)
+    novoed_course_stub = models.CharField(null=True, blank=True, max_length=100)  # noqa: DJ001
     allows_skipped_steps = models.BooleanField(default=False)
 
     @property
@@ -161,7 +161,7 @@ class BootcampRun(models.Model):
         """
         next_installment = self.next_installment
         if next_installment is None:
-            return
+            return None
         due_in = next_installment.deadline - datetime.datetime.now(tz=pytz.UTC)
         return due_in.days
 
@@ -217,7 +217,7 @@ class BootcampRun(models.Model):
             return personal_price.price
         return self.price
 
-    def __str__(self):
+    def __str__(self):  # noqa: DJ012
         return self.display_title
 
     @property
@@ -283,7 +283,7 @@ class BootcampRunEnrollment(TimestampedModel, AuditableModel):
     bootcamp_run = models.ForeignKey(
         BootcampRun, on_delete=models.CASCADE, related_name="enrollments"
     )
-    change_status = models.CharField(
+    change_status = models.CharField(  # noqa: DJ001
         choices=ENROLL_CHANGE_STATUS_CHOICES, max_length=20, null=True, blank=True
     )
     novoed_sync_date = models.DateTimeField(null=True, blank=True)
@@ -302,7 +302,7 @@ class BootcampRunEnrollment(TimestampedModel, AuditableModel):
     def __str__(self):
         return f"Enrollment for {self.bootcamp_run}"
 
-    def to_dict(self):
+    def to_dict(self):  # noqa: D102
         return {
             **serialize_model_object(self),
             "username": self.user.username,
@@ -311,16 +311,16 @@ class BootcampRunEnrollment(TimestampedModel, AuditableModel):
         }
 
     @classmethod
-    def get_audit_class(cls):
+    def get_audit_class(cls):  # noqa: D102
         return BootcampRunEnrollmentAudit
 
-    def deactivate_and_save(self, change_status, no_user=False):
+    def deactivate_and_save(self, change_status, no_user=False):  # noqa: FBT002
         """Sets an enrollment to inactive, sets the status, and saves"""
         self.active = False
         self.change_status = change_status
         return self.save_and_log(None if no_user else self.user)
 
-    def reactivate_and_save(self, no_user=False):
+    def reactivate_and_save(self, no_user=False):  # noqa: FBT002
         """Sets an enrollment to be active again and saves"""
         self.active = True
         self.change_status = None
@@ -335,7 +335,7 @@ class BootcampRunEnrollmentAudit(AuditModel):
     )
 
     @classmethod
-    def get_related_field_name(cls):
+    def get_related_field_name(cls):  # noqa: D102
         return "enrollment"
 
 
@@ -384,12 +384,12 @@ class BootcampRunCertificate(TimestampedModel, BaseCertificate):
     )
 
     objects = ActiveCertificates()
-    all_objects = models.Manager()
+    all_objects = models.Manager()  # noqa: DJ012
 
     class Meta:
         unique_together = ("user", "bootcamp_run")
 
-    def get_certified_object_id(self):
+    def get_certified_object_id(self):  # noqa: D102
         return self.bootcamp_run_id
 
     @property
@@ -406,7 +406,7 @@ class BootcampRunCertificate(TimestampedModel, BaseCertificate):
         """Returns the start and end date for bootcamp object duration"""
         return self.bootcamp_run.start_date, self.bootcamp_run.end_date
 
-    def __str__(self):
+    def __str__(self):  # noqa: DJ012
         return "BootcampRunCertificate for user={user}, run={bootcamp_run} ({uuid})".format(
             user=self.user.username, bootcamp_run=self.bootcamp_run.id, uuid=self.uuid
         )

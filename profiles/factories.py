@@ -6,24 +6,24 @@ import pycountry
 from django.contrib.auth.models import User
 from factory import (
     Faker,
+    RelatedFactory,
     Sequence,
     SubFactory,
     Trait,
-    RelatedFactory,
     lazy_attribute,
     random,
 )
 from factory.django import DjangoModelFactory
-from factory.fuzzy import FuzzyText, FuzzyChoice
+from factory.fuzzy import FuzzyChoice, FuzzyText
 from social_django.models import UserSocialAuth
 
 from profiles.constants import (
-    GENDER_CHOICES,
     COMPANY_SIZE_CHOICES,
-    YRS_EXPERIENCE_CHOICES,
+    GENDER_CHOICES,
     HIGHEST_EDUCATION_CHOICES,
+    YRS_EXPERIENCE_CHOICES,
 )
-from profiles.models import Profile, LegalAddress
+from profiles.models import LegalAddress, Profile
 
 
 class UserFactory(DjangoModelFactory):
@@ -74,7 +74,7 @@ class LegalAddressFactory(DjangoModelFactory):
             return ""
         subdivisions = pycountry.subdivisions.get(country_code=self.country)
         subdivision = random.randgen.sample(list(subdivisions), 1)[0]
-        # Example: "US-MA"
+        # Example: "US-MA"  # noqa: ERA001
         return subdivision.code
 
     class Meta:

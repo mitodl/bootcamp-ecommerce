@@ -2,37 +2,36 @@
 
 from decimal import Decimal
 
-from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from mitol.common.utils import now_in_utc
 
 from applications.api import (
-    get_or_create_bootcamp_application,
     derive_application_state,
+    get_or_create_bootcamp_application,
     get_required_submission_type,
     populate_interviews_in_jobma,
 )
 from applications.constants import (
-    AppStates,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
     SUBMISSION_QUIZ,
     SUBMISSION_VIDEO,
+    AppStates,
 )
 from applications.factories import (
     ApplicationStepFactory,
+    ApplicationStepSubmissionFactory,
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
-    ApplicationStepSubmissionFactory,
 )
 from applications.models import ApplicationStepSubmission, VideoInterviewSubmission
 from ecommerce.factories import LineFactory
 from ecommerce.models import Order
-from klasses.factories import BootcampRunFactory, InstallmentFactory
 from jobma.factories import InterviewFactory, JobFactory
 from jobma.models import Interview
-from profiles.factories import ProfileFactory, UserFactory, LegalAddressFactory
-
+from klasses.factories import BootcampRunFactory, InstallmentFactory
+from profiles.factories import LegalAddressFactory, ProfileFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -219,7 +218,7 @@ def application():
 
 
 @pytest.fixture
-def job(application):  # pylint: disable=redefined-outer-name
+def job(application):
     """Make a job"""
     yield JobFactory.create(run=application.bootcamp_run)
 
@@ -228,7 +227,7 @@ def job(application):  # pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("has_interview_link", [True, False])
 def test_populate_interviews_in_jobma(
     interview_exists, has_interview_link, mocker, application, job
-):  # pylint: disable=redefined-outer-name,too-many-arguments
+):
     """
     populate_interviews_in_jobma should create interviews on Jobma via REST API
     for each relevant BootcampRunApplicationStep

@@ -2,12 +2,11 @@
 
 from urllib.parse import urljoin
 
-from django.urls import reverse
 import pytest
+from django.urls import reverse
 
 from jobma.api import create_interview_in_jobma, get_jobma_client
 from jobma.factories import InterviewFactory
-
 
 pytestmark = pytest.mark.django_db
 
@@ -29,9 +28,9 @@ def test_get_jobma_client(settings):
 @pytest.mark.parametrize("interview_url", [None, "https://new.url/"])
 @pytest.mark.parametrize("preexisting_token", [None, "old token"])
 @pytest.mark.parametrize("preexisting_url", [None, "http://old.url"])
-def test_create_interview(
+def test_create_interview(  # noqa: PLR0913
     mocker, settings, interview_token, interview_url, preexisting_token, preexisting_url
-):  # pylint: disable=too-many-arguments
+):
     """create_interview should send an existing interview to Jobma"""
     client_mock = mocker.patch("jobma.api.get_jobma_client")
 

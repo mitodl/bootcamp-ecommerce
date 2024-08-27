@@ -3,12 +3,11 @@
 from importlib import import_module
 
 from django.conf import settings
-from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY, HASH_SESSION_KEY
+from django.contrib.auth import BACKEND_SESSION_KEY, HASH_SESSION_KEY, SESSION_KEY
 from django.db import IntegrityError
 
-from profiles.utils import is_duplicate_username_error
 from profiles.api import find_available_username
-
+from profiles.utils import is_duplicate_username_error
 
 USERNAME_COLLISION_ATTEMPTS = 10
 
@@ -27,7 +26,7 @@ def create_user_session(user):
 
     session = SessionStore()
 
-    session[SESSION_KEY] = user._meta.pk.value_to_string(user)
+    session[SESSION_KEY] = user._meta.pk.value_to_string(user)  # noqa: SLF001
     session[BACKEND_SESSION_KEY] = "django.contrib.auth.backends.ModelBackend"
     session[HASH_SESSION_KEY] = user.get_session_auth_hash()
     session.save()
@@ -54,7 +53,7 @@ def create_user_with_generated_username(serializer, initial_username):
     while created_user is None and attempts < USERNAME_COLLISION_ATTEMPTS:
         try:
             created_user = serializer.save(username=username)
-        except IntegrityError as exc:
+        except IntegrityError as exc:  # noqa: PERF203
             if not is_duplicate_username_error(exc):
                 raise
             username = find_available_username(initial_username)

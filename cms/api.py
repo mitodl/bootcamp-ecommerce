@@ -23,5 +23,5 @@ def render_template(text, *, context):
     }
     for name in variable_names:
         if name not in context:
-            raise TemplateSyntaxError(f"Can't find a variable with name '{name}'")
+            raise TemplateSyntaxError(f"Can't find a variable with name '{name}'")  # noqa: EM102
     return template.render(context=context)

@@ -1,6 +1,7 @@
 """jobma tests for permissions"""
 
 from django.http.request import HttpHeaders
+
 from jobma.permissions import JobmaWebhookPermission
 
 

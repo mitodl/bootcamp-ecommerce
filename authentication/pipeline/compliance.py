@@ -20,9 +20,13 @@ log = logging.getLogger()
 
 
 @partial
-def verify_exports_compliance(
-    strategy, backend, user=None, current_partial=None, **kwargs
-):  # pylint: disable=unused-argument
+def verify_exports_compliance(  # noqa: C901
+    strategy,
+    backend,
+    user=None,
+    current_partial=None,
+    **kwargs,  # noqa: ARG001
+):
     """
     Verify that the user is allowed by exports compliance
 
@@ -53,7 +57,7 @@ def verify_exports_compliance(
         user = serializer.save()
     try:
         export_inquiry = api.verify_user_with_exports(user)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         # hard failure to request the exports API, log an error but don't let the user proceed
         log.exception("Unable to verify exports compliance")
         raise UserTryAgainLaterException(
@@ -107,7 +111,7 @@ def verify_exports_compliance(
                         [settings.ADMIN_EMAIL],
                         connection=connection,
                     )
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 log.exception(
                     "Exception sending email to support regarding export compliance check failure"
                 )
@@ -115,6 +119,6 @@ def verify_exports_compliance(
             backend, current_partial, reason_code=export_inquiry.reason_code, user=user
         )
     if export_inquiry.is_unknown:
-        raise AuthException("Unable to authenticate, please contact support")
+        raise AuthException("Unable to authenticate, please contact support")  # noqa: EM101
 
     return {}

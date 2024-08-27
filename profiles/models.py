@@ -2,27 +2,26 @@
 Models classes needed for bootcamp
 """
 
-from datetime import timedelta
 import uuid
+from datetime import timedelta
 
+import pycountry
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-import pycountry
-from mitol.common.utils import now_in_utc
 from mitol.common.models import TimestampedModel
+from mitol.common.utils import now_in_utc
 
 from main.utils import is_blank
-
-from profiles.constants import (
-    GENDER_CHOICES,
-    COMPANY_SIZE_CHOICES,
-    YRS_EXPERIENCE_CHOICES,
-    HIGHEST_EDUCATION_CHOICES,
-    COUNTRIES_REQUIRING_POSTAL_CODE,
-)
 from profiles import api as profile_api
+from profiles.constants import (
+    COMPANY_SIZE_CHOICES,
+    COUNTRIES_REQUIRING_POSTAL_CODE,
+    GENDER_CHOICES,
+    HIGHEST_EDUCATION_CHOICES,
+    YRS_EXPERIENCE_CHOICES,
+)
 
 
 def generate_change_email_code():

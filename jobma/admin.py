@@ -4,7 +4,7 @@ Admin views for jobma
 
 from django.contrib import admin
 
-from jobma.models import Interview, Job, InterviewAudit
+from jobma.models import Interview, InterviewAudit, Job
 
 
 @admin.register(Interview)
@@ -22,7 +22,7 @@ class InterviewAdmin(admin.ModelAdmin):
         """Overrides base queryset"""
         return super().get_queryset(request).select_related("applicant", "job")
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, obj=None):  # noqa: D102
         fields = super().get_fields(request, obj)
         # Move "status" column directly underneath "applicant" in detail view
         fields.remove("status")
@@ -77,11 +77,11 @@ class InterviewAuditAdmin(admin.ModelAdmin):
 
     model = InterviewAudit
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # noqa: ARG002, D102
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False

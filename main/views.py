@@ -6,10 +6,9 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import redirect, render, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-
 from mitol.common.utils import has_all_keys
 
 
@@ -50,7 +49,7 @@ def index(request):
 
 
 @csrf_exempt
-def react(request, **kwargs):
+def react(request, **kwargs):  # noqa: ARG001
     """
     View for pages served by react
     """
@@ -87,21 +86,21 @@ def standard_error_page(request, status_code, template_filename):
     return response
 
 
-def page_404(request, *args, **kwargs):  # pylint: disable=unused-argument
+def page_404(request, *args, **kwargs):  # noqa: ARG001
     """
     Overridden handler for the 404 error pages.
     """
     return standard_error_page(request, 404, "404.html")
 
 
-def page_500(request, *args, **kwargs):  # pylint: disable=unused-argument
+def page_500(request, *args, **kwargs):  # noqa: ARG001
     """
     Overridden handler for the 404 error pages.
     """
     return standard_error_page(request, 500, "500.html")
 
 
-def cms_login_redirect_view(request):
+def cms_login_redirect_view(request):  # noqa: ARG001
     """
     Redirects cms login page to site's login page
     """

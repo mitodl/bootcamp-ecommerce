@@ -9,12 +9,12 @@ from cms.utils import invalidate_resource_page_urls
 
 
 @receiver(page_published)
-def resource_page_published(sender, **kwargs):  # pylint: disable=unused-argument
+def resource_page_published(sender, **kwargs):  # noqa: ARG001
     """Invalidate the cached values whenever a page is published"""
     invalidate_resource_page_urls()
 
 
 @receiver(post_save, sender=ResourcePagesSettings)
-def resource_page_settings_change(sender, **kwargs):  # pylint: disable=unused-argument
+def resource_page_settings_change(sender, **kwargs):  # noqa: ARG001
     """Invalidate the cached values whenver the settings are saved"""
     invalidate_resource_page_urls()

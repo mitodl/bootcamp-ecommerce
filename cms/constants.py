@@ -2,16 +2,15 @@
 
 import pathlib
 
-
 BOOTCAMP_INDEX_SLUG = "bootcamps"
 SIGNATORY_INDEX_SLUG = "signatories"
 CERTIFICATE_INDEX_SLUG = "certificate"
 
 RESOURCES_DIRECTORY = pathlib.Path(__file__).absolute().parent / "resources"
-ACCEPTANCE_DEFAULT_LETTER_TEXT = open(
+ACCEPTANCE_DEFAULT_LETTER_TEXT = open(  # noqa: PTH123, SIM115
     RESOURCES_DIRECTORY / "acceptance_letter.txt"
 ).read()
-REJECTION_DEFAULT_LETTER_TEXT = open(
+REJECTION_DEFAULT_LETTER_TEXT = open(  # noqa: PTH123, SIM115
     RESOURCES_DIRECTORY / "rejection_letter.txt"
 ).read()
 

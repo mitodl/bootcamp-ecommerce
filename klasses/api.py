@@ -37,13 +37,13 @@ def deactivate_run_enrollment(
         Optional[BootcampRunEnrollment]: The updated enrollment (or None if the enrollment doesn't exist)
     """
     if run_enrollment is None and (user is None or bootcamp_run is None):
-        raise ValueError("Must provide run_enrollment, or both user and bootcamp_run")
+        raise ValueError("Must provide run_enrollment, or both user and bootcamp_run")  # noqa: EM101
     if run_enrollment is None:
         run_enrollment = BootcampRunEnrollment.objects.filter(
             user=user, bootcamp_run=bootcamp_run
         ).first()
         if run_enrollment is None:
-            return
+            return None
     run_enrollment.active = False
     run_enrollment.change_status = change_status
     run_enrollment.save()
@@ -91,7 +91,7 @@ def adjust_app_state_for_new_price(user, bootcamp_run, new_price=None):
         ),
     ).first()
     if application is None:
-        return
+        return None
     if needs_payment:
         application.await_further_payment()
     else:
@@ -132,8 +132,8 @@ def _parse_formatted_date_range(date_range_str):
         date2_parts = date2_string.split(",")
         date2_monthday = date2_parts[0].strip().split(" ")
         year2 = int(date2_parts[1].strip())
-        year1 = year2 if len(date1_parts) < 2 else int(date1_parts[1].strip())
-        if len(date2_monthday) < 2:
+        year1 = year2 if len(date1_parts) < 2 else int(date1_parts[1].strip())  # noqa: PLR2004
+        if len(date2_monthday) < 2:  # noqa: PLR2004
             month2 = month1
             day2 = int(date2_monthday[0])
         else:
@@ -141,7 +141,7 @@ def _parse_formatted_date_range(date_range_str):
             day2 = int(date2_monthday[1])
     date1 = datetime(
         year=year1,
-        month=datetime.strptime(month1, DATE_RANGE_MONTH_FMT).month,
+        month=datetime.strptime(month1, DATE_RANGE_MONTH_FMT).month,  # noqa: DTZ007
         day=day1,
         tzinfo=pytz.UTC,
     )
@@ -150,7 +150,7 @@ def _parse_formatted_date_range(date_range_str):
         if not date2_string
         else datetime(
             year=year2,
-            month=datetime.strptime(month2, DATE_RANGE_MONTH_FMT).month,
+            month=datetime.strptime(month2, DATE_RANGE_MONTH_FMT).month,  # noqa: DTZ007
             day=day2,
             tzinfo=pytz.UTC,
         )
@@ -168,7 +168,7 @@ def fetch_bootcamp_run(run_property):
     Returns:
         BootcampRun: The bootcamp run matching the given property
     """
-    if run_property:
+    if run_property:  # noqa: RET503
         if run_property.isdigit():
             return BootcampRun.objects.get(id=run_property)
         run = BootcampRun.objects.filter(title=run_property).first()
@@ -184,10 +184,10 @@ def fetch_bootcamp_run(run_property):
         potential_start_date, potential_end_date = _parse_formatted_date_range(
             potential_date_range
         )
-        run_filters = dict(bootcamp__title=potential_bootcamp_title)
+        run_filters = dict(bootcamp__title=potential_bootcamp_title)  # noqa: C408
         if potential_start_date:
             run_filters.update(
-                dict(
+                dict(  # noqa: C408
                     start_date__gte=potential_start_date,
                     start_date__lt=potential_start_date + timedelta(days=1),
                 )
@@ -196,7 +196,7 @@ def fetch_bootcamp_run(run_property):
             run_filters["start_date"] = None
         if potential_end_date:
             run_filters.update(
-                dict(
+                dict(  # noqa: C408
                     end_date__gte=potential_end_date,
                     end_date__lt=potential_end_date + timedelta(days=1),
                 )
@@ -207,7 +207,7 @@ def fetch_bootcamp_run(run_property):
             return BootcampRun.objects.get(**run_filters)
         except BootcampRun.DoesNotExist as exc:
             raise BootcampRun.DoesNotExist(
-                "Could not find BootcampRun with the following filters: {}".format(
+                "Could not find BootcampRun with the following filters: {}".format(  # noqa: EM103
                     run_filters
                 )
             ) from exc
@@ -274,7 +274,7 @@ def create_run_enrollments(user, runs, order=None):
     for run in runs:
         try:
             successful_enrollments.append(create_run_enrollment(user, run, order))
-        except:  # noqa: E722
+        except:  # noqa: E722, PERF203
             log.exception(
                 "Failed to create/update enrollment record (user: %s, run: %s, order: %s)",
                 user,
@@ -285,7 +285,11 @@ def create_run_enrollments(user, runs, order=None):
 
 
 def defer_enrollment(
-    user, from_bootcamp_run_id, to_bootcamp_run_id, order_id, force=False
+    user,
+    from_bootcamp_run_id,
+    to_bootcamp_run_id,
+    order_id,
+    force=False,  # noqa: FBT002
 ):
     """
     Deactivates a user's existing enrollment in one bootcamp run and enrolls the user in another.
@@ -307,7 +311,7 @@ def defer_enrollment(
     )
     if not force and not from_enrollment.active:
         raise ValidationError(
-            "Cannot defer from inactive enrollment (id: {}, run: {}, user: {}). "
+            "Cannot defer from inactive enrollment (id: {}, run: {}, user: {}). "  # noqa: EM103
             "Set force=True to defer anyway.".format(
                 from_enrollment.id,
                 from_enrollment.bootcamp_run.bootcamp_run_id,
@@ -317,19 +321,19 @@ def defer_enrollment(
     to_run = BootcampRun.objects.get(bootcamp_run_id=to_bootcamp_run_id)
     if from_enrollment.bootcamp_run == to_run:
         raise ValidationError(
-            "Cannot defer to the same bootcamp run (run: {})".format(
+            "Cannot defer to the same bootcamp run (run: {})".format(  # noqa: EM103
                 to_run.bootcamp_run_id
             )
         )
     if not to_run.is_not_beyond_enrollment:
         raise ValidationError(
-            "Cannot defer to a bootcamp run that is outside of its enrollment period (run: {}).".format(
+            "Cannot defer to a bootcamp run that is outside of its enrollment period (run: {}).".format(  # noqa: EM103
                 to_run.bootcamp_run_id
             )
         )
     if not force and from_enrollment.bootcamp_run.bootcamp != to_run.bootcamp:
         raise ValidationError(
-            "Cannot defer to a bootcamp run of a different bootcamp ('{}' -> '{}'). "
+            "Cannot defer to a bootcamp run of a different bootcamp ('{}' -> '{}'). "  # noqa: EM103
             "Set force=True to defer anyway.".format(
                 from_enrollment.bootcamp_run.bootcamp.title, to_run.bootcamp.title
             )
@@ -338,12 +342,11 @@ def defer_enrollment(
         defaults = {
             "id": order_id,
             "user": user,
-            # "application__bootcamp_run": from_enrollment.bootcamp_run,
         }
         order = Order.objects.get(**defaults)
     except ObjectDoesNotExist:
-        raise ValidationError(
-            "Order (order: {}) does not exist for user (User: {}) against bootcamp run = (run: {})".format(
+        raise ValidationError(  # noqa: B904, TRY200
+            "Order (order: {}) does not exist for user (User: {}) against bootcamp run = (run: {})".format(  # noqa: EM103
                 order_id, user, from_bootcamp_run_id
             )
         )

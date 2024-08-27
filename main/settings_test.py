@@ -6,14 +6,10 @@ import sys
 from types import SimpleNamespace
 
 import pytest
+import semantic_version
 from django.conf import settings
 from django.core import mail
-import semantic_version
 from mitol.common import envs, pytest_utils
-
-
-# pylint: disable=redefined-outer-name, unused-argument
-
 
 # this is a test, but pylint thinks it ends up being unused
 # hence we import the entire module and assign it here

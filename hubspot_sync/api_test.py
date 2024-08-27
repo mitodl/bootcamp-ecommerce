@@ -28,7 +28,6 @@ from klasses.factories import (
 from klasses.models import BootcampRun
 from profiles.factories import UserFactory
 
-# pylint: disable=redefined-outer-name
 pytestmark = pytest.mark.django_db
 
 

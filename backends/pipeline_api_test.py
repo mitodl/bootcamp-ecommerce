@@ -6,9 +6,8 @@ from urllib.parse import urljoin
 
 import pytest
 
-from backends import pipeline_api, edxorg
+from backends import edxorg, pipeline_api
 from backends.utils import get_social_username
-
 
 pytestmark = pytest.mark.django_db
 
@@ -31,7 +30,7 @@ def test_update_email(mocker, user, is_new):
     mocked_get_json.assert_called_once_with(
         urljoin(
             edxorg.EdxOrgOAuth2.EDXORG_BASE_URL,
-            "/api/user/v1/accounts/{0}".format(get_social_username(user)),
+            "/api/user/v1/accounts/{0}".format(get_social_username(user)),  # noqa: UP030
         ),
         headers={"Authorization": "Bearer foo_token"},
     )

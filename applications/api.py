@@ -1,14 +1,16 @@
 """API for bootcamp applications app"""
 
 import logging
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 
+from applications import tasks
 from applications.constants import (
-    AppStates,
-    REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_PENDING,
+    REVIEW_STATUS_REJECTED,
     SUBMISSION_VIDEO,
+    AppStates,
 )
 from applications.models import (
     ApplicationStepSubmission,
@@ -17,7 +19,6 @@ from applications.models import (
     VideoInterviewSubmission,
 )
 from applications.utils import check_eligibility_to_skip_steps
-from applications import tasks
 from jobma.api import create_interview_in_jobma
 from jobma.models import Interview, Job
 from profiles.api import is_user_info_complete
@@ -62,9 +63,9 @@ def get_or_create_bootcamp_application(user, bootcamp_run_id):
     return bootcamp_app, created
 
 
-def derive_application_state(
+def derive_application_state(  # noqa: PLR0911
     bootcamp_application,
-):  # pylint: disable=too-many-return-statements
+):
     """
     Returns the correct state that an application should be in based on the application object itself and related data
 
@@ -84,10 +85,10 @@ def derive_application_state(
     submission_review_statuses = [
         submission.review_status for submission in submissions
     ]
-    if any([status == REVIEW_STATUS_REJECTED for status in submission_review_statuses]):
+    if any([status == REVIEW_STATUS_REJECTED for status in submission_review_statuses]):  # noqa: C419
         return AppStates.REJECTED.value
     elif any(
-        [status == REVIEW_STATUS_PENDING for status in submission_review_statuses]
+        [status == REVIEW_STATUS_PENDING for status in submission_review_statuses]  # noqa: C419
     ):
         return AppStates.AWAITING_SUBMISSION_REVIEW.value
     elif len(submissions) < bootcamp_application.bootcamp_run.application_steps.count():

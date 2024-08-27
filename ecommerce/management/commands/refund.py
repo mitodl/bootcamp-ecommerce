@@ -1,7 +1,6 @@
 """Management command to change enrollment status"""
 
 import sys
-
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -20,7 +19,7 @@ class Command(BaseCommand):
 
     help = __doc__
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "--user",
             type=str,
@@ -38,7 +37,7 @@ class Command(BaseCommand):
         )
         super().add_arguments(parser)
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002
         """Handle command execution"""
         user = fetch_user(options["user"])
         bootcamp_run = fetch_bootcamp_run(options["run"])

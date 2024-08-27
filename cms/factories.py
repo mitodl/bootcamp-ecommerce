@@ -47,7 +47,7 @@ class BootcampRunPageFactory(wagtail_factories.PageFactory):
         model = models.BootcampRunPage
 
     @factory.post_generation
-    def post_gen(obj, create, extracted, **kwargs):  # pylint:disable=unused-argument
+    def post_gen(obj, create, extracted, **kwargs):  # noqa: ARG002, N805
         """Post-generation hook"""
         if create:
             # Move the created page to be a child of the home page
@@ -192,7 +192,7 @@ class HomePageFactory(wagtail_factories.PageFactory):
         model = models.HomePage
 
     @factory.post_generation
-    def post_gen(obj, create, extracted, **kwargs):  # pylint:disable=unused-argument
+    def post_gen(obj, create, extracted, **kwargs):  # noqa: ARG002, N805
         """Post-generation hook, moves home page to the root of the site"""
         if create:
             site = Site.objects.get(is_default_site=True)

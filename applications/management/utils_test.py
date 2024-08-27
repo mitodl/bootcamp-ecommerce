@@ -1,32 +1,31 @@
 """Application management util tests"""
 
-# pylint: disable=redefined-outer-name
 from types import SimpleNamespace
-import pytest
-import factory
-from django.core.exceptions import ValidationError
 
+import factory
+import pytest
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mitol.common.utils import now_in_utc
 
 from applications.api import derive_application_state
 from applications.constants import (
     REVIEW_STATUS_APPROVED,
+    SUBMISSION_QUIZ,
     SUBMISSION_VIDEO,
     AppStates,
-    SUBMISSION_QUIZ,
 )
 from applications.factories import (
-    BootcampApplicationFactory,
-    BootcampRunApplicationStepFactory,
     ApplicationStepFactory,
     ApplicationStepSubmissionFactory,
-    VideoInterviewSubmissionFactory,
+    BootcampApplicationFactory,
+    BootcampRunApplicationStepFactory,
     QuizSubmissionFactory,
+    VideoInterviewSubmissionFactory,
 )
 from applications.management.utils import (
-    migrate_application,
     has_same_application_steps,
+    migrate_application,
 )
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order

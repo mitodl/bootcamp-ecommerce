@@ -4,10 +4,9 @@ Tests for ecommerce models
 
 import pytest
 
-from main.utils import serialize_model_object
 from ecommerce.factories import LineFactory, OrderFactory, ReceiptFactory
-from ecommerce.models import Order, Line
-
+from ecommerce.models import Line, Order
+from main.utils import serialize_model_object
 
 pytestmark = pytest.mark.django_db
 
@@ -105,7 +104,6 @@ def lines_fulfilled():
     yield line_fulfilled_1, line_fulfilled_2, user
 
 
-# pylint: disable=redefined-outer-name
 def test_fulfilled_for_user(lines_fulfilled):
     """
     Test for the fulfilled_for_user classmethod

@@ -6,10 +6,10 @@ from mitol.common.models import TimestampedModel
 
 from compliance.constants import (
     RESULT_CHOICES,
-    RESULT_SUCCESS,
     RESULT_DENIED,
-    RESULT_UNKNOWN,
     RESULT_MANUALLY_APPROVED,
+    RESULT_SUCCESS,
+    RESULT_UNKNOWN,
 )
 
 
@@ -29,7 +29,7 @@ class ExportsInquiryLog(TimestampedModel):
     )
 
     reason_code = models.IntegerField()
-    info_code = models.CharField(max_length=255, null=True)
+    info_code = models.CharField(max_length=255, null=True)  # noqa: DJ001
 
     encrypted_request = models.TextField()
     encrypted_response = models.TextField()

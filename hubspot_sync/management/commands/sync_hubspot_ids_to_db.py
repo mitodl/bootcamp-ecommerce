@@ -3,7 +3,6 @@ Management command to sync hubspot ids to database
 """
 
 import sys
-from typing import List
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -19,9 +18,9 @@ from hubspot_sync.api import (
 from klasses.models import BootcampRun
 
 
-def format_missing(missing: List[int]) -> str:
+def format_missing(missing: list[int]) -> str:
     """Return a string of missing ids"""
-    return f"\n {','.join([str(id) for id in sorted(missing)])}\n\n"
+    return f"\n {','.join([str(id) for id in sorted(missing)])}\n\n"  # noqa: A001
 
 
 class Command(BaseCommand):
@@ -137,7 +136,7 @@ class Command(BaseCommand):
             help="Sync all orders",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002, D102
         sys.stdout.write("Syncing hubspot ids...\n")
         if not (
             options["sync_contacts"]

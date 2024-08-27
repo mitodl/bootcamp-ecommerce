@@ -2,16 +2,16 @@
 Factories for ecommerce models
 """
 
+import faker
 from factory import LazyAttribute, SelfAttribute, SubFactory
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice, FuzzyDecimal, FuzzyText
-import faker
 
 from applications.factories import BootcampApplicationFactory
-from ecommerce.api import make_reference_id, generate_cybersource_sa_signature
+from ecommerce.api import generate_cybersource_sa_signature, make_reference_id
 from ecommerce.models import Line, Order, Receipt
-from profiles.factories import UserFactory
 from klasses.factories import BootcampRunFactory
+from profiles.factories import UserFactory
 
 FAKE = faker.Factory.create()
 

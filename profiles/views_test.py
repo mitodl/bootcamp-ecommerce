@@ -1,13 +1,13 @@
 """Test for user views"""
 
 from datetime import timedelta
-import pytest
 
+import pytest
 from django.urls import reverse
-from rest_framework import status
-from social_django.models import UserSocialAuth
 from mitol.common.pytest_utils import any_instance_of
 from mitol.common.utils import now_in_utc
+from rest_framework import status
+from social_django.models import UserSocialAuth
 
 from profiles.factories import UserFactory
 from profiles.models import ChangeEmailRequest

@@ -2,7 +2,6 @@
 
 import pycountry
 
-
 USERNAME_MAX_LEN = 30
 
 

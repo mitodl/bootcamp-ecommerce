@@ -11,28 +11,27 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 """
 
-# pylint: disable=too-many-lines
 import logging
 import os
 import platform
 from urllib.parse import urljoin, urlparse
 
+import dj_database_url
+import saml2
 from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.temp import NamedTemporaryFile
-import dj_database_url
-import saml2
-from saml2.saml import NAMEID_FORMAT_UNSPECIFIED, NAMEID_FORMAT_PERSISTENT
-from saml2.sigver import get_xmlsec_binary
 from mitol.common.envs import (
     get_bool,
     get_features,
     get_int,
+    get_list_literal,
     get_string,
     import_settings_modules,
-    get_list_literal,
 )
 from mitol.common.settings.webpack import *  # noqa: F403
+from saml2.saml import NAMEID_FORMAT_PERSISTENT, NAMEID_FORMAT_UNSPECIFIED
+from saml2.sigver import get_xmlsec_binary
 
 from main.sentry import init_sentry
 
@@ -55,7 +54,7 @@ init_sentry(
     dsn=SENTRY_DSN, environment=ENVIRONMENT, version=VERSION, log_level=SENTRY_LOG_LEVEL
 )
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # noqa: PTH100, PTH120
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -108,7 +107,7 @@ WEBPACK_LOADER = {
     "DEFAULT": {
         "CACHE": not DEBUG,
         "BUNDLE_DIR_NAME": "bundles/",
-        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
+        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),  # noqa: PTH118
         "POLL_INTERVAL": 0.1,
         "TIMEOUT": None,
         "IGNORE": [r".+\.hot-update\.+", r".+\.js\.map"],
@@ -408,7 +407,7 @@ HIJACK_INSERT_BEFORE = "</body>"
 DEFAULT_DATABASE_CONFIG = dj_database_url.parse(
     get_string(
         name="DATABASE_URL",
-        default="sqlite:///{0}".format(os.path.join(BASE_DIR, "db.sqlite3")),
+        default="sqlite:///{0}".format(os.path.join(BASE_DIR, "db.sqlite3")),  # noqa: PTH118, UP030
         description="The connection url to the Postgres database",
         required=True,
         write_app_json=False,
@@ -461,7 +460,7 @@ if CLOUDFRONT_DIST:
     )
 
 STATIC_ROOT = "staticfiles"
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)  # noqa: PTH118
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
@@ -566,7 +565,7 @@ ADMIN_EMAIL = get_string(
     default="admin@example.com",
     description="E-mail to send 500 reports to",
 )
-if ADMIN_EMAIL != "":
+if ADMIN_EMAIL != "":  # noqa: SIM108
     ADMINS = (("Admins", ADMIN_EMAIL),)
 else:
     ADMINS = ()
@@ -714,7 +713,7 @@ WAGTAILADMIN_BASE_URL = SITE_BASE_URL
 
 MEDIA_ROOT = get_string(
     name="MEDIA_ROOT",
-    default=os.path.join(BASE_DIR, "media"),
+    default=os.path.join(BASE_DIR, "media"),  # noqa: PTH118
     description="Django MEDIA_ROOT setting",
 )
 MEDIA_URL = "/media/"
@@ -754,7 +753,7 @@ if BOOTCAMP_ECOMMERCE_USE_S3 and (
     not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY or not AWS_STORAGE_BUCKET_NAME
 ):
     raise ImproperlyConfigured(
-        "You have enabled S3 support, but are missing one of "
+        "You have enabled S3 support, but are missing one of "  # noqa: EM101
         "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or "
         "AWS_STORAGE_BUCKET_NAME"
     )
@@ -912,7 +911,7 @@ MIDDLEWARE_FEATURE_FLAG_COOKIE_MAX_AGE_SECONDS = get_int(
 if DEBUG:
     INSTALLED_APPS += ("debug_toolbar",)
     # it needs to be enabled before other middlewares
-    MIDDLEWARE = ("debug_toolbar.middleware.DebugToolbarMiddleware",) + MIDDLEWARE
+    MIDDLEWARE = ("debug_toolbar.middleware.DebugToolbarMiddleware",) + MIDDLEWARE  # noqa: RUF005
 
 MITOL_HUBSPOT_API_PRIVATE_TOKEN = get_string(
     name="MITOL_HUBSPOT_API_PRIVATE_TOKEN",
@@ -1010,7 +1009,7 @@ NOVOED_BASE_URL = get_string(
 # (see: http://djoser.readthedocs.io/en/stable/settings.html#password-reset-confirm-url)
 
 PASSWORD_RESET_CONFIRM_URL = (
-    "password_reset/confirm/{uid}/{token}/"  # noqa: S105 # pragma: allowlist secret
+    "password_reset/confirm/{uid}/{token}/"  # pragma: allowlist secret
 )
 
 # ol-django configuration
@@ -1063,12 +1062,12 @@ if _novoed_saml_key and _novoed_saml_cert:
     with NamedTemporaryFile(prefix="saml_", suffix=".key", delete=False) as f:
         lines = _novoed_saml_key.split("\\n")
         for line in lines:
-            f.write(f"{line}\n".encode("utf-8"))
+            f.write(f"{line}\n".encode())
         _novoed_saml_key_file_path = f.name
     with NamedTemporaryFile(prefix="saml_", suffix=".cert", delete=False) as f:
         lines = _novoed_saml_cert.split("\\n")
         for line in lines:
-            f.write(f"{line}\n".encode("utf-8"))
+            f.write(f"{line}\n".encode())
         _novoed_saml_cert_file_path = f.name
     SAML_IDP_CONFIG = {
         "debug": NOVOED_SAML_DEBUG,

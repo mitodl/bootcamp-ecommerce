@@ -3,10 +3,9 @@ Admin site bindings for profiles
 """
 
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as ContribUserAdmin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as ContribUserAdmin
 from django.utils.translation import gettext_lazy as _
-from hijack.contrib.admin import HijackUserAdminMixin
 
 from profiles.models import LegalAddress, Profile
 
@@ -37,7 +36,7 @@ class UserLegalAddressInline(admin.StackedInline):
         ),
     )
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return False
 
 
@@ -47,7 +46,7 @@ class UserProfileInline(admin.StackedInline):
     model = Profile
     classes = ["collapse"]
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):  # noqa: ARG002, D102
         return True
 
 

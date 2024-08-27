@@ -1,20 +1,21 @@
 """API tests"""
 
 from email.utils import formataddr
+
 import pytest
 from mitol.common.pytest_utils import any_instance_of
 
 from mail.v2.api import (
-    context_for_user,
-    safe_format_recipients,
-    render_email_templates,
-    send_messages,
-    messages_for_recipients,
+    EmailMetadata,
+    UserMessageProps,
+    build_message,
     build_messages,
     build_user_specific_messages,
-    build_message,
-    UserMessageProps,
-    EmailMetadata,
+    context_for_user,
+    messages_for_recipients,
+    render_email_templates,
+    safe_format_recipients,
+    send_messages,
 )
 from profiles.factories import UserFactory
 

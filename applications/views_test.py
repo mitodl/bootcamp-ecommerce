@@ -6,26 +6,26 @@ from types import SimpleNamespace
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from mitol.common.utils import now_in_utc
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
-from mitol.common.utils import now_in_utc
 
 from applications.constants import (
-    AppStates,
-    REVIEW_STATUS_REJECTED,
+    ALL_REVIEW_STATUSES,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
-    ALL_REVIEW_STATUSES,
+    REVIEW_STATUS_REJECTED,
     SUBMISSION_STATUS_SUBMITTED,
+    AppStates,
 )
 from applications.factories import (
+    ApplicantLetterFactory,
+    ApplicationStepFactory,
+    ApplicationStepSubmissionFactory,
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
-    ApplicationStepSubmissionFactory,
-    ApplicantLetterFactory,
     QuizSubmissionFactory,
     VideoInterviewSubmissionFactory,
-    ApplicationStepFactory,
 )
 from applications.serializers import (
     BootcampApplicationDetailSerializer,
@@ -40,7 +40,6 @@ from klasses.factories import BootcampRunFactory
 from main.test_utils import assert_drf_json_equal
 from main.utils import serializer_date_format
 from profiles.factories import UserFactory
-
 
 pytestmark = pytest.mark.django_db
 
@@ -57,7 +56,7 @@ def bootcamp_run_submissions():
             bootcamp_run=bootcamp_run, application_step__bootcamp=bootcamp_run.bootcamp
         )
         for review_status in ALL_REVIEW_STATUSES:
-            submissions.append(
+            submissions.append(  # noqa: PERF401
                 ApplicationStepSubmissionFactory.create(
                     review_status=review_status,
                     bootcamp_application__bootcamp_run=bootcamp_run,
@@ -85,7 +84,6 @@ def test_view_serializer(mocker, action, exp_serializer):
     assert serializer_cls == exp_serializer
 
 
-# pylint: disable=redefined-outer-name, too-many-arguments
 def test_view_serializer_context(mocker):
     """
     The bootcamp application view should add context to the serializer in the list view
@@ -201,7 +199,7 @@ def test_review_submission_list(
     The review submission list view should return a list of all submissions
     """
     url = reverse("submissions_api-list")
-    resp = admin_drf_client.get(url, dict(limit=100))
+    resp = admin_drf_client.get(url, dict(limit=100))  # noqa: C408
     assert resp.status_code == status.HTTP_200_OK
     result = resp.json()
     result["facets"]["review_statuses"] = sorted(
@@ -250,7 +248,7 @@ def test_review_submission_list_expired(admin_drf_client, bootcamp_run_submissio
         run.start_date = now_in_utc() - timedelta(weeks=1)
         run.save()
     url = reverse("submissions_api-list")
-    resp = admin_drf_client.get(url, dict(limit=100))
+    resp = admin_drf_client.get(url, dict(limit=100))  # noqa: C408
     assert resp.status_code == status.HTTP_200_OK
     result = resp.json()
     assert result == {
@@ -454,7 +452,7 @@ def test_review_submission_list_query_review_status_in(
         [True, True, status.HTTP_200_OK, False],
     ],
 )
-def test_upload_resume_view(
+def test_upload_resume_view(  # noqa: PLR0913
     client, mocker, has_resume, has_linkedin, resp_status, has_application_steps
 ):
     """

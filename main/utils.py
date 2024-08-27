@@ -10,7 +10,6 @@ import re
 from django.core.serializers import serialize
 from rest_framework import serializers
 
-
 log = logging.getLogger(__name__)
 
 
@@ -33,7 +32,7 @@ def partition_around_index(list_to_partition, index):
     list_len = len(list_to_partition)
     if list_len <= index:
         raise ValueError(
-            "Index out of range: {} ({} item list)".format(index, list_len)
+            "Index out of range: {} ({} item list)".format(index, list_len)  # noqa: EM103
         )
     l1, l2 = [], []
     if index > 0:
@@ -85,8 +84,8 @@ def get_field_names(model):
     """
     return [
         field.name
-        for field in model._meta.get_fields()
-        if not field.auto_created  # pylint: disable=protected-access
+        for field in model._meta.get_fields()  # noqa: SLF001
+        if not field.auto_created
     ]
 
 

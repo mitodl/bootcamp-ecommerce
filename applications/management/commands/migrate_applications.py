@@ -5,8 +5,8 @@ from django.core.management.base import BaseCommand, CommandError
 from applications.constants import APPROVED_APP_STATES
 from applications.management.utils import (
     fetch_bootcamp_run,
-    migrate_application,
     has_same_application_steps,
+    migrate_application,
 )
 from applications.models import BootcampApplication
 from profiles.api import fetch_user
@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     help = __doc__
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "--from-run",
             type=str,
@@ -61,9 +61,7 @@ class Command(BaseCommand):
             help="Migrate applications even if the 'from' run and 'to' run belong to different bootcamps.",
         )
 
-    def handle(
-        self, *args, **options
-    ):  # pylint: disable=too-many-locals,too-many-branches
+    def handle(self, *args, **options):  # noqa: ARG002, C901, D102
         from_run_property = options["from_run"]
         to_run_property = options["to_run"]
         from_run = fetch_bootcamp_run(from_run_property)
@@ -77,7 +75,7 @@ class Command(BaseCommand):
             ]
         )
 
-        application_filter = dict(bootcamp_run=from_run)
+        application_filter = dict(bootcamp_run=from_run)  # noqa: C408
         if users:
             application_filter["user__in"] = users
         if options["state"]:
@@ -88,11 +86,11 @@ class Command(BaseCommand):
 
         if not from_run_applications.exists():
             raise CommandError(
-                f"No completed applications found with the given filters:\n{application_filter}"
+                f"No completed applications found with the given filters:\n{application_filter}"  # noqa: EM102
             )
         if from_run.bootcamp != to_run.bootcamp and options["force"] is False:
             raise CommandError(
-                "'from' run and 'to' run are from different bootcamps "
+                "'from' run and 'to' run are from different bootcamps "  # noqa: EM102
                 f"('{from_run.bootcamp.title}', '{to_run.bootcamp.title}').\n"
                 "Use '--force' flag to migrate anyway."
             )
@@ -100,7 +98,7 @@ class Command(BaseCommand):
             from_run.bootcamp.id, to_run.bootcamp.id
         ):
             raise CommandError(
-                f"The 'from' run and 'to' run have different application steps for their respective bootcamps "
+                f"The 'from' run and 'to' run have different application steps for their respective bootcamps "  # noqa: EM102
                 f"('{from_run.bootcamp.title}', '{to_run.bootcamp.title}')."
             )
 
@@ -123,7 +121,7 @@ class Command(BaseCommand):
         for from_run_application in from_run_applications:
             try:
                 to_run_application = migrate_application(from_run_application, to_run)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:  # noqa: BLE001, PERF203
                 self.stdout.write(
                     self.style.ERROR(
                         "Failed to migrate user application to new run "

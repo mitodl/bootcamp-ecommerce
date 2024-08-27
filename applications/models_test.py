@@ -1,29 +1,29 @@
 """Applications models tests"""
 
 from functools import reduce
-from operator import or_, itemgetter
+from operator import itemgetter, or_
 from unittest.mock import PropertyMock
 
+import pytest
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
-import pytest
 from django_fsm import TransitionNotAllowed
 
 from applications.constants import (
-    VALID_SUBMISSION_TYPE_CHOICES,
-    REVIEW_STATUS_REJECTED,
-    LETTER_TYPE_REJECTED,
     LETTER_TYPE_APPROVED,
+    LETTER_TYPE_REJECTED,
+    REVIEW_STATUS_REJECTED,
+    VALID_SUBMISSION_TYPE_CHOICES,
+    AppStates,
 )
-from applications.models import ApplicationStepSubmission, APP_SUBMISSION_MODELS
 from applications.factories import (
-    BootcampRunApplicationStepFactory,
+    ApplicationStepFactory,
     ApplicationStepSubmissionFactory,
     BootcampApplicationFactory,
-    ApplicationStepFactory,
+    BootcampRunApplicationStepFactory,
 )
-from applications.constants import AppStates
+from applications.models import APP_SUBMISSION_MODELS, ApplicationStepSubmission
 from ecommerce.test_utils import create_test_application, create_test_order
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.factories import (
@@ -32,9 +32,7 @@ from klasses.factories import (
     InstallmentFactory,
     PersonalPriceFactory,
 )
-from klasses.models import Installment, PersonalPrice, BootcampRunEnrollment
-
-# pylint: disable=redefined-outer-name,unused-argument
+from klasses.models import BootcampRunEnrollment, Installment, PersonalPrice
 from main.features import NOVOED_INTEGRATION
 
 pytestmark = pytest.mark.django_db
@@ -77,7 +75,7 @@ def test_submission_types():
     assert len(APP_SUBMISSION_MODELS) == len(VALID_SUBMISSION_TYPE_CHOICES)
     # The choices for ApplicationStep.submission_type should match the models
     # that we have defined as valid submission models
-    assert {model_cls._meta.model_name for model_cls in APP_SUBMISSION_MODELS} == set(
+    assert {model_cls._meta.model_name for model_cls in APP_SUBMISSION_MODELS} == set(  # noqa: SLF001
         map(itemgetter(0), VALID_SUBMISSION_TYPE_CHOICES)
     )
 
@@ -85,14 +83,14 @@ def test_submission_types():
     expected_content_type_limit = reduce(
         or_,
         (
-            models.Q(app_label="applications", model=model_cls._meta.model_name)
+            models.Q(app_label="applications", model=model_cls._meta.model_name)  # noqa: SLF001
             for model_cls in APP_SUBMISSION_MODELS
-        ),  # pylint: disable=protected-access
+        ),
     )
     assert (
-        ApplicationStepSubmission._meta.get_field("content_type").get_limit_choices_to()
+        ApplicationStepSubmission._meta.get_field("content_type").get_limit_choices_to()  # noqa: SLF001
         == expected_content_type_limit
-    )  # pylint: disable=protected-access
+    )
 
 
 def test_bootcamp_application_with_no_steps_file_submission():
@@ -301,8 +299,8 @@ def test_get_total_paid_no_payments(application):
 @pytest.mark.parametrize(
     "run_price,personal_price,expected_price",
     [[10, None, 10], [10, 5, 5], [10, 25, 25]],
-)  # pylint: disable=too-many-arguments
-def test_price(
+)
+def test_price(  # noqa: PLR0913
     application, bootcamp_run, user, run_price, personal_price, expected_price
 ):
     """
@@ -328,7 +326,7 @@ def test_price(
 @pytest.mark.parametrize(
     "price,total_paid,expected_fully_paid",
     [[10, 10, True], [10, 9, False], [10, 11, True]],
-)  # pylint: disable=too-many-arguments
+)
 def test_is_paid_in_full(mocker, application, price, total_paid, expected_fully_paid):
     """
     is_paid_in_full should return true if the payments match or exceed the price of the run

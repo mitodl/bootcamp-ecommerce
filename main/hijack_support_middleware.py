@@ -1,4 +1,4 @@
-from django.utils.deprecation import MiddlewareMixin
+from django.utils.deprecation import MiddlewareMixin  # noqa: D100
 
 
 class HijackSupportMiddleware(MiddlewareMixin):

@@ -2,12 +2,12 @@
 
 from unittest.mock import PropertyMock
 
-from django.urls import resolve, reverse
 import faker
 import pytest
+from django.urls import resolve, reverse
 from rest_framework import status as statuses
 
-from applications.constants import AppStates, VALID_APP_STATE_CHOICES
+from applications.constants import VALID_APP_STATE_CHOICES, AppStates
 from applications.factories import BootcampApplicationFactory
 from backends.edxorg import EdxOrgOAuth2
 from ecommerce.api import make_reference_id
@@ -16,15 +16,14 @@ from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import Order, OrderAudit, Receipt
 from ecommerce.serializers import (
     CheckoutDataSerializer,
-    PaymentSerializer,
     OrderSerializer,
+    PaymentSerializer,
 )
 from ecommerce.test_utils import create_test_application, create_test_order
 from ecommerce.views import OrderView
 from klasses.factories import BootcampRunFactory
 from klasses.models import BootcampRunEnrollment
 from profiles.factories import ProfileFactory, UserFactory
-
 
 CYBERSOURCE_SECURITY_KEY = "🔑"
 CYBERSOURCE_SECURE_ACCEPTANCE_URL = "http://fake"
@@ -35,7 +34,6 @@ FAKE = faker.Factory.create()
 pytestmark = pytest.mark.django_db
 
 
-# pylint: disable=unused-argument,too-many-locals,redefined-outer-name
 @pytest.fixture(autouse=True)
 def ecommerce_settings(settings):
     """Settings for ecommerce tests"""
@@ -165,9 +163,8 @@ def test_payment_invalid_state(client, state, application, user, bootcamp_run):
     assert resp.json() == ["Invalid application state"]
 
 
-# pylint: disable=too-many-arguments
 @pytest.mark.parametrize("has_paid", [True, False])
-def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_paid):
+def test_order_fulfilled(client, mocker, application, bootcamp_run, user, has_paid):  # noqa: PLR0913
     """
     Test the happy case
     """
@@ -238,7 +235,7 @@ def test_missing_fields(client, mocker):
     mocker.patch(
         "ecommerce.views.IsSignedByCyberSource.has_permission", return_value=True
     )
-    try:
+    try:  # noqa: SIM105
         # Missing fields from Cybersource POST will cause the KeyError.
         # In this test we want to make sure we saved the data in Receipt for later
         # analysis even if there is an error.
@@ -440,7 +437,7 @@ def test_bootcamp_run_detail(test_data, client):
     response = client.get(bootcamp_run_detail_url)
     assert response.status_code == statuses.HTTP_200_OK
     response_json = response.json()
-    assert sorted(list(response_json.keys())) == sorted(BOOTCAMP_RUN_FIELDS)
+    assert sorted(list(response_json.keys())) == sorted(BOOTCAMP_RUN_FIELDS)  # noqa: C414
     assert response_json["run_key"] == bootcamp_run.run_key
 
 
@@ -474,7 +471,7 @@ def test_bootcamp_run_list(test_data, client):
     response_json = response.json()
     assert len(response_json) == 1
     for resp in response_json:
-        assert sorted(list(resp.keys())) == sorted(BOOTCAMP_RUN_FIELDS)
+        assert sorted(list(resp.keys())) == sorted(BOOTCAMP_RUN_FIELDS)  # noqa: C414
 
 
 def test_user_bootcamp_run_statement(test_data, fulfilled_order, client):
@@ -541,14 +538,14 @@ def test_checkout_data(mocker, client):
 
 
 def test_checkout_data_no_application_id(client, user):
-    """check that the application query parameter is required"""
+    """Check that the application query parameter is required"""
     client.force_login(user)
     resp = client.get(reverse("checkout-data-detail"))
     assert resp.status_code == statuses.HTTP_404_NOT_FOUND
 
 
 def test_checkout_data_anonymous(client):
-    """anonymous users cannot query the checkout data API"""
+    """Anonymous users cannot query the checkout data API"""
     resp = client.get(reverse("checkout-data-detail"))
     assert resp.status_code == statuses.HTTP_403_FORBIDDEN
 

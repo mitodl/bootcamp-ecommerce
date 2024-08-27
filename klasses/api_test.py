@@ -2,7 +2,6 @@
 klasses API tests
 """
 
-# pylint: disable=redefined-outer-name
 import datetime
 from datetime import timedelta
 from types import SimpleNamespace
@@ -54,19 +53,19 @@ def default_settings(settings):
 
 @pytest.fixture()
 def patched_create_run_enrollment(mocker):
-    """patched create_run_enrollment"""
+    """Patched create_run_enrollment"""
     return mocker.patch("klasses.api.create_run_enrollment", return_value=None)
 
 
 @pytest.fixture()
 def patched_deactivate_run_enrollment(mocker):
-    """patched deactivate_run_enrollment"""
+    """Patched deactivate_run_enrollment"""
     return mocker.patch("klasses.api.deactivate_run_enrollment", return_value=[])
 
 
 @pytest.fixture()
 def enrollment_data(user):
-    """enrollment data for testing"""
+    """Enrollment data for testing"""
     bootcamps = BootcampFactory.create_batch(2)
     enrollments = BootcampRunEnrollmentFactory.create_batch(
         3,
@@ -243,9 +242,9 @@ def test_fetch_bootcamp_run():
 @pytest.mark.parametrize(
     "end_date_params",
     [
-        dict(year=2020, month=1, day=15),
-        dict(year=2020, month=2, day=1),
-        dict(year=2021, month=1, day=1),
+        dict(year=2020, month=1, day=15),  # noqa: C408
+        dict(year=2020, month=2, day=1),  # noqa: C408
+        dict(year=2021, month=1, day=1),  # noqa: C408
         None,
     ],
 )
@@ -267,14 +266,14 @@ def test_fetch_bootcamp_run_dates(end_date_params):
 
 
 def test_create_run_enrollments(mocker, patched_create_run_enrollment, user):
-    """test create_run_enrollments"""
+    """Test create_run_enrollments"""
     bootcamp = BootcampFactory.create()
     bootcamp_runs = BootcampRunFactory.create_batch(3, bootcamp=bootcamp)
     create_run_enrollments(user, bootcamp_runs)
     assert patched_create_run_enrollment.call_count == 3
     expected_calls = []
     for run in bootcamp_runs:
-        expected_calls.append(mocker.call(user, run, None))
+        expected_calls.append(mocker.call(user, run, None))  # noqa: PERF401
     patched_create_run_enrollment.assert_has_calls(expected_calls)
 
 
@@ -303,13 +302,13 @@ def test_create_run_enrollment(mocker, user, settings, novoed_integration):
     assert user.profile.can_skip_application_steps is False
     successful_enrollments = []
     for run in runs:
-        successful_enrollments.append(create_run_enrollment(user, run, order=order))
+        successful_enrollments.append(create_run_enrollment(user, run, order=order))  # noqa: PERF401
     if novoed_integration:
         assert patched_novoed_enroll.call_count == 3
 
         expected_calls = []
         for run in runs:
-            expected_calls.append(
+            expected_calls.append(  # noqa: PERF401
                 mocker.call(
                     novoed_course_stub=run.novoed_course_stub, user_ids=[user.id]
                 )
@@ -340,7 +339,7 @@ def test_create_run_enrollments_creation_fail(caplog, mocker, user):
         "klasses.api.novoed_tasks.enroll_users_in_novoed_course.delay"
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: B017
         successful_enrollments = create_run_enrollments(user, [run], order=None)
         patched_novoed_enroll.assert_not_called()
         assert successful_enrollments == []

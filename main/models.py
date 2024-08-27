@@ -3,10 +3,10 @@
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import (
-    ForeignKey,
-    Model,
     SET_NULL,
+    ForeignKey,
     JSONField,
+    Model,
 )
 from mitol.common.models import TimestampedModel
 
@@ -69,7 +69,7 @@ class AuditableModel(Model):
         if before_obj is not None:
             before_dict = before_obj.to_dict()
 
-        audit_kwargs = dict(
+        audit_kwargs = dict(  # noqa: C408
             acting_user=acting_user, data_before=before_dict, data_after=self.to_dict()
         )
         audit_class = self.get_audit_class()
@@ -83,9 +83,7 @@ class ValidateOnSaveMixin(Model):
     class Meta:
         abstract = True
 
-    def save(
-        self, force_insert=False, force_update=False, **kwargs
-    ):  # pylint: disable=arguments-differ
+    def save(self, force_insert=False, force_update=False, **kwargs):  # noqa: D102, FBT002
         if not (force_insert or force_update):
             self.full_clean()
         super().save(force_insert=force_insert, force_update=force_update, **kwargs)

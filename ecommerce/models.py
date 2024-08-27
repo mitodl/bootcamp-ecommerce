@@ -2,23 +2,23 @@
 
 from django.conf import settings
 from django.db.models import (
-    CharField,
     CASCADE,
+    PROTECT,
+    SET_NULL,
+    CharField,
     DecimalField,
     ForeignKey,
     IntegerField,
-    SET_NULL,
-    PROTECT,
-    TextField,
-    Sum,
     JSONField,
+    Sum,
+    TextField,
 )
 from mitol.common.models import TimestampedModel
 
 from ecommerce.constants import CARD_TYPES
+from klasses.models import BootcampRun
 from main.models import AuditableModel, AuditModel
 from main.utils import serialize_model_object
-from klasses.models import BootcampRun
 
 
 class Order(AuditableModel, TimestampedModel):
@@ -80,7 +80,7 @@ class Order(AuditableModel, TimestampedModel):
         return bootcamp_run.display_title
 
     @classmethod
-    def get_audit_class(cls):
+    def get_audit_class(cls):  # noqa: D102
         return OrderAudit
 
     def to_dict(self):
@@ -112,7 +112,7 @@ class OrderAudit(AuditModel):
     order = ForeignKey(Order, null=True, on_delete=SET_NULL)
 
     @classmethod
-    def get_related_field_name(cls):
+    def get_related_field_name(cls):  # noqa: D102
         return "order"
 
     def __str__(self):
@@ -179,7 +179,7 @@ class Receipt(TimestampedModel):
     def payment_method(self):
         """Try to guess the payment source based on the Cybersource receipt"""
         payment_method = self.data.get("req_payment_method")
-        if payment_method == "card":
+        if payment_method == "card":  # noqa: RET503
             card_type = self.data.get("req_card_type")
             card_type_description = CARD_TYPES.get(card_type, "")
             card_number = self.data.get("req_card_number", "")

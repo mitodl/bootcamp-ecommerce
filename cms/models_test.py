@@ -56,7 +56,7 @@ def test_bootcamp_run_learning_resources():
     assert bootcamp_run_page.learning_resources
     assert bootcamp_run_page.learning_resources == learning_resources_page
     assert learning_resources_page.heading == "heading"
-    for item in learning_resources_page.items:  # pylint: disable=not-an-iterable
+    for item in learning_resources_page.items:
         assert item.value.get("title") == "title"
         assert item.value.get("links") == "<p>links</p>"
 
@@ -89,11 +89,7 @@ def test_three_column_image_text_section_under_runpage():
         bootcamp_run_page.three_column_image_text_section
         == three_column_image_text_section
     )
-    for (
-        item
-    ) in (
-        three_column_image_text_section.column_image_text_section
-    ):  # pylint: disable=not-an-iterable
+    for item in three_column_image_text_section.column_image_text_section:
         assert item.value.get("heading") == "heading of block"
         assert item.value.get("sub_heading") == "subheading of block"
         assert item.value.get("body").source == "<p>body of the block</p>"
@@ -124,11 +120,7 @@ def test_three_column_image_text_section_under_homepage():
     )
     assert home_page.three_column_image_text_section
     assert home_page.three_column_image_text_section == three_column_image_text_section
-    for (
-        item
-    ) in (
-        three_column_image_text_section.column_image_text_section
-    ):  # pylint: disable=not-an-iterable
+    for item in three_column_image_text_section.column_image_text_section:
         assert item.value.get("heading") == "heading of block"
         assert item.value.get("sub_heading") == "subheading of block"
         assert item.value.get("body").source == "<p>body of the block</p>"
@@ -254,7 +246,7 @@ def test_program_description_page():
     assert page.heading == "heading of the page"
     assert page.body == "body of the page"
 
-    for block in page.steps:  # pylint: disable=not-an-iterable
+    for block in page.steps:
         assert block.block_type == "steps"
         assert block.value["title"] == "Introduction"
         assert block.value["description"].source == "description of title"
@@ -336,7 +328,7 @@ def test_certificate_for_bootcamp_run_page():
     assert certificate_page.bootcamp_run_name == "bootcamp_run"
     assert certificate_page.certificate_name == "certificate_name"
     assert certificate_page.location == "location"
-    for signatory in certificate_page.signatories:  # pylint: disable=not-an-iterable
+    for signatory in certificate_page.signatories:
         assert signatory.value.name == "Name"
         assert signatory.value.title_1 == "Title_1"
         assert signatory.value.title_2 == "Title_2"

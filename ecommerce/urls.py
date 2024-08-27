@@ -7,13 +7,12 @@ from django.urls import path, re_path
 from ecommerce.views import (
     CheckoutDataView,
     OrderFulfillmentView,
+    OrderView,
     PaymentView,
     UserBootcampRunDetail,
     UserBootcampRunList,
     UserBootcampRunStatement,
-    OrderView,
 )
-
 
 urlpatterns = [
     path("api/v0/payment/", PaymentView.as_view(), name="create-payment"),

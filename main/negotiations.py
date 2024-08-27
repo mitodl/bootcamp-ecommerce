@@ -8,7 +8,7 @@ class IgnoreClientContentNegotiation(BaseContentNegotiation):
     Ignore whatever a request's 'Accept' header is if any.
     """
 
-    def select_parser(self, request, parsers):
+    def select_parser(self, request, parsers):  # noqa: ARG002
         """
         Select the first parser in the `.parser_classes` list.
 
@@ -21,7 +21,7 @@ class IgnoreClientContentNegotiation(BaseContentNegotiation):
         """
         return parsers[0]
 
-    def select_renderer(self, request, renderers, format_suffix=None):
+    def select_renderer(self, request, renderers, format_suffix=None):  # noqa: ARG002
         """
         Select the first renderer in the `.renderer_classes` list.
 

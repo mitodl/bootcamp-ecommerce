@@ -1,12 +1,11 @@
 """Tests for CMS forms"""
 
+import pytest
 from django.core.exceptions import ValidationError
 from django.template.exceptions import TemplateSyntaxError
-import pytest
 
 from cms.factories import LetterTemplatePageFactory
 from cms.forms import LetterTemplatePageForm
-
 
 pytestmark = pytest.mark.django_db
 

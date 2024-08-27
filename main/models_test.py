@@ -2,9 +2,9 @@
 
 from django.test import TestCase
 
-from main.utils import serialize_model_object
 from ecommerce.factories import LineFactory, OrderFactory
 from ecommerce.models import OrderAudit
+from main.utils import serialize_model_object
 from profiles.factories import UserFactory
 
 

@@ -8,9 +8,9 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from mitol.common.utils import now_in_utc
 
-from mail.v2 import api
-from mail.v2.constants import EMAIL_RECEIPT, EMAIL_PW_RESET, EMAIL_VERIFICATION
 from mail.forms import EmailDebuggerForm
+from mail.v2 import api
+from mail.v2.constants import EMAIL_PW_RESET, EMAIL_RECEIPT, EMAIL_VERIFICATION
 
 
 def drf_datetime(dt):
@@ -38,12 +38,12 @@ def _render_email(email_type):
     elif email_type == EMAIL_RECEIPT:
         context.update(
             {
-                "application": dict(
+                "application": dict(  # noqa: C408
                     price=5000.0,
-                    user=dict(
+                    user=dict(  # noqa: C408
                         email="janedoe@example.com",
-                        profile=dict(name="Jane Doe"),
-                        legal_address=dict(
+                        profile=dict(name="Jane Doe"),  # noqa: C408
+                        legal_address=dict(  # noqa: C408
                             street_address=["600 Technology Square", "2nd Floor"],
                             city="Cambridge",
                             state_or_territory="US-MA",
@@ -51,23 +51,23 @@ def _render_email(email_type):
                             postal_code="02139",
                         ),
                     ),
-                    bootcamp_run=dict(
+                    bootcamp_run=dict(  # noqa: C408
                         title="Artificial Intelligence",
                         start_date=drf_datetime(now_in_utc() + timedelta(days=15)),
                         end_date=drf_datetime(now_in_utc() + timedelta(days=30)),
                     ),
                     orders=[
-                        dict(
+                        dict(  # noqa: C408
                             updated_on=drf_datetime(now_in_utc() - timedelta(days=21)),
                             total_price_paid=800.0,
                             payment_method="Credit Card",
                         ),
-                        dict(
+                        dict(  # noqa: C408
                             updated_on=drf_datetime(now_in_utc() - timedelta(days=14)),
                             total_price_paid=200.67,
                             payment_method="Wire Transfer",
                         ),
-                        dict(
+                        dict(  # noqa: C408
                             updated_on=drf_datetime(now_in_utc() - timedelta(days=7)),
                             total_price_paid=729.85,
                             payment_method="Credit Card",

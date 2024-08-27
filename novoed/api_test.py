@@ -1,18 +1,15 @@
-# pylint: disable=redefined-outer-name
 """Test for NovoEd API functionality"""
 
 import pytest
-
-from rest_framework import status
-from requests.exceptions import HTTPError
 from mitol.common.utils import now_in_utc
+from requests.exceptions import HTTPError
+from rest_framework import status
 
 from klasses.factories import BootcampRunEnrollmentFactory
-from profiles.factories import UserFactory
+from main.test_utils import MockResponse
 from novoed.api import enroll_in_novoed_course, unenroll_from_novoed_course
 from novoed.constants import REGISTER_USER_URL_STUB, UNENROLL_USER_URL_STUB
-from main.test_utils import MockResponse
-
+from profiles.factories import UserFactory
 
 FAKE_API_KEY = "apikey"
 FAKE_API_SECRET = "apisecret"
@@ -51,14 +48,14 @@ def patched_post(mocker):
         [status.HTTP_204_NO_CONTENT, False, False, False],
     ],
 )
-def test_enroll_in_novoed_course(
+def test_enroll_in_novoed_course(  # noqa: PLR0913
     patched_post,
     novoed_user,
     response_status,
     exp_created,
     exp_existing,
     exp_update_sync_date,
-):  # pylint:disable=too-many-arguments
+):
     """
     enroll_in_novoed_course should make a request to enroll a user in NovoEd and return flags indicating the results
     """

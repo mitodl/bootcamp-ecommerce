@@ -1,14 +1,14 @@
 """Seed data API tests"""
 
-# pylint: disable=unused-argument, redefined-outer-name
 from types import SimpleNamespace
+
 import pytest
 
-from klasses.models import Bootcamp, BootcampRun
 from applications.models import ApplicationStep, BootcampRunApplicationStep
+from klasses.models import Bootcamp, BootcampRun
+from localdev.seed.api import create_seed_data, delete_seed_data
 from localdev.seed.config import SEED_DATA_PREFIX
 from localdev.seed.utils import get_raw_seed_data_from_file, seed_prefixed
-from localdev.seed.api import create_seed_data, delete_seed_data
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def seeded():
 
 
 @pytest.mark.django_db
-def test_seed_prefix(seeded):  # pylint: disable=unused-argument
+def test_seed_prefix(seeded):
     """
     A prefix should be added to certain field values that indicates which objects are seed data
     """

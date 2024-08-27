@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from applications.api import refresh_jobma_interview_submissions
-from applications.constants import AppStates, REVIEWABLE_APP_STATES
+from applications.constants import REVIEWABLE_APP_STATES, AppStates
 from applications.management.utils import fetch_bootcamp_run
 from applications.models import BootcampApplication
 from profiles.api import fetch_user
@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     help = __doc__
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "--run",
             type=str,
@@ -31,7 +31,7 @@ class Command(BaseCommand):
             required=True,
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002, D102
         user = fetch_user(options["user"])
         bootcamp_run = fetch_bootcamp_run(options["run"])
 
@@ -41,12 +41,12 @@ class Command(BaseCommand):
                 user=user, bootcamp_run=bootcamp_run
             )
         except BootcampApplication.DoesNotExist:
-            raise CommandError(
-                f"No application found for User={user}, Run={bootcamp_run}."
+            raise CommandError(  # noqa: B904, TRY200
+                f"No application found for User={user}, Run={bootcamp_run}."  # noqa: EM102
             )
         if user_run_application.state not in REVIEWABLE_APP_STATES:
             raise CommandError(
-                f"User's application is not in a reviewable state. User={user}, Run={bootcamp_run}, "
+                f"User's application is not in a reviewable state. User={user}, Run={bootcamp_run}, "  # noqa: EM102
                 f"State={user_run_application.state}."
             )
 

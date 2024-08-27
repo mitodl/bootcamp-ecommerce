@@ -40,12 +40,11 @@ def test_is_enabled(
     assert features.is_enabled(key, default=default) is expected
 
 
-# pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
     "feature_enabled,initial_value,update_value,expected_result_value",
     [(True, None, "new value", "new value"), (False, None, "new value", None)],
 )
-def test_if_feature_enabled(
+def test_if_feature_enabled(  # noqa: PLR0913
     mocker,
     settings,
     feature_enabled,
@@ -62,7 +61,7 @@ def test_if_feature_enabled(
     some_mock = mocker.Mock(value=initial_value)
 
     @features.if_feature_enabled(key)
-    def mock_editing_func(value):  # pylint: disable=missing-docstring
+    def mock_editing_func(value):
         some_mock.value = value
 
     mock_editing_func(update_value)

@@ -6,23 +6,23 @@ import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from social_core.backends.email import EmailAuth
 from social_django.models import UserSocialAuth
 from social_django.utils import load_backend
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 
 from authentication.serializers import (
     LoginEmailSerializer,
     LoginPasswordSerializer,
-    RegisterEmailSerializer,
+    RegisterComplianceSerializer,
     RegisterConfirmSerializer,
     RegisterDetailsSerializer,
+    RegisterEmailSerializer,
     RegisterExtraDetailsSerializer,
-    RegisterComplianceSerializer,
 )
 from authentication.utils import load_drf_strategy
 
@@ -37,7 +37,7 @@ class SocialAuthAPIView(APIView):
 
     def get_serializer_cls(self):  # pragma: no cover
         """Return the serializer cls"""
-        raise NotImplementedError("get_serializer_cls must be implemented")
+        raise NotImplementedError("get_serializer_cls must be implemented")  # noqa: EM101
 
     def post(self, request, backend_name=EmailAuth.name):
         """Processes a request"""
@@ -142,6 +142,6 @@ def get_social_auth_types(request):
     return Response(data=social_auths, status=status.HTTP_200_OK)
 
 
-def confirmation_sent(request, **kwargs):  # pylint: disable=unused-argument
+def confirmation_sent(request, **kwargs):  # noqa: ARG001
     """The confirmation of an email being sent"""
     return render(request, "confirmation_sent.html")

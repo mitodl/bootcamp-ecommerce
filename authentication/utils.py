@@ -4,7 +4,7 @@ from social_core.utils import get_strategy
 from social_django.utils import STORAGE
 
 
-class SocialAuthState:  # pylint: disable=too-many-instance-attributes
+class SocialAuthState:
     """Social auth state"""
 
     FLOW_REGISTER = "register"
@@ -31,7 +31,7 @@ class SocialAuthState:  # pylint: disable=too-many-instance-attributes
     STATE_INVALID_EMAIL = "invalid-email"
     STATE_USER_BLOCKED = "user-blocked"
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         state,
         *,
@@ -42,7 +42,7 @@ class SocialAuthState:  # pylint: disable=too-many-instance-attributes
         field_errors=None,
         redirect_url=None,
         user=None,
-    ):  # pylint: disable=too-many-arguments
+    ):
         self.state = state
         self.partial = partial
         self.flow = flow

@@ -3,21 +3,20 @@
 from collections import namedtuple
 from datetime import timedelta
 
-from django.urls import reverse
 import pytest
-from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
+from django.urls import reverse
 from mitol.common.utils import now_in_utc
+from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
-from klasses.factories import BootcampRunFactory, BootcampRunEnrollmentFactory
+from klasses.factories import BootcampRunEnrollmentFactory, BootcampRunFactory
 from klasses.serializers import BootcampRunSerializer
-
 
 pytestmark = pytest.mark.django_db
 
 
-RunInfo = namedtuple(
+RunInfo = namedtuple(  # noqa: PYI024
     "RunInfo",
     ["available_run", "alumni_run", "unavailable_run", "submitted_application_run"],
 )
@@ -48,7 +47,6 @@ def runs(user):
     )
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize(
     "is_alumni, user_has_bought_one_bootcamp",
     [(False, False), (True, False), (False, True)],

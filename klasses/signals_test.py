@@ -3,11 +3,9 @@
 import pytest
 
 from klasses.factories import BootcampRunFactory, PersonalPriceFactory
-from klasses.signals import personal_price_post_save, personal_price_post_delete
+from klasses.signals import personal_price_post_delete, personal_price_post_save
 
 pytestmark = pytest.mark.django_db
-
-# pylint: disable=redefined-outer-name
 
 
 def test_bootcamp_run_signal(mocker):
@@ -29,7 +27,7 @@ def test_personal_price_save_signal(mocker):
     assert mock_on_commit.call_count == 3
     # Test the function call from the signal handler
     patched_adjust_app = mocker.patch("klasses.signals.adjust_app_state_for_new_price")
-    personal_price_post_save(mocker.Mock(), personal_price, False)
+    personal_price_post_save(mocker.Mock(), personal_price, False)  # noqa: FBT003
     # Call the function that was passed into "on_commit", which in this case should be our patched API function
     mock_on_commit.call_args[0][0]()
     patched_adjust_app.assert_called_once_with(

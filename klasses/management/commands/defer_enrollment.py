@@ -1,8 +1,8 @@
 """Management command to change enrollment status"""
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.management.base import CommandError
-from django.contrib.auth import get_user_model
 
 from klasses.api import defer_enrollment
 from klasses.management.utils import EnrollmentChangeCommand, enrollment_summary
@@ -17,7 +17,7 @@ class Command(EnrollmentChangeCommand):
 
     help = "Sets a user's enrollment to 'deferred' and creates an enrollment for a different bootcamp run"
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "--user",
             type=str,
@@ -44,7 +44,7 @@ class Command(EnrollmentChangeCommand):
         )
         super().add_arguments(parser)
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002
         """Handle command execution"""
         user = fetch_user(options["user"])
         from_bootcamp_run_id = options["from_run"]
@@ -65,13 +65,13 @@ class Command(EnrollmentChangeCommand):
                 message = "'to' bootcamp does not exist ({})".format(to_bootcamp_run_id)
             else:
                 message = str(exc)
-            raise CommandError(message)
+            raise CommandError(message)  # noqa: B904, TRY200
         except ValidationError as exc:
-            raise CommandError("Invalid enrollment deferral - {}".format(exc))
+            raise CommandError("Invalid enrollment deferral - {}".format(exc))  # noqa: B904, EM103, TRY200
         else:
             if not to_enrollment:
                 raise CommandError(
-                    "Failed to create/update the target enrollment ({})".format(
+                    "Failed to create/update the target enrollment ({})".format(  # noqa: EM103
                         to_bootcamp_run_id
                     )
                 )

@@ -3,10 +3,10 @@
 import pytest
 
 from cms.factories import (
-    ResourcePageFactory,
-    HomePageFactory,
     BootcampIndexPageFactory,
     BootcampRunPageFactory,
+    HomePageFactory,
+    ResourcePageFactory,
     ResourcePagesSettingsFactory,
 )
 

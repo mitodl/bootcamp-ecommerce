@@ -1,10 +1,10 @@
 """Tests for verification_api"""
 
 from urllib.parse import quote_plus
-import pytest
 
-from django.core.mail import EmailMessage
+import pytest
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.mail import EmailMessage
 from django.shortcuts import reverse
 from django.test.client import RequestFactory
 from mitol.common.pytest_utils import any_instance_of

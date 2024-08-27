@@ -2,25 +2,24 @@
 
 import pytest
 
-from main.utils import serializer_date_format
 from ecommerce.factories import (
-    LineFactory,
     BootcampApplicationFactory,
-    ReceiptFactory,
+    LineFactory,
     OrderFactory,
+    ReceiptFactory,
 )
 from ecommerce.models import Order
 from ecommerce.serializers import (
-    PaymentSerializer,
-    OrderPartialSerializer,
-    LineSerializer,
     ApplicationOrderSerializer,
     CheckoutDataSerializer,
+    LineSerializer,
+    OrderPartialSerializer,
     OrderSerializer,
+    PaymentSerializer,
 )
 from klasses.factories import InstallmentFactory
 from klasses.serializers import BootcampRunSerializer, InstallmentSerializer
-
+from main.utils import serializer_date_format
 
 pytestmark = pytest.mark.django_db
 
@@ -47,7 +46,6 @@ def line():
     yield LineFactory.create()
 
 
-# pylint: disable=redefined-outer-name
 def test_orderpartial_serializer(line):
     """
     Test order partial serializer result

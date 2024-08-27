@@ -3,13 +3,11 @@
 import pytest
 
 from applications.factories import (
-    BootcampApplicationFactory,
     ApplicationStepSubmissionFactory,
+    BootcampApplicationFactory,
 )
 
 pytestmark = pytest.mark.django_db
-
-# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture

@@ -31,7 +31,7 @@ def enroll_users_in_novoed_course(*, user_ids, novoed_course_stub):
                 results["created"] += 1
             elif existed:
                 results["existed"] += 1
-        except:  # noqa: E722
+        except:  # noqa: E722, PERF203
             results["failed"] += 1
             log.exception(
                 "User enrollment in NovoEd failed (%s, %s)",
@@ -52,7 +52,7 @@ def unenroll_user_from_novoed_course(*, user_id, novoed_course_stub):
     user = User.objects.select_related("profile", "legal_address").get(id=user_id)
     try:
         api.unenroll_from_novoed_course(user, novoed_course_stub)
-        return user.email, True
+        return user.email, True  # noqa: TRY300
     except:  # noqa: E722
         log.exception(
             "User unenrollment from NovoEd failed (%s, %s)",

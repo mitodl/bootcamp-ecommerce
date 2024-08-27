@@ -21,9 +21,9 @@ def get_jobma_client():
     """
     session = Session()
     session.headers["Authorization"] = f"Bearer {settings.JOBMA_ACCESS_TOKEN}"
-    session.headers["User-Agent"] = (
-        f"BootcampEcommerceBot/{settings.VERSION} ({settings.SITE_BASE_URL})"
-    )
+    session.headers[
+        "User-Agent"
+    ] = f"BootcampEcommerceBot/{settings.VERSION} ({settings.SITE_BASE_URL})"
     return session
 
 

@@ -53,7 +53,7 @@ def deserialize_bootcamp_run(seed_data_spec):
             it was newly created, and a flag indicating whether or not it was updated
     """
     if seed_data_spec.parent_spec.db_object is None:
-        raise ValueError("BootcampRun requires a parent Bootcamp")
+        raise ValueError("BootcampRun requires a parent Bootcamp")  # noqa: EM101
     field_data = seed_adjusted_field_data(
         seed_data_spec.model_cls, seed_data_spec.raw_item_data
     )
@@ -83,7 +83,7 @@ def deserialize_bootcamp_run(seed_data_spec):
         date_range_choice=date_range_choice, series_index=date_index
     )
     query_dict = dict(**field_data, bootcamp=seed_data_spec.parent_spec.db_object)
-    upsert_dict = dict(start_date=start_date, end_date=end_date)
+    upsert_dict = dict(start_date=start_date, end_date=end_date)  # noqa: C408
     existing_obj_qset = BootcampRun.objects.filter(**query_dict)
     if existing_obj_qset.exists():
         existing_obj = existing_obj_qset.first()
@@ -110,11 +110,11 @@ def deserialize_app_step(seed_data_spec):
             it was newly created, and a flag indicating whether or not it was updated
     """
     if seed_data_spec.parent_spec.db_object is None:
-        raise ValueError("ApplicationStep requires a parent Bootcamp")
+        raise ValueError("ApplicationStep requires a parent Bootcamp")  # noqa: EM101
     if "submission_type" not in seed_data_spec.raw_item_data:
-        raise ValueError("ApplicationStep needs a 'submission_type' value")
+        raise ValueError("ApplicationStep needs a 'submission_type' value")  # noqa: EM101
     submission_type = seed_data_spec.raw_item_data["submission_type"]
-    query_dict = dict(
+    query_dict = dict(  # noqa: C408
         step_order=seed_data_spec.index, bootcamp=seed_data_spec.parent_spec.db_object
     )
     existing_obj_qset = ApplicationStep.objects.filter(**query_dict)
@@ -143,9 +143,9 @@ def deserialize_installment(seed_data_spec):
             it was newly created, and a flag indicating whether or not it was updated
     """
     if seed_data_spec.parent_spec.db_object is None:
-        raise ValueError("Installment requires a parent BootcampRun")
+        raise ValueError("Installment requires a parent BootcampRun")  # noqa: EM101
     if "amount" not in seed_data_spec.raw_item_data:
-        raise ValueError("Installment needs an 'amount' value")
+        raise ValueError("Installment needs an 'amount' value")  # noqa: EM101
     amount = seed_data_spec.raw_item_data["amount"]
     parent_bootcamp_run = seed_data_spec.parent_spec.db_object
     deadline_offset = INSTALLMENT_DUE_DATE_OFFSET_DAYS * (seed_data_spec.index + 1)
@@ -161,7 +161,8 @@ def deserialize_installment(seed_data_spec):
         ):
             return existing_installment, False, False
         installment = set_model_properties_from_dict(
-            existing_installment, dict(amount=amount, deadline=deadline)
+            existing_installment,
+            dict(amount=amount, deadline=deadline),  # noqa: C408
         )
         return installment, False, True
     installment = Installment.objects.create(
@@ -183,7 +184,7 @@ def deserialize_run_app_step(seed_data_spec):
             it was updated
     """
     if seed_data_spec.parent_spec.db_object is None:
-        raise ValueError("BootcampRunApplicationStep requires a parent BootcampRun")
+        raise ValueError("BootcampRunApplicationStep requires a parent BootcampRun")  # noqa: EM101
     parent_bootcamp_run = seed_data_spec.parent_spec.db_object
     app_steps = ApplicationStep.objects.filter(
         bootcamp=parent_bootcamp_run.bootcamp

@@ -1,6 +1,5 @@
 """Tests for compliance api"""
 
-# pylint: disable=redefined-outer-name,c-extension-no-member
 import time
 
 import pytest
@@ -10,8 +9,8 @@ from nacl.public import SealedBox
 
 from compliance import api
 from compliance.constants import (
-    RESULT_SUCCESS,
     RESULT_DENIED,
+    RESULT_SUCCESS,
     RESULT_UNKNOWN,
     TEMPORARY_FAILURE_REASON_CODES,
 )
@@ -82,7 +81,7 @@ def test_log_exports_inquiry(mocker, cybersource_private_key, user):
 )
 def test_verify_user_with_exports(
     user, cybersource_mock_client_responses, expected_result
-):  # pylint: disable=unused-argument
+):
     """Test that verify_user_with_exports handles"""
     result = api.verify_user_with_exports(user)
 

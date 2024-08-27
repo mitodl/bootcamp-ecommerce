@@ -15,7 +15,7 @@ class CanReadIfSelf(BasePermission):
     Only the requester can view their own pay.
     """
 
-    def has_permission(self, request, view):
+    def has_permission(self, request, view):  # noqa: D102
         if request.user.is_anonymous:
             raise Http404
 

@@ -2,17 +2,16 @@
 Utility functions for the backends
 """
 
-from datetime import datetime, timedelta
 import logging
-import pytz
+from datetime import datetime, timedelta
 
+import pytz
 from django.core.exceptions import ObjectDoesNotExist
 from requests.exceptions import HTTPError
 from social_django.utils import load_strategy
 
-from backends.exceptions import InvalidCredentialStored
 from backends.edxorg import EdxOrgOAuth2
-
+from backends.exceptions import InvalidCredentialStored
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ def _send_refresh_request(user_social):
         user_social.refresh_token(strategy)
     except HTTPError as exc:
         if exc.response.status_code in (400, 401):
-            raise InvalidCredentialStored(
+            raise InvalidCredentialStored(  # noqa: B904, TRY200
                 message="Received a {} status code from the OAUTH server".format(
                     exc.response.status_code
                 ),
@@ -71,6 +70,6 @@ def get_social_username(user):
         return user.social_auth.get(provider=EdxOrgOAuth2.name).uid
     except ObjectDoesNotExist:
         return None
-    except Exception as ex:  # pylint: disable=broad-except
-        log.error("Unexpected error retrieving social auth username: %s", ex)
+    except Exception as ex:  # noqa: BLE001
+        log.error("Unexpected error retrieving social auth username: %s", ex)  # noqa: TRY400
         return None

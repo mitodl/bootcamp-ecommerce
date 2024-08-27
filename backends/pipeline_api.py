@@ -15,9 +15,7 @@ from profiles.models import Profile
 log = logging.getLogger(__name__)
 
 
-def update_profile_from_edx(
-    backend, user, response, is_new, *args, **kwargs
-):  # pylint: disable=unused-argument
+def update_profile_from_edx(backend, user, response, is_new, *args, **kwargs):  # noqa: ARG001
     """
     Gets profile information from edX and saves it in the Profile object (creating one if necessary)
 
@@ -42,7 +40,7 @@ def update_profile_from_edx(
 
     username = get_social_username(user)
     user_profile_edx = backend.get_json(
-        urljoin(backend.EDXORG_BASE_URL, "/api/user/v1/accounts/{0}".format(username)),
+        urljoin(backend.EDXORG_BASE_URL, "/api/user/v1/accounts/{0}".format(username)),  # noqa: UP030
         headers={"Authorization": "Bearer {}".format(access_token)},
     )
 
@@ -64,7 +62,7 @@ def update_profile_from_edx(
     )
 
 
-def set_last_update(details, *args, **kwargs):  # pylint: disable=unused-argument
+def set_last_update(details, *args, **kwargs):  # noqa: ARG001
     """
     Pipeline function to add extra information about when the social auth
     profile has been updated.

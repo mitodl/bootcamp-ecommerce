@@ -41,7 +41,7 @@ def sync_hubspot_application_from_order(order):
     try:
         sync_hubspot_application(order.application)
     except AttributeError:
-        log.error("No matching BootcampApplication found for order %s", order.id)
+        log.error("No matching BootcampApplication found for order %s", order.id)  # noqa: TRY400
 
 
 def sync_hubspot_product(bootcamp_run):

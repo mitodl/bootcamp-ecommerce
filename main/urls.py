@@ -3,18 +3,16 @@ URLs for bootcamp
 """
 
 from django.conf import settings
-from django.urls import re_path
 from django.conf.urls.static import static
-from django.urls import re_path, include, path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-
-from wagtail.admin import urls as wagtailadmin_urls
+from django.urls import include, path, re_path
 from wagtail import urls as wagtail_urls
+from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 
-from main.views import react, BackgroundImagesCSSView, cms_login_redirect_view
+from main.views import BackgroundImagesCSSView, cms_login_redirect_view, react
 
 root_urlpatterns = [path("", include(wagtail_urls))]
 

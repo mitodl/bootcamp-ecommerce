@@ -1,6 +1,5 @@
 """Tests for API functionality that sets the state of an application"""
 
-# pylint: disable=redefined-outer-name
 import pytest
 
 from applications.api import derive_application_state
@@ -11,8 +10,8 @@ from applications.factories import (
 )
 from klasses.factories import BootcampRunFactory, InstallmentFactory
 from localdev.seed.app_state_api import (
-    set_application_state,
     ORDERED_APPLICATION_STEP_CLASSES,
+    set_application_state,
 )
 
 

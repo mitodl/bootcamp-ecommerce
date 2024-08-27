@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from applications.models import BootcampApplication
 from klasses.api import fetch_bootcamp_run
-from localdev.seed.app_state_api import set_application_state, ALLOWED_STATES
+from localdev.seed.app_state_api import ALLOWED_STATES, set_application_state
 from profiles.api import fetch_user
 
 
@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     help = __doc__
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "--user",
             type=str,
@@ -42,10 +42,10 @@ class Command(BaseCommand):
             required=True,
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002, D102
         if not options["app_id"] and not (options["user"] and options["run"]):
             raise CommandError(
-                "Need to provide the bootcamp application id, or both the user and bootcamp run."
+                "Need to provide the bootcamp application id, or both the user and bootcamp run."  # noqa: EM101
             )
         app_filters = {}
         if options["app_id"]:

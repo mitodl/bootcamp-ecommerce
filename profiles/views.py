@@ -2,18 +2,18 @@
 
 import pycountry
 from django.contrib.auth import get_user_model
+from mitol.common.utils import now_in_utc
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from mitol.common.utils import now_in_utc
 
 from main.permissions import UserIsOwnerPermission
 from profiles.models import ChangeEmailRequest
 from profiles.serializers import (
-    UserSerializer,
-    CountrySerializer,
     ChangeEmailRequestCreateSerializer,
     ChangeEmailRequestUpdateSerializer,
+    CountrySerializer,
+    UserSerializer,
 )
 
 User = get_user_model()
@@ -50,7 +50,7 @@ class ChangeEmailRequestViewSet(
 
     lookup_field = "code"
 
-    def get_permissions(self):
+    def get_permissions(self):  # noqa: D102
         permission_classes = []
         if self.action == "create":
             permission_classes = [IsAuthenticated]
@@ -63,8 +63,8 @@ class ChangeEmailRequestViewSet(
             expires_on__gt=now_in_utc(), confirmed=False
         )
 
-    def get_serializer_class(self):
-        if self.action == "create":
+    def get_serializer_class(self):  # noqa: D102
+        if self.action == "create":  # noqa: RET503
             return ChangeEmailRequestCreateSerializer
         elif self.action == "partial_update":
             return ChangeEmailRequestUpdateSerializer
@@ -75,8 +75,8 @@ class CountriesStatesViewSet(viewsets.ViewSet):
 
     permission_classes = []
 
-    def list(self, request):  # pylint:disable=unused-argument
+    def list(self, request):  # noqa: ARG002
         """Get generator for countries/states list"""
-        queryset = sorted(list(pycountry.countries), key=lambda country: country.name)
+        queryset = sorted(pycountry.countries, key=lambda country: country.name)
         serializer = CountrySerializer(queryset, many=True)
         return Response(serializer.data)

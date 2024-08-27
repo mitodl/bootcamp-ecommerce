@@ -1,50 +1,48 @@
 """Tests for bootcamp application serializers"""
 
-# pylint: disable=redefined-outer-name
 from datetime import timedelta
 from types import SimpleNamespace
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-import pytest
 import factory
+import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from applications.constants import (
     REVIEW_STATUS_APPROVED,
-    REVIEW_STATUS_REJECTED,
-    AppStates,
-    REVIEW_STATUS_WAITLISTED,
     REVIEW_STATUS_PENDING,
+    REVIEW_STATUS_REJECTED,
+    REVIEW_STATUS_WAITLISTED,
+    AppStates,
 )
 from applications.exceptions import InvalidApplicationStateException
-from applications.serializers import (
-    BootcampApplicationDetailSerializer,
-    BootcampRunStepSerializer,
-    SubmissionSerializer,
-    BootcampApplicationSerializer,
-    SubmissionReviewSerializer,
-)
 from applications.factories import (
+    ApplicationStepFactory,
+    ApplicationStepSubmissionFactory,
     BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
-    ApplicationStepSubmissionFactory,
-    ApplicationStepFactory,
     QuizSubmissionFactory,
     VideoInterviewSubmissionFactory,
+)
+from applications.serializers import (
+    BootcampApplicationDetailSerializer,
+    BootcampApplicationSerializer,
+    BootcampRunStepSerializer,
+    SubmissionReviewSerializer,
+    SubmissionSerializer,
 )
 from ecommerce.factories import OrderFactory
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from jobma.factories import InterviewFactory
 from klasses.factories import (
+    BootcampRunEnrollmentFactory,
     BootcampRunFactory,
     InstallmentFactory,
-    BootcampRunEnrollmentFactory,
 )
-from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
+from klasses.serializers import BootcampRunEnrollmentSerializer, BootcampRunSerializer
 from main.utils import serializer_date_format
 from profiles.factories import UserFactory
 from profiles.serializers import UserSerializer
-
 
 pytestmark = pytest.mark.django_db
 

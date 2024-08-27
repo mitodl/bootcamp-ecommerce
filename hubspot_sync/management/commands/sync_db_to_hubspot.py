@@ -12,8 +12,8 @@ from mitol.hubspot_api.api import HubspotObjectType
 
 from applications.models import BootcampApplication, BootcampApplicationLine
 from hubspot_sync.tasks import (
-    batch_upsert_hubspot_objects,
     batch_upsert_associations,
+    batch_upsert_hubspot_objects,
 )
 from klasses.models import BootcampRun
 
@@ -38,7 +38,7 @@ class Command(BaseCommand):
         task = batch_upsert_hubspot_objects.delay(
             HubspotObjectType.CONTACTS.value,
             ContentType.objects.get_for_model(User).model,
-            User._meta.app_label,
+            User._meta.app_label,  # noqa: SLF001
             self.create,
             object_ids=self.object_ids,
         )
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         task = batch_upsert_hubspot_objects.delay(
             HubspotObjectType.PRODUCTS.value,
             ContentType.objects.get_for_model(BootcampRun).model,
-            BootcampRun._meta.app_label,
+            BootcampRun._meta.app_label,  # noqa: SLF001
             self.create,
             object_ids=self.object_ids,
         )
@@ -80,7 +80,7 @@ class Command(BaseCommand):
         task = batch_upsert_hubspot_objects.delay(
             HubspotObjectType.DEALS.value,
             ContentType.objects.get_for_model(BootcampApplication).model,
-            BootcampApplication._meta.app_label,
+            BootcampApplication._meta.app_label,  # noqa: SLF001
             self.create,
             object_ids=self.object_ids,
         )
@@ -101,7 +101,7 @@ class Command(BaseCommand):
         task = batch_upsert_hubspot_objects.delay(
             HubspotObjectType.LINES.value,
             ContentType.objects.get_for_model(BootcampApplicationLine).model,
-            BootcampApplicationLine._meta.app_label,
+            BootcampApplicationLine._meta.app_label,  # noqa: SLF001
             self.create,
             object_ids=self.object_ids,
         )
@@ -192,7 +192,7 @@ class Command(BaseCommand):
             help="create or update",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002, D102
         if not options["mode"]:
             sys.stderr.write("You must specify mode ('create' or 'update')\n")
             sys.exit(1)

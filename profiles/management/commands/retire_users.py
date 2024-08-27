@@ -9,8 +9,8 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 from social_django.models import UserSocialAuth
-
 from user_util import user_util
+
 from jobma.constants import EXPIRED
 from jobma.models import Interview
 from profiles.api import fetch_users
@@ -43,17 +43,16 @@ For multiple users, add arg `--user` for each user i.e:\n
 `./manage.py retire_users -u foo -u bar -u baz`
 """
 
-    def create_parser(self, prog_name, subcommand, **kwargs):
+    def create_parser(self, prog_name, subcommand, **kwargs):  # noqa: ARG002
         """
         create parser to add new line in help text.
         """
-        parser = super(Command, self).create_parser(prog_name, subcommand)
+        parser = super(Command, self).create_parser(prog_name, subcommand)  # noqa: UP008
         parser.formatter_class = RawTextHelpFormatter
         return parser
 
     def add_arguments(self, parser):
-        """create args"""
-        # pylint: disable=expression-not-assigned
+        """Create args"""
         parser.add_argument(
             "-u",
             "--user",
@@ -67,7 +66,7 @@ For multiple users, add arg `--user` for each user i.e:\n
         """Convert user email to retired email format."""
         return user_util.get_retired_email(email, RETIRED_USER_SALTS, RETIRED_EMAIL_FMT)
 
-    def display_messages(self, message, log_messages, is_error=False):
+    def display_messages(self, message, log_messages, is_error=False):  # noqa: FBT002
         """
         Display error on console
         Args:
@@ -78,12 +77,12 @@ For multiple users, add arg `--user` for each user i.e:\n
         self.stdout.write(message, style_func=self.style.ERROR if is_error else None)
         log_messages.append(message)
 
-    def handle(self, *args, **kwargs):  # pylint: disable=unused-argument
+    def handle(self, *args, **kwargs):  # noqa: ARG002, D102
         users = kwargs.get("users", [])
         if not users:
             # show error when no user selected.
             raise CommandError(
-                "No user(s) provided. Please provide user(s) using -u or --user."
+                "No user(s) provided. Please provide user(s) using -u or --user."  # noqa: EM101
             )
 
         users = fetch_users(kwargs["users"])

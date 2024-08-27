@@ -1,19 +1,19 @@
 """Users api"""
 
-from collections import namedtuple
 import csv
+import logging
+import operator
+import re
+from collections import namedtuple
 from datetime import datetime, timedelta
 from functools import reduce
-import logging
-import re
-import operator
-import pytz
 
-from django.db import transaction
-from django.db.models import Q
+import pytz
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.db.models import Q
 from django.utils.timezone import make_aware
 from mitol.common.utils import first_or_none, max_or_none, unique, unique_ignore_case
 
@@ -34,7 +34,7 @@ User = get_user_model()
 
 CASE_INSENSITIVE_SEARCHABLE_FIELDS = {"email"}
 
-Alum = namedtuple(
+Alum = namedtuple(  # noqa: PYI024
     "Alum",
     [
         "learner_email",
@@ -87,12 +87,12 @@ def _determine_filter_field(user_property):
     else:
         try:
             validate_email(user_property)
-            return "email"
+            return "email"  # noqa: TRY300
         except ValidationError:
             return "username"
 
 
-def fetch_user(filter_value, ignore_case=True):
+def fetch_user(filter_value, ignore_case=True):  # noqa: FBT002
     """
     Attempts to fetch a user based on several properties
 
@@ -112,7 +112,7 @@ def fetch_user(filter_value, ignore_case=True):
         return User.objects.get(**query)
     except User.DoesNotExist as e:
         raise User.DoesNotExist(
-            "Could not find User with {}={} ({})".format(
+            "Could not find User with {}={} ({})".format(  # noqa: EM103
                 filter_field,
                 filter_value,
                 "case-insensitive" if ignore_case else "case-sensitive",
@@ -120,7 +120,7 @@ def fetch_user(filter_value, ignore_case=True):
         ) from e
 
 
-def fetch_users(filter_values, ignore_case=True):
+def fetch_users(filter_values, ignore_case=True):  # noqa: FBT002
     """
     Attempts to fetch a set of users based on several properties. The property being searched
     (i.e.: id, email, or username) is assumed to be the same for all of the given values, so the
@@ -146,7 +146,7 @@ def fetch_users(filter_values, ignore_case=True):
     )
     if len(filter_values) > len(unique_filter_values):
         raise ValidationError(
-            "Duplicate values provided ({})".format(
+            "Duplicate values provided ({})".format(  # noqa: EM103
                 set(filter_values).intersection(unique_filter_values)
             )
         )
@@ -164,14 +164,14 @@ def fetch_users(filter_values, ignore_case=True):
         user_qset = User.objects.filter(
             **{"{}__in".format(filter_field): filter_values}
         )
-    if not user_qset.count() == len(filter_values):
+    if user_qset.count() != len(filter_values):
         valid_values = user_qset.values_list(filter_field, flat=True)
         invalid_values = set(filter_values) - set(valid_values)
         raise User.DoesNotExist(
-            "Could not find Users with these '{}' values ({}): {}".format(
+            "Could not find Users with these '{}' values ({}): {}".format(  # noqa: EM103
                 filter_field,
                 "case-insensitive" if ignore_case else "case-sensitive",
-                sorted(list(invalid_values)),
+                sorted(list(invalid_values)),  # noqa: C414
             )
         )
     return user_qset
@@ -208,7 +208,7 @@ def find_available_username(initial_username_base):
     # Any query for suffixed usernames could come up empty. The minimum suffix will be added to
     # the username in that case.
     current_min_suffix = 1
-    while letters_to_truncate < len(initial_username_base):
+    while letters_to_truncate < len(initial_username_base):  # noqa: RET503
         username_base = initial_username_base[
             0 : len(initial_username_base) - letters_to_truncate
         ]
@@ -303,7 +303,7 @@ def import_alum(alum):
             email=alum.learner_email, username=alum.learner_email
         )
 
-        from profiles.models import Profile, LegalAddress
+        from profiles.models import LegalAddress, Profile
 
         LegalAddress.objects.create(user=user)
         Profile.objects.create(user=user, can_skip_application_steps=True)
@@ -314,8 +314,8 @@ def import_alum(alum):
             "User does not exist against that email=%s but created without password and incomplete profile",
             alum.learner_email,
         )
-    bootcamp_start_date = datetime.strptime(alum.bootcamp_start_date, "%Y-%m-%d")
-    bootcamp_end_date = datetime.strptime(alum.bootcamp_end_date, "%Y-%m-%d")
+    bootcamp_start_date = datetime.strptime(alum.bootcamp_start_date, "%Y-%m-%d")  # noqa: DTZ007
+    bootcamp_end_date = datetime.strptime(alum.bootcamp_end_date, "%Y-%m-%d")  # noqa: DTZ007
     bootcamp_start_date = make_aware(bootcamp_start_date, timezone=pytz.UTC)
     bootcamp_end_date = make_aware(bootcamp_end_date, timezone=pytz.UTC)
 
@@ -355,18 +355,18 @@ def parse_alumni_csv(csv_path):
     Returns:
         list of Alumns, list:
     """
-    with open(csv_path) as csv_file:
+    with open(csv_path) as csv_file:  # noqa: PTH123
         reader = csv.DictReader(csv_file)
 
         header_row = reader.fieldnames
         if header_row and ALUM_LEARNER_EMAIL in header_row:
             for field in ALUM_HEADER_FIELDS:
                 if field not in header_row:
-                    raise AlumImportException(f"Unable to find column header {field}")
+                    raise AlumImportException(f"Unable to find column header {field}")  # noqa: EM102
         else:
-            raise AlumImportException("Unable to find the header row")
+            raise AlumImportException("Unable to find the header row")  # noqa: EM101
 
-        alumni = [
+        return [
             Alum(
                 learner_email=row[ALUM_LEARNER_EMAIL],
                 bootcamp_name=row[ALUM_BOOTCAMP_NAME],
@@ -376,8 +376,6 @@ def parse_alumni_csv(csv_path):
             )
             for row in reader
         ]
-
-        return alumni
 
 
 def import_alumni(csv_path):
@@ -396,7 +394,7 @@ def import_alumni(csv_path):
         for alum in alumni:
             try:
                 import_alum(alum)
-            except:  # noqa: E722
-                raise AlumImportException(
-                    f"Error while importing row for user={alum.learner_email} bootcamp={alum.bootcamp_name} run={alum.bootcamp_run_title}"
+            except:  # noqa: E722, PERF203
+                raise AlumImportException(  # noqa: B904, TRY200
+                    f"Error while importing row for user={alum.learner_email} bootcamp={alum.bootcamp_name} run={alum.bootcamp_run_title}"  # noqa: EM102
                 )

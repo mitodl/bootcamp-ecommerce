@@ -4,9 +4,9 @@ import pytest
 
 from applications.constants import (
     ALL_REVIEW_STATUSES,
-    REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
+    REVIEW_STATUS_REJECTED,
 )
 from applications.factories import ApplicationStepSubmissionFactory
 from applications.filters import ApplicationStepSubmissionFilterSet

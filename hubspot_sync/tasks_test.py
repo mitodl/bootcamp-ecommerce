@@ -2,7 +2,6 @@
 Tests for hubspot_sync tasks
 """
 
-# pylint: disable=redefined-outer-name
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from hubspot.crm.associations import BatchInputPublicAssociation, PublicAssociation
@@ -163,7 +162,7 @@ def test_batch_create_hubspot_objects_with_ids(settings, mocker, mocked_celery):
 def test_batch_update_hubspot_objects_chunked(mocker, id_count):
     """batch_update_hubspot_objects_chunked should make expected api calls and args"""
     contacts = UserFactory.create_batch(id_count)
-    mock_ids = sorted(
+    mock_ids = sorted(  # noqa: C414
         list(
             zip(
                 [contact.id for contact in contacts],

@@ -1,6 +1,7 @@
 """CMS templatetags"""
 
 from urllib.parse import quote_plus
+
 from django import template
 from wagtail.images.templatetags.wagtailimages_tags import image_url
 

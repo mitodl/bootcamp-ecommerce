@@ -1,21 +1,19 @@
 """Common fixtures"""
 
-# pylint: disable=unused-argument, redefined-outer-name
 from types import SimpleNamespace
 
 import pytest
 import responses
-
 from django.test.client import Client
 from rest_framework.test import APIClient
 from wagtail.models import Site
 
-from applications.constants import AppStates, VALID_SUBMISSION_TYPE_CHOICES
+from applications.constants import VALID_SUBMISSION_TYPE_CHOICES, AppStates
 from applications.factories import (
-    BootcampApplicationFactory,
     ApplicationStepFactory,
-    BootcampRunApplicationStepFactory,
     ApplicationStepSubmissionFactory,
+    BootcampApplicationFactory,
+    BootcampRunApplicationStepFactory,
 )
 from backends.edxorg import EdxOrgOAuth2
 from klasses.factories import InstallmentFactory
@@ -29,7 +27,7 @@ def social_extra_data():
 
 
 @pytest.fixture
-def user(db, social_extra_data):
+def user(db, social_extra_data):  # noqa: ARG001
     """Creates a user"""
     # create a user
     user = UserFactory.create()
@@ -43,7 +41,7 @@ def user(db, social_extra_data):
 
 
 @pytest.fixture
-def staff_user(db, user):
+def staff_user(db, user):  # noqa: ARG001
     """Staff user fixture"""
     user.is_staff = True
     user.save()

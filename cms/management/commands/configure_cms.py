@@ -6,18 +6,18 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-from wagtail.models import Site, Page
+from wagtail.models import Page, Site
 
-from cms.models import HomePage, ResourcePage, ResourcePagesSettings, LetterTemplatePage
+from cms.models import HomePage, LetterTemplatePage, ResourcePage, ResourcePagesSettings
 
 HOME_PAGE_SLUG = "home"
-DEFAULT_WAGTAIL_HOMEPAGE_PROPS = dict(
+DEFAULT_WAGTAIL_HOMEPAGE_PROPS = dict(  # noqa: C408
     title="Welcome to your new Wagtail site!", depth=2
 )
-DEFAULT_HOMEPAGE_PROPS = dict(
+DEFAULT_HOMEPAGE_PROPS = dict(  # noqa: C408
     title="MIT Bootcamps", tagline="Learn Innovation and Entrepreneurship from MIT"
 )
-DEFAULT_SITE_PROPS = dict(hostname="localhost", port=80, is_default_site=True)
+DEFAULT_SITE_PROPS = dict(hostname="localhost", port=80, is_default_site=True)  # noqa: C408
 
 
 def create_resource_page_under_parent(title, parent):
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             help="Revert the CMS content to default structure",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002
         """Setup all CMS related stuff (home page, catalog etc.)"""
         if options["uninstall"]:
             self.remove_home_page()

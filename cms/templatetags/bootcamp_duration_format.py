@@ -1,4 +1,4 @@
-from django import template
+from django import template  # noqa: D100
 
 register = template.Library()
 

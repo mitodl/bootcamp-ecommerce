@@ -1,39 +1,39 @@
 """Models for bootcamp applications"""
 
 from decimal import Decimal
-from uuid import uuid4
 from functools import reduce
 from operator import or_
+from uuid import uuid4
 
-from django.core.exceptions import ValidationError
-from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.urls import reverse
-from django_fsm import FSMField, transition, RETURN_VALUE
-from wagtail.fields import RichTextField
-from mitol.common.utils import now_in_utc
+from django_fsm import RETURN_VALUE, FSMField, transition
 from mitol.common.models import TimestampedModel
+from mitol.common.utils import now_in_utc
+from wagtail.fields import RichTextField
 
 from applications.constants import (
-    VALID_SUBMISSION_TYPE_CHOICES,
-    AppStates,
-    VALID_APP_STATE_CHOICES,
-    VALID_REVIEW_STATUS_CHOICES,
-    VALID_SUBMISSION_STATUS_CHOICES,
+    INTEGRATION_PREFIX,
+    LETTER_TYPE_APPROVED,
+    LETTER_TYPE_REJECTED,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_PENDING,
     SUBMISSION_STATUS_PENDING,
-    LETTER_TYPE_APPROVED,
-    LETTER_TYPE_REJECTED,
+    VALID_APP_STATE_CHOICES,
     VALID_LETTER_TYPE_CHOICES,
+    VALID_REVIEW_STATUS_CHOICES,
+    VALID_SUBMISSION_STATUS_CHOICES,
+    VALID_SUBMISSION_TYPE_CHOICES,
+    AppStates,
 )
-from applications.constants import INTEGRATION_PREFIX
-from applications.utils import validate_file_extension, check_eligibility_to_skip_steps
+from applications.utils import check_eligibility_to_skip_steps, validate_file_extension
 from ecommerce.models import Order
 from jobma.models import Interview
-from klasses.api import deactivate_run_enrollment, create_run_enrollment
+from klasses.api import create_run_enrollment, deactivate_run_enrollment
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from main.models import ValidateOnSaveMixin
 
@@ -73,10 +73,10 @@ class BootcampRunApplicationStep(ValidateOnSaveMixin):
     )
     due_date = models.DateTimeField(null=True, blank=True)
 
-    def clean(self):
+    def clean(self):  # noqa: D102
         if self.bootcamp_run.bootcamp_id != self.application_step.bootcamp_id:
             raise ValidationError(
-                "The bootcamp run does not match the bootcamp linked to the application step ({}, {}).".format(
+                "The bootcamp run does not match the bootcamp linked to the application step ({}, {}).".format(  # noqa: EM103
                     self.bootcamp_run.bootcamp_id, self.application_step.bootcamp_id
                 )
             )
@@ -123,7 +123,7 @@ class BootcampApplicationQuerySet(models.QuerySet):
 class BootcampApplicationManager(models.Manager):
     """Custom manager for BootcampApplication model"""
 
-    def get_queryset(self):  # pylint:disable=missing-docstring
+    def get_queryset(self):  # noqa: D102
         return BootcampApplicationQuerySet(self.model, using=self._db)
 
     def prefetch_state_data(self):
@@ -144,7 +144,7 @@ class BootcampApplication(TimestampedModel):
     resume_file = models.FileField(
         upload_to=_get_resume_upload_path, null=True, blank=True
     )
-    linkedin_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)  # noqa: DJ001
     resume_upload_date = models.DateTimeField(null=True, blank=True)
     state = FSMField(
         default=AppStates.AWAITING_PROFILE_COMPLETION.value,
@@ -305,7 +305,7 @@ class BootcampApplication(TimestampedModel):
         conditions=[check_eligibility_to_skip_steps],
     )
     def skip_application_steps(self):
-        """skip application steps for alumni"""
+        """Skip application steps for alumni"""
 
     def all_application_steps_submitted(self):
         """
@@ -411,9 +411,9 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
     valid_submission_types = reduce(
         or_,
         (
-            models.Q(app_label="applications", model=model_cls._meta.model_name)
+            models.Q(app_label="applications", model=model_cls._meta.model_name)  # noqa: SLF001
             for model_cls in APP_SUBMISSION_MODELS
-        ),  # pylint: disable=protected-access
+        ),
     )
     content_type = models.ForeignKey(
         ContentType,
@@ -428,13 +428,13 @@ class ApplicationStepSubmission(TimestampedModel, ValidateOnSaveMixin):
         # Users should not be able to provide multiple submissions for the same application step
         unique_together = ["bootcamp_application", "run_application_step"]
 
-    def clean(self):
+    def clean(self):  # noqa: D102
         if (
             self.bootcamp_application.bootcamp_run
             != self.run_application_step.bootcamp_run
         ):
             raise ValidationError(
-                "The application step does not match the application's bootcamp run ({}, {}).".format(
+                "The application step does not match the application's bootcamp run ({}, {}).".format(  # noqa: EM103
                     self.bootcamp_application.bootcamp_run_id,
                     self.run_application_step.bootcamp_run_id,
                 )

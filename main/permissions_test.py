@@ -2,7 +2,7 @@
 
 import pytest
 
-from main.permissions import UserIsOwnerPermission, UserIsOwnerOrAdminPermission
+from main.permissions import UserIsOwnerOrAdminPermission, UserIsOwnerPermission
 
 
 @pytest.mark.parametrize("has_owner_field", [True, False])

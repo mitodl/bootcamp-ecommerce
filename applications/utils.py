@@ -3,6 +3,7 @@ Application utils
 """
 
 import os
+
 from django.core.exceptions import ValidationError
 
 
@@ -13,10 +14,10 @@ def validate_file_extension(value):
     Args:
         value (File): file name
     """
-    ext = os.path.splitext(value.name)[1]
+    ext = os.path.splitext(value.name)[1]  # noqa: PTH122
     valid_extensions = [".pdf", ".doc", ".docx", ".odt"]
     if ext.lower() not in valid_extensions:
-        raise ValidationError("Unsupported file extension.")
+        raise ValidationError("Unsupported file extension.")  # noqa: EM101
 
 
 def check_eligibility_to_skip_steps(bootcamp_application):

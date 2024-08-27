@@ -3,7 +3,7 @@
 from django.db import migrations
 
 
-def generate_bootcamp_run_key(apps, schema_editor):
+def generate_bootcamp_run_key(apps, schema_editor):  # noqa: D103
     Line = apps.get_model("ecommerce", "Line")
     BootcampRun = apps.get_model("klasses", "BootcampRun")
 

@@ -63,7 +63,7 @@ def render_applicant_letter_text(application, *, letter_type):
         template_text = page.rejection_text
         subject = "Regarding your application"
     else:
-        raise ValueError(f"Unexpected letter type {letter_type}")
+        raise ValueError(f"Unexpected letter type {letter_type}")  # noqa: EM102
 
     first_name, last_name = get_first_and_last_names(application.user)
     rendered_text = render_template(

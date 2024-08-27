@@ -19,10 +19,10 @@ class Job(AuditableModel):
     run = models.OneToOneField(BootcampRun, on_delete=models.CASCADE)
 
     @classmethod
-    def get_audit_class(cls):
+    def get_audit_class(cls):  # noqa: D102
         return JobAudit
 
-    def to_dict(self):
+    def to_dict(self):  # noqa: D102
         return serialize_model_object(self)
 
     def __str__(self):
@@ -35,7 +35,7 @@ class JobAudit(AuditModel):
     job = models.ForeignKey(Job, null=True, on_delete=models.SET_NULL)
 
     @classmethod
-    def get_related_field_name(cls):
+    def get_related_field_name(cls):  # noqa: D102
         return "job"
 
 
@@ -45,19 +45,19 @@ class Interview(AuditableModel):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    interview_url = models.TextField(blank=True, null=True)
-    results_url = models.TextField(blank=True, null=True)
+    interview_url = models.TextField(blank=True, null=True)  # noqa: DJ001
+    results_url = models.TextField(blank=True, null=True)  # noqa: DJ001
     status = models.TextField(
         default=PENDING,
         choices=[(status, status) for status in JOBMA_INTERVIEW_STATUSES],
     )
-    interview_token = models.TextField(blank=True, null=True)
+    interview_token = models.TextField(blank=True, null=True)  # noqa: DJ001
 
     @classmethod
-    def get_audit_class(cls):
+    def get_audit_class(cls):  # noqa: D102
         return InterviewAudit
 
-    def to_dict(self):
+    def to_dict(self):  # noqa: D102
         return serialize_model_object(self)
 
     def __str__(self):
@@ -70,5 +70,5 @@ class InterviewAudit(AuditModel):
     interview = models.ForeignKey(Interview, null=True, on_delete=models.SET_NULL)
 
     @classmethod
-    def get_related_field_name(cls):
+    def get_related_field_name(cls):  # noqa: D102
         return "interview"

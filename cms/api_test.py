@@ -1,10 +1,9 @@
 """Tests for CMS functions"""
 
-from django.template.exceptions import TemplateSyntaxError
 import pytest
+from django.template.exceptions import TemplateSyntaxError
 
 from cms.api import render_template
-
 
 TEMPLATE = "{{ x }}{{ y }}"
 BROKEN_TEMPLATE = "{% x %}"

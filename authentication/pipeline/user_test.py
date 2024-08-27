@@ -1,7 +1,5 @@
 """Tests of user pipeline actions"""
 
-# pylint: disable=redefined-outer-name
-
 import pytest
 from django.contrib.sessions.middleware import SessionMiddleware
 from social_django.utils import load_backend, load_strategy
@@ -241,7 +239,7 @@ def test_create_user_via_email(
     response = user_actions.create_user_via_email(
         mock_create_user_strategy,
         mock_email_backend,
-        details=dict(email=user.email),
+        details=dict(email=user.email),  # noqa: C408
         pipeline_index=0,
         flow=SocialAuthState.FLOW_REGISTER,
         user=(None if is_new else user),
@@ -304,7 +302,7 @@ def test_create_user_via_email_with_shorter_name(mocker, mock_email_backend):
         user_actions.create_user_via_email(
             mock_strategy,
             mock_email_backend,
-            details=dict(email="test@example.com"),
+            details=dict(email="test@example.com"),  # noqa: C408
             pipeline_index=0,
             flow=SocialAuthState.FLOW_REGISTER,
         )
@@ -334,7 +332,7 @@ def test_create_user_via_email_create_fail(
         user_actions.create_user_via_email(
             mock_create_user_strategy,
             mock_email_backend,
-            details=dict(email="someuser@example.com"),
+            details=dict(email="someuser@example.com"),  # noqa: C408
             pipeline_index=0,
             flow=SocialAuthState.FLOW_REGISTER,
         )
@@ -345,7 +343,7 @@ def test_create_user_via_email_create_fail(
 @pytest.mark.parametrize("hubspot_key", [None, "fake-key"])
 def test_create_profile(
     mock_email_backend, mock_create_profile_strategy, hubspot_key, settings, mocker
-):  # pylint:disable=too-many-arguments
+):
     """
     Tests that create_profile creates a profile
     """
@@ -449,7 +447,7 @@ def test_send_user_to_hubspot(mocker, settings):
         [True, False, None, False],  # feature enabled, no result
     ],
 )
-def test_activate_user(
+def test_activate_user(  # noqa: PLR0913
     settings,
     mocker,
     mock_create_user_strategy,
@@ -460,7 +458,7 @@ def test_activate_user(
     has_inquiry,
     computed_result,
     expected,
-):  # pylint: disable=too-many-arguments
+):
     """Test that activate_user takes the correct action"""
     settings.FEATURES["SOCIAL_AUTH_API"] = True
     user.is_active = is_active

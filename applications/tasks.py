@@ -7,12 +7,12 @@ from django.conf import settings
 from django.db.models import Q
 from mitol.common.utils import now_in_utc
 
-from applications.constants import (
-    SUBMISSION_STATUS_PENDING,
-    REVIEW_COMPLETED_APP_STATES,
-)
-from applications.models import BootcampApplication, ApplicationStepSubmission
 from applications import api
+from applications.constants import (
+    REVIEW_COMPLETED_APP_STATES,
+    SUBMISSION_STATUS_PENDING,
+)
+from applications.models import ApplicationStepSubmission, BootcampApplication
 from main.celery import app
 
 log = logging.getLogger()

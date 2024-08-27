@@ -1,33 +1,34 @@
 """Tests for authentication views"""
 
-# pylint: disable=redefined-outer-name,too-many-public-methods
 import json
-from contextlib import contextmanager, ExitStack
+from contextlib import ExitStack, contextmanager
 from unittest.mock import patch
 
+import factory
+import pytest
+import responses
 from django.conf import settings
 from django.contrib.auth import get_user, get_user_model
 from django.core import mail
 from django.db import transaction
-from django.urls import reverse
 from django.test import Client, override_settings
-import factory
+from django.urls import reverse
 from faker import Faker
-from hypothesis import settings as hypothesis_settings, strategies as st, Verbosity
+from hypothesis import Verbosity
+from hypothesis import settings as hypothesis_settings
+from hypothesis import strategies as st
+from hypothesis.extra.django import TestCase as HTestCase
 from hypothesis.stateful import (
+    Bundle,
+    HealthCheck,
+    RuleBasedStateMachine,
     consumes,
     precondition,
     rule,
-    Bundle,
-    RuleBasedStateMachine,
-    HealthCheck,
 )
-from hypothesis.extra.django import TestCase as HTestCase
-import pytest
-import responses
+from mitol.common.pytest_utils import any_instance_of
 from rest_framework import status
 from social_core.backends.email import EmailAuth
-from mitol.common.pytest_utils import any_instance_of
 
 from authentication.serializers import PARTIAL_PIPELINE_TOKEN_KEY
 from authentication.utils import SocialAuthState
@@ -38,10 +39,10 @@ from compliance.test_utils import (
     mock_cybersource_wsdl,
     mock_cybersource_wsdl_operation,
 )
-from profiles.factories import UserFactory, UserSocialAuthFactory
-from profiles.serializers import UserSerializer
 from main import features
 from main.test_utils import MockResponse
+from profiles.factories import UserFactory, UserSocialAuthFactory
+from profiles.serializers import UserSerializer
 
 pytestmark = [pytest.mark.django_db]
 
@@ -60,15 +61,14 @@ def email_user(user):
     return user
 
 
-# pylint:disable=too-many-arguments
-def assert_api_call(
+def assert_api_call(  # noqa: PLR0913
     client,
     url,
     payload,
     expected,
-    expect_authenticated=False,
+    expect_authenticated=False,  # noqa: FBT002
     expect_status=status.HTTP_200_OK,
-    use_defaults=True,
+    use_defaults=True,  # noqa: FBT002
 ):
     """Run the API call and perform basic assertions"""
     assert bool(get_user(client).is_authenticated) is False
@@ -131,8 +131,6 @@ class AuthStateMachine(RuleBasedStateMachine):
     If you add a new state to the auth flows, create a new bundle to represent that state and define
     methods to define transitions into and (optionally) out of that state.
     """
-
-    # pylint: disable=too-many-instance-attributes
 
     ConfirmationSentAuthStates = Bundle("confirmation-sent")
     ConfirmationRedeemedAuthStates = Bundle("confirmation-redeemed")
@@ -344,7 +342,7 @@ class AuthStateMachine(RuleBasedStateMachine):
         auth_state=consumes(RegisterExtraDetailsAuthStates),
     )
     @precondition(lambda self: self.flow_started)
-    def login_email_abandoned(self, auth_state):  # pylint: disable=unused-argument
+    def login_email_abandoned(self, auth_state):
         """Login with a user that abandoned the register flow"""
         # NOTE: This works by "consuming" an extra details auth state,
         #       but discarding the state and starting a new login.
@@ -794,7 +792,7 @@ def test_new_register_no_session_partial(client):
             "state": SocialAuthState.STATE_REGISTER_CONFIRM_SENT,
         },
     )
-    assert PARTIAL_PIPELINE_TOKEN_KEY not in client.session.keys()
+    assert PARTIAL_PIPELINE_TOKEN_KEY not in client.session.keys()  # noqa: SIM118
 
 
 def test_login_email_error(client, mocker):

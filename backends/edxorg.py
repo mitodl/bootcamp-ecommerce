@@ -5,8 +5,8 @@ EdX.org backend for Python Social Auth
 from datetime import datetime
 from urllib.parse import urljoin
 
-from django.conf import settings
 import pytz
+from django.conf import settings
 from social_core.backends.oauth import BaseOAuth2
 
 
@@ -34,7 +34,7 @@ class EdxOrgOAuth2(BaseOAuth2):
         ("scope", "scope"),
     ]
 
-    def user_data(self, access_token, *args, **kwargs):
+    def user_data(self, access_token, *args, **kwargs):  # noqa: ARG002
         """
         Loads user data from service.
 
@@ -81,7 +81,7 @@ class EdxOrgOAuth2(BaseOAuth2):
             "last_name": "",
         }
 
-    def get_user_id(self, details, response):
+    def get_user_id(self, details, response):  # noqa: ARG002
         """
         Return a unique ID for the current user, by default from server
         response.
@@ -105,6 +105,6 @@ class EdxOrgOAuth2(BaseOAuth2):
         Returns:
             dict of information about the user
         """
-        response = super(EdxOrgOAuth2, self).refresh_token(token, *args, **kwargs)
+        response = super(EdxOrgOAuth2, self).refresh_token(token, *args, **kwargs)  # noqa: UP008
         response["updated_at"] = datetime.now(tz=pytz.UTC).timestamp()
         return response

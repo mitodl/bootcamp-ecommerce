@@ -1,7 +1,7 @@
 """Exceptions for mail"""
 
 
-class SendBatchException(Exception):
+class SendBatchException(Exception):  # noqa: N818
     """
     An exception which occurs when batch processing of email fails. This contains a list of other exceptions and
     the emails which caused the failure.

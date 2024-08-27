@@ -19,12 +19,13 @@ messages = messages_for_recipients([
 send_messages(messages)
 """
 
-from email.utils import formataddr
 import logging
 import re
 from collections import namedtuple
+from email.utils import formataddr
 from urllib.parse import urlparse
 
+import premailer
 from anymail.message import AnymailMessage
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -32,7 +33,6 @@ from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
-import premailer
 from wagtail.models import Site
 from wagtail.models.sites import get_site_for_hostname
 
@@ -42,7 +42,7 @@ from mail.v2.exceptions import MultiEmailValidationError
 log = logging.getLogger()
 
 
-EmailMetadata = namedtuple("EmailMetadata", ["tags", "user_variables"])
+EmailMetadata = namedtuple("EmailMetadata", ["tags", "user_variables"])  # noqa: PYI024
 
 
 class UserMessageProps:
@@ -106,7 +106,7 @@ def get_base_context():
     try:
         site = get_site_for_hostname(hostname, None)
     except Site.DoesNotExist:
-        log.error("Unable to generate")
+        log.error("Unable to generate")  # noqa: TRY400
     else:
         resource_page_urls = get_resource_page_urls(site)
     return {
@@ -222,7 +222,7 @@ def message_for_recipient(recipient, context, template_name):
     Returns:
         django.core.mail.EmailMultiAlternatives: email message with rendered content
     """
-    return list(messages_for_recipients([(recipient, context)], template_name))[0]
+    return list(messages_for_recipients([(recipient, context)], template_name))[0]  # noqa: RUF015
 
 
 def build_messages(template_name, recipients, extra_context, metadata=None):
@@ -320,7 +320,7 @@ def send_messages(messages):
     for msg in messages:
         try:
             msg.send()
-        except:  # noqa: E722
+        except:  # noqa: E722, PERF203
             log.exception("Error sending email '%s' to %s", msg.subject, msg.to)
 
 
@@ -349,7 +349,7 @@ def validate_email_addresses(email_addresses):
     for email in email_addresses:
         try:
             validate_email(email)
-        except ValidationError:
+        except ValidationError:  # noqa: PERF203
             invalid_emails.add(email)
     if invalid_emails:
         raise MultiEmailValidationError(invalid_emails)

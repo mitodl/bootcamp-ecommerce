@@ -18,9 +18,7 @@ class RequireProviderException(AuthException):
 class PartialException(AuthException):
     """Partial pipeline exception"""
 
-    def __init__(
-        self, backend, partial, errors=None, reason_code=None, user=None
-    ):  # pylint:disable=too-many-arguments
+    def __init__(self, backend, partial, errors=None, reason_code=None, user=None):  # noqa: PLR0913
         self.partial = partial
         self.errors = errors
         self.reason_code = reason_code
@@ -82,5 +80,5 @@ class UserTryAgainLaterException(PartialException):
     """The user should try to register again later"""
 
 
-class UserMissingSocialAuthException(Exception):
+class UserMissingSocialAuthException(Exception):  # noqa: N818
     """Raised if the user doesn't have a social auth"""

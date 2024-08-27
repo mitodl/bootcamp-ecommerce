@@ -23,7 +23,7 @@ class BootcampDjangoStrategy(DjangoStrategy):
 
     def is_api_request(self):
         """Returns True if the request is being executed in an API context"""
-        raise NotImplementedError("is_api_request must be implemented")
+        raise NotImplementedError("is_api_request must be implemented")  # noqa: EM101
 
 
 class DefaultStrategy(BootcampDjangoStrategy):
@@ -33,7 +33,7 @@ class DefaultStrategy(BootcampDjangoStrategy):
         """Returns True if the request is being executed in an API context"""
         return False
 
-    def create_user(self, *args, **kwargs):
+    def create_user(self, *args, **kwargs):  # noqa: D102
         with transaction.atomic():
             user = super().create_user(*args, **kwargs)
             LegalAddress.objects.create(user=user)
@@ -47,14 +47,14 @@ class DjangoRestFrameworkStrategy(BootcampDjangoStrategy):
     def __init__(self, storage, drf_request=None, tpl=None):
         self.drf_request = drf_request
         # pass the original django request to DjangoStrategy
-        request = drf_request._request  # pylint: disable=protected-access
+        request = drf_request._request  # noqa: SLF001
         super().__init__(storage, request=request, tpl=tpl)
 
     def is_api_request(self):
         """Returns True if the request is being executed in an API context"""
         return True
 
-    def request_data(self, merge=True):
+    def request_data(self, merge=True):  # noqa: ARG002, FBT002
         """Returns the request data"""
         if not self.drf_request:
             return {}

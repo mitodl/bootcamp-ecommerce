@@ -11,7 +11,6 @@ from applications.mail_api import (
 )
 from applications.models import ApplicantLetter
 
-
 pytestmark = pytest.mark.django_db
 
 

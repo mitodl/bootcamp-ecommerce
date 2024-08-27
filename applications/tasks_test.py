@@ -6,17 +6,17 @@ import pytest
 from mitol.common.utils import now_in_utc
 
 from applications.constants import (
-    AppStates,
     SUBMISSION_STATUS_PENDING,
     SUBMISSION_STATUS_SUBMITTED,
     SUBMISSION_VIDEO,
+    AppStates,
 )
 from applications.factories import (
-    BootcampApplicationFactory,
-    VideoInterviewSubmissionFactory,
-    ApplicationStepSubmissionFactory,
     ApplicationStepFactory,
+    ApplicationStepSubmissionFactory,
+    BootcampApplicationFactory,
     BootcampRunApplicationStepFactory,
+    VideoInterviewSubmissionFactory,
 )
 from applications.tasks import (
     create_and_send_applicant_letter,
@@ -56,9 +56,7 @@ def mock_jobma_client(mocker):
     )
 
 
-def test_create_and_send_applicant_letter(
-    mocker, application
-):  # pylint: disable=redefined-outer-name
+def test_create_and_send_applicant_letter(mocker, application):
     """This should just start a task to forward the request to the API function"""
     letter_type = "letter_type"
     patched = mocker.patch("applications.mail_api.create_and_send_applicant_letter")
@@ -108,8 +106,8 @@ def test_create_and_send_applicant_letter(
             False,
         ],
     ],
-)  # pylint:disable=too-many-locals
-def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments,redefined-outer-name
+)
+def test_refresh_pending_interview_links(  # noqa: PLR0913
     mocker, settings, state, status, old_link, old_run, recreated, mock_jobma_client
 ):
     """Test that refresh_pending_interview_links updates links only when appropriate"""
@@ -157,9 +155,7 @@ def test_refresh_pending_interview_links(  # pylint:disable=too-many-arguments,r
         assert new_interview.id == interview.id
 
 
-def test_refresh_pending_interview_links_bad_interviews(  # pylint:disable=too-many-arguments,redefined-outer-name
-    mocker, mock_jobma_client
-):
+def test_refresh_pending_interview_links_bad_interviews(mocker, mock_jobma_client):
     """Test that refresh_pending_interview_links handles missing submissions & empty urls"""
     mock_log = mocker.patch("applications.tasks.log.error")
     applications = BootcampApplicationFactory.create_batch(2)

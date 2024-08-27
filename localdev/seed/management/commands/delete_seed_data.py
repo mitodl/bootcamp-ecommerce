@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     help = __doc__
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: ARG002, D102
         raw_seed_data = get_raw_seed_data_from_file()
         results = delete_seed_data(raw_seed_data)
 

@@ -10,35 +10,35 @@ from types import SimpleNamespace
 import pytest
 import pytz
 from mitol.common.utils import (
-    is_near_now,
-    has_equal_properties,
-    first_or_none,
+    all_equal,
+    all_unique,
+    chunks,
+    filter_dict_by_key_set,
     first_matching_item,
+    first_or_none,
+    get_error_response_summary,
+    group_into_dict,
+    has_all_keys,
+    has_equal_properties,
+    is_near_now,
+    item_at_index_or_none,
     max_or_none,
+    now_in_utc,
     partition_to_lists,
     unique,
     unique_ignore_case,
-    item_at_index_or_none,
-    all_equal,
-    all_unique,
-    has_all_keys,
-    group_into_dict,
-    now_in_utc,
-    filter_dict_by_key_set,
-    chunks,
-    get_error_response_summary,
 )
 
 from ecommerce.factories import Order, ReceiptFactory
+from main.test_utils import MockResponse, format_as_iso8601
 from main.utils import (
-    get_field_names,
-    is_empty_file,
-    serialize_model_object,
-    is_blank,
-    partition_around_index,
     format_month_day,
+    get_field_names,
+    is_blank,
+    is_empty_file,
+    partition_around_index,
+    serialize_model_object,
 )
-from main.test_utils import format_as_iso8601, MockResponse
 
 
 def test_now_in_utc():
@@ -73,8 +73,8 @@ def test_first_or_none():
 def test_first_matching_item():
     """first_matching_item should return the first item where the predicate function returns true"""
     assert first_matching_item([1, 2, 3, 4, 5], lambda x: x % 2 == 0) == 2
-    assert first_matching_item([], lambda x: True) is None
-    assert first_matching_item(["x", "y", "z"], lambda x: False) is None
+    assert first_matching_item([], lambda x: True) is None  # noqa: ARG005
+    assert first_matching_item(["x", "y", "z"], lambda x: False) is None  # noqa: ARG005
 
 
 def test_max_or_none():
@@ -147,7 +147,7 @@ def test_is_blank():
     assert is_blank(None) is True
     assert is_blank(0) is False
     assert is_blank(" ") is False
-    assert is_blank(False) is False
+    assert is_blank(False) is False  # noqa: FBT003
     assert is_blank("value") is False
 
 
@@ -157,7 +157,7 @@ def test_group_into_dict():
     grouped by generated keys
     """
 
-    class Car:  # pylint: disable=missing-docstring
+    class Car:
         def __init__(self, make, model):
             self.make = make
             self.model = model
@@ -316,7 +316,7 @@ def test_chunks_iterable():
     input_range = range(count)
     chunk_output = []
     for chunk in chunks(input_range, chunk_size=10):
-        chunk_output.append(chunk)
+        chunk_output.append(chunk)  # noqa: PERF402
     assert len(chunk_output) == ceil(113 / 10)
 
     range_list = []
@@ -341,7 +341,7 @@ def test_has_equal_properties():
     """
     obj = SimpleNamespace(a=1, b=2, c=3)
     assert has_equal_properties(obj, {}) is True
-    assert has_equal_properties(obj, dict(a=1, b=2)) is True
-    assert has_equal_properties(obj, dict(a=1, b=2, c=3)) is True
-    assert has_equal_properties(obj, dict(a=2)) is False
-    assert has_equal_properties(obj, dict(d=4)) is False
+    assert has_equal_properties(obj, dict(a=1, b=2)) is True  # noqa: C408
+    assert has_equal_properties(obj, dict(a=1, b=2, c=3)) is True  # noqa: C408
+    assert has_equal_properties(obj, dict(a=2)) is False  # noqa: C408
+    assert has_equal_properties(obj, dict(d=4)) is False  # noqa: C408

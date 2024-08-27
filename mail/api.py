@@ -2,17 +2,16 @@
 Provides functions for sending and retrieving data about in-app email
 """
 
-import logging
 import json
+import logging
 
 import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import status
 from mitol.common.utils import chunks
+from rest_framework import status
 
 from mail.exceptions import SendBatchException
-
 
 log = logging.getLogger(__name__)
 
@@ -36,8 +35,13 @@ class MailgunClient:
         return {"from": settings.EMAIL_SUPPORT}
 
     @classmethod
-    def _mailgun_request(  # pylint: disable=too-many-arguments
-        cls, request_func, endpoint, params, sender_name=None, raise_for_status=True
+    def _mailgun_request(  # noqa: PLR0913
+        cls,
+        request_func,
+        endpoint,
+        params,
+        sender_name=None,
+        raise_for_status=True,  # noqa: FBT002
     ):
         """
         Sends a request to the Mailgun API
@@ -70,16 +74,16 @@ class MailgunClient:
         return response
 
     @classmethod
-    def send_batch(
+    def send_batch(  # noqa: PLR0913
         cls,
         subject,
         body,
-        recipients,  # pylint: disable=too-many-arguments, too-many-locals
+        recipients,
         sender_address=None,
         sender_name=None,
         chunk_size=settings.MAILGUN_BATCH_CHUNK_SIZE,
-        raise_for_status=True,
-    ):  # pylint:disable=too-many-locals, too-many-arguments
+        raise_for_status=True,  # noqa: FBT002
+    ):
         """
         Sends a text email to a list of recipients (one email per recipient) via batch.
 
@@ -124,8 +128,7 @@ class MailgunClient:
         exception_pairs = []
 
         for chunk in chunks(recipients, chunk_size=chunk_size):
-            # pylint: disable=unnecessary-comprehension
-            chunk_dict = {email: context for email, context in chunk}
+            chunk_dict = {email: context for email, context in chunk}  # noqa: C416
             emails = list(chunk_dict.keys())
 
             params = {
@@ -149,7 +152,7 @@ class MailgunClient:
                 responses.append(response)
             except ImproperlyConfigured:
                 raise
-            except Exception as exception:  # pylint: disable=broad-except
+            except Exception as exception:  # noqa: BLE001
                 exception_pairs.append((emails, exception))
 
         if len(exception_pairs) > 0:
@@ -158,16 +161,16 @@ class MailgunClient:
         return responses
 
     @classmethod
-    def send_individual_email(
+    def send_individual_email(  # noqa: PLR0913
         cls,
         subject,
         body,
-        recipient,  # pylint: disable=too-many-arguments
+        recipient,
         recipient_variables=None,
         sender_address=None,
         sender_name=None,
-        raise_for_status=True,
-    ):  # pylint:disable=too-many-arguments
+        raise_for_status=True,  # noqa: FBT002
+    ):
         """
         Sends a text email to a single recipient.
 

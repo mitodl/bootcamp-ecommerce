@@ -4,7 +4,7 @@ import pytest
 from django.db import IntegrityError
 
 from authentication import api
-from profiles.factories import UserFactory, LegalAddressFactory
+from profiles.factories import LegalAddressFactory, UserFactory
 from profiles.serializers import UserSerializer
 
 pytestmark = pytest.mark.django_db

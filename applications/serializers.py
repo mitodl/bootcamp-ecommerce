@@ -2,22 +2,22 @@
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import serializers
 from mitol.common.utils import first_or_none, now_in_utc
+from rest_framework import serializers
 
 from applications import models
 from applications.constants import (
-    AppStates,
     REVIEW_STATUS_APPROVED,
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_WAITLISTED,
+    AppStates,
 )
 from applications.exceptions import InvalidApplicationStateException
 from applications.models import VideoInterviewSubmission
 from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.models import BootcampRunCertificate
-from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
+from klasses.serializers import BootcampRunEnrollmentSerializer, BootcampRunSerializer
 from profiles.serializers import UserSerializer
 
 
@@ -45,7 +45,7 @@ class InterviewUrlMixin:
 
     def get_interview_url(self, submission):
         """Return the results URL for the reviewer or others to view the interview"""
-        if (
+        if (  # noqa: RET503
             submission.content_type_id
             == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
@@ -63,7 +63,7 @@ class SubmissionSerializer(InterviewUrlMixin, serializers.ModelSerializer):
 
     def get_take_interview_url(self, submission):
         """Return the interview URL for the applicant to take the interview"""
-        if (
+        if (  # noqa: RET503
             submission.content_type_id
             == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
@@ -71,7 +71,7 @@ class SubmissionSerializer(InterviewUrlMixin, serializers.ModelSerializer):
 
     def get_interview_token(self, submission):
         """Return the interview token for the applicant"""
-        if (
+        if (  # noqa: RET503
             submission.content_type_id
             == ContentType.objects.get_for_model(VideoInterviewSubmission).id
         ):
@@ -162,13 +162,13 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
 
     def get_certificate_link(self, application):
         """Returns certificate link if both certificate and certificate template are present and enabled"""
-        if settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):
+        if settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):  # noqa: RET503
             user = application.user
             try:
                 certificate = application.bootcamp_run.certificates.get(user=user)
             except BootcampRunCertificate.DoesNotExist:
                 return None
-            if (
+            if (  # noqa: RET503
                 certificate
                 and certificate.bootcamp_run.page
                 and certificate.bootcamp_run.page.certificate_page
@@ -240,7 +240,7 @@ class SubmissionReviewSerializer(InterviewUrlMixin, serializers.ModelSerializer)
                 or bootcamp_application.total_paid > 0
             ):
                 # HTTP 409 error
-                raise InvalidApplicationStateException()
+                raise InvalidApplicationStateException()  # noqa: RSE102
             attrs["review_status_date"] = now_in_utc()
 
         return attrs

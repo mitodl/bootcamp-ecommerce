@@ -5,8 +5,8 @@ Test cases for email API
 import json
 import string
 
-from django.core.exceptions import ImproperlyConfigured
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 from requests import Response
 from requests.exceptions import HTTPError
 from rest_framework.status import (
@@ -15,9 +15,8 @@ from rest_framework.status import (
     HTTP_401_UNAUTHORIZED,
 )
 
-from mail.exceptions import SendBatchException
 from mail.api import MailgunClient
-
+from mail.exceptions import SendBatchException
 
 pytestmark = pytest.mark.django_db
 
@@ -26,9 +25,7 @@ pytestmark = pytest.mark.django_db
 def mocked_json():
     """Mocked version of the json method for the Response class"""
 
-    def _json(
-        *args, **kwargs
-    ):  # pylint:disable=unused-argument, missing-docstring, redefined-outer-name
+    def _json(*args, **kwargs):
         return {}
 
     yield _json
@@ -38,7 +35,6 @@ batch_recipient_arg = [("a@example.com", None), ("b@example.com", {"name": "B"})
 individual_recipient_arg = "a@example.com"
 
 
-# pylint: disable=redefined-outer-name
 @pytest.fixture
 def mock_post(mocker, mocked_json):
     """Mock post with successful json response"""
@@ -52,7 +48,6 @@ def mock_post(mocker, mocked_json):
     yield mocked
 
 
-# pylint: disable=redefined-outer-name
 @pytest.mark.parametrize("sender_name", [None, "Tester"])
 def test_send_batch(settings, sender_name, mock_post):
     """
@@ -65,7 +60,7 @@ def test_send_batch(settings, sender_name, mock_post):
     )
     assert mock_post.called is True
     called_args, called_kwargs = mock_post.call_args
-    assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")
+    assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")  # noqa: RUF015
     assert called_kwargs["auth"] == ("api", settings.MAILGUN_KEY)
     assert called_kwargs["data"]["text"].startswith("email body")
     assert called_kwargs["data"]["subject"] == "email subject"
@@ -94,7 +89,7 @@ def test_send_batch_recipient_override(settings, mock_post):
     )
     assert mock_post.called is True
     called_args, called_kwargs = mock_post.call_args
-    assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")
+    assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")  # noqa: RUF015
     assert called_kwargs["auth"] == ("api", settings.MAILGUN_KEY)
     assert (
         called_kwargs["data"]["text"]
@@ -119,7 +114,8 @@ def test_send_batch_chunk(settings, mock_post):
     settings.MAILGUN_RECIPIENT_OVERRIDE = None
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), None) for letter in string.ascii_letters
+        ("{0}@example.com".format(letter), None)
+        for letter in string.ascii_letters  # noqa: UP030
     ]
     chunked_emails_to = [
         recipient_tuples[i : i + chunk_size]
@@ -133,7 +129,7 @@ def test_send_batch_chunk(settings, mock_post):
     assert mock_post.call_count == 6
     for call_num, args in enumerate(mock_post.call_args_list):
         called_args, called_kwargs = args
-        assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")
+        assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")  # noqa: RUF015
         assert called_kwargs["data"]["text"].startswith("email body")
         assert called_kwargs["data"]["subject"] == "email subject"
         assert sorted(called_kwargs["data"]["to"]) == sorted(
@@ -157,7 +153,7 @@ def test_send_batch_error(settings, recipient_override, mock_post):
 
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), {"letter": letter})
+        ("{0}@example.com".format(letter), {"letter": letter})  # noqa: UP030
         for letter in string.ascii_letters
     ]
     chunked_emails_to = [
@@ -179,7 +175,7 @@ def test_send_batch_error(settings, recipient_override, mock_post):
 
     for call_num, args in enumerate(mock_post.call_args_list):
         called_args, called_kwargs = args
-        assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")
+        assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")  # noqa: RUF015
         assert called_kwargs["data"]["text"].startswith("email body")
         assert called_kwargs["data"]["subject"] == "email subject"
         assert sorted(called_kwargs["data"]["to"]) == sorted(
@@ -213,7 +209,8 @@ def test_send_batch_400_no_raise(settings, mocker, mock_post, mocked_json):
 
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), None) for letter in string.ascii_letters
+        ("{0}@example.com".format(letter), None)
+        for letter in string.ascii_letters  # noqa: UP030
     ]
     assert len(recipient_tuples) == 52
     settings.MAILGUN_RECIPIENT_OVERRIDE = None
@@ -241,7 +238,8 @@ def test_send_batch_exception(settings, mock_post):
 
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), None) for letter in string.ascii_letters
+        ("{0}@example.com".format(letter), None)
+        for letter in string.ascii_letters  # noqa: UP030
     ]
     chunked_emails_to = [
         recipient_tuples[i : i + chunk_size]
@@ -256,7 +254,7 @@ def test_send_batch_exception(settings, mock_post):
     assert mock_post.call_count == 6
     for call_num, args in enumerate(mock_post.call_args_list):
         called_args, called_kwargs = args
-        assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")
+        assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")  # noqa: RUF015
         assert called_kwargs["data"]["text"].startswith("email body")
         assert called_kwargs["data"]["subject"] == "email subject"
         assert sorted(called_kwargs["data"]["to"]) == sorted(
@@ -286,7 +284,8 @@ def test_send_batch_improperly_configured(settings, mocker, mock_post):
 
     chunk_size = 10
     recipient_pairs = [
-        ("{0}@example.com".format(letter), None) for letter in string.ascii_letters
+        ("{0}@example.com".format(letter), None)
+        for letter in string.ascii_letters  # noqa: UP030
     ]
     with pytest.raises(ImproperlyConfigured) as ex:
         MailgunClient.send_batch(
@@ -319,7 +318,7 @@ def test_send_individual_email(settings, sender_name, mock_post):
     assert response.status_code == HTTP_200_OK
     assert mock_post.called is True
     called_args, called_kwargs = mock_post.call_args
-    assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")
+    assert list(called_args)[0] == "{}/{}".format(settings.MAILGUN_URL, "messages")  # noqa: RUF015
     assert called_kwargs["auth"] == ("api", settings.MAILGUN_KEY)
     assert called_kwargs["data"]["text"].startswith("email body")
     assert called_kwargs["data"]["subject"] == "email subject"

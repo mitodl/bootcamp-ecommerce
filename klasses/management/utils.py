@@ -1,7 +1,6 @@
 """Utility functions/classes for bootcamp management commands"""
 
 from django.core.management.base import BaseCommand
-
 from mitol.common.utils import has_equal_properties
 
 
@@ -49,7 +48,7 @@ def create_or_update_enrollment(model_cls, defaults=None, **kwargs):
 class EnrollmentChangeCommand(BaseCommand):
     """Base class for management commands that change enrollment status"""
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser):  # noqa: D102
         parser.add_argument(
             "-f",
             "--force",
@@ -58,5 +57,5 @@ class EnrollmentChangeCommand(BaseCommand):
             help="Ignores validation when performing the desired status change",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: D102
         pass

@@ -9,7 +9,6 @@ from ecommerce.factories import OrderFactory
 from ecommerce.models import OrderAudit
 from profiles.factories import UserFactory
 
-
 pytestmark = pytest.mark.django_db
 
 

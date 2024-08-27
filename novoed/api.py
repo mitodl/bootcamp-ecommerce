@@ -1,20 +1,20 @@
 """API functionality for integrating with NovoEd"""
 
-from urllib.parse import urljoin
 import logging
 import operator
+from urllib.parse import urljoin
 
 import requests
 from django.conf import settings
 from djangosaml2idp.processors import BaseProcessor
-from rest_framework import status
 from mitol.common.utils import now_in_utc
+from rest_framework import status
 
 from klasses.models import BootcampRunEnrollment
 from novoed.constants import (
     REGISTER_USER_URL_STUB,
-    UNENROLL_USER_URL_STUB,
     SAML_ID_STAGING_PREFIX,
+    UNENROLL_USER_URL_STUB,
 )
 from profiles.api import get_first_and_last_names
 
@@ -103,7 +103,7 @@ class NovoEdSamlProcessor(BaseProcessor):
     when responding to auth requests.
     """
 
-    def create_identity(self, user, sp_attribute_mapping):
+    def create_identity(self, user, sp_attribute_mapping):  # noqa: D102
         results = {}
         for user_attr, out_attr in sp_attribute_mapping.items():
             # This line allows the attribute map for a ServiceProvider record to have keys that refer to

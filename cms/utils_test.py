@@ -2,7 +2,7 @@
 
 import pytest
 
-from cms.factories import ResourcePagesSettingsFactory, ResourcePageFactory
+from cms.factories import ResourcePageFactory, ResourcePagesSettingsFactory
 from cms.utils import get_resource_page_urls, invalidate_resource_page_urls
 
 pytestmark = pytest.mark.django_db

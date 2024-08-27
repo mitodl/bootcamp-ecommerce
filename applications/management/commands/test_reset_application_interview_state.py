@@ -2,16 +2,17 @@
 
 import pytest
 from django.core.management.base import CommandError
-from applications.management.commands import reset_application_interview_state
+
 from applications.constants import REVIEWABLE_APP_STATES, AppStates
 from applications.factories import BootcampApplicationFactory
+from applications.management.commands import reset_application_interview_state
 
 pytestmark = [pytest.mark.django_db]
 
 
 @pytest.mark.parametrize(
     "state",
-    set(item.value for item in AppStates).difference(set(REVIEWABLE_APP_STATES)),
+    set(item.value for item in AppStates).difference(set(REVIEWABLE_APP_STATES)),  # noqa: C401
 )
 def test_reset_application_interview_state_prints_error_on_invalid_states(state):
     """Test that the reset interview command throws an error when the application is in Approved state already"""

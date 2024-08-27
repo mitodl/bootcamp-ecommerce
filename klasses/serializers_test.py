@@ -11,13 +11,11 @@ from cms.factories import AdmissionSectionFactory, BootcampRunPageFactory
 from cms.serializers import BootcampRunPageSerializer
 from klasses.factories import BootcampFactory, BootcampRunFactory, InstallmentFactory
 from klasses.serializers import (
-    BootcampSerializer,
     BootcampRunSerializer,
+    BootcampSerializer,
     InstallmentSerializer,
 )
 from main.utils import serializer_date_format
-
-# pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 
 pytestmark = pytest.mark.django_db
 

@@ -8,20 +8,19 @@ from mitol.common.utils import now_in_utc
 
 from localdev.seed.config import (
     SEED_DATA_FILE_PATH,
-    SEED_DATA_PREFIX,
     SEED_DATA_KEY_FIELDS,
+    SEED_DATA_PREFIX,
     DateRangeOption,
 )
-
 
 DEFAULT_RANGE_DAYS = 90
 DEFAULT_OFFSET_DAYS = 60
 
 
-class SeedDataSpec:  # pylint: disable=too-many-instance-attributes,too-many-arguments
+class SeedDataSpec:
     """Represents an object described by seed data and, if one is created/found, the actual database object"""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         model_cls,
         index,
@@ -51,7 +50,7 @@ class SeedDataSpec:  # pylint: disable=too-many-instance-attributes,too-many-arg
 
 def get_raw_seed_data_from_file(seed_file_path=SEED_DATA_FILE_PATH):
     """Loads raw seed data from a seed data file"""
-    with open(seed_file_path) as f:
+    with open(seed_file_path) as f:  # noqa: PTH123
         return json.loads(f.read())
 
 

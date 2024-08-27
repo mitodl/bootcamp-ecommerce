@@ -76,7 +76,7 @@ class HubspotDealSerializer(serializers.ModelSerializer, UniqueAppIdMixin):
                 state = SUBMISSION_TYPE_STATE.get(next_step, state)
         return state
 
-    def to_representation(self, instance):
+    def to_representation(self, instance):  # noqa: D102
         # Populate deal data
         data = super().to_representation(instance)
         orders = Order.objects.filter(

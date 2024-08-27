@@ -1,39 +1,38 @@
-# pylint: disable=too-many-lines
 """
 Page models for the CMS
 """
 
-from datetime import datetime
 import logging
+from datetime import datetime
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.templatetags.static import static
 from django.db import models
 from django.http.response import Http404
+from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.text import slugify
-from django.shortcuts import render
 from wagtail.admin.panels import FieldPanel, TitleFieldPanel
+from wagtail.blocks import PageChooserBlock, StreamBlock
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
-from wagtail.blocks import StreamBlock, PageChooserBlock
-from wagtail.fields import RichTextField, StreamField
-from wagtail.models import Page
 from wagtail.coreutils import WAGTAIL_APPEND_SLASH
+from wagtail.fields import RichTextField, StreamField
 from wagtail.images.models import Image
+from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
 from cms.api import render_template
 from cms.blocks import (
-    ResourceBlock,
+    AlumniBlock,
+    CatalogSectionBootcampBlock,
     InstructorSectionBlock,
+    ResourceBlock,
     SponsorSectionBlock,
     ThreeColumnImageTextBlock,
-    AlumniBlock,
-    TitleLinksBlock,
     TitleDescriptionBlock,
-    CatalogSectionBootcampBlock,
+    TitleLinksBlock,
 )
 from cms.constants import (
     ACCEPTANCE_DEFAULT_LETTER_TEXT,
@@ -45,7 +44,6 @@ from cms.constants import (
 )
 from cms.forms import LetterTemplatePageForm
 from klasses.models import BootcampRunCertificate
-
 
 log = logging.getLogger(__name__)
 
@@ -73,13 +71,11 @@ class BootcampIndexPage(Page):
             and not parent.get_children().type(cls).exists()
         )
 
-    def route(
-        self, request, path_components
-    ):  # pylint:disable=useless-super-delegation
+    def route(self, request, path_components):
         """Placeholder to implement custom routing later on (based on some sort of courseware key like in xPRO)"""
         return super().route(request, path_components)
 
-    def serve(self, request, *args, **kwargs):
+    def serve(self, request, *args, **kwargs):  # noqa: ARG002
         """
         For index page we raise a 404 because this page do not have a template
         of their own and we do not expect a page to available at their slug.
@@ -128,12 +124,12 @@ class HomePage(Page, CommonProperties):
         blank=True, help_text="The description shown in the hero section on the page."
     )
 
-    content_panels = Page.content_panels + [
+    content_panels = Page.content_panels + [  # noqa: RUF005
         FieldPanel("tagline"),
         FieldPanel("description"),
     ]
 
-    def get_context(self, request, *args, **kwargs):
+    def get_context(self, request, *args, **kwargs):  # noqa: D102
         return {
             **super().get_context(request, *args, **kwargs),
             "CSOURCE_PAYLOAD": None,
@@ -210,7 +206,7 @@ class BootcampPage(Page, CommonProperties):
         FieldPanel("thumbnail_image"),
     ]
 
-    def get_context(self, request, *args, **kwargs):
+    def get_context(self, request, *args, **kwargs):  # noqa: D102
         return {
             **super().get_context(request, *args, **kwargs),
             "site_name": settings.SITE_NAME,
@@ -272,15 +268,15 @@ class BootcampRunPage(BootcampPage):
         help_text="The bootcamp run for this page",
     )
 
-    def copy(self, *args, **kwargs):  # pylint: disable=signature-differs
+    def copy(self, *args, **kwargs):  # noqa: D102
         kwargs["copy_revisions"] = False
-        kwargs["exclude_fields"] = kwargs.get("exclude_fields", []) + ["bootcamp_run"]
+        kwargs["exclude_fields"] = kwargs.get("exclude_fields", []) + ["bootcamp_run"]  # noqa: RUF005
         kwargs["keep_live"] = False
         return super().copy(*args, **kwargs)
 
-    content_panels = [FieldPanel("bootcamp_run")] + BootcampPage.content_panels
+    content_panels = [FieldPanel("bootcamp_run")] + BootcampPage.content_panels  # noqa: RUF005
 
-    def get_context(self, request, *args, **kwargs):
+    def get_context(self, request, *args, **kwargs):  # noqa: D102
         return {
             **super().get_context(request, *args, **kwargs),
             # properties
@@ -312,17 +308,17 @@ class BootcampRunChildPage(Page):
         return self.get_parent().specific if self.get_parent() else None
 
     @classmethod
-    def can_create_at(cls, parent):
+    def can_create_at(cls, parent):  # noqa: D102
         # You can only create one of these page under bootcamp.
         return (
             super().can_create_at(parent)
             and parent.get_children().type(cls).count() == 0
         )
 
-    def save(self, *args, **kwargs):  # pylint: disable=signature-differs
+    def save(self, *args, **kwargs):  # noqa: D102
         # autogenerate a unique slug so we don't hit a ValidationError
         if not self.title:
-            self.title = self.__class__._meta.verbose_name.title()
+            self.title = self.__class__._meta.verbose_name.title()  # noqa: SLF001
         self.slug = slugify("{}-{}".format(self.title, self.id))
         super().save(*args, **kwargs)
 
@@ -348,7 +344,7 @@ class BootcampRunChildPage(Page):
             page_path = "{}/{}".format(parent_path, self.slug)
         return (site_id, site_root, page_path)
 
-    def serve(self, request, *args, **kwargs):
+    def serve(self, request, *args, **kwargs):  # noqa: ARG002
         """
         As the name suggests these pages are going to be children of some other page. They are not
         designed to be viewed on their own so we raise a 404 if someone tries to access their slug.
@@ -464,7 +460,7 @@ class InstructorsSection(InstructorSponsorSection):
         use_json_field=True,
     )
 
-    content_panels = InstructorSponsorSection.content_panels + [
+    content_panels = InstructorSponsorSection.content_panels + [  # noqa: RUF005
         FieldPanel("sections"),
     ]
 
@@ -477,9 +473,9 @@ class SponsorsSection(InstructorSponsorSection):
         help_text="The sponsor to display in this section",
         use_json_field=True,
     )
-    InstructorSponsorSection._meta.get_field("heading").default = "Sponsors"
+    InstructorSponsorSection._meta.get_field("heading").default = "Sponsors"  # noqa: SLF001
 
-    content_panels = InstructorSponsorSection.content_panels + [
+    content_panels = InstructorSponsorSection.content_panels + [  # noqa: RUF005
         FieldPanel("sections"),
     ]
 
@@ -508,7 +504,7 @@ class AdmissionsSection(BootcampRunChildPage):
         max_length=255, help_text="Any notes to display, e.g. application deadline etc."
     )
     details = RichTextField(help_text="Admission details that need to be displayed.")
-    bootcamp_location = models.CharField(
+    bootcamp_location = models.CharField(  # noqa: DJ001
         max_length=255,
         default="Online",
         null=True,
@@ -571,12 +567,12 @@ class ResourcePage(Page):
         use_json_field=True,
     )
 
-    content_panels = Page.content_panels + [
+    content_panels = Page.content_panels + [  # noqa: RUF005
         FieldPanel("header_image"),
         FieldPanel("content"),
     ]
 
-    def get_context(self, request, *args, **kwargs):
+    def get_context(self, request, *args, **kwargs):  # noqa: D102
         return {
             **super().get_context(request, *args, **kwargs),
             "site_name": settings.SITE_NAME,
@@ -617,7 +613,7 @@ class HomeAlumniSection(BootcampRunChildPage):
         blank=False,
         help_text="Extra text to appear besides alumni quotes in this section.",
     )
-    highlight_quote = models.CharField(
+    highlight_quote = models.CharField(  # noqa: DJ001
         null=True,
         max_length=255,
         help_text="Highlighted quote to display for this section.",
@@ -659,7 +655,7 @@ class AlumniSection(BootcampRunChildPage):
         blank=False,
         help_text="Extra text to appear besides alumni quotes in this section.",
     )
-    highlight_quote = models.CharField(
+    highlight_quote = models.CharField(  # noqa: DJ001
         null=True,
         max_length=255,
         help_text="Highlighted quote to display for this section.",
@@ -746,7 +742,7 @@ class LetterTemplatePage(Page):
         help_text="Upload an image that will render in the program description section.",
     )
 
-    content_panels = Page.content_panels + [
+    content_panels = Page.content_panels + [  # noqa: RUF005
         FieldPanel("acceptance_text"),
         FieldPanel("rejection_text"),
         FieldPanel("signatory_name"),
@@ -755,8 +751,7 @@ class LetterTemplatePage(Page):
 
     base_form_class = LetterTemplatePageForm
 
-    # pylint: disable=unused-argument
-    def serve_preview(self, request, *args, **kwargs):
+    def serve_preview(self, request, *args, **kwargs):  # noqa: ARG002
         """
         Show a sample letter for testing
         """
@@ -774,7 +769,7 @@ class LetterTemplatePage(Page):
             context={"preview": True, "content": content, "signatory": signatory},
         )
 
-    def serve(self, request, *args, **kwargs):
+    def serve(self, request, *args, **kwargs):  # noqa: ARG002
         """Applicants should use LettersView to see their letters"""
         raise Http404
 
@@ -835,7 +830,7 @@ class SignatoryObjectIndexPage(Page):
             and not parent.get_children().type(cls).exists()
         )
 
-    def serve(self, request, *args, **kwargs):
+    def serve(self, request, *args, **kwargs):  # noqa: ARG002
         """
         For index pages we raise a 404 because these pages do not have a template
         of their own and we do not expect a page to available at their slug.
@@ -872,7 +867,7 @@ class SignatoryPage(Page):
         blank=True,
         help_text="Specify signatory second title in organization.",
     )
-    organization = models.CharField(
+    organization = models.CharField(  # noqa: DJ001
         max_length=250,
         null=True,
         blank=True,
@@ -899,15 +894,15 @@ class SignatoryPage(Page):
         FieldPanel("signature_image"),
     ]
 
-    def save(self, *args, **kwargs):  # pylint: disable=signature-differs
+    def save(self, *args, **kwargs):  # noqa: D102
         # auto generate a unique slug so we don't hit a ValidationError
         if not self.title:
-            self.title = self.__class__._meta.verbose_name.title() + "-" + self.name
+            self.title = self.__class__._meta.verbose_name.title() + "-" + self.name  # noqa: SLF001
 
         self.slug = slugify("{}-{}".format(self.title, self.id))
         super().save(*args, **kwargs)
 
-    def serve(self, request, *args, **kwargs):
+    def serve(self, request, *args, **kwargs):  # noqa: ARG002
         """
         As the name suggests these pages are going to be children of some other page. They are not
         designed to be viewed on their own so we raise a 404 if someone tries to access their slug.
@@ -938,15 +933,13 @@ class CertificateIndexPage(RoutablePageMixin, Page):
         )
 
     @route(r"^([A-Fa-f0-9-]{36})/?$")
-    def bootcamp_certificate(
-        self, request, uuid, *args, **kwargs
-    ):  # pylint: disable=unused-argument
+    def bootcamp_certificate(self, request, uuid, *args, **kwargs):  # noqa: ARG002
         """
         Serve a bootcamp certificate by uuid
         """
         # Return 404 if certificates feature is disabled
         if not settings.FEATURES.get("ENABLE_CERTIFICATE_USER_VIEW", False):
-            raise Http404()
+            raise Http404()  # noqa: RSE102
 
         # Try to fetch a certificate by the uuid passed in the URL
         try:
@@ -954,7 +947,7 @@ class CertificateIndexPage(RoutablePageMixin, Page):
                 uuid=uuid, is_revoked=False
             )
         except BootcampRunCertificate.DoesNotExist:
-            raise Http404()
+            raise Http404()  # noqa: B904, RSE102, TRY200
         # Get a CertificatePage to serve this request
         certificate_page = (
             certificate.bootcamp_run.page.certificate_page
@@ -962,17 +955,17 @@ class CertificateIndexPage(RoutablePageMixin, Page):
             else None
         )
         if not certificate_page:
-            raise Http404()
+            raise Http404()  # noqa: RSE102
 
         certificate_page.certificate = certificate
         return certificate_page.serve(request)
 
     @route(r"^$")
-    def index_route(self, request, *args, **kwargs):
+    def index_route(self, request, *args, **kwargs):  # noqa: ARG002
         """
         The index page is not meant to be served/viewed directly
         """
-        raise Http404()
+        raise Http404()  # noqa: RSE102
 
 
 class CertificatePage(BootcampRunChildPage):
@@ -998,7 +991,7 @@ class CertificatePage(BootcampRunChildPage):
         help_text="Specify the granting institution name. e.g. MIT Bootcamps & Harvard Medical School Center for Primary Care.",
     )
 
-    certificate_name = models.CharField(
+    certificate_name = models.CharField(  # noqa: DJ001
         max_length=250,
         null=True,
         blank=True,
@@ -1051,10 +1044,10 @@ class CertificatePage(BootcampRunChildPage):
         self.certificate = None
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # noqa: D102
         # auto generate a unique slug so we don't hit a ValidationError
         self.title = (
-            self.__class__._meta.verbose_name.title()
+            self.__class__._meta.verbose_name.title()  # noqa: SLF001
             + " For "
             + self.get_parent().title
         )
@@ -1074,12 +1067,12 @@ class CertificatePage(BootcampRunChildPage):
         Extracts all the pages out of the `signatories` stream into a list
         """
         pages = []
-        for block in self.signatories:  # pylint: disable=not-an-iterable
+        for block in self.signatories:
             if block.value:
-                pages.append(block.value.specific)
+                pages.append(block.value.specific)  # noqa: PERF401
         return pages
 
-    def get_context(self, request, *args, **kwargs):
+    def get_context(self, request, *args, **kwargs):  # noqa: D102
         preview_context = {}
         context = {}
         parent = self.parent()
@@ -1089,12 +1082,12 @@ class CertificatePage(BootcampRunChildPage):
                 "start_date": (
                     parent.bootcamp_run.start_date
                     if parent.bootcamp_run
-                    else datetime.now()
+                    else datetime.now()  # noqa: DTZ005
                 ),
                 "end_date": (
                     parent.bootcamp_run.end_date
                     if parent.bootcamp_run
-                    else datetime.now()
+                    else datetime.now()  # noqa: DTZ005
                 ),
                 "location": self.location if self.location else "Brisbane, Australia",
                 "certificate_user": None,
@@ -1102,7 +1095,7 @@ class CertificatePage(BootcampRunChildPage):
         elif self.certificate:
             # Verify that the certificate in fact is for this same course
             if parent.bootcamp_run.id != self.certificate.bootcamp_run.id:
-                raise Http404()
+                raise Http404()  # noqa: RSE102
             start_date, end_date = self.certificate.start_end_dates
             context = {
                 "uuid": self.certificate.uuid,
@@ -1113,7 +1106,7 @@ class CertificatePage(BootcampRunChildPage):
                 "location": self.location,
             }
         else:
-            raise Http404()
+            raise Http404()  # noqa: RSE102
 
         # The share image url needs to be absolute
         return {

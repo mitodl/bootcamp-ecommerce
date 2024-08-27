@@ -2,42 +2,41 @@
 Test for ecommerce functions
 """
 
-# pylint: disable=too-many-lines
+import hashlib
+import hmac
 from base64 import b64encode
 from datetime import datetime
 from decimal import Decimal
-import hashlib
-import hmac
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+import pytz
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
 from django.core.management.base import CommandError
-import pytest
-import pytz
-from rest_framework.exceptions import ValidationError
 from mitol.common.pytest_utils import any_instance_of
+from rest_framework.exceptions import ValidationError
 
 from applications.constants import AppStates
 from applications.factories import BootcampApplicationFactory
 from applications.models import BootcampApplication
 from ecommerce.api import (
+    ISO_8601_FORMAT,
+    WireTransfer,
+    complete_successful_order,
+    create_refund_order,
     generate_cybersource_sa_payload,
     generate_cybersource_sa_signature,
     get_new_order_by_reference_number,
-    import_wire_transfers,
     import_wire_transfer,
-    ISO_8601_FORMAT,
+    import_wire_transfers,
     make_reference_id,
     parse_wire_transfer_csv,
+    process_refund,
+    send_receipt_email,
     serialize_user_bootcamp_run,
     serialize_user_bootcamp_runs,
-    send_receipt_email,
-    create_refund_order,
-    complete_successful_order,
-    process_refund,
-    WireTransfer,
 )
 from ecommerce.exceptions import (
     EcommerceException,
@@ -50,20 +49,18 @@ from ecommerce.serializers import LineSerializer
 from ecommerce.test_utils import create_test_application, create_test_order
 from klasses.constants import ENROLL_CHANGE_STATUS_REFUNDED
 from klasses.factories import (
+    BootcampRunEnrollmentFactory,
     BootcampRunFactory,
     InstallmentFactory,
-    BootcampRunEnrollmentFactory,
 )
 from klasses.models import BootcampRun, BootcampRunEnrollment
 from klasses.serializers import InstallmentSerializer
 from profiles.factories import ProfileFactory
 
-
 pytestmark = pytest.mark.django_db
 User = get_user_model()
 
 
-# pylint: disable=redefined-outer-name, unused-argument
 @pytest.fixture
 def application():
     """An application for testing"""
@@ -653,7 +650,7 @@ def test_parse_wire_transfer_csv():
             id=2,
             learner_email="hdoof@odl.mit.edu",
             amount=Decimal(100),
-            bootcamp_start_date=datetime(2019, 12, 21),
+            bootcamp_start_date=datetime(2019, 12, 21),  # noqa: DTZ001
             bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
             bootcamp_name="How to be Evil",
             row=[
@@ -682,7 +679,7 @@ def test_parse_wire_transfer_csv():
             id=3,
             learner_email="pplatypus@odl.mit.edu",
             amount=Decimal(50),
-            bootcamp_start_date=datetime(2019, 12, 21),
+            bootcamp_start_date=datetime(2019, 12, 21),  # noqa: DTZ001
             bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
             bootcamp_name="How to be Evil",
             row=[
@@ -713,7 +710,7 @@ def test_parse_wire_transfer_csv():
 def test_parse_wire_transfer_csv_no_header(tmp_path):
     """parse_wire_transfer_csv should error if no header is found"""
     path = tmp_path / "test.csv"
-    open(path, "w")  # create file
+    open(path, "w")  # create file  # noqa: PTH123, SIM115
     with pytest.raises(WireTransferImportException) as ex:
         parse_wire_transfer_csv(path)
 
@@ -723,7 +720,7 @@ def test_parse_wire_transfer_csv_no_header(tmp_path):
 def test_parse_wire_transfer_csv_missing_header(tmp_path):
     """parse_wire_transfer_csv should error if not all fields are present"""
     path = tmp_path / "test.csv"
-    with open(path, "w") as f:
+    with open(path, "w") as f:  # noqa: PTH123
         f.write("Learner Email,Id\n")
         f.write("hdoof@odl.mit.edu,20\n")
 
@@ -786,7 +783,7 @@ def test_import_wire_transfer_missing_user():
         id=2,
         learner_email="hdoof@odl.mit.edu",
         amount=Decimal(100),
-        bootcamp_start_date=datetime(2019, 12, 21),
+        bootcamp_start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_name="How to be Evil",
         bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
         row=[],
@@ -803,7 +800,7 @@ def test_import_wire_transfers_missing_run():
         id=2,
         learner_email=doof_email,
         amount=Decimal(100),
-        bootcamp_start_date=datetime(2019, 12, 21),
+        bootcamp_start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_name="How to be Evil",
         bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
         row=[],
@@ -855,13 +852,13 @@ def test_import_wire_transfers_missing_application():
 
 
 def test_import_wire_transfers_update_receipt(mocker):
-    """check for update receipt"""
+    """Check for update receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
         bootcamp__title="How to be Evil",
-        start_date=datetime(2019, 12, 21),
+        start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     BootcampApplicationFactory.create(
@@ -870,23 +867,23 @@ def test_import_wire_transfers_update_receipt(mocker):
 
     csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
-    import_wire_transfer(wire_transfers[0], header_row, False)
+    import_wire_transfer(wire_transfers[0], header_row, False)  # noqa: FBT003
     receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
     assert receipt.data["SAP doc # - Cash Application"] == ""
     wire_transfers[0].row[13] = "TBD"
-    import_wire_transfer(wire_transfers[0], header_row, False)
+    import_wire_transfer(wire_transfers[0], header_row, False)  # noqa: FBT003
     receipt.refresh_from_db()
     assert receipt.data["SAP doc # - Cash Application"] == "TBD"
 
 
 def test_import_wire_transfers_update_existing_order_amount(mocker):
-    """check for update order amount and receipt"""
+    """Check for update order amount and receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
         bootcamp__title="How to be Evil",
-        start_date=datetime(2019, 12, 21),
+        start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     BootcampApplicationFactory.create(
@@ -896,7 +893,7 @@ def test_import_wire_transfers_update_existing_order_amount(mocker):
     csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
 
-    import_wire_transfer(wire_transfers[0], header_row, False)
+    import_wire_transfer(wire_transfers[0], header_row, False)  # noqa: FBT003
     receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
     assert receipt.data["Amount"] == "100"
     assert receipt.order.total_price_paid == 100.00
@@ -911,15 +908,15 @@ def test_import_wire_transfers_update_existing_order_amount(mocker):
         row=wire_transfers[0].row,
     )
     with pytest.raises(CommandError):
-        import_wire_transfer(wire_transfer, header_row, False)
-    import_wire_transfer(wire_transfer, header_row, True)
+        import_wire_transfer(wire_transfer, header_row, False)  # noqa: FBT003
+    import_wire_transfer(wire_transfer, header_row, True)  # noqa: FBT003
     receipt.refresh_from_db()
     assert receipt.data["Amount"] == "50"
     assert receipt.order.total_price_paid == 50.00
 
 
 def test_import_wire_transfers_update_existing_order_user(mocker):
-    """check for update order user and receipt"""
+    """Check for update order user and receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     pretty_platypus_email = "pplatypus@odl.mit.edu"
@@ -929,7 +926,7 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
     )
     run = BootcampRunFactory.create(
         bootcamp__title="How to be Evil",
-        start_date=datetime(2019, 12, 21),
+        start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     for _user in [user, pretty_platypus]:
@@ -940,7 +937,7 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
     csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
 
-    import_wire_transfer(wire_transfers[0], header_row, False)
+    import_wire_transfer(wire_transfers[0], header_row, False)  # noqa: FBT003
     receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
     assert receipt.data["Learner Email"] == doof_email
     assert receipt.order.user.email == doof_email
@@ -955,26 +952,26 @@ def test_import_wire_transfers_update_existing_order_user(mocker):
         row=wire_transfers[0].row,
     )
     with pytest.raises(CommandError):
-        import_wire_transfer(wire_transfer, header_row, False)
-    import_wire_transfer(wire_transfer, header_row, True)
+        import_wire_transfer(wire_transfer, header_row, False)  # noqa: FBT003
+    import_wire_transfer(wire_transfer, header_row, True)  # noqa: FBT003
     receipt.refresh_from_db()
     assert receipt.data["Learner Email"] == pretty_platypus_email
     assert receipt.order.user.email == pretty_platypus_email
 
 
 def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
-    """check for update order bootcamp and receipt"""
+    """Check for update order bootcamp and receipt"""
     mocker.patch("ecommerce.api.tasks.send_receipt_email")
     doof_email = "hdoof@odl.mit.edu"
     user = User.objects.create(email=doof_email)
     run = BootcampRunFactory.create(
         bootcamp__title="How to be Evil",
-        start_date=datetime(2019, 12, 21),
+        start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_run_id="bootcamp-v1:public+SVCR-ol+R1",
     )
     bootcamp_run = BootcampRunFactory.create(
         bootcamp__title="How to be Good",
-        start_date=datetime(2019, 12, 21),
+        start_date=datetime(2019, 12, 21),  # noqa: DTZ001
         bootcamp_run_id="bootcamp-v1:public+HTBG-ol+R1",
     )
     for _run in [run, bootcamp_run]:
@@ -985,7 +982,7 @@ def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
     csv_path = Path(__file__).parent / "testdata" / "example_wire_transfers.csv"
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
 
-    import_wire_transfer(wire_transfers[0], header_row, False)
+    import_wire_transfer(wire_transfers[0], header_row, False)  # noqa: FBT003
     receipt = WireTransferReceipt.objects.get(wire_transfer_id=2)
     assert receipt.data["Bootcamp Name"] == "How to be Evil"
     assert receipt.order.application.bootcamp_run == run
@@ -1000,8 +997,8 @@ def test_import_wire_transfers_update_existing_order_bootcamp(mocker):
         row=wire_transfers[0].row,
     )
     with pytest.raises(CommandError):
-        import_wire_transfer(wire_transfer, header_row, False)
-    import_wire_transfer(wire_transfer, header_row, True)
+        import_wire_transfer(wire_transfer, header_row, False)  # noqa: FBT003
+    import_wire_transfer(wire_transfer, header_row, True)  # noqa: FBT003
     receipt.refresh_from_db()
     assert receipt.data["Bootcamp Name"] == "How to be Good"
     assert receipt.order.application.bootcamp_run == bootcamp_run
@@ -1014,7 +1011,7 @@ def test_import_wire_transfers(mocker):
     import_wire_transfers(csv_path)
     wire_transfers, header_row = parse_wire_transfer_csv(csv_path)
     for wire_transfer in wire_transfers:
-        import_mock.assert_any_call(wire_transfer, header_row, False)
+        import_mock.assert_any_call(wire_transfer, header_row, False)  # noqa: FBT003
 
 
 def test_import_wire_transfers_error(mocker):

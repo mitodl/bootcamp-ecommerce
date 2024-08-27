@@ -3,24 +3,25 @@ Factories for bootcamp application models
 """
 
 import operator as op
-from factory import Faker, LazyAttribute, Sequence, SubFactory, fuzzy, Trait
-from factory.django import DjangoModelFactory
+
 import faker
 import pytz
+from factory import Faker, LazyAttribute, Sequence, SubFactory, Trait, fuzzy
+from factory.django import DjangoModelFactory
 from mitol.common.utils import now_in_utc
 
 from applications import models
 from applications.constants import (
-    VALID_SUBMISSION_TYPE_CHOICES,
-    VALID_APP_STATE_CHOICES,
+    ALL_LETTER_TYPES,
     ALL_REVIEW_STATUSES,
-    REVIEW_STATUS_PENDING,
     REVIEW_STATUS_APPROVED,
+    REVIEW_STATUS_PENDING,
     REVIEW_STATUS_REJECTED,
     REVIEW_STATUS_WAITLISTED,
-    ALL_LETTER_TYPES,
-    SUBMISSION_STATUS_SUBMITTED,
     REVIEWABLE_APP_STATES,
+    SUBMISSION_STATUS_SUBMITTED,
+    VALID_APP_STATE_CHOICES,
+    VALID_SUBMISSION_TYPE_CHOICES,
 )
 from jobma.factories import InterviewFactory
 from klasses.factories import BootcampFactory, BootcampRunFactory

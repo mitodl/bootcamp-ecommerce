@@ -2,25 +2,25 @@
 Functions for ecommerce
 """
 
-from base64 import b64encode
-from collections import namedtuple
 import csv
-from datetime import datetime
-from decimal import Decimal
 import hashlib
 import hmac
 import logging
 import re
 import uuid
+from base64 import b64encode
+from collections import namedtuple
+from datetime import datetime
+from decimal import Decimal
 
+import pytz
 from dateutil.parser import parse as parse_datetime
-from django.core.management.base import CommandError
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.management.base import CommandError
 from django.db import transaction
 from django.db.models import Q
 from django_fsm import TransitionNotAllowed
-import pytz
 from rest_framework.exceptions import ValidationError
 
 from applications.constants import AppStates
@@ -30,12 +30,12 @@ from ecommerce import tasks
 from ecommerce.constants import (
     CYBERSOURCE_DECISION_CANCEL,
     WIRE_TRANSFER_AMOUNT,
-    WIRE_TRANSFER_ID,
-    WIRE_TRANSFER_LEARNER_EMAIL,
-    WIRE_TRANSFER_HEADER_FIELDS,
+    WIRE_TRANSFER_BOOTCAMP_NAME,
     WIRE_TRANSFER_BOOTCAMP_RUN_ID,
     WIRE_TRANSFER_BOOTCAMP_START_DATE,
-    WIRE_TRANSFER_BOOTCAMP_NAME,
+    WIRE_TRANSFER_HEADER_FIELDS,
+    WIRE_TRANSFER_ID,
+    WIRE_TRANSFER_LEARNER_EMAIL,
 )
 from ecommerce.exceptions import (
     EcommerceException,
@@ -78,7 +78,7 @@ def create_unfulfilled_order(*, application, payment_amount):
     bootcamp_run = application.bootcamp_run
 
     if payment_amount <= 0:
-        raise ValidationError("Payment is less than or equal to zero")
+        raise ValidationError("Payment is less than or equal to zero")  # noqa: EM101
 
     order = Order.objects.create(
         status=Order.CREATED,
@@ -115,7 +115,7 @@ def create_refund_order(*, user, bootcamp_run, amount, application=None):
     refund_amount = -Decimal(amount)
 
     if refund_amount >= 0:
-        raise EcommerceException("Amount to refund must be greater than zero")
+        raise EcommerceException("Amount to refund must be greater than zero")  # noqa: EM101
 
     order = Order.objects.create(
         status=Order.FULFILLED,
@@ -163,7 +163,7 @@ def process_refund(*, user, bootcamp_run, amount):
     )
 
     if total_paid < amount:
-        raise EcommerceException(f"Refund exceeds total payment of ${total_paid}")
+        raise EcommerceException(f"Refund exceeds total payment of ${total_paid}")  # noqa: EM102
 
     create_refund_order(
         user=user,
@@ -223,7 +223,7 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
     if line is not None:
         bootcamp_run = line.bootcamp_run
     else:
-        raise EcommerceException("Unable to find line for order {}".format(order.id))
+        raise EcommerceException("Unable to find line for order {}".format(order.id))  # noqa: EM103
 
     run_key = bootcamp_run.run_key
 
@@ -234,7 +234,7 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
     run_title = remove_html_tags(bootcamp_run.title)
     if not run_title:
         raise ValidationError(
-            "Bootcamp run {run_key} title is either empty or contains only HTML.".format(
+            "Bootcamp run {run_key} title is either empty or contains only HTML.".format(  # noqa: EM103
                 run_key=run_key
             )
         )
@@ -242,7 +242,7 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
     bootcamp_title = remove_html_tags(bootcamp_run.bootcamp.title)
     if not bootcamp_title:
         raise ValidationError(
-            "Bootcamp {bootcamp_id} title is either empty or contains only HTML.".format(
+            "Bootcamp {bootcamp_id} title is either empty or contains only HTML.".format(  # noqa: EM103
                 bootcamp_id=bootcamp_run.bootcamp.id
             )
         )
@@ -282,7 +282,7 @@ def generate_cybersource_sa_payload(order, redirect_url, ip_address=None):
     if ip_address:
         payload["customer_ip_address"] = ip_address
 
-    field_names = sorted(list(payload.keys()) + ["signed_field_names"])
+    field_names = sorted(list(payload.keys()) + ["signed_field_names"])  # noqa: RUF005
     payload["signed_field_names"] = ",".join(field_names)
     payload["signature"] = generate_cybersource_sa_signature(payload)
 
@@ -302,19 +302,19 @@ def get_new_order_by_reference_number(reference_number):
     """
     if not reference_number.startswith(_REFERENCE_NUMBER_PREFIX):
         raise ParseException(
-            "Reference number must start with {}".format(_REFERENCE_NUMBER_PREFIX)
+            "Reference number must start with {}".format(_REFERENCE_NUMBER_PREFIX)  # noqa: EM103
         )
     reference_number = reference_number[len(_REFERENCE_NUMBER_PREFIX) :]
 
     try:
         order_id_pos = reference_number.rindex("-")
     except ValueError:
-        raise ParseException("Unable to find order number in reference number")
+        raise ParseException("Unable to find order number in reference number")  # noqa: B904, EM101, TRY200
 
     try:
         order_id = int(reference_number[order_id_pos + 1 :])
     except ValueError:
-        raise ParseException("Unable to parse order number")
+        raise ParseException("Unable to parse order number")  # noqa: B904, EM101, TRY200
 
     prefix = reference_number[:order_id_pos]
     if prefix != settings.CYBERSOURCE_REFERENCE_PREFIX:
@@ -323,12 +323,12 @@ def get_new_order_by_reference_number(reference_number):
             prefix,
             settings.CYBERSOURCE_REFERENCE_PREFIX,
         )
-        raise ParseException("CyberSource prefix doesn't match")
+        raise ParseException("CyberSource prefix doesn't match")  # noqa: EM101
 
     try:
         return Order.objects.select_related("application").get(id=order_id)
     except Order.DoesNotExist:
-        raise EcommerceException("Unable to find order {}".format(order_id))
+        raise EcommerceException("Unable to find order {}".format(order_id))  # noqa: B904, EM103, TRY200
 
 
 def make_reference_id(order):
@@ -347,7 +347,7 @@ def make_reference_id(order):
     )
 
 
-def complete_successful_order(order, send_receipt=True):
+def complete_successful_order(order, send_receipt=True):  # noqa: FBT002
     """
     Once an order is fulfilled, we need to create an enrollment and notify other services.
 
@@ -499,7 +499,7 @@ def send_receipt_email(application_id):
     )
 
 
-WireTransfer = namedtuple(
+WireTransfer = namedtuple(  # noqa: PYI024
     "WireTransfer",
     [
         "id",
@@ -523,7 +523,7 @@ def parse_wire_transfer_csv(csv_path):
     Returns:
         (list of WireTransfer, list):
     """
-    with open(csv_path) as csv_file:
+    with open(csv_path) as csv_file:  # noqa: PTH123
         rows = list(csv.reader(csv_file))
 
     for col, row in enumerate(rows):
@@ -532,7 +532,7 @@ def parse_wire_transfer_csv(csv_path):
             header_row_index = col
             break
     else:
-        raise WireTransferImportException("Unable to find header row")
+        raise WireTransferImportException("Unable to find header row")  # noqa: EM101
 
     header_index_lookup = {}
     for col, cell in enumerate(header_row):
@@ -541,7 +541,7 @@ def parse_wire_transfer_csv(csv_path):
 
     for field in WIRE_TRANSFER_HEADER_FIELDS:
         if field not in header_index_lookup:
-            raise WireTransferImportException(f"Unable to find column header {field}")
+            raise WireTransferImportException(f"Unable to find column header {field}")  # noqa: EM102
 
     wire_transfers = [
         WireTransfer(
@@ -581,7 +581,7 @@ def wire_transfer_difference(wire_transfer_data, raw_data):
     keys value difference between two wire transfer data
     """
     keys_value_difference = {"order_fields": [], "receipt_fields": []}
-    for key in raw_data.keys():
+    for key in raw_data.keys():  # noqa: SIM118
         if raw_data[key] != wire_transfer_data[key]:
             # if paid amount or bootcamp or learner email changed
             if re.compile("amount|bootcamp|email", re.IGNORECASE).search(key):
@@ -592,7 +592,7 @@ def wire_transfer_difference(wire_transfer_data, raw_data):
     return keys_value_difference
 
 
-def import_wire_transfer(wire_transfer, header_row, forced=False):
+def import_wire_transfer(wire_transfer, header_row, forced=False):  # noqa: FBT002
     """
     Import a wire transfer. If the WireTransferReceipt already exists, the information will be updated,
     otherwise it will be created
@@ -642,7 +642,7 @@ def import_wire_transfer(wire_transfer, header_row, forced=False):
             wire_transfer_receipt.save()
             log.info("Receipt data is updated")
         elif difference["order_fields"] and not forced:
-            raise CommandError("Use --force flag to update the order.")
+            raise CommandError("Use --force flag to update the order.")  # noqa: EM101
         elif difference["receipt_fields"]:
             wire_transfer_receipt.data = data
             wire_transfer_receipt.save()
@@ -678,7 +678,7 @@ def import_wire_transfer(wire_transfer, header_row, forced=False):
     log.info("Wire transfer %d successfully imported", wire_transfer.id)
 
 
-def import_wire_transfers(csv_path, force_flag=False):
+def import_wire_transfers(csv_path, force_flag=False):  # noqa: FBT002
     """
     Import orders from a CSV file with file transfers
 
@@ -693,7 +693,7 @@ def import_wire_transfers(csv_path, force_flag=False):
         for wire_transfer in wire_transfers:
             try:
                 import_wire_transfer(wire_transfer, header_row, force_flag)
-            except:  # noqa: E722
-                raise WireTransferImportException(
-                    f"Error while importing row with Id column={wire_transfer.id}"
+            except:  # noqa: E722, PERF203
+                raise WireTransferImportException(  # noqa: B904, TRY200
+                    f"Error while importing row with Id column={wire_transfer.id}"  # noqa: EM102
                 )

@@ -5,13 +5,13 @@ from collections import defaultdict
 
 from applications.models import ApplicationStep, BootcampRunApplicationStep
 from klasses.models import Bootcamp, BootcampRun, Installment
+from localdev.seed.deserializers import MODEL_SERIALIZER_MAP
 from localdev.seed.utils import (
     SeedDataSpec,
     get_child_object_data,
     get_own_data,
     seed_adjusted_field_data,
 )
-from localdev.seed.deserializers import MODEL_SERIALIZER_MAP
 from main.utils import partition_around_index
 
 
@@ -123,7 +123,7 @@ def iter_seed_data(raw_data):
         yield bootcamp_spec
 
         app_steps_data = bootcamp_spec.child_object_data.get("[steps]", [])
-        for app_step_spec in raw_data_list_iterator(
+        for app_step_spec in raw_data_list_iterator(  # noqa: UP028
             app_steps_data, model_cls=ApplicationStep, parent_spec=bootcamp_spec
         ):
             yield app_step_spec
@@ -137,7 +137,7 @@ def iter_seed_data(raw_data):
             installments_data = bootcamp_run_spec.child_object_data.get(
                 "[installments]", []
             )
-            for installment_spec in raw_data_list_iterator(
+            for installment_spec in raw_data_list_iterator(  # noqa: UP028
                 installments_data, model_cls=Installment, parent_spec=bootcamp_run_spec
             ):
                 yield installment_spec
@@ -173,7 +173,7 @@ def create_seed_data(raw_data):
         deserializer = MODEL_SERIALIZER_MAP[seed_data_spec.model_cls]
         try:
             db_object, created, updated = deserializer(seed_data_spec)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:  # noqa: BLE001
             seed_result.add_invalid(
                 seed_data_spec.model_cls,
                 index=seed_data_spec.index,
