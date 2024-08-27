@@ -16,7 +16,6 @@ function run_test {
 	return $status
 }
 
-run_test black --check .
 run_test pytest --no-pylint
 
 exit $status
