@@ -67,10 +67,10 @@ def create_user_via_email(  # noqa: C901
     strategy,
     backend,
     user=None,
-    flow=None,
+    flow=None,  # noqa: ARG001
     current_partial=None,
-    *args,
-    **kwargs,  # noqa: ARG001
+    *args,  # noqa: ARG001
+    **kwargs,
 ):
     """
     Creates a new user if needed and sets the password and name.
@@ -144,9 +144,9 @@ def create_profile(
     strategy,
     backend,
     user=None,
-    flow=None,
+    flow=None,  # noqa: ARG001
     current_partial=None,
-    *args,
+    *args,  # noqa: ARG001
     **kwargs,  # noqa: ARG001
 ):
     """
@@ -188,7 +188,7 @@ def validate_password(
     user=None,
     flow=None,
     current_partial=None,
-    *args,
+    *args,  # noqa: ARG001
     **kwargs,  # noqa: ARG001
 ):
     """

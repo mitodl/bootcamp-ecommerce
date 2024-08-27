@@ -114,15 +114,15 @@ class Command(BaseCommand):
         if users_to_block:
             result = manage_user_certificate_blocking(
                 users_to_block,
-                True,
-                bootcamp_run,  # noqa: FBT003
+                True,  # noqa: FBT003
+                bootcamp_run,
             )
             self.show_message(**result)
         elif users_to_unblock:
             result = manage_user_certificate_blocking(
                 users_to_unblock,
-                False,
-                bootcamp_run,  # noqa: FBT003
+                False,  # noqa: FBT003
+                bootcamp_run,
             )
             self.show_message(**result)
         elif revoke and user and bootcamp_run:

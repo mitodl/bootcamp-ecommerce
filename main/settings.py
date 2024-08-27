@@ -35,7 +35,6 @@ from saml2.sigver import get_xmlsec_binary
 
 from main.sentry import init_sentry
 
-
 VERSION = "0.122.0"
 
 ENVIRONMENT = get_string(

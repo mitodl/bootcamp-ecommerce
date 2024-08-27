@@ -65,8 +65,8 @@ def test_manage_certificates_command(mocker, method, command_kwargs):
             run_command("manage_certificates", run=bootcamp_run.id, **command_kwargs)
             patched_method.assert_called_once_with(
                 users_to_unblock,
-                False,
-                bootcamp_run,  # noqa: FBT003
+                False,  # noqa: FBT003
+                bootcamp_run,
             )
         else:
             run_command(

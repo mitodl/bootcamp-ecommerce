@@ -114,8 +114,8 @@ def test_send_batch_chunk(settings, mock_post):
     settings.MAILGUN_RECIPIENT_OVERRIDE = None
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), None)
-        for letter in string.ascii_letters  # noqa: UP030
+        ("{0}@example.com".format(letter), None)  # noqa: UP030
+        for letter in string.ascii_letters
     ]
     chunked_emails_to = [
         recipient_tuples[i : i + chunk_size]
@@ -209,8 +209,8 @@ def test_send_batch_400_no_raise(settings, mocker, mock_post, mocked_json):
 
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), None)
-        for letter in string.ascii_letters  # noqa: UP030
+        ("{0}@example.com".format(letter), None)  # noqa: UP030
+        for letter in string.ascii_letters
     ]
     assert len(recipient_tuples) == 52
     settings.MAILGUN_RECIPIENT_OVERRIDE = None
@@ -238,8 +238,8 @@ def test_send_batch_exception(settings, mock_post):
 
     chunk_size = 10
     recipient_tuples = [
-        ("{0}@example.com".format(letter), None)
-        for letter in string.ascii_letters  # noqa: UP030
+        ("{0}@example.com".format(letter), None)  # noqa: UP030
+        for letter in string.ascii_letters
     ]
     chunked_emails_to = [
         recipient_tuples[i : i + chunk_size]
@@ -284,8 +284,8 @@ def test_send_batch_improperly_configured(settings, mocker, mock_post):
 
     chunk_size = 10
     recipient_pairs = [
-        ("{0}@example.com".format(letter), None)
-        for letter in string.ascii_letters  # noqa: UP030
+        ("{0}@example.com".format(letter), None)  # noqa: UP030
+        for letter in string.ascii_letters
     ]
     with pytest.raises(ImproperlyConfigured) as ex:
         MailgunClient.send_batch(

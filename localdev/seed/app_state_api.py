@@ -285,8 +285,8 @@ class AwaitingResumeStep(AppStep):
     @staticmethod
     def _fulfill(application, **kwargs):  # noqa: ARG004
         with open(  # noqa: PTH123
-            os.path.join(settings.BASE_DIR, DUMMY_RESUME_FILEPATH),
-            "rb",  # noqa: PTH118
+            os.path.join(settings.BASE_DIR, DUMMY_RESUME_FILEPATH),  # noqa: PTH118
+            "rb",
         ) as resume_file:
             application.add_resume(
                 resume_file=File(resume_file, name=DUMMY_RESUME_FILENAME),
