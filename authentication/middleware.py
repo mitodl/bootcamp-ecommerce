@@ -20,7 +20,7 @@ class SocialAuthExceptionRedirectMiddleware(SocialAuthExceptionMiddleware):
         """
         strategy = getattr(request, "social_strategy", None)
         if strategy is None or self.raise_exception(request, exception):
-            return
+            return  # noqa: RET502
 
         if isinstance(exception, SocialAuthBaseException):  # noqa: RET503
             backend = getattr(request, "backend", None)
