@@ -1061,12 +1061,12 @@ if _novoed_saml_key and _novoed_saml_cert:
     with NamedTemporaryFile(prefix="saml_", suffix=".key", delete=False) as f:
         lines = _novoed_saml_key.split("\\n")
         for line in lines:
-            f.write(f"{line}\n".encode("utf-8"))
+            f.write(f"{line}\n".encode("utf-8"))  # noqa: UP012
         _novoed_saml_key_file_path = f.name
     with NamedTemporaryFile(prefix="saml_", suffix=".cert", delete=False) as f:
         lines = _novoed_saml_cert.split("\\n")
         for line in lines:
-            f.write(f"{line}\n".encode("utf-8"))
+            f.write(f"{line}\n".encode("utf-8"))  # noqa: UP012
         _novoed_saml_cert_file_path = f.name
     SAML_IDP_CONFIG = {
         "debug": NOVOED_SAML_DEBUG,
