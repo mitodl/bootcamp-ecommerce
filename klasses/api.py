@@ -43,7 +43,7 @@ def deactivate_run_enrollment(
             user=user, bootcamp_run=bootcamp_run
         ).first()
         if run_enrollment is None:
-            return None
+            return  # noqa: RET502
     run_enrollment.active = False
     run_enrollment.change_status = change_status
     run_enrollment.save()
@@ -91,7 +91,7 @@ def adjust_app_state_for_new_price(user, bootcamp_run, new_price=None):
         ),
     ).first()
     if application is None:
-        return None
+        return  # noqa: RET502
     if needs_payment:
         application.await_further_payment()
     else:

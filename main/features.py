@@ -37,7 +37,7 @@ def if_feature_enabled(name, default=None):
         def wrapped_func(*args, **kwargs):
             if not is_enabled(name, default):
                 # If the given feature name is not enabled, do nothing (no-op).
-                return None
+                return  # noqa: RET502
             else:
                 # If the given feature name is enabled, call the function and return as normal.
                 return func(*args, **kwargs)
