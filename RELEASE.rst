@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.122.1
+Version 0.122.1 (Released September 19, 2024)
 ---------------
 
 - fix(deps): update dependency express to v4.20.0 [security]
