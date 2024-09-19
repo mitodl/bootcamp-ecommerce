@@ -60,7 +60,7 @@
     "keycode": "^2.2.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.1.2",
-    "minimist": "^1.2.6",
+    "minimist": "1.2.8",
     "mocha": "^8.0.0",
     "moment": "^2.29.4",
     "mutationobserver-shim": "^0.3.5",
