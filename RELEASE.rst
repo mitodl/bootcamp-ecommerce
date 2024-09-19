@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Version 0.122.1
+---------------
+
+- fix(deps): update dependency express to v4.20.0 [security]
+- Bump setuptools from 69.5.1 to 70.0.0 (#1600)
+- chore: upgrade redis version in CI (#1589)
+
 Version 0.122.0 (Released August 13, 2024)
 ---------------
 
