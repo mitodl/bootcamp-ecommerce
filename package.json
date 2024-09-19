@@ -125,6 +125,7 @@
     "yup": "^0.32.0"
   },
   "resolutions": {
+    "minimist": "1.2.8",
     "merge": "^2.1.1",
     "webpack/watchpack/watchpack-chokidar2/**/chokidar": "^3.4.3"
   },
