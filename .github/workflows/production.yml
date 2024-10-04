@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: release
-      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820
+      - uses: akhileshns/heroku-deploy@e86b991436e126ff9d78399b801a6610a64881c9
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "bootcamp-ecommerce"
