@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.123.0
+---------------
+
+- fix(deps): update dependency django to v4.2.16 [security] (#1606)
+- fix(deps): update dependency @sentry/browser to v8.33.0 [security]
+- fix(deps): update dependency requests to v2.32.2 [security]
+- fix: pin minimist to solve dependabot security issues (#1598)
+
 Version 0.122.1 (Released September 19, 2024)
 ---------------
 
