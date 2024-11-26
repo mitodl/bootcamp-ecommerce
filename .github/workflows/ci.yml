@@ -37,7 +37,7 @@ jobs:
           - 9200:9200
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Apt install
         run: cat Aptfile | sudo xargs apt-get install
@@ -114,7 +114,7 @@ jobs:
   javascript-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: actions/setup-node@v2-beta
