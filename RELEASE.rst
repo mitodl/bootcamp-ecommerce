@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.123.0
+Version 0.123.0 (Released January 08, 2025)
 ---------------
 
 - fix(deps): update dependency django to v4.2.16 [security] (#1606)
