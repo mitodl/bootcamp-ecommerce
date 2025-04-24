@@ -83,7 +83,7 @@
     "react-page-click": "^4.0.4",
     "react-paginate": "^6.3.2",
     "react-redux": "7.2.9",
-    "react-router": "^5.1.2",
+    "react-router": "^7.0.0",
     "react-router-dom": "^5.1.2",
     "react-test-renderer": "^16.13.1",
     "react-zendesk": "^0.1.9",
