@@ -234,10 +234,6 @@
       "description": "Form ID for Hubspot Forms API",
       "required": false
     },
-    "HUBSPOT_FOOTER_FORM_GUID": {
-      "description": "Form guid over hub spot for footer block.",
-      "required": false
-    },
     "HUBSPOT_MAX_CONCURRENT_TASKS": {
       "description": "Max number of concurrent Hubspot tasks to run",
       "required": false
@@ -248,10 +244,6 @@
     },
     "HUBSPOT_PIPELINE_ID": {
       "description": "Hubspot ecommerce pipeline id",
-      "required": false
-    },
-    "HUBSPOT_PORTAL_ID": {
-      "description": "Hub spot portal id.",
       "required": false
     },
     "HUBSPOT_TASK_DELAY": {

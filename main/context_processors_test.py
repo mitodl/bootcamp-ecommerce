@@ -29,10 +29,6 @@ def test_configuration_context(
         "HELP_WIDGET_ENABLED": False,
         "HELP_WIDGET_KEY": "fake_key",
     }
-    settings.HUBSPOT_CONFIG = {
-        "HUBSPOT_PORTAL_ID": "fake-portal-id",
-        "HUBSPOT_FOOTER_FORM_GUID": "fake-form-guid",
-    }
     user = UserFactory.create() if is_authed else AnonymousUser()
 
     request = RequestFactory().get("/")
@@ -45,10 +41,6 @@ def test_configuration_context(
             "help_widget_enabled": settings.ZENDESK_CONFIG["HELP_WIDGET_ENABLED"],
             "help_widget_key": settings.ZENDESK_CONFIG["HELP_WIDGET_KEY"],
         },
-        "hubspot_portal_id": settings.HUBSPOT_CONFIG.get("HUBSPOT_PORTAL_ID"),
-        "hubspot_footer_form_guid": settings.HUBSPOT_CONFIG.get(
-            "HUBSPOT_FOOTER_FORM_GUID"
-        ),
         "support_url": settings.SUPPORT_URL,
     }
     patched_get_resource_page_urls.assert_called_once_with(request.site)
