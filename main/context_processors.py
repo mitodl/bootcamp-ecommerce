@@ -54,10 +54,6 @@ def configuration_context(request):  # pylint: disable=unused-argument
     Configuration context for django templates
     """
     return {
-        "hubspot_portal_id": settings.HUBSPOT_CONFIG.get("HUBSPOT_PORTAL_ID"),
-        "hubspot_footer_form_guid": settings.HUBSPOT_CONFIG.get(
-            "HUBSPOT_FOOTER_FORM_GUID"
-        ),
         "resource_page_urls": get_resource_page_urls(request.site),
         "support_url": settings.SUPPORT_URL,
         "zendesk_config": {

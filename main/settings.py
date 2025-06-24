@@ -936,14 +936,6 @@ HUBSPOT_CONFIG = {
         default=None,
         description="Form guid over hub spot for new courses email subscription form.",
     ),
-    "HUBSPOT_FOOTER_FORM_GUID": get_string(
-        name="HUBSPOT_FOOTER_FORM_GUID",
-        default=None,
-        description="Form guid over hub spot for footer block.",
-    ),
-    "HUBSPOT_PORTAL_ID": get_string(
-        name="HUBSPOT_PORTAL_ID", default=None, description="Hub spot portal id."
-    ),
     "HUBSPOT_CREATE_USER_FORM_ID": get_string(
         name="HUBSPOT_CREATE_USER_FORM_ID",
         default=None,
