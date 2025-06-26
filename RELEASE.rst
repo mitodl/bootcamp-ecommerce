@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+Version 0.123.1
+---------------
+
+- chore: disable gemini auto review (#1616)
+- fix(deps): update dependency requests to v2.32.4 [security] (#1614)
+- fix(deps): update dependency django to v4.2.22 [security] (#1611)
+- chore: remove HubSpot email updates signup form in footer (#1613)
+- fix(deps): update dependency django to v4.2.18 [security] (#1609)
+- fix(deps): update dependency django to v4.2.17 [security] (#1608)
+
 Version 0.123.0 (Released January 08, 2025)
 ---------------
 
