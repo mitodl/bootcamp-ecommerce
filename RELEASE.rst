@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.123.1
+Version 0.123.1 (Released July 02, 2025)
 ---------------
 
 - chore: disable gemini auto review (#1616)
