@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.123.2
+---------------
+
+- fix(deps): update dependency urllib3 to v2 [security] (#1615)
+
 Version 0.123.1 (Released July 02, 2025)
 ---------------
 
