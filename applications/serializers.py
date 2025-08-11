@@ -18,6 +18,7 @@ from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.models import BootcampRunCertificate
 from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
+from localdev.seed.api_test import seeded
 from profiles.serializers import UserSerializer
 
 
@@ -159,6 +160,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
     has_payments = serializers.SerializerMethodField()
     enrollment = serializers.SerializerMethodField()
     certificate_link = serializers.SerializerMethodField()
+    is_payment_enabled = serializers.SerializerMethodField()
 
     def get_certificate_link(self, application):
         """Returns certificate link if both certificate and certificate template are present and enabled"""
@@ -199,6 +201,25 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
             return bool(application.orders.all())
         else:
             return application.orders.filter(status=Order.FULFILLED).exists()
+    def get_is_payment_enabled(self, application):
+        if self.get_has_payments(application):
+            return True
+
+        if all(
+            (
+                settings.CYBERSOURCE_ACCESS_KEY,
+                settings.CYBERSOURCE_SECURITY_KEY,
+                settings.CYBERSOURCE_TRANSACTION_KEY,
+                settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL,
+                settings.CYBERSOURCE_PROFILE_ID,
+                settings.CYBERSOURCE_REFERENCE_PREFIX,
+                settings.CYBERSOURCE_WSDL_URL,
+                settings.CYBERSOURCE_MERCHANT_ID,
+            )
+        ):
+            return True
+
+        return False
 
     class Meta:
         model = models.BootcampApplication
@@ -210,6 +231,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
             "enrollment",
             "has_payments",
             "certificate_link",
+            "is_payment_enabled",
         ]
 
 
