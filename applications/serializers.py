@@ -18,7 +18,6 @@ from ecommerce.models import Order
 from ecommerce.serializers import ApplicationOrderSerializer
 from klasses.models import BootcampRunCertificate
 from klasses.serializers import BootcampRunSerializer, BootcampRunEnrollmentSerializer
-from localdev.seed.api_test import seeded
 from profiles.serializers import UserSerializer
 
 
@@ -202,10 +201,12 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
         else:
             return application.orders.filter(status=Order.FULFILLED).exists()
     def get_is_payment_enabled(self, application):
-        if self.get_has_payments(application):
-            return True
+        """
+        Checks if the payment step should be enabled.
 
-        if all(
+        Payment is enabled if the user has already made payments, or if Cybersource is configured.
+        """
+        cybersource_configured = all(
             (
                 settings.CYBERSOURCE_ACCESS_KEY,
                 settings.CYBERSOURCE_SECURITY_KEY,
@@ -216,10 +217,9 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
                 settings.CYBERSOURCE_WSDL_URL,
                 settings.CYBERSOURCE_MERCHANT_ID,
             )
-        ):
-            return True
+        )
 
-        return False
+        return self.get_has_payments(application) or cybersource_configured
 
     class Meta:
         model = models.BootcampApplication
