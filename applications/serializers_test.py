@@ -136,8 +136,8 @@ def test_application_detail_serializer_nested(app_data):
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
 
 
-@pytest.mark.parametrize("has_payments,has_enrollment", [[True, False], [False, True]])
-def test_application_list_serializer(app_data, has_payments, has_enrollment):
+@pytest.mark.parametrize("has_payments,has_enrollment,is_payment_enabled", [[True, False, True], [False, True, True]])
+def test_application_list_serializer(app_data, has_payments, has_enrollment, is_payment_enabled):
     """
     BootcampApplicationListSerializer should return serialized versions of all of a user's
     bootcamp applications
@@ -173,7 +173,7 @@ def test_application_list_serializer(app_data, has_payments, has_enrollment):
             ),
             "has_payments": has_payments,
             "certificate_link": None,
-            "is_payment_enabled": False,
+            "is_payment_enabled": is_payment_enabled,
         }
         for application in user_applications
     ]
