@@ -173,6 +173,7 @@ def test_application_list_serializer(app_data, has_payments, has_enrollment):
             ),
             "has_payments": has_payments,
             "certificate_link": None,
+            "is_payment_enabled": False,
         }
         for application in user_applications
     ]
