@@ -44,6 +44,7 @@ export const makeApplication = (): Application => ({
   bootcamp_run: generateFakeRun(),
   enrollment: generateFakeEnrollment(),
   has_payments: casual.boolean,
+  is_payment_enabled: true,
 });
 
 export const makeApplicationRunStep = (
