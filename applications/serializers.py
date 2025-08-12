@@ -200,6 +200,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
             return bool(application.orders.all())
         else:
             return application.orders.filter(status=Order.FULFILLED).exists()
+
     def get_is_payment_enabled(self, application):
         """
         Checks if the payment step should be enabled.
