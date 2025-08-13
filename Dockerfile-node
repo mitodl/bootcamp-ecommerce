@@ -1,8 +1,6 @@
-FROM node:16.20.2
+FROM node:16.20.2-bullseye
 LABEL maintainer "ODL DevOps <mitx-devops@mit.edu>"
 
-RUN sed -i 's/deb.debian.org\/debian/deb-archive.debian.org\/debian/g' /etc/apt/sources.list \
-    && sed -i 's/security.debian.org\/debian-security/deb-archive.debian.org\/debian-security/g' /etc/apt/sources.list
 RUN apt-get update && apt-get install libelf1
 
 RUN mkdir /src/
