@@ -130,7 +130,7 @@
     "webpack/watchpack/watchpack-chokidar2/**/chokidar": "^3.4.3"
   },
   "engines": {
-    "node": "20.19.3",
+    "node": "16.20.2",
     "yarn": "1.22.4"
   },
   "scripts": {
