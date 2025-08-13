@@ -207,20 +207,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
 
         Payment is enabled if the user has already made payments, or if Cybersource is configured.
         """
-        cybersource_configured = all(
-            (
-                settings.CYBERSOURCE_ACCESS_KEY,
-                settings.CYBERSOURCE_SECURITY_KEY,
-                settings.CYBERSOURCE_TRANSACTION_KEY,
-                settings.CYBERSOURCE_SECURE_ACCEPTANCE_URL,
-                settings.CYBERSOURCE_PROFILE_ID,
-                settings.CYBERSOURCE_REFERENCE_PREFIX,
-                settings.CYBERSOURCE_WSDL_URL,
-                settings.CYBERSOURCE_MERCHANT_ID,
-            )
-        )
-
-        return self.get_has_payments(application) or cybersource_configured
+        return self.get_has_payments(application) or settings.CYBERSOURCE_ACCESS_KEY
 
     class Meta:
         model = models.BootcampApplication
