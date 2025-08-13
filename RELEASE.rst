@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.124.0
+---------------
+
+- fix: docker build (#1620)
+
 Version 0.123.2 (Released July 14, 2025)
 ---------------
 
