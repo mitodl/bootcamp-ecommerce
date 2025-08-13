@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.124.0
+Version 0.124.0 (Released August 13, 2025)
 ---------------
 
 - revert: node upgrade and fix for build (#1622)
