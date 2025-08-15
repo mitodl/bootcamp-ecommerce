@@ -155,6 +155,8 @@ def test_application_list_serializer(
     """
     if not cybersource_configured:
         settings.CYBERSOURCE_ACCESS_KEY = None
+    else:
+        settings.CYBERSOURCE_ACCESS_KEY = "test_access_key"
     other_app = BootcampApplicationFactory.create(user=app_data.application.user)
     user_applications = [app_data.application, other_app]
     if has_payments:
