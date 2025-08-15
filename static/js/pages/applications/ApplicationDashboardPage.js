@@ -458,7 +458,7 @@ export class ApplicationDashboardPage extends React.Component<Props, State> {
             {submissionStepRows}
           </Fragment>
         )}
-        {paymentRow}
+        {application.is_payment_enabled ? paymentRow : null}
         {bootcampStartRow}
       </div>
     );

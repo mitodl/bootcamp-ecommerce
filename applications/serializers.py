@@ -159,6 +159,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
     has_payments = serializers.SerializerMethodField()
     enrollment = serializers.SerializerMethodField()
     certificate_link = serializers.SerializerMethodField()
+    is_payment_enabled = serializers.SerializerMethodField()
 
     def get_certificate_link(self, application):
         """Returns certificate link if both certificate and certificate template are present and enabled"""
@@ -200,6 +201,16 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
         else:
             return application.orders.filter(status=Order.FULFILLED).exists()
 
+    def get_is_payment_enabled(self, application):
+        """
+        Checks if the payment step should be enabled.
+
+        Payment is enabled if the user has already made payments, or if Cybersource is configured.
+        """
+        return self.get_has_payments(application) or bool(
+            settings.CYBERSOURCE_ACCESS_KEY
+        )
+
     class Meta:
         model = models.BootcampApplication
         fields = [
@@ -210,6 +221,7 @@ class BootcampApplicationSerializer(serializers.ModelSerializer):
             "enrollment",
             "has_payments",
             "certificate_link",
+            "is_payment_enabled",
         ]
 
 

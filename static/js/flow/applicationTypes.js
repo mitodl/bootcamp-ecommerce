@@ -21,6 +21,7 @@ export type Application = {
   certificate_link: string,
   enrollment: ?BootcampRunEnrollment,
   has_payments: boolean,
+  is_payment_enabled: boolean,
 };
 
 export type ValidAppStepType = SUBMISSION_VIDEO | SUBMISSION_QUIZ;
