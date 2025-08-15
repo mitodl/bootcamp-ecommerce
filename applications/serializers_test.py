@@ -138,7 +138,7 @@ def test_application_detail_serializer_nested(app_data):
 
 @pytest.mark.parametrize(
     "has_payments,has_enrollment,is_payment_enabled",
-    [[True, False, True], [False, True, True]],
+    [[True, False, True], [False, True, False]],
 )
 def test_application_list_serializer(
     app_data, has_payments, has_enrollment, is_payment_enabled
