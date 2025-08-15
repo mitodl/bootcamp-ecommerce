@@ -5,6 +5,7 @@ from datetime import timedelta
 from types import SimpleNamespace
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 import pytest
 import factory
 
@@ -136,12 +137,26 @@ def test_application_detail_serializer_nested(app_data):
     assert data["orders"] == ApplicationOrderSerializer(instance=orders, many=True).data
 
 
-@pytest.mark.parametrize("has_payments,has_enrollment", [[True, False], [False, True]])
-def test_application_list_serializer(app_data, has_payments, has_enrollment):
+@pytest.mark.parametrize(
+    "has_payments,has_enrollment,cybersource_configured,is_payment_enabled",
+    [
+        [True, False, True, True],
+        [False, True, True, True],
+        [True, True, False, True],
+        [False, True, False, False],
+    ],
+)
+def test_application_list_serializer(
+    app_data, has_payments, has_enrollment, cybersource_configured, is_payment_enabled
+):
     """
     BootcampApplicationListSerializer should return serialized versions of all of a user's
     bootcamp applications
     """
+    if not cybersource_configured:
+        settings.CYBERSOURCE_ACCESS_KEY = None
+    else:
+        settings.CYBERSOURCE_ACCESS_KEY = "test_access_key"
     other_app = BootcampApplicationFactory.create(user=app_data.application.user)
     user_applications = [app_data.application, other_app]
     if has_payments:
@@ -173,6 +188,7 @@ def test_application_list_serializer(app_data, has_payments, has_enrollment):
             ),
             "has_payments": has_payments,
             "certificate_link": None,
+            "is_payment_enabled": is_payment_enabled,
         }
         for application in user_applications
     ]
