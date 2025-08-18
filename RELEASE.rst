@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.124.1
+Version 0.124.1 (Released August 18, 2025)
 ---------------
 
 - feat: hide payment if no payments or payment method configured (#1619)
