@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.124.2
+Version 0.124.2 (Released September 08, 2025)
 ---------------
 
 - chore(deps): update akhileshns/heroku-deploy digest to e3eb99d (#1459)
