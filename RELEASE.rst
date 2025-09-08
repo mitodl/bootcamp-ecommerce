@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.124.2
+---------------
+
+- chore(deps): update akhileshns/heroku-deploy digest to e3eb99d (#1459)
+- chore: bump Django to 4.2.24 (#1625)
+
 Version 0.124.1 (Released August 18, 2025)
 ---------------
 
