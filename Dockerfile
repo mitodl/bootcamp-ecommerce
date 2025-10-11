@@ -1,4 +1,4 @@
-FROM python:3.10.13
+FROM python:3.14.0
 LABEL maintainer "ODL DevOps <mitx-devops@mit.edu>"
 
 
