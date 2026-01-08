@@ -32,7 +32,7 @@ packages = []
 authors  = ["MIT ODL"]
 
 [tool.poetry.dependencies]
-python = "3.10.13"
+python = "3.14.2"
 django = "4.2.27"
 celery = {extras = ["redis"], version = "^5.3.6"}
 boto3 = "^1.16.63"
