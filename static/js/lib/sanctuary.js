@@ -14,7 +14,7 @@ export const allJust = R.curry((items: S.Maybe[]) =>
 /*
  * converts a Maybe<String> to a string
  */
-export const mstr = S.maybe("", String);
+export const mstr = S.maybe("")(String);
 
 /*
  * returns Nothing if the input is undefined|null,
@@ -49,26 +49,24 @@ export const getm = R.curry((prop, obj) => S.toMaybe(R.prop(prop, obj)));
 // A Right value indicates the JSON parsed successfully,
 // a Left value indicates the JSON was malformed (a Left contains
 // an empty object)
-export const parseJSON = S.encaseEither(() => ({}), JSON.parse);
+export const parseJSON = S.encaseEither(() => ({}))(JSON.parse);
 
 // filterE :: (Either -> Boolean) -> Either -> Either
 // filterE takes a function f and an either E(v).
 // if the Either is a Left, it returns it.
 // if the f(v) === true, it returns, E. Else,
 // if returns Left(v).
-export const filterE = R.curry((predicate, either) =>
-  S.either(
-    S.Left,
-    (right) => (predicate(right) ? S.Right(right) : S.Left(right)),
-    either,
-  ),
-);
+export const filterE = R.curry((predicate, either) => {
+  return S.either(S.Left)((right) =>
+    predicate(right) ? S.Right(right) : S.Left(right),
+  )(either);
+});
 
 // reduceM :: forall a b. b -> (a -> b) -> Maybe a -> b
 // this is how I think Sanctuary's `reduce` should handle a maybe
 // pass a default value, a function, and a maybe
 // if Nothing, return the function called with the default value
 // if Just, return the function called with the value in the Just
-export const reduceM = R.curry((def, fn, maybe) =>
-  S.maybe_(() => fn(def), fn, maybe),
-);
+export const reduceM = R.curry((def, fn, maybe) => {
+  return S.maybe_(() => fn(def))(fn)(maybe);
+});
